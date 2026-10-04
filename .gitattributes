@@ -1,0 +1,7 @@
+# Normalize text to LF in the repository regardless of contributor OS.
+* text=auto eol=lf
+
+# Official sources and other binaries: never apply line-ending or diff transforms.
+*.pdf binary
+*.png binary
+*.jpg binary

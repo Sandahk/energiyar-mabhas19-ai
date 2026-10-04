@@ -1,0 +1,29 @@
+# Representative pages rendered by `python -m mabhas19.cli.audit_sources` into
+# data/interim/<doc_id>/<sha8>/audit-samples/ for visual comparison with extracted text.
+samples:
+  m19-ed5-1404-main:
+    - {pdf_page: 1, reason: "title page; front-matter letter marker"}
+    - {pdf_page: 5, reason: "full-page raster (notification letter): no text layer"}
+    - {pdf_page: 15, reason: "printed table of contents (no PDF bookmarks)"}
+    - {pdf_page: 19, reason: "chapter 19-1 heading and definitions; damaged text layer"}
+    - {pdf_page: 55, reason: "chapter 19-2 heading; hyphen missing from text layer"}
+    - {pdf_page: 62, reason: "numbered clauses extracted in visual order (1-4-2-19)"}
+    - {pdf_page: 68, reason: "table 19-3-2 (climate class of provincial capitals)"}
+    - {pdf_page: 84, reason: "table 19-5-1 (minimum thermal resistance)"}
+    - {pdf_page: 99, reason: "table 19-5-3 (minimum HVAC equipment efficiency)"}
+  m19-ed5-1404-app01:
+    - {pdf_page: 2, reason: "terminology (Persian/English glossary); Persian drawn as vectors"}
+  m19-ed5-1404-app02:
+    - {pdf_page: 2, reason: "city -> climate class table"}
+  m19-ed5-1404-app03:
+    - {pdf_page: 2, reason: "energy-use intensity limits table (class D)"}
+  m19-ed5-1404-app04:
+    - {pdf_page: 3, reason: "LCA prose; no extractable Persian text"}
+    - {pdf_page: 12, reason: "table in appendix 4 not found by automatic detection"}
+  m19-ed5-1404-app07:
+    - {pdf_page: 3, reason: "material thermal properties table; values are Persian digits drawn as vectors"}
+  m19-ed5-1404-app08:
+    - {pdf_page: 2, reason: "placeholder: lighting-limit table not yet published"}
+  m19-ed5-1404-app09:
+    - {pdf_page: 6, reason: "mixed Persian list and English ASHRAE references"}
+    - {pdf_page: 9, reason: "English references with extractable Latin text"}

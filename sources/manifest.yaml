@@ -1,0 +1,198 @@
+# Source manifest: the single registry of official source PDFs.
+#
+# Rules:
+# - Source files under sources/ are never edited. Their bytes must match sha256/size_bytes.
+# - Paths are relative to the sources/ directory.
+# - A better or corrected original is added as a NEW version (v2, v3, ...) with its own
+#   file, `supersedes` pointing at the previous version, and `current_version` updated.
+#   Old versions stay in place so existing citations and derived data remain traceable.
+# - Verified by tests/unit/test_source_manifest.py.
+
+schema_version: 1
+
+corpus:
+  corpus_id: mabhas19-ed5-1404
+  name_fa: "مبحث نوزدهم مقررات ملی ساختمان — ویرایش پنجم (۱۴۰۴)"
+  name_en: "Iranian National Building Regulations, Part 19 (energy) — 5th edition (1404)"
+
+documents:
+  - doc_id: m19-ed5-1404-main
+    kind: main
+    appendix_number: null
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+        canonical_filename: m19-ed5-1404-main-v1.pdf
+        original_filename: "mab15-v5.pdf"
+        sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+        size_bytes: 1837422
+        page_count: 146
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: "Microsoft® Word LTSC"
+          producer: "3.0.28 (5.1.14)"
+  - doc_id: m19-ed5-1404-app01
+    kind: appendix
+    appendix_number: 1
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app01-v1.pdf
+        canonical_filename: m19-ed5-1404-app01-v1.pdf
+        original_filename: "پیوست1- 30-04-1404.pdf"
+        sha256: 536dd07db77686ae60dfde4cee318f146d598ed7365ea2f035c9a7f06506705a
+        size_bytes: 480389
+        page_count: 8
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app02
+    kind: appendix
+    appendix_number: 2
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app02-v1.pdf
+        canonical_filename: m19-ed5-1404-app02-v1.pdf
+        original_filename: "پیوست2- 30-04-1404.pdf"
+        sha256: 8e40c4f80eb1db38874380160a167342a5ec75512842ebd424708e954ec0d4fe
+        size_bytes: 171250
+        page_count: 4
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app03
+    kind: appendix
+    appendix_number: 3
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app03-v1.pdf
+        canonical_filename: m19-ed5-1404-app03-v1.pdf
+        original_filename: "پیوست 3 - 30-04-1404.pdf"
+        sha256: 04a2a23f45ced84d6dbe01d39d05793e68a0e9371d3a3cc500db375d7faef517
+        size_bytes: 475206
+        page_count: 5
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app04
+    kind: appendix
+    appendix_number: 4
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app04-v1.pdf
+        canonical_filename: m19-ed5-1404-app04-v1.pdf
+        original_filename: "پیوست 4 - 30-04-1404.pdf"
+        sha256: 8c8fd2142400afd05ed73e79959411c8d9fc455f29459c7fa56c75f42b81cae2
+        size_bytes: 5194637
+        page_count: 32
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app05
+    kind: appendix
+    appendix_number: 5
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app05-v1.pdf
+        canonical_filename: m19-ed5-1404-app05-v1.pdf
+        original_filename: "پیوست 5 - 30-04-1404.pdf"
+        sha256: 1e9b574d1d73cd217540044d701aea89294ce1d72aeac53daa9b93a9b388d7db
+        size_bytes: 65960
+        page_count: 2
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app06
+    kind: appendix
+    appendix_number: 6
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app06-v1.pdf
+        canonical_filename: m19-ed5-1404-app06-v1.pdf
+        original_filename: "پیوست 6 - 30-04-1404.pdf"
+        sha256: 2be1a3fa512e8833b0aa2cb07156cfea41b1bcfdff1b1f61af8ca9436b191902
+        size_bytes: 50155
+        page_count: 2
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app07
+    kind: appendix
+    appendix_number: 7
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app07-v1.pdf
+        canonical_filename: m19-ed5-1404-app07-v1.pdf
+        original_filename: "پیوست 7 - 30-04-1404.pdf"
+        sha256: f3e8e5c3f59ca25e3831cffe245a1d0b5081043bbe4aff91de5f76086b158031
+        size_bytes: 1029008
+        page_count: 13
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app08
+    kind: appendix
+    appendix_number: 8
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app08-v1.pdf
+        canonical_filename: m19-ed5-1404-app08-v1.pdf
+        original_filename: "پیوست 8 - 30-04-1404.pdf"
+        sha256: 9402d83d7f809d17d6ddd61b653929f09c37971e1dabbc9834dbfd789b086a8a
+        size_bytes: 49024
+        page_count: 2
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"
+  - doc_id: m19-ed5-1404-app09
+    kind: appendix
+    appendix_number: 9
+    current_version: v1
+    versions:
+      - version: v1
+        path: mabhas19/ed5-1404/appendices/m19-ed5-1404-app09-v1.pdf
+        canonical_filename: m19-ed5-1404-app09-v1.pdf
+        original_filename: "پیوست 9 - 30-04-1404.pdf"
+        sha256: 12862c5a23ef22d9c7993853cee3d97406b635161786b1d5815717e400447972
+        size_bytes: 2151031
+        page_count: 10
+        added_on: 2026-10-04
+        supersedes: null
+        provenance: "Supplied by the project owner; upstream publication source not yet recorded."
+        pdf_metadata:
+          creator: ""
+          producer: "Microsoft: Print To PDF"

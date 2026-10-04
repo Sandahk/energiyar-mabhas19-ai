@@ -1,0 +1,41 @@
+# --- Python / tooling ---
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Derived data (regenerable; never committed) ---
+data/**
+!data/*/
+!data/**/.gitkeep
+
+# --- Evaluation run outputs ---
+eval/runs/**
+!eval/runs/.gitkeep
+
+# --- Models, caches, logs ---
+models/
+*.gguf
+*.safetensors
+*.onnx
+logs/
+*.log
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

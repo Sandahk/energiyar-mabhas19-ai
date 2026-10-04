@@ -1,0 +1,61 @@
+[project]
+name = "energiyar-mabhas19-ai"
+version = "0.1.0"
+description = "Persian RAG assistant for Mabhas 19 (5th edition, 1404) and its official appendices"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pymupdf>=1.28.2",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.3",
+    "ruff>=0.6",
+    "types-pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.10,<0.11"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "mabhas19"
+
+[tool.uv]
+# Install mypy as pure Python: Windows Application Control on dev machines blocks the
+# mypyc-compiled DLLs shipped in mypy's binary wheels.
+no-binary-package = ["mypy"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF", "PL", "PT"]
+ignore = [
+    "PLR2004",  # magic values are normal in tests and regulatory constants
+    "RUF001",   # Persian text legitimately contains characters ruff flags as ambiguous
+    "RUF002",
+    "RUF003",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+# PyMuPDF's inline annotations are partial (untyped methods, Document not declared
+# iterable); treat it as untyped so strict checking stays on for our own code.
+module = ["pymupdf", "pymupdf.*"]
+follow_imports = "skip"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+xfail_strict = true

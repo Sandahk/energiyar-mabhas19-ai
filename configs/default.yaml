@@ -1,0 +1,20 @@
+# Default project configuration. Paths are relative to the repository root.
+# Later phases add pipeline, retrieval and provider sections here.
+
+project:
+  name: energiyar-mabhas19-ai
+  corpus_id: mabhas19-ed5-1404
+
+paths:
+  sources: sources
+  manifest: sources/manifest.yaml
+  curated: curated
+  data_interim: data/interim
+  data_processed: data/processed
+  data_indexes: data/indexes
+  eval_golden: eval/golden
+  eval_runs: eval/runs
+
+# Bumped whenever extraction/normalization logic changes; derived data is stored under
+# data/<stage>/<doc_id>/<source sha256 prefix>/ and tagged with this version.
+pipeline_version: 0

@@ -1,0 +1,67 @@
+# Table observations from a visual review of rendered pages (contact sheets of all
+# 224 pages), made by Claude (AI assistant) on 2026-10-04.
+#
+# Status: NOT human-verified. These complement automatic detection, which is unreliable
+# where the Persian text is drawn as vector outlines (all appendices). Caption texts are
+# visual readings and must be checked against the page before any use.
+#
+# Merged into data/interim/<doc_id>/<sha8>/table-inventory.jsonl with
+# source: manual_visual_review.
+
+observations:
+  # --- Main document -------------------------------------------------------------------
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [64]
+    notes: "Large matrix of check/cross marks, set very small; caption reads as table 19-2-1 (implementation timing of requirements by building group). Hard to read at normal resolution."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [67]
+    notes: "Table 19-3-1 climate classes by cooling/heating degree-days; the same page holds map figure 19-3-2."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [68]
+    notes: "Table 19-3-2 climate class of provincial capitals (~31 rows, includes WMO station codes)."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [74]
+    notes: "Table 19-3-3 energy rating class (A-D) by ratio R; small."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [84]
+    notes: "Table 19-5-1 minimum thermal resistance (R-value) of opaque envelope parts by climate; grouped header rows per element."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [90]
+    notes: "Table 19-5-2 prescriptive requirements for glazed envelope by climate (U-value, SHGC by projection factor)."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [99]
+    notes: "Table 19-5-3 minimum efficiency of central heating/cooling equipment (efficiency, national standard, energy label)."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [100]
+    notes: "Table 19-5-4 minimum efficiency of non-central heating/cooling equipment."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [107]
+    notes: "Table 19-5-5 maximum domestic hot-water temperature at point of use; small."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [115]
+    notes: "Table 19-5-6 daylight-sufficiency area ratio by use; small."
+  - doc_id: m19-ed5-1404-main
+    pdf_pages: [116]
+    notes: "Table 19-5-7 minimum uniformity of artificial lighting by space; small."
+
+  # --- Appendices ----------------------------------------------------------------------
+  - doc_id: m19-ed5-1404-app01
+    pdf_pages: [2, 3, 4, 5, 6, 7, 8]
+    notes: "Not a ruled table: two-column English/Persian glossary (table-like term pairs). English terms extract as text; Persian equivalents are vector outlines."
+  - doc_id: m19-ed5-1404-app02
+    pdf_pages: [2, 3, 4]
+    notes: "One table continued over 3 pages: row no., city name, climate class (76 rows). Row numbers and climate codes extract as text; city names are vector outlines. Page 4 ends with an explanatory note."
+  - doc_id: m19-ed5-1404-app03
+    pdf_pages: [2, 3, 4, 5]
+    notes: "One table per page (tables P3-1..P3-4 for energy classes D, C, B, A): ~34 use types x 9 climate columns (0B..5B), kWh/m2.yr. Numeric cells extract as text; row labels and row numbers are vector outlines."
+  - doc_id: m19-ed5-1404-app04
+    pdf_pages: [12]
+    notes: "Table 1: structure of ISO 14040 LCA stages (text only, no numeric values). Not found by automatic detection."
+  - doc_id: m19-ed5-1404-app07
+    pdf_pages: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    notes: "One long table across 11 pages: material, dry density [kg/m3], effective thermal conductivity [W/m.K], grouped in numbered material categories. ALL values are Persian digits drawn as vector outlines - nothing extractable."
+  - doc_id: m19-ed5-1404-app08
+    pdf_pages: [2]
+    probable_table: false
+    tables_per_page: 0
+    notes: "Expected lighting-power limits table is ABSENT: the page only states that the appendix is being completed (in comparison with Mabhas 13) and will be published later."

@@ -1,0 +1,20 @@
+page_id: app09-p002
+doc_id: m19-ed5-1404-app09
+pdf_page: 2
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 180-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - {id: app09-p002-01, doc_id: m19-ed5-1404-app09, pdf_page: 2, type: heading,
+     expected_text: "پ ۱۳-۱ استانداردها و آیین‌نامه‌های مرجع",
+     notes: "Header numbering «پ ۱۳-۱» does not match «پیوست ۹»; see SI-0005."}
+  - {id: app09-p002-02, doc_id: m19-ed5-1404-app09, pdf_page: 2, type: prose,
+     expected_text: "فهرست آیین‌نامه‌ها و استانداردهای مورد استناد در این مبحث به شرح زیر است:"}
+  - {id: app09-p002-03, doc_id: m19-ed5-1404-app09, pdf_page: 2, type: list_entry,
+     expected_text: "استانداردهای تعیین‌شده در مبحث ۵ مقررات ملی در خصوص مصالح ساختمانی، از جمله عایق‌های حرارتی و شیشه‌ها"}
+  - {id: app09-p002-04, doc_id: m19-ed5-1404-app09, pdf_page: 2, type: list_entry,
+     expected_text: "استاندارد ملی شماره ۱۲۱۹-۲ – آبگرمکن گاز سوز مخزن‌دار- ویژگی‌ها و روش‌های آزمون مصرف انرژی و دستورالعمل برچسب انرژی",
+     expected_fields: {standard_number_groups: ["1219", "2"]},
+     notes: "Order of the number parts in right-to-left rendering differs between entries; checked order-insensitively."}
+  - {id: app09-p002-05, doc_id: m19-ed5-1404-app09, pdf_page: 2, type: list_entry,
+     expected_text: "استاندارد ملی شماره ۲-۱۲۲۰ - بخاری گاز سوز دودکش‌دار - مشخصات فنی و روش تعیین معیار مصرف انرژی و دستورالعمل بر چسب انرژی",
+     expected_fields: {standard_number_groups: ["1220", "2"]}}

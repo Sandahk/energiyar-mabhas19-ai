@@ -1,0 +1,17 @@
+page_id: app09-p007
+doc_id: m19-ed5-1404-app09
+pdf_page: 7
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 180-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - {id: app09-p007-01, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: list_entry,
+     expected_text: "ANSI/ASHRAE 223: Designation and Classification of Semantic Tags for Building Data"}
+  - {id: app09-p007-02, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: list_entry,
+     expected_text: "ANSI/ASHRAE 224: Facilitating the Use of Building Information Modeling for the Building Lifecycle"}
+  - {id: app09-p007-03, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: heading, expected_text: "ASTM International"}
+  - {id: app09-p007-04, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: list_entry,
+     expected_text: "ASTM E2797: Standard Practice for Building Energy Performance Assessment for a Building Involved in a Real Estate Transaction."}
+  - {id: app09-p007-05, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: list_entry,
+     expected_text: "ASTM E2921: Standard Practice for Minimum Criteria for Comparing Whole Building Life Cycle Assessments for Use with Building Codes and Rating Systems."}
+  - {id: app09-p007-06, doc_id: m19-ed5-1404-app09, pdf_page: 7, type: list_entry,
+     expected_text: "ASTM E3179: Standard Guide for Conducting a Building Energy Audit."}

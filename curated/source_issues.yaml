@@ -1,0 +1,103 @@
+# Known anomalies in the official sources. These are recorded, NOT interpreted:
+# no value is remapped, corrected or completed on the basis of an entry here.
+# status: unresolved | resolved | wont_fix. Validated by tests/unit/test_source_issues.py.
+schema_version: 1
+issues:
+  - id: SI-0001
+    status: unresolved
+    title: "Appendix 2 assigns climate class 5C to a city"
+    locations:
+      - {doc_id: m19-ed5-1404-app02, pdf_pages: [2]}
+    description: >-
+      Row 5 «اردبیل» has climate class «5C». It is the only 5C row among the 76 rows of
+      appendix 2 (text-layer count: 0B 12, 1B 5, 2A 1, 2B 12, 3A 10, 3B 11, 4A 7, 4B 15,
+      5B 2, 5C 1).
+    related: [SI-0002]
+    do_not: ["map 5C to 5B or any other class", "drop the row"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 1/2A audit (Claude), from the text layer and visual review"
+
+  - id: SI-0002
+    status: unresolved
+    title: "Appendix 3 energy-limit tables have no 5C column"
+    locations:
+      - {doc_id: m19-ed5-1404-app03, pdf_pages: [2, 3, 4, 5]}
+    description: >-
+      Tables P3-1..P3-4 list nine climate columns 0B 1B 2A 2B 3A 3B 4A 4B 5B (text layer:
+      each code exactly once per table). There is therefore no energy-use limit for a city
+      classed 5C (see SI-0001). The main document's table 19-5-1 uses a combined «5B,5C»
+      column header; whether that applies to appendix 3 is not stated.
+    related: [SI-0001]
+    do_not: ["use the 5B column for 5C cities", "answer EUI questions for 5C cities as if defined"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 1/2A audit (Claude)"
+
+  - id: SI-0003
+    status: unresolved
+    title: "Appendix 3 rows 1-2: comparison operator direction visually ambiguous"
+    locations:
+      - {doc_id: m19-ed5-1404-app03, pdf_pages: [2, 3, 4, 5]}
+    description: >-
+      Use types 1 and 2 read «مسکونی [operator] ۳۰۰۰ مترمربع». The two operators render as
+      «≥» and «>» with the same orientation, so right-to-left mirroring makes the intended
+      split (e.g. ≤3000 vs >3000 m2) impossible to confirm from the glyphs alone.
+    do_not: ["infer the operator direction", "present either row as the larger/smaller building without verification"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 2A reference transcription (Claude)"
+
+  - id: SI-0004
+    status: unresolved
+    title: "Appendices 5, 6 and 8 are placeholders without substantive content"
+    locations:
+      - {doc_id: m19-ed5-1404-app05, pdf_pages: [1, 2]}
+      - {doc_id: m19-ed5-1404-app06, pdf_pages: [1, 2]}
+      - {doc_id: m19-ed5-1404-app08, pdf_pages: [1, 2]}
+    description: >-
+      Each consists of a cover page and one short note that the content will be completed
+      or published later. Appendix 8 («حداکثر توان مجاز سامانه روشنایی مصنوعی») contains NO
+      lighting-power table.
+    do_not: ["fabricate lighting-power limits", "cite appendix 8 for numeric limits"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 1 audit (Claude)"
+
+  - id: SI-0005
+    status: unresolved
+    title: "Appendix 9 page header numbered «پ ۱۳-۱»"
+    locations:
+      - {doc_id: m19-ed5-1404-app09, pdf_pages: [2]}
+    description: "The heading numbering does not match «پیوست ۹»; recorded as printed."
+    raised_on: 2026-10-04
+    raised_by: "Phase 1 audit (Claude)"
+
+  - id: SI-0006
+    status: unresolved
+    title: "Appendix 7 group 14 title printed «فلزت و آلیاژها»"
+    locations:
+      - {doc_id: m19-ed5-1404-app07, pdf_pages: [13]}
+    description: "Probably a typo for «فلزات»; kept as printed in references and extractions."
+    do_not: ["silently correct the source text"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 2A reference transcription (Claude)"
+
+  - id: SI-0007
+    status: unresolved
+    title: "Appendix titles differ between appendix covers and the list in the main document"
+    locations:
+      - {doc_id: m19-ed5-1404-main, pdf_pages: [146]}
+      - {doc_id: m19-ed5-1404-app04, pdf_pages: [1]}
+      - {doc_id: m19-ed5-1404-app06, pdf_pages: [1]}
+    description: >-
+      e.g. appendix 6 cover «فرآیند آموزش، سنجش و احراز صلاحیت انرژی» vs main-document list
+      «آیین‌نامه آموزش، ارزیابی و احراز صلاحیت بازرسان انرژی ساختمان».
+    raised_on: 2026-10-04
+    raised_by: "Phase 1 audit (Claude)"
+
+  - id: SI-0008
+    status: unresolved
+    title: "Main document misspelling «حافظت» (for «حفاظت») on PDF page 20"
+    locations:
+      - {doc_id: m19-ed5-1404-main, pdf_pages: [20]}
+    description: "Confirmed visually; the repair pipeline reproduces it faithfully."
+    do_not: ["silently correct the source text"]
+    raised_on: 2026-10-04
+    raised_by: "Phase 2A repair investigation (Claude)"

@@ -1,0 +1,46 @@
+page_id: main-p021
+doc_id: m19-ed5-1404-main
+pdf_page: 21
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - id: main-p021-01
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: heading
+    expected_text: "۱۹-۱-۹ انرژی نهفته ساختمان"
+    expected_fields: {section_number: "19-1-9", title: "انرژی نهفته ساختمان"}
+    notes: "Rendered right-to-left as ۹-۱-۱۹ visually; logical number 19-1-9."
+  - id: main-p021-02
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: term
+    expected_text: "Building Embodied Energy"
+  - id: main-p021-03
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: prose
+    expected_text: "به مقدار انرژی گفته می‌شود که برای تولید، استخراج، حمل‌ونقل، ساخت، نصب، نگهداری، تعمیر، تعویض، تخریب و بازیافت تمامی مصالح و اجزای ساختمانی مصرف شده است. این انرژی به‌صورت مقدار انرژی مصرفی بخش بر واحد سطح مانند مگاژول بر متر مربع (MJ/m2) محاسبه می‌شود."
+    notes: "The 2 in MJ/m2 is a superscript. Tests bracket order inside right-to-left text."
+  - id: main-p021-04
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: heading
+    expected_text: "۱۹-۱-۱۰ انرژی نهفته مرحله ساخت"
+    expected_fields: {section_number: "19-1-10", title: "انرژی نهفته مرحله ساخت"}
+  - id: main-p021-05
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: term
+    expected_text: "Construction Phase Embodied Energy"
+  - id: main-p021-06
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: heading
+    expected_text: "۱۹-۱-۱۱ انرژی نهفته مصالح"
+    expected_fields: {section_number: "19-1-11", title: "انرژی نهفته مصالح"}
+  - id: main-p021-07
+    doc_id: m19-ed5-1404-main
+    pdf_page: 21
+    type: term
+    expected_text: "Material Embodied Energy"

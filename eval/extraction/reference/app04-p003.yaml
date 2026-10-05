@@ -1,0 +1,22 @@
+page_id: app04-p003
+doc_id: m19-ed5-1404-app04
+pdf_page: 3
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - id: app04-p003-01
+    doc_id: m19-ed5-1404-app04
+    pdf_page: 3
+    type: prose
+    expected_text: "توجه به اندازه‌گیری و کنترل میزان انرژی مصرفی در جهان از دو منظر قابل توجه است، از یک سو ارتباط میان تولید گازهای گلخانه‌ای و میزان مصرف انرژی مورد توجه قرار دارد."
+  - id: app04-p003-02
+    doc_id: m19-ed5-1404-app04
+    pdf_page: 3
+    type: prose
+    expected_text: "به این ترتیب با کاهش میزان مصرف انرژی‌های فسیلی، میزان تولید دی اکسید کربن نیز کاهش یافته و سرعت افزایش دمای زمین کاهش خواهد یافت،"
+  - id: app04-p003-03
+    doc_id: m19-ed5-1404-app04
+    pdf_page: 3
+    type: prose
+    expected_text: "نیز یکی از مهمترین برنامه های بین المللی برای کاهش میزان مصرف انرژی در جهان است."
+    notes: "Printed with plain spaces in «برنامه های» and «بین المللی» (no ZWNJ)."

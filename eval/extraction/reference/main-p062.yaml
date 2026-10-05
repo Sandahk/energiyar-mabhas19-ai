@@ -1,0 +1,70 @@
+page_id: main-p062
+doc_id: m19-ed5-1404-main
+pdf_page: 62
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - id: main-p062-01
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: heading
+    expected_text: "۱۹-۲-۴ رده‌بندی بازدهی انرژی ساختمان‌ها"
+    expected_fields: {section_number: "19-2-4", title: "رده‌بندی بازدهی انرژی ساختمان‌ها"}
+  - id: main-p062-02
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: clause
+    expected_text: "۱۹-۲-۴-۱ بازدهی انرژی ساختمان‌ها بر مبنای شدت مصرف انرژی در ساختمان رده‌بندی می‌شود."
+    expected_fields: {section_number: "19-2-4-1"}
+    notes: "The text layer stores the number in visual order «1-4-2-19»."
+  - id: main-p062-03
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: clause
+    expected_text: "۱۹-۲-۴-۲ به‌منظور ساده‌سازی محاسبه میزان کل انرژی مصرفی ساختمان، در این ویرایش، انرژی مصرفی نهایی یا انرژی مصرفی در محل"
+    expected_fields: {section_number: "19-2-4-2"}
+    notes: "Ends before footnote mark 1."
+  - id: main-p062-04
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: prose
+    expected_text: "شدت مصرف انرژی ساختمان نیز به صورت میزان مصرف انرژی سالانه به ازای هر متر مربع از فضای کنترل‌شده ساختمان و بر مبنای کیلووات ساعت بر متر مربع در سال (kWh/m2.yr) محاسبه و رده‌بندی می‌شود."
+    notes: "Unit with superscript 2 inside right-to-left text."
+  - id: main-p062-05
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: clause
+    expected_text: "۱۹-۲-۴-۳ با توجه به تکلیف بند \"ب\" از ماده ۵۵ قانون برنامه هفتم پیشرفت جمهوری اسلامی ایران"
+    expected_fields: {section_number: "19-2-4-3", article_number: "55"}
+    notes: "Contains the لا ligature («اسلامی») and a number inside Persian text."
+  - id: main-p062-06
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: list_entry
+    expected_text: "رده D: منطبق با مبحث نوزدهم"
+    notes: "Space before the colon (visually «رده D :») ignored by normalized metrics."
+  - id: main-p062-07
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: list_entry
+    expected_text: "رده C: ساختمان کم‌مصرف"
+  - id: main-p062-08
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: list_entry
+    expected_text: "رده B: ساختمان بسیار کم‌مصرف"
+  - id: main-p062-09
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: list_entry
+    expected_text: "رده A: ساختمان نزدیک به مصرف صفر"
+  - id: main-p062-10
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: footnote
+    expected_text: "Site Energy (Final Energy)"
+  - id: main-p062-11
+    doc_id: m19-ed5-1404-main
+    pdf_page: 62
+    type: footnote
+    expected_text: "Source Energy (Primary Energy)"

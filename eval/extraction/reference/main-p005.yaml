@@ -1,0 +1,30 @@
+page_id: main-p005
+doc_id: m19-ed5-1404-main
+pdf_page: 5
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from a 260-dpi render of the scanned image, 2026-10-04; not yet checked by a human"
+items:
+  - id: main-p005-01
+    doc_id: m19-ed5-1404-main
+    pdf_page: 5
+    type: date
+    expected_text: "تاریخ : ۱۴۰۴/۰۴/۱۹"
+    expected_fields: {date: "1404/04/19"}
+    notes: "A Solar Hijri date, NOT a decimal number: the slash here is a date separator."
+  - id: main-p005-02
+    doc_id: m19-ed5-1404-main
+    pdf_page: 5
+    type: heading
+    expected_text: "موضوع : ابلاغ ویرایش پنجم مبحث نوزدهم مقررات ملی ساختمان"
+  - id: main-p005-03
+    doc_id: m19-ed5-1404-main
+    pdf_page: 5
+    type: prose
+    expected_text: "وزیر محترم کشور"
+  - id: main-p005-04
+    doc_id: m19-ed5-1404-main
+    pdf_page: 5
+    type: prose
+    expected_text: "در اجرای ماده ۳۳ قانون نظام مهندسی و کنترل ساختمان مصوب سال ۱۳۷۴، بدینوسیله ویرایش پنجم مبحث نوزدهم مقررات ملی ساختمان تحت عنوان «مدیریت انرژی در ساختمان» که مراحل تدوین و تصویب را در وزارت راه و شهرسازی"
+    expected_fields: {article_number: "33", year: "1374"}
+    notes: "The scan uses kashida stretching (e.g. «قـــانون»); the reference omits it."

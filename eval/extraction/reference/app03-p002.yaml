@@ -1,0 +1,47 @@
+page_id: app03-p002
+doc_id: m19-ed5-1404-app03
+pdf_page: 2
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 250-dpi renders, 2026-10-04; not yet checked by a human. Numeric cells cross-checked against the PDF text layer (ASCII digits are real text on this page)."
+# Table P3-1: maximum energy-use intensity (kWh/m2.yr) for energy rating D, by use type x climate.
+energy_rating: D
+columns: ["0B", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5B"]
+items:
+  - {id: app03-p002-r01, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "مسکونی ≤۳۰۰۰ مترمربع",
+     expected_fields: {row_number: 1, occupancy_type: "مسکونی ≤۳۰۰۰ مترمربع", label_check: false,
+       values: {"0B": "151", "1B": "161", "2A": "171", "2B": "171", "3A": "192", "3B": "175", "4A": "233", "4B": "195", "5B": "222"}},
+     notes: "Comparison operator direction is visually ambiguous (RTL mirroring); see SI-0003. Label excluded from label accuracy."}
+  - {id: app03-p002-r02, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "مسکونی >۳۰۰۰ مترمربع",
+     expected_fields: {row_number: 2, occupancy_type: "مسکونی >۳۰۰۰ مترمربع", label_check: false,
+       values: {"0B": "103", "1B": "110", "2A": "116", "2B": "116", "3A": "130", "3B": "120", "4A": "157", "4B": "133", "5B": "151"}},
+     notes: "See SI-0003."}
+  - {id: app03-p002-r03, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "ویلایی",
+     expected_fields: {row_number: 3, occupancy_type: "ویلایی",
+       values: {"0B": "90", "1B": "96", "2A": "103", "2B": "103", "3A": "113", "3B": "103", "4A": "137", "4B": "116", "5B": "130"}}}
+  - {id: app03-p002-r04, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "اداری عمومی",
+     expected_fields: {row_number: 4, occupancy_type: "اداری عمومی",
+       values: {"0B": "158", "1B": "168", "2A": "171", "2B": "168", "3A": "178", "3B": "164", "4A": "195", "4B": "168", "5B": "178"}}}
+  - {id: app03-p002-r05, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "اداری خصوصی",
+     expected_fields: {row_number: 5, occupancy_type: "اداری خصوصی",
+       values: {"0B": "125", "1B": "133", "2A": "137", "2B": "133", "3A": "144", "3B": "133", "4A": "157", "4B": "137", "5B": "144"}}}
+  - {id: app03-p002-r06, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "بانک و موسسه مالی",
+     expected_fields: {row_number: 6, occupancy_type: "بانک و موسسه مالی",
+       values: {"0B": "177", "1B": "188", "2A": "195", "2B": "192", "3A": "202", "3B": "188", "4A": "222", "4B": "192", "5B": "202"}}}
+  - {id: app03-p002-r07, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "بیمارستان",
+     expected_fields: {row_number: 7, occupancy_type: "بیمارستان",
+       values: {"0B": "457", "1B": "486", "2A": "489", "2B": "479", "3A": "483", "3B": "472", "4A": "489", "4B": "442", "5B": "424"}}}
+  - {id: app03-p002-r08, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "تشخیص پزشکی آزمایشگاه",
+     expected_fields: {row_number: 8, occupancy_type: "تشخیص پزشکی آزمایشگاه",
+       values: {"0B": "573", "1B": "609", "2A": "602", "2B": "585", "3A": "599", "3B": "565", "4A": "664", "4B": "592", "5B": "640"}}}
+  - {id: app03-p002-r09, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "کلینیک تشخیصی",
+     expected_fields: {row_number: 9, occupancy_type: "کلینیک تشخیصی",
+       values: {"0B": "106", "1B": "113", "2A": "110", "2B": "110", "3A": "110", "3B": "110", "4A": "110", "4B": "103", "5B": "103"}}}
+  - {id: app03-p002-r10, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "کلینیک بدون بستری بیمار",
+     expected_fields: {row_number: 10, occupancy_type: "کلینیک بدون بستری بیمار",
+       values: {"0B": "161", "1B": "171", "2A": "164", "2B": "168", "3A": "164", "3B": "164", "4A": "164", "4B": "157", "5B": "154"}}}
+  - {id: app03-p002-r11, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "مطب پزشکی",
+     expected_fields: {row_number: 11, occupancy_type: "مطب پزشکی",
+       values: {"0B": "106", "1B": "113", "2A": "116", "2B": "113", "3A": "120", "3B": "113", "4A": "133", "4B": "116", "5B": "123"}}}
+  - {id: app03-p002-r12, doc_id: m19-ed5-1404-app03, pdf_page: 2, type: table_row, expected_text: "مراکز نگهداری/ پرستاری",
+     expected_fields: {row_number: 12, occupancy_type: "مراکز نگهداری/ پرستاری",
+       values: {"0B": "270", "1B": "288", "2A": "284", "2B": "277", "3A": "284", "3B": "267", "4A": "311", "4B": "281", "5B": "301"}}}

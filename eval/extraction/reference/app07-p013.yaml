@@ -1,0 +1,53 @@
+page_id: app07-p013
+doc_id: m19-ed5-1404-app07
+pdf_page: 13
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 210-dpi renders, 2026-10-04; not yet checked by a human. Values are vector-drawn Persian digits: no text layer to cross-check against."
+# Group 14 title is printed «فلزت و آلیاژها» (probably a typo for «فلزات»); kept as printed (SI-0006).
+items:
+  - {id: app07-p013-r01, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 190, 540, 206], expected_text: "قیر خالص",
+     expected_fields: {category: "۱۳. عایق‌های رطوبتی", material: "قیر خالص", density_qualifier: "کمتر از", density_min: null, density_max: "2100", conductivity: "0.70"}}
+  - {id: app07-p013-r02, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 206, 540, 222], expected_text: "آسفالت (قیر ماسه‌دار)",
+     expected_fields: {category: "۱۳. عایق‌های رطوبتی", material: "آسفالت (قیر ماسه‌دار)", density_qualifier: "کمتر از", density_min: null, density_max: "2100", conductivity: "1.15"}}
+  - {id: app07-p013-r03, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 222, 540, 238], expected_text: "ورق پیش‌ساخته قیر اصلاح‌شده با مسلح‌کننده",
+     expected_fields: {category: "۱۳. عایق‌های رطوبتی", material: "ورق پیش‌ساخته قیر اصلاح‌شده با مسلح‌کننده", density_qualifier: null, density_min: "1000", density_max: "1100", conductivity: "0.23"}}
+  - {id: app07-p013-r04, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 268, 540, 284], expected_text: "آهن خالص",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "آهن خالص", density_qualifier: null, density_min: "7870", density_max: "7870", conductivity: "72"}}
+  - {id: app07-p013-r05, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 284, 540, 300], expected_text: "فولاد",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "فولاد", density_qualifier: null, density_min: "7780", density_max: "7780", conductivity: "52"}}
+  - {id: app07-p013-r06, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 300, 540, 316], expected_text: "چدن",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "چدن", density_qualifier: null, density_min: "7500", density_max: "7500", conductivity: "56"}}
+  - {id: app07-p013-r07, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 316, 540, 332], expected_text: "آلومینیوم",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "آلومینیوم", density_qualifier: null, density_min: "2700", density_max: "2700", conductivity: "230"}}
+  - {id: app07-p013-r08, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 332, 540, 348], expected_text: "آلومینیوم آلیاژی سخت",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "آلومینیوم آلیاژی سخت", density_qualifier: null, density_min: "2800", density_max: "2800", conductivity: "160"}}
+  - {id: app07-p013-r09, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 348, 540, 364], expected_text: "مس",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "مس", density_qualifier: null, density_min: "8930", density_max: "8930", conductivity: "380"}}
+  - {id: app07-p013-r10, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 364, 540, 380], expected_text: "برنج",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "برنج", density_qualifier: null, density_min: "8400", density_max: "8400", conductivity: "120"}}
+  - {id: app07-p013-r11, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 380, 540, 396], expected_text: "سرب",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "سرب", density_qualifier: null, density_min: "11340", density_max: "11340", conductivity: "35"},
+     notes: "Five-digit density."}
+  - {id: app07-p013-r12, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 396, 540, 412], expected_text: "روی",
+     expected_fields: {category: "۱۴. فلزت و آلیاژها", material: "روی", density_qualifier: null, density_min: "7200", density_max: "7200", conductivity: "110"}}
+  - {id: app07-p013-r13, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 429, 540, 445], expected_text: "گچ سخت با حداقل میزان آب لازم",
+     expected_fields: {category: "۱۵. گچ", material: "گچ سخت با حداقل میزان آب لازم", density_qualifier: null, density_min: "1200", density_max: "1500", conductivity: "0.56"}}
+  - {id: app07-p013-r14, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 445, 540, 460], expected_text: "۹۰۰ تا ۱۲۰۰",
+     expected_fields: {category: "۱۵. گچ", material: "گچ سخت با حداقل میزان آب لازم", density_qualifier: null, density_min: "900", density_max: "1200", conductivity: "0.43"},
+     notes: "Continuation row without its own label; material assumed inherited (ambiguous - verify)."}
+  - {id: app07-p013-r15, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 460, 540, 476], expected_text: "گچ اندود داخلی (زنده یا کشته)",
+     expected_fields: {category: "۱۵. گچ", material: "گچ اندود داخلی (زنده یا کشته)", density_qualifier: null, density_min: "1000", density_max: "1300", conductivity: "0.57"}}
+  - {id: app07-p013-r16, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 476, 540, 492], expected_text: "کمتر از ۱۰۰۰",
+     expected_fields: {category: "۱۵. گچ", material: "گچ اندود داخلی (زنده یا کشته)", density_qualifier: "کمتر از", density_min: null, density_max: "1000", conductivity: "0.40"},
+     notes: "Continuation row; material inherited (verify)."}
+  - {id: app07-p013-r17, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 492, 540, 508], expected_text: "گچ و خاک",
+     expected_fields: {category: "۱۵. گچ", material: "گچ و خاک", density_qualifier: null, density_min: "1300", density_max: "1700", conductivity: "1.10"}}
+  - {id: app07-p013-r18, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 508, 540, 524], expected_text: "گچ قطعات پیش‌ساختهٔ گچی با روکش مقوایی",
+     expected_fields: {category: "۱۵. گچ", material: "گچ قطعات پیش‌ساختهٔ گچی با روکش مقوایی", density_qualifier: null, density_min: "750", density_max: "900", conductivity: "0.25"}}
+  - {id: app07-p013-r19, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 536, 540, 552], expected_text: "۸۰۰ تا ۱۰۰۰",
+     expected_fields: {category: "۱۵. گچ", material: "گچ با روکش مقوایی ضدآتش و لایه‌های گچ تقویت‌شده با الیاف معدنی", density_qualifier: null, density_min: "800", density_max: "1000", conductivity: "0.25"},
+     notes: "Two labels («گچ با سبک‌دانه یا با الیاف معدنی» and «گچ با روکش مقوایی ضدآتش …») share one value row; association ambiguous - verify."}
+  - {id: app07-p013-r20, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 582, 540, 598], expected_text: "۶۰۰ تا ۹۰۰",
+     expected_fields: {category: "۱۵. گچ", material: "گچ اندود با پرلیت یا ورمیکولیت (از ۱ تا ۲ میلی‌متر)", condition: "یک حجم پرلیت یا ورمیکولیت برای یک حجم گچ", density_qualifier: null, density_min: "600", density_max: "900", conductivity: "0.30"}}
+  - {id: app07-p013-r21, doc_id: m19-ed5-1404-app07, pdf_page: 13, type: material_row, bbox: [120, 608, 540, 624], expected_text: "۵۰۰ تا ۶۰۰",
+     expected_fields: {category: "۱۵. گچ", material: "گچ اندود با پرلیت یا ورمیکولیت (از ۱ تا ۲ میلی‌متر)", condition: "دو حجم پرلیت یا ورمیکولیت برای یک حجم گچ", density_qualifier: null, density_min: "500", density_max: "600", conductivity: "0.18"}}

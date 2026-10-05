@@ -1,0 +1,31 @@
+# Reference items for the extraction benchmark. See eval/extraction/README.md.
+page_id: main-p011
+doc_id: m19-ed5-1404-main
+pdf_page: 11
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - id: main-p011-01
+    doc_id: m19-ed5-1404-main
+    pdf_page: 11
+    type: prose
+    expected_text: "سهم قابل توجه ساختمان‌ها از مصرف انرژی کشور، تکالیف قانونی دارای فوریت برای کاهش مصرف انرژی ساختمان‌ها در محدوده مجاز با هدف کمک به کاهش ناترازی انرژی و همچنین ضرورت حمایت از حقوق مصرف‌کنندگان، گران‌قیمت‌ترین کالای طول عمر شهروند ایرانی، منجر به شکل‌گیری رویکردهای متفاوت در ویرایش جدید مبحث نوزدهم شد."
+    notes: "Multi-line paragraph; contains the لا ligature («کالای») and a genuine «ال» is absent."
+  - id: main-p011-02
+    doc_id: m19-ed5-1404-main
+    pdf_page: 11
+    type: prose
+    expected_text: "تأمین شرایط آسایش در ساختمان‌ها باید به‌گونه‌ای باشد که میزان مصرف انرژی در محدوده الگوی مجاز حفظ شده و هزینه‌های غیرمتعارف مصرف خارج از الگوی ناشی از اشتباه و یا سهل‌انگاری در مراحل طراحی و ساخت به مالکان و بهره‌برداران تحمیل نشود."
+    notes: "Tests that genuine «ال» («الگوی») is NOT rewritten while «مالکان» (لا ligature) is repaired."
+  - id: main-p011-03
+    doc_id: m19-ed5-1404-main
+    pdf_page: 11
+    type: prose
+    expected_text: "ویرایش پنجم با عنوان \"مدیریت انرژی در ساختمان\"، مصرف و تولید انرژی در تمامی مراحل چرخه عمر ساختمان را مورد توجه قرار داده است."
+    notes: "Comma after the closing quote may be Latin ',' rather than «،» - punctuation uncertain at render resolution."
+  - id: main-p011-04
+    doc_id: m19-ed5-1404-main
+    pdf_page: 11
+    type: prose
+    expected_text: "یکی از اصلی‌ترین تغییرات در ویرایش جدید، توجه ویژه به فرایند بازرسی‌های دوره‌ای مراحل طراحی، ساخت و بهره‌برداری ساختمان است"
+    notes: "First clause of the third paragraph, ending before «تا»."

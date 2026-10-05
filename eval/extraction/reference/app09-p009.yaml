@@ -1,0 +1,19 @@
+page_id: app09-p009
+doc_id: m19-ed5-1404-app09
+pdf_page: 9
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 180-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - {id: app09-p009-01, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: list_entry,
+     expected_text: "EN 15603: Energy performance of buildings - Overall energy use and definition of energy ratings."}
+  - {id: app09-p009-02, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: heading,
+     expected_text: "IEC (International Electrotechnical Commission)"}
+  - {id: app09-p009-03, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: list_entry,
+     expected_text: "IEC 60364-7-712 – Low-voltage electrical installations – Requirements for photovoltaic power supply systems",
+     notes: "En dashes (U+2013) around the title; normalized metrics fold dash variants."}
+  - {id: app09-p009-04, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: list_entry,
+     expected_text: "IEC 62052/62053: Electricity metering equipment"}
+  - {id: app09-p009-05, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: list_entry,
+     expected_text: "IEC 62933: Electrical energy storage (EES) systems"}
+  - {id: app09-p009-06, doc_id: m19-ed5-1404-app09, pdf_page: 9, type: heading,
+     expected_text: "ICC (International Code Council)"}

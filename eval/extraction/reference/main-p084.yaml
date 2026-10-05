@@ -1,0 +1,71 @@
+page_id: main-p084
+doc_id: m19-ed5-1404-main
+pdf_page: 84
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 230-400 dpi renders, 2026-10-04; not yet checked by a human"
+# Table 19-5-1: minimum thermal resistance (R-value) of opaque envelope parts, m2.K/W.
+# Column labels are kept exactly as printed in the header.
+columns: ["0B", "1B", "2A, 2B", "3A, 3B", "4A, 4B", "5B,5C"]
+items:
+  - id: main-p084-01
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: caption
+    expected_text: "جدول ۱۹-۵-۱: حداقل میزان مجاز مقاومت حرارتی (R-Value) بخش‌های پوسته خارجی غیرنورگذر در اقلیم‌های مختلف (m2.k/W)"
+    expected_fields: {table_number: "19-5-1"}
+  - id: main-p084-02
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 126, 420, 140]
+    expected_text: "دیوار خارجی مجاور فضای باز"
+    expected_fields:
+      element: "دیوار خارجی مجاور فضای باز"
+      values: {"0B": "1.09", "1B": "1.16", "2A, 2B": "1.16", "3A, 3B": "1.43", "4A, 4B": "1.69", "5B,5C": "1.96"}
+    notes: "The text layer stores the decimal separator as '/' (e.g. «1/09»)."
+  - id: main-p084-03
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 150, 420, 164]
+    expected_text: "دیوار خارجی مجاور فضای نیمه‌باز کنترل نشده"
+    expected_fields:
+      element: "دیوار خارجی مجاور فضای نیمه‌باز کنترل نشده"
+      values: {"0B": "0.91", "1B": "0.97", "2A, 2B": "0.97", "3A, 3B": "1.19", "4A, 4B": "1.41", "5B,5C": "1.64"}
+  - id: main-p084-04
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 174, 420, 188]
+    expected_text: "دیوار خارجی مجاور خاک"
+    expected_fields:
+      element: "دیوار خارجی مجاور خاک"
+      values: {"0B": "0.15", "1B": "0.15", "2A, 2B": "0.15", "3A, 3B": "0.15", "4A, 4B": "1.47", "5B,5C": "1.47"}
+    notes: "Jump from 0.15 to 1.47 confirmed visually at 400 dpi; recorded as printed, not interpreted."
+  - id: main-p084-05
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 198, 420, 212]
+    expected_text: "سقف مجاور فضای آزاد"
+    expected_fields:
+      element: "سقف مجاور فضای آزاد"
+      values: {"0B": "3.70", "1B": "3.70", "2A, 2B": "4.55", "3A, 3B": "4.55", "4A, 4B": "5.56", "5B,5C": "5.56"}
+  - id: main-p084-06
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 246, 420, 260]
+    expected_text: "کف مجاور هوای آزاد"
+    expected_fields:
+      element: "کف مجاور هوای آزاد"
+      values: {"0B": "0.51", "1B": "0.55", "2A, 2B": "1.64", "3A, 3B": "2.38", "4A, 4B": "3.13", "5B,5C": "3.45"}
+  - id: main-p084-07
+    doc_id: m19-ed5-1404-main
+    pdf_page: 84
+    type: table_row
+    bbox: [60, 294, 420, 308]
+    expected_text: "کف مجاور خاک"
+    expected_fields:
+      element: "کف مجاور خاک"
+      values: {"0B": "0.26", "1B": "0.26", "2A, 2B": "0.27", "3A, 3B": "0.27", "4A, 4B": "0.28", "5B,5C": "0.28"}

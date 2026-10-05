@@ -7,8 +7,9 @@ The system uses retrieval-augmented generation (RAG). It answers only from the o
 source documents and cites the document, section or table, and page (both the PDF page and
 the printed page). It must never fabricate regulatory values or citations.
 
-> **Status:** Phase 1 (source audit). No OCR, text repair, retrieval, model or API code yet.
-> Findings: [`docs/source-audit.md`](docs/source-audit.md).
+> **Status:** Phase 2A (extraction benchmark). No full-corpus extraction, retrieval, model or API
+> code yet. Findings: [`docs/source-audit.md`](docs/source-audit.md),
+> [`docs/extraction-benchmark.md`](docs/extraction-benchmark.md).
 
 ## Repository layout
 
@@ -48,6 +49,9 @@ uv run mypy             # type check (strict)
 
 # Page-by-page audit of all sources -> data/interim/<doc_id>/<sha8>/
 uv run python -m mabhas19.cli.audit_sources
+
+# Extraction benchmark (needs Tesseract 5 + fas/eng traineddata in data/models/tessdata)
+uv run python -m mabhas19.cli.extraction_benchmark
 ```
 
 Copy `.env.example` to `.env` for local settings. Never commit `.env`.

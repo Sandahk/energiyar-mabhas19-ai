@@ -1,0 +1,40 @@
+# Phase 2A extraction benchmark: a small representative page set (from the Phase 1 audit).
+# References for these pages live in eval/extraction/reference/<page_id>.yaml.
+render_dpi: 300
+
+pages:
+  # --- Main document: damaged but usable text layer ---------------------------------------
+  - {id: main-p011, doc_id: m19-ed5-1404-main, pdf_page: 11, category: prose,
+     reason: "normal prose (preface to the 5th edition)"}
+  - {id: main-p021, doc_id: m19-ed5-1404-main, pdf_page: 21, category: definitions,
+     reason: "definition entries: numbered heading + English term + Persian definition"}
+  - {id: main-p062, doc_id: m19-ed5-1404-main, pdf_page: 62, category: clauses,
+     reason: "heading 19-2-4 and numbered clauses 19-2-4-1..3 (visual-order numbers)"}
+  - {id: main-p084, doc_id: m19-ed5-1404-main, pdf_page: 84, category: table,
+     reason: "table 19-5-1 minimum thermal resistance (numeric cells)"}
+  - {id: main-p005, doc_id: m19-ed5-1404-main, pdf_page: 5, category: scanned,
+     reason: "full-page raster: notification letter (no text layer)"}
+
+  # --- Appendices: Persian glyphs drawn as vector outlines ---------------------------------
+  - {id: app01-p002, doc_id: m19-ed5-1404-app01, pdf_page: 2, category: terminology,
+     reason: "English/Persian glossary term pairs"}
+  - {id: app02-p002, doc_id: m19-ed5-1404-app02, pdf_page: 2, category: table_city_climate,
+     reason: "city -> climate class table (rows 1-27)"}
+  - {id: app03-p002, doc_id: m19-ed5-1404-app03, pdf_page: 2, category: table_energy_limits,
+     reason: "table P3-1 maximum EUI for class D by use type x climate"}
+  - {id: app04-p003, doc_id: m19-ed5-1404-app04, pdf_page: 3, category: prose,
+     reason: "LCA prose with footnotes"}
+  - {id: app04-p012, doc_id: m19-ed5-1404-app04, pdf_page: 12, category: table_text,
+     reason: "small text table (ISO 14040 stages) above prose"}
+  - {id: app07-p003, doc_id: m19-ed5-1404-app07, pdf_page: 3, category: table_materials,
+     reason: "materials table: mortar/plaster and concrete groups, Persian-digit values"}
+  - {id: app07-p006, doc_id: m19-ed5-1404-app07, pdf_page: 6, category: table_materials,
+     reason: "materials table: aerated concrete densities, sealants (footnote marks)"}
+  - {id: app07-p013, doc_id: m19-ed5-1404-app07, pdf_page: 13, category: table_materials,
+     reason: "materials table: bitumen, metals, gypsum (large and decimal values)"}
+  - {id: app09-p002, doc_id: m19-ed5-1404-app09, pdf_page: 2, category: standards_fa,
+     reason: "Persian list of national standards"}
+  - {id: app09-p007, doc_id: m19-ed5-1404-app09, pdf_page: 7, category: standards_en,
+     reason: "English references drawn as vector outlines"}
+  - {id: app09-p009, doc_id: m19-ed5-1404-app09, pdf_page: 9, category: standards_en,
+     reason: "English references with an extractable Latin text layer"}

@@ -1,0 +1,28 @@
+page_id: app01-p002
+doc_id: m19-ed5-1404-app01
+pdf_page: 2
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - {id: app01-p002-00, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: heading,
+     expected_text: "واژه‌نامه فارسی - انگلیسی"}
+  - {id: app01-p002-01, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "آبگرم مصرفی", expected_fields: {english: "Domestic Hot Water (DHW)", persian: "آبگرم مصرفی"}}
+  - {id: app01-p002-02, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "آب و هوا", expected_fields: {english: "Weather", persian: "آب و هوا"}}
+  - {id: app01-p002-03, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "ارتباط فیزیکی", expected_fields: {english: "Physical Contact", persian: "ارتباط فیزیکی"}}
+  - {id: app01-p002-04, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "ارزیابی چرخه عمر", expected_fields: {english: "Life Cycle Assessment (LCA)", persian: "ارزیابی چرخه عمر"}}
+  - {id: app01-p002-05, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "اصلاح مصرف انرژی", expected_fields: {english: "Energy Retrofit", persian: "اصلاح مصرف انرژی"}}
+  - {id: app01-p002-06, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "اقلیم", expected_fields: {english: "Climate", persian: "اقلیم"}}
+  - {id: app01-p002-07, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "الگوریتم ژنتیک", expected_fields: {english: "Genetic Algorithm", persian: "الگوریتم ژنتیک"}}
+  - {id: app01-p002-08, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "انتقال حرارت", expected_fields: {english: "Heat Transmittance", persian: "انتقال حرارت"}}
+  - {id: app01-p002-09, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "انرژی اولیه", expected_fields: {english: "Primary Energy (Source Energy)", persian: "انرژی اولیه"}}
+  - {id: app01-p002-10, doc_id: m19-ed5-1404-app01, pdf_page: 2, type: term_pair,
+     expected_text: "انرژی متر", expected_fields: {english: "Energy Meter", persian: "انرژی متر"}}

@@ -1,0 +1,36 @@
+page_id: app02-p002
+doc_id: m19-ed5-1404-app02
+pdf_page: 2
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 230-dpi renders, 2026-10-04; not yet checked by a human. Row numbers and climate codes cross-checked against the PDF text layer (exact source characters)."
+# All 27 rows on this page. Columns (right to left): row number, city name, climate class.
+items:
+  - {id: app02-p002-r01, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "آبادان 0B", expected_fields: {row_number: 1, city: "آبادان", climate_class: "0B"}}
+  - {id: app02-p002-r02, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "آباده 4B", expected_fields: {row_number: 2, city: "آباده", climate_class: "4B"}}
+  - {id: app02-p002-r03, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "آقاجاری 0B", expected_fields: {row_number: 3, city: "آقاجاری", climate_class: "0B"}}
+  - {id: app02-p002-r04, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "اراک 4B", expected_fields: {row_number: 4, city: "اراک", climate_class: "4B"}}
+  - {id: app02-p002-r05, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "اردبیل 5C", expected_fields: {row_number: 5, city: "اردبیل", climate_class: "5C"},
+     notes: "The only 5C row in appendix 2; see curated/source_issues.yaml (SI-0001). Do not remap."}
+  - {id: app02-p002-r06, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "ارومیه 4B", expected_fields: {row_number: 6, city: "ارومیه", climate_class: "4B"}}
+  - {id: app02-p002-r07, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "اصفهان 4B", expected_fields: {row_number: 7, city: "اصفهان", climate_class: "4B"}}
+  - {id: app02-p002-r08, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "کرج 3B", expected_fields: {row_number: 8, city: "کرج", climate_class: "3B"},
+     notes: "Out of alphabetical order in the source; recorded as printed."}
+  - {id: app02-p002-r09, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "الیگودرز 4A", expected_fields: {row_number: 9, city: "الیگودرز", climate_class: "4A"}}
+  - {id: app02-p002-r10, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "انزلی 3A", expected_fields: {row_number: 10, city: "انزلی", climate_class: "3A"}}
+  - {id: app02-p002-r11, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "اهر 4B", expected_fields: {row_number: 11, city: "اهر", climate_class: "4B"}}
+  - {id: app02-p002-r12, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "اهواز 0B", expected_fields: {row_number: 12, city: "اهواز", climate_class: "0B"}}
+  - {id: app02-p002-r13, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "ایرانشهر 0B", expected_fields: {row_number: 13, city: "ایرانشهر", climate_class: "0B"}}
+  - {id: app02-p002-r14, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "ایلام 3A", expected_fields: {row_number: 14, city: "ایلام", climate_class: "3A"}}
+  - {id: app02-p002-r15, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بابلسر 3A", expected_fields: {row_number: 15, city: "بابلسر", climate_class: "3A"}}
+  - {id: app02-p002-r16, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بازرگان 5B", expected_fields: {row_number: 16, city: "بازرگان", climate_class: "5B"}}
+  - {id: app02-p002-r17, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بافت 3B", expected_fields: {row_number: 17, city: "بافت", climate_class: "3B"}}
+  - {id: app02-p002-r18, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بجنورد 4B", expected_fields: {row_number: 18, city: "بجنورد", climate_class: "4B"}}
+  - {id: app02-p002-r19, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بم 1B", expected_fields: {row_number: 19, city: "بم", climate_class: "1B"}}
+  - {id: app02-p002-r20, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بندر بوشهر 1B", expected_fields: {row_number: 20, city: "بندر بوشهر", climate_class: "1B"}}
+  - {id: app02-p002-r21, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بندر لنگه 0B", expected_fields: {row_number: 21, city: "بندر لنگه", climate_class: "0B"}}
+  - {id: app02-p002-r22, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بندر ماهشهر 1B", expected_fields: {row_number: 22, city: "بندر ماهشهر", climate_class: "1B"}}
+  - {id: app02-p002-r23, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بندرعباس 0B", expected_fields: {row_number: 23, city: "بندرعباس", climate_class: "0B"}}
+  - {id: app02-p002-r24, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "بیرجند 3B", expected_fields: {row_number: 24, city: "بیرجند", climate_class: "3B"}}
+  - {id: app02-p002-r25, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "پارس آباد مغان 3B", expected_fields: {row_number: 25, city: "پارس آباد مغان", climate_class: "3B"}}
+  - {id: app02-p002-r26, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "تبریز 4B", expected_fields: {row_number: 26, city: "تبریز", climate_class: "4B"}}
+  - {id: app02-p002-r27, doc_id: m19-ed5-1404-app02, pdf_page: 2, type: table_row, expected_text: "تربت حیدریه 4B", expected_fields: {row_number: 27, city: "تربت حیدریه", climate_class: "4B"}}

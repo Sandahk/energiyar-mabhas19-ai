@@ -1,0 +1,40 @@
+page_id: app07-p003
+doc_id: m19-ed5-1404-app07
+pdf_page: 3
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 220-260 dpi renders, 2026-10-04; not yet checked by a human. Values are vector-drawn Persian digits: no text layer to cross-check against."
+# Units: density kg/m3, effective thermal conductivity W/m.K. bbox = [x0, y0, x1, y1] in PDF points.
+# density_qualifier: "بیش از" (more than) / "کمتر از" (less than) / null (range or single value).
+items:
+  - {id: app07-p003-00, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: caption, expected_text: "۱. اندود و ملات آهکی یا سیمانی"}
+  - {id: app07-p003-r01, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 172, 540, 188], expected_text: "بیش از ۲۰۰۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: "بیش از", density_min: "2000", density_max: null, conductivity: "1.80"}}
+  - {id: app07-p003-r02, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 189, 540, 205], expected_text: "۱۸۰۰ تا ۲۰۰۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "1800", density_max: "2000", conductivity: "1.30"}}
+  - {id: app07-p003-r03, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 206, 540, 222], expected_text: "۱۶۰۰ تا ۱۸۰۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "1600", density_max: "1800", conductivity: "1.00"}}
+  - {id: app07-p003-r04, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 222, 540, 238], expected_text: "۱۴۵۰ تا ۱۶۰۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "1450", density_max: "1600", conductivity: "0.80"}}
+  - {id: app07-p003-r05, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 238, 540, 254], expected_text: "۱۲۵۰ تا ۱۴۵۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "1250", density_max: "1450", conductivity: "0.70"}}
+  - {id: app07-p003-r06, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 254, 540, 270], expected_text: "۱۰۰۰ تا ۱۲۵۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "1000", density_max: "1250", conductivity: "0.55"}}
+  - {id: app07-p003-r07, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 270, 540, 286], expected_text: "۷۵۰ تا ۱۰۰۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "750", density_max: "1000", conductivity: "0.40"}}
+  - {id: app07-p003-r08, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 286, 540, 302], expected_text: "۵۰۰ تا ۷۵۰",
+     expected_fields: {category: "۱. اندود و ملات آهکی یا سیمانی", material: null, density_qualifier: null, density_min: "500", density_max: "750", conductivity: "0.30"}}
+  - {id: app07-p003-r09, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 352, 540, 368], expected_text: "۲۳۰۰ تا ۲۶۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "متراکم", density_qualifier: null, density_min: "2300", density_max: "2600", conductivity: "2.00"},
+     notes: "Sub-group «بتن‌های با سنگدانه متداول (سیلیسی، سیلیسی-آهکی و آهکی)»."}
+  - {id: app07-p003-r10, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 369, 540, 385], expected_text: "۲۰۰۰ تا ۲۳۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "متراکم", density_qualifier: null, density_min: "2000", density_max: "2300", conductivity: "1.65"},
+     notes: "Continuation row: material label inherited from the row above."}
+  - {id: app07-p003-r11, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 386, 540, 402], expected_text: "۱۸۰۰ تا ۲۰۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "متخلخل", density_qualifier: null, density_min: "1800", density_max: "2000", conductivity: "1.35"}}
+  - {id: app07-p003-r12, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 402, 540, 418], expected_text: "۱۶۰۰ تا ۱۸۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "متخلخل", density_qualifier: null, density_min: "1600", density_max: "1800", conductivity: "1.15"}}
+  - {id: app07-p003-r13, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 442, 540, 458], expected_text: "۲۳۰۰ تا ۲۴۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "مسلح", condition: "درصد میل‌گرد: بین ۱ تا ۲ درصد", density_qualifier: null, density_min: "2300", density_max: "2400", conductivity: "2.30", footnote_refs: ["1"]},
+     notes: "Footnote 1: «در صورتی که حداقل نیمی از میل‌گردها موازی شار حرارت باشد.» Material label wraps unusually across lines."}
+  - {id: app07-p003-r14, doc_id: m19-ed5-1404-app07, pdf_page: 3, type: material_row, bbox: [120, 458, 540, 474], expected_text: "بیش از ۲۴۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "مسلح", condition: "درصد میل‌گرد: بیش از ۲ درصد", density_qualifier: "بیش از", density_min: "2400", density_max: null, conductivity: "2.50", footnote_refs: ["1"]}}

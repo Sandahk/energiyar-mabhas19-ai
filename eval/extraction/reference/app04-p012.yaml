@@ -1,0 +1,16 @@
+page_id: app04-p012
+doc_id: m19-ed5-1404-app04
+pdf_page: 12
+status: draft_pending_human_review
+transcribed_by: "Claude (AI) from 170-dpi renders, 2026-10-04; not yet checked by a human"
+items:
+  - {id: app04-p012-01, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: caption,
+     expected_text: "جدول ۱- ساختار بررسی استاندارد ایزو ۱۴۰۴۰", expected_fields: {standard_number: "14040"}}
+  - {id: app04-p012-02, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "مراحل ارزیابی چرخه عمر"}
+  - {id: app04-p012-03, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "اقدامات اولیه"}
+  - {id: app04-p012-04, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "تعریف هدف و روش"}
+  - {id: app04-p012-05, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "تعریف واحد عملکردی"}
+  - {id: app04-p012-06, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "اطمینان از کیفیت داده ها"}
+  - {id: app04-p012-07, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "بررسی جزء به جزء"}
+  - {id: app04-p012-08, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "اندازه‌گیری ورودی ها و خروجی ها"}
+  - {id: app04-p012-09, doc_id: m19-ed5-1404-app04, pdf_page: 12, type: table_text, expected_text: "ارزیابی تاثیر"}

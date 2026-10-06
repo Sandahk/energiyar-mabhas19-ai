@@ -19,6 +19,24 @@ References: [`eval/extraction/reference/`](../eval/extraction/reference/).
 - So the offline OCR comparison covers **Tesseract 5.4 only** (`fas`+`eng`,
   `tessdata_best`). Tuning experiments (600 dpi, digit whitelist) are reported below.
 
+## Reference corrections after the run (2026-10-06)
+
+Human review of the appendix 7 references (pages 3, 6 and 13; 57 items now
+`human_verified`) found that several stored row bounding boxes sat below the printed rows.
+Measured against the vector digit glyphs of the conductivity column:
+
+- page 13 r04-r12 were 11-14 pt low (about one row); r13-r18 6-7 pt; r01-r03 3-4 pt
+- page 6 r02 and r07-r21 were 4-7 pt low
+
+The boxes were replaced with boxes centred on the measured glyph rows (centre ±8 pt). This
+corrects metadata only: no density or conductivity value changed. The `app07_rows_ocr`
+results above match rows by these boxes (10 pt tolerance), so **the appendix 7 page 13 scores,
+and to a lesser degree the page 6 scores, may be understated** (some OCR rows were compared
+with a neighbouring reference row or with none). The benchmark has not been re-run. The
+conclusion that offline OCR is unsafe for appendix 7 rests mainly on the decimal-separator and
+digit errors listed under "Numeric errors", which don't depend on row matching. It should
+still be confirmed by a re-run.
+
 ## Methods
 
 | Method | Kind | Applies to | Status |

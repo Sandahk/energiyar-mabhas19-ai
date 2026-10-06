@@ -1,51 +1,53 @@
 page_id: app07-p006
 doc_id: m19-ed5-1404-app07
 pdf_page: 6
-status: draft_pending_human_review
+status: human_verified
+verified_by: project_owner
+verified_on: 2026-10-06
 transcribed_by: "Claude (AI) from 210-dpi renders, 2026-10-04; not yet checked by a human. Values are vector-drawn Persian digits: no text layer to cross-check against."
 items:
-  - {id: app07-p006-r01, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 168, 540, 184], expected_text: "۴۰۰ تا ۶۰۰",
-     expected_fields: {category: null, material: "نسبت: ۱ به ۶", density_qualifier: null, density_min: "400", density_max: "600", conductivity: "0.24"},
-     notes: "Continues a group from page 5; category not on this page."}
-  - {id: app07-p006-r02, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 185, 540, 201], expected_text: "۴۰۰ تا ۴۵۰",
-     expected_fields: {category: null, material: "لایه‌های بتن متشکل از ورمیکولیت ساخته شده در کارخانه", density_qualifier: null, density_min: "400", density_max: "450", conductivity: "0.19"}}
-  - {id: app07-p006-r03, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 232, 540, 248], expected_text: "۷۷۵ تا ۸۲۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۸۰۰", density_qualifier: null, density_min: "775", density_max: "825", conductivity: "0.29", footnote_refs: ["1"]},
-     notes: "Footnote 1: AAC."}
-  - {id: app07-p006-r04, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 248, 540, 264], expected_text: "۷۲۵ تا ۷۷۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۷۵۰", density_qualifier: null, density_min: "725", density_max: "775", conductivity: "0.27"}}
-  - {id: app07-p006-r05, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 264, 540, 280], expected_text: "۶۷۵ تا ۷۲۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۷۰۰", density_qualifier: null, density_min: "675", density_max: "725", conductivity: "0.25"}}
-  - {id: app07-p006-r06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 280, 540, 296], expected_text: "۶۲۵ تا ۶۷۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۶۵۰", density_qualifier: null, density_min: "625", density_max: "675", conductivity: "0.23"}}
-  - {id: app07-p006-r07, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 296, 540, 312], expected_text: "۵۷۵ تا ۶۲۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۶۰۰", density_qualifier: null, density_min: "575", density_max: "625", conductivity: "0.21"}}
-  - {id: app07-p006-r08, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 312, 540, 328], expected_text: "۵۲۵ تا ۵۷۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۵۵۰", density_qualifier: null, density_min: "525", density_max: "575", conductivity: "0.19"}}
-  - {id: app07-p006-r09, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 328, 540, 344], expected_text: "۴۷۵ تا ۵۲۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۵۰۰", density_qualifier: null, density_min: "475", density_max: "525", conductivity: "0.18"}}
-  - {id: app07-p006-r10, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 344, 540, 360], expected_text: "۴۲۵ تا ۴۷۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۴۵۰", density_qualifier: null, density_min: "425", density_max: "475", conductivity: "0.16"}}
-  - {id: app07-p006-r11, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 360, 540, 376], expected_text: "۳۷۵ تا ۴۲۵",
-     expected_fields: {category: null, material: "بتن هوادار اتوکلاو شده", condition: "چگالی اسمی: ۴۰۰", density_qualifier: null, density_min: "375", density_max: "425", conductivity: "0.15"}}
-  - {id: app07-p006-r12, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 395, 540, 410], expected_text: "۴۵۰ تا ۶۵۰",
-     expected_fields: {category: null, material: "بتن با خرده چوب", condition: "ساخته شده با تراشه‌های چوب و سیمان", density_qualifier: null, density_min: "450", density_max: "650", conductivity: "0.16"}}
-  - {id: app07-p006-r13, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 411, 540, 426], expected_text: "۲۰۰۰ تا ۲۳۰۰",
-     expected_fields: {category: null, material: "موزاییک", density_qualifier: null, density_min: "2000", density_max: "2300", conductivity: "1.65"}}
-  - {id: app07-p006-r14, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 427, 540, 442], expected_text: "۱۸۰۰ تا ۲۰۰۰",
-     expected_fields: {category: null, material: "موزاییک", density_qualifier: null, density_min: "1800", density_max: "2000", conductivity: "1.35"}}
-  - {id: app07-p006-r15, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 466, 540, 482], expected_text: "سیلیکون خالص",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "سیلیکون خالص", density_qualifier: null, density_min: "1200", density_max: "1200", conductivity: "0.35", footnote_refs: ["2"]},
-     notes: "Single density value: density_min == density_max. Category footnote 2: Thermal break."}
-  - {id: app07-p006-r16, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 482, 540, 498], expected_text: "سیلیکون خمیری",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "سیلیکون خمیری", density_qualifier: null, density_min: "1450", density_max: "1450", conductivity: "0.50"}}
-  - {id: app07-p006-r17, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 498, 540, 514], expected_text: "سیلیکون اسفنجی",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "سیلیکون اسفنجی", density_qualifier: null, density_min: "750", density_max: "750", conductivity: "0.12"}}
-  - {id: app07-p006-r18, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 514, 540, 530], expected_text: "پلی‌یورتان",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "پلی‌یورتان", density_qualifier: null, density_min: "1300", density_max: "1300", conductivity: "0.21"}}
-  - {id: app07-p006-r19, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 530, 540, 546], expected_text: "پی‌وی‌سی قابل انعطاف با ۴۰ درصد روان‌ساز",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "پی‌وی‌سی قابل انعطاف با ۴۰ درصد روان‌ساز", density_qualifier: null, density_min: "1200", density_max: "1200", conductivity: "0.14"}}
-  - {id: app07-p006-r20, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 546, 540, 562], expected_text: "پلی‌یورتان اسفنجی",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "پلی‌یورتان اسفنجی", density_qualifier: null, density_min: "70", density_max: "70", conductivity: "0.05"}}
-  - {id: app07-p006-r21, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 562, 540, 578], expected_text: "پلی‌اتیلن اسفنجی",
-     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", material: "پلی‌اتیلن اسفنجی", density_qualifier: null, density_min: "70", density_max: "70", conductivity: "0.05"}}
+  - {id: app07-p006-r01, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 168, 540, 184], expected_text: "۴۰۰ تا ۶۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن با سنگدانهٔ بسیار سبک", material: "متشکل از پرلیت یا ورمیکولیت (از ۳ تا ۶ میلیمتر) اجرای درجا", condition: "نسبت: ۱ به ۶", density_qualifier: null, density_min: "400", density_max: "600", conductivity: "0.24"},
+     notes: "Category inherited from page 3 and subgroup/material from page 5 (no new heading on pages 4-5)."}
+  - {id: app07-p006-r02, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 180.5, 540, 196.5], expected_text: "۴۰۰ تا ۴۵۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن با سنگدانهٔ بسیار سبک", material: "لایه‌های بتن متشکل از ورمیکولیت ساخته شده در کارخانه", density_qualifier: null, density_min: "400", density_max: "450", conductivity: "0.19"}}
+  - {id: app07-p006-r03, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 232, 540, 248], expected_text: "۷۷۵ تا ۸۲۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۸۰۰", density_qualifier: null, density_min: "775", density_max: "825", conductivity: "0.29"},
+     notes: "Subgroup heading «بتن هوادار اتوکلاو شده¹:»; footnote 1: AAC."}
+  - {id: app07-p006-r04, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 248, 540, 264], expected_text: "۷۲۵ تا ۷۷۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۷۵۰", density_qualifier: null, density_min: "725", density_max: "775", conductivity: "0.27"}}
+  - {id: app07-p006-r05, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 264, 540, 280], expected_text: "۶۷۵ تا ۷۲۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۷۰۰", density_qualifier: null, density_min: "675", density_max: "725", conductivity: "0.25"}}
+  - {id: app07-p006-r06, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 280, 540, 296], expected_text: "۶۲۵ تا ۶۷۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۶۵۰", density_qualifier: null, density_min: "625", density_max: "675", conductivity: "0.23"}}
+  - {id: app07-p006-r07, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 291.7, 540, 307.7], expected_text: "۵۷۵ تا ۶۲۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۶۰۰", density_qualifier: null, density_min: "575", density_max: "625", conductivity: "0.21"}}
+  - {id: app07-p006-r08, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 307.3, 540, 323.3], expected_text: "۵۲۵ تا ۵۷۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۵۵۰", density_qualifier: null, density_min: "525", density_max: "575", conductivity: "0.19"}}
+  - {id: app07-p006-r09, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 322.8, 540, 338.8], expected_text: "۴۷۵ تا ۵۲۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۵۰۰", density_qualifier: null, density_min: "475", density_max: "525", conductivity: "0.18"}}
+  - {id: app07-p006-r10, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 338.4, 540, 354.4], expected_text: "۴۲۵ تا ۴۷۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۴۵۰", density_qualifier: null, density_min: "425", density_max: "475", conductivity: "0.16"}}
+  - {id: app07-p006-r11, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 354.0, 540, 370.0], expected_text: "۳۷۵ تا ۴۲۵",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن هوادار اتوکلاو شده", subgroup_footnote_refs: ["1"], material: null, condition: "چگالی اسمی: ۴۰۰", density_qualifier: null, density_min: "375", density_max: "425", conductivity: "0.15"}}
+  - {id: app07-p006-r12, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 390.1, 540, 406.1], expected_text: "۴۵۰ تا ۶۵۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", subgroup: "بتن با خرده چوب", material: "ساخته شده با تراشه‌های چوب و سیمان", density_qualifier: null, density_min: "450", density_max: "650", conductivity: "0.16"}}
+  - {id: app07-p006-r13, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 406.0, 540, 422.0], expected_text: "۲۰۰۰ تا ۲۳۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "موزاییک", density_qualifier: null, density_min: "2000", density_max: "2300", conductivity: "1.65"}}
+  - {id: app07-p006-r14, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 421.6, 540, 437.6], expected_text: "۱۸۰۰ تا ۲۰۰۰",
+     expected_fields: {category: "۲. بتن و فرآورده‌های بتنی", material: "موزاییک", density_qualifier: null, density_min: "1800", density_max: "2000", conductivity: "1.35"}}
+  - {id: app07-p006-r15, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 461.8, 540, 477.8], expected_text: "سیلیکون خالص",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "سیلیکون خالص", density_qualifier: null, density_min: "1200", density_max: "1200", conductivity: "0.35"},
+     notes: "Single density value: density_min == density_max. Category footnote 2 (Thermal break) is inherited by r15-r21."}
+  - {id: app07-p006-r16, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 477.5, 540, 493.5], expected_text: "سیلیکون خمیری",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "سیلیکون خمیری", density_qualifier: null, density_min: "1450", density_max: "1450", conductivity: "0.50"}}
+  - {id: app07-p006-r17, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 492.9, 540, 508.9], expected_text: "سیلیکون اسفنجی",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "سیلیکون اسفنجی", density_qualifier: null, density_min: "750", density_max: "750", conductivity: "0.12"}}
+  - {id: app07-p006-r18, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 508.5, 540, 524.5], expected_text: "پلی‌یورتان",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "پلی‌یورتان", density_qualifier: null, density_min: "1300", density_max: "1300", conductivity: "0.21"}}
+  - {id: app07-p006-r19, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 524.1, 540, 540.1], expected_text: "پی‌وی‌سی قابل انعطاف با ۴۰ درصد روان‌ساز",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "پی‌وی‌سی قابل انعطاف با ۴۰ درصد روان‌ساز", density_qualifier: null, density_min: "1200", density_max: "1200", conductivity: "0.14"}}
+  - {id: app07-p006-r20, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 539.8, 540, 555.8], expected_text: "پلی‌یورتان اسفنجی",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "پلی‌یورتان اسفنجی", density_qualifier: null, density_min: "70", density_max: "70", conductivity: "0.05"}}
+  - {id: app07-p006-r21, status: human_verified, verified_by: project_owner, verified_on: 2026-10-06, doc_id: m19-ed5-1404-app07, pdf_page: 6, type: material_row, bbox: [120, 555.4, 540, 571.4], expected_text: "پلی‌اتیلن اسفنجی",
+     expected_fields: {category: "۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی", category_footnote_refs: ["2"], material: "پلی‌اتیلن اسفنجی", density_qualifier: null, density_min: "70", density_max: "70", conductivity: "0.05"}}

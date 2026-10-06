@@ -65,7 +65,7 @@ def test_numeric_reference_values_are_ascii_decimal_strings() -> None:
 
 
 def _minimal() -> dict[str, Any]:
-    return {"page_id": "x", "doc_id": "d", "pdf_page": 1, "status": "human_verified",
+    return {"page_id": "x", "doc_id": "d", "pdf_page": 1, "status": "draft_pending_human_review",
             "items": [{"id": "x-1", "doc_id": "d", "pdf_page": 1, "type": "prose",
                        "expected_text": "متن"}]}  # fmt: skip
 

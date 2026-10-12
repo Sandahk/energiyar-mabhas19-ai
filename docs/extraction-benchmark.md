@@ -237,3 +237,135 @@ Recorded in [`curated/source_issues.yaml`](../curated/source_issues.yaml), all `
 | SI-0006 | Appendix 7 prints «فلزت». |
 | SI-0007 | Appendix titles differ between the covers and the main document's list. |
 | SI-0008 | Main PDF misspells «حافظت» on PDF page 20. |
+
+---
+
+# Phase 2B – Gemini Vision / Appendix 7
+
+Run 2026-10-12 with `gemini-3.8-flash` (Gemini API, Standard tier), reproducible offline with:
+
+```sh
+# re-score the cached responses (no API calls); --with-tesseract adds the local OCR comparison
+uv run python -m mabhas19.cli.score_app07 --with-tesseract
+```
+
+The extraction runner is `mabhas19.cli.gemini_benchmark` (explicit `--allow-external`; key from
+the git-ignored `.env`). Raw responses are cached under the ignored
+`data/interim/gemini-phase2b/gemini-3.8-flash/responses/` and are not committed.
+
+## Bottom line
+
+- **Gemini achieved 163/163 exact numeric values and 56/56 fully numerically correct rows on
+  the human-verified Appendix 7 benchmark**, both from whole pages and from row crops.
+- **Raw Gemini label/structure output is not yet production-ready and requires deterministic
+  post-processing plus human review.**
+- Only Appendix 7 was sent. Other appendices, the main document and the full corpus have not
+  been run through Gemini.
+
+## Evaluation set
+
+- 56 `human_verified` rows on Appendix 7 PDF pages 3 (14 rows), 6 (21) and 13 (21);
+  163 numeric values (56 conductivities, 107 density bounds).
+- Only verified items count. Every number is **re-parsed from Gemini's raw text** with the
+  project's non-guessing parser (`slash_is_decimal` in numeric cells only). The model's own
+  `*_parsed` fields are stored but never credited.
+- Prompts carry the numeric rule: *Never infer, repair, or guess a number from context.
+  Transcribe only what is visibly present.* Raw and parsed values are kept separately.
+
+## Methods compared
+
+| Method | What is sent / run |
+|---|---|
+| Gemini whole page | one 200-dpi page image → JSON rows (raw density, raw conductivity, raw category/subgroup/material/condition, parsed values) |
+| Gemini row crop | one 300-dpi crop per verified row (56 crops; crop boxes from the verified row bounding boxes) |
+| Tesseract whole page | `fas+eng`, 300 dpi, words assigned to rows/columns by position |
+| Tesseract per cell | `fas+eng`, cells located from the vector digit glyphs (`app07_rows_ocr`) |
+
+## Numeric results (human-verified rows)
+
+| Measure | Gemini whole page | Gemini row crop | Tesseract whole page | Tesseract per cell |
+|---|---|---|---|---|
+| Page 3 | 40/40 | 40/40 | 10/40 | 11/40 |
+| Page 6 | 63/63 | 63/63 | 16/63 | 17/63 |
+| Page 13 | 60/60 | 60/60 | 7/60 | 13/60 |
+| **Exact numeric (all)** | **163/163** | **163/163** | 33/163 (20%) | 41/163 (25%) |
+| Fully numerically correct rows | **56/56** | **56/56** | 0/56 | 0/56 |
+| Decimal preserved (`٫` value correct) | **47/47** | **47/47** | 0/47 | 2/47 |
+| Ranges («… تا …», both bounds) | **35/35** | **35/35** | 0/35 | 0/35 |
+| Inequality qualifiers («بیش از» / «کمتر از») | **5/5** | **5/5** | 4/5 | 2/5 |
+| Integer conductivities (72, 52, 56, 230 …) | **9/9** | **9/9** | 2/9 | 5/9 |
+| Five-digit density «۱۱۳۴۰» (min and max) | **2/2** | **2/2** | 0/2 | 0/2 |
+| Numeric mismatches | **0** | **0** | 130 | 122 |
+
+Row detection (whole page): 14/14, 21/21 and 21/21 rows returned and matched, in order; no
+missing or extra rows.
+
+## Label / structure results (Gemini whole page, raw fields)
+
+| Field | Strict (normalized) | Lenient (ignores list dash, trailing colon, footnote markers) |
+|---|---|---|
+| Category | 35/42 | 35/42 |
+| Subgroup | 35/54 | 53/54 |
+| Material | 31/49 | 36/49 |
+| Condition | 44/56 | 44/56 |
+| **All** | **145/201 (72%)** | **168/201 (84%)** |
+
+- Expected label text present somewhere in the row's raw fields: 97/105 (92%): most
+  failures are text placed in the wrong field, not misread.
+- Context handling: 6 inherited materials correctly left empty; 16 of 17 values that are not
+  printed on the page (page 6 continues group 2 from page 3 and a sub-group from page 5)
+  correctly left empty; 1 filled with the visible line in the wrong field.
+- Row crops: material label correct (lenient) on 28/30 rows that print their own label;
+  page 3 r13 returned the condition line, page 6 r02 lost a wrapped second line that the
+  crop box cut off.
+
+### Known structural error classes
+
+1. **Condition placed in the material field.** Dashed sub-lines («- چگالی اسمی: ۸۰۰»,
+   «- نسبت: ۱ به ۶», the mix-ratio lines) come back as `material_raw` with `condition_raw`
+   empty: page 6 r01, r03–r11; page 13 r20–r21.
+2. **Footnote markers attached to headings, with text loss.** «گرماشکنی²» → «گرماشکن ۲»
+   (final «ی» lost) on page 6 r15–r21 (one heading); «اتوکلاو شده¹:» → «اتوکلاو شده ۱:».
+3. **Line merged across rows.** Page 13: the r19 subgroup line was appended to r18's
+   material, and r19's subgroup is empty.
+4. **Heading duplicated into a field.** Page 3 r01: the category heading also returned as
+   the material.
+5. **Formatting differences** (list dash, trailing colon, inline footnote digit): harmless
+   after normalization, counted only by the strict measure.
+
+Required before production use: deterministic post-processing (strip dashes/colons, split
+footnote markers into references, apply the subgroup/condition convention and label
+inheritance, re-attach cross-page context) and human review of labels. Numbers still need
+verification against the page (current policy for all extracted regulatory values).
+
+## Requests, latency, tokens and measured cost
+
+| Requests | Count | Mean latency (min–max) | Input / output / thinking tokens | Cost |
+|---|---|---|---|---|
+| Whole page | 3 | 46.6 s (15.8–76.6) | 4,059 / 7,421 / 14,385 | $0.0848 (≈ $0.028/page) |
+| Row crop | 56 | 9.4 s (2.6–40.6) | 65,975 / 4,782 / 51,634 | $0.2610 (≈ $0.0047/crop) |
+| **Total** | **59** | | | **$0.3458** |
+
+Prices: $0.75 input and $3.75 output (including thinking) per 1M tokens, Standard tier
+through 2026-12-31 (they double from 2027-01-01). Thinking tokens are most of the cost.
+All 59 successful requests completed on the first attempt (no 429, 503 or timeouts).
+
+### Earlier free-tier behaviour (before the paid key)
+
+- Pro models (`gemini-3.1-pro-preview`, `gemini-pro-latest`) returned `429
+  RESOURCE_EXHAUSTED` (no free quota); `gemini-2.5-pro`/`-flash` are retired for new users.
+- Image requests to Flash models repeatedly returned `503 UNAVAILABLE` ("high demand") for
+  periods of 15 minutes to several hours, while text-only prompts succeeded.
+- The free-tier daily limit for `gemini-3.8-flash` was **20 requests per project per day**
+  (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`), exhausted after probes and retries.
+- One request hung for over an hour; the adapter now uses a 180 s timeout, and timeouts
+  are retried like server errors.
+
+## Phase 2B conclusion (Appendix 7)
+
+| Question | Answer |
+|---|---|
+| Numbers from vector-drawn Persian digits | Gemini whole page and crops: 163/163; Tesseract unusable (20–25%). |
+| Whole page or crop? | Equal numeric accuracy; whole page is cheaper per row and returns structure; crops are useful as an independent second read. |
+| Production readiness | Numbers: strong evidence on this benchmark, still subject to verification. Labels/structure: not production-ready without post-processing and review. |
+| Not yet benchmarked with Gemini | Appendices 1–4, 9, the main PDF scan, and plain-text transcription. |

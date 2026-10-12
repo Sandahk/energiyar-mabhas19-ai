@@ -13,19 +13,24 @@ import importlib.util
 import json
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
 
+NUMERIC_RULE = (
+    "Never infer, repair, or guess a number from context. Transcribe only what is visibly "
+    "present: every digit, decimal separator and range word exactly as printed."
+)
 TEXT_PROMPT = (
     "Transcribe all text on this page of an official Persian building regulation exactly "
-    "as printed. Keep Persian digits as printed. Do not correct, translate, summarise or "
-    "complete anything; write [illegible] for anything you cannot read."
+    "as printed. Keep Persian digits as printed. Keep section and article numbers exactly. "
+    "Do not paraphrase, correct, translate, summarise or complete anything, even apparent "
+    "errors in the source; write [illegible] for anything you cannot read. " + NUMERIC_RULE
 )
 JSON_PROMPT = (
     "Extract the table on this page as JSON matching this schema. Copy labels and numbers "
     "exactly as printed (keep the printed digits and decimal separators in the *_raw "
-    "fields). Never infer missing values: use null. Schema:\n{schema}"
+    "fields). Never infer missing values: use null. " + NUMERIC_RULE + " Schema:\n{schema}"
 )
 
 
@@ -33,7 +38,8 @@ JSON_PROMPT = (
 class VisionResult:
     text: str
     seconds: float
-    model: str
+    model: str  # model actually reported by the API when available
+    usage: dict[str, int | None] = field(default_factory=dict)
 
 
 class VisionExtractor(Protocol):
@@ -101,13 +107,21 @@ class AnthropicVision:
 
 
 class GeminiVision:
-    """Gemini via the ``google-genai`` SDK (optional group ``vision-gemini``)."""
+    """Gemini via the ``google-genai`` SDK (optional group ``vision-gemini``).
+
+    Experimental benchmark adapter only. The API key is read by the SDK from the
+    ``GEMINI_API_KEY`` environment variable; it is never logged or stored.
+    """
 
     name = "gemini"
 
-    def __init__(self, model: str = "gemini-2.5-pro", allow_external: bool = False) -> None:
+    def __init__(
+        self, model: str = "gemini-3.8-flash", allow_external: bool = False, timeout_s: float = 180
+    ) -> None:
         self.model = model
         self.allow_external = allow_external
+        self.timeout_s = timeout_s
+        self._client: Any = None
 
     def availability(self) -> tuple[bool, str]:
         if not self.allow_external:
@@ -122,23 +136,43 @@ class GeminiVision:
             return False, "google-genai SDK not installed (uv sync --group vision-gemini)"
         return True, ""
 
-    def _ask(self, image: Path, prompt: str) -> VisionResult:
+    def ask(self, image: Path, prompt: str, json_mode: bool = False) -> VisionResult:
+        """One request: an image plus a prompt. Temperature 0; JSON output if requested."""
         from google import genai  # noqa: PLC0415
         from google.genai import types  # noqa: PLC0415
 
-        client = genai.Client()
+        if self._client is None:
+            # A hard per-request timeout: a stalled connection must fail (and be retried by
+            # the caller) instead of blocking the whole benchmark indefinitely.
+            self._client = genai.Client(
+                http_options=types.HttpOptions(timeout=int(self.timeout_s * 1000))
+            )
+        config = types.GenerateContentConfig(
+            temperature=0.0,
+            response_mime_type="application/json" if json_mode else "text/plain",
+        )
         start = time.perf_counter()
-        response = client.models.generate_content(
+        response = self._client.models.generate_content(
             model=self.model,
             contents=[
                 types.Part.from_bytes(data=image.read_bytes(), mime_type="image/png"),
                 prompt,
             ],
+            config=config,
         )
-        return VisionResult(response.text or "", time.perf_counter() - start, self.model)
+        u = response.usage_metadata
+        usage = {
+            "prompt_tokens": getattr(u, "prompt_token_count", None),
+            "output_tokens": getattr(u, "candidates_token_count", None),
+            "thinking_tokens": getattr(u, "thoughts_token_count", None),
+            "total_tokens": getattr(u, "total_token_count", None),
+        }
+        model = getattr(response, "model_version", None) or self.model
+        return VisionResult(response.text or "", time.perf_counter() - start, model, usage)
 
     def extract_text(self, image: Path) -> VisionResult:
-        return self._ask(image, TEXT_PROMPT)
+        return self.ask(image, TEXT_PROMPT)
 
     def extract_json(self, image: Path, schema: dict[str, Any]) -> VisionResult:
-        return self._ask(image, JSON_PROMPT.format(schema=json.dumps(schema, ensure_ascii=False)))
+        prompt = JSON_PROMPT.format(schema=json.dumps(schema, ensure_ascii=False))
+        return self.ask(image, prompt, json_mode=True)

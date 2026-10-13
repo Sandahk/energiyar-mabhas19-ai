@@ -3,6 +3,7 @@
 doc_id: m19-ed5-1404-app07
 reviewed_by: project_owner
 reviewed_on: '2026-10-13'
+basis_default: project_owner_reviewed
 basis: Owner visual review of the Phase 2C review sheets (source crops of the official PDF); written decisions
   of 2026-10-13. The official PDF is authoritative; the M19_Bavaghar workbook is a secondary cross-check
   only.
@@ -314,6 +315,11 @@ decisions:
   - app07-p011-r16
   decision: confirm
   note: Sub-category/material grouping; the eight following condition rows inherit it.
+- id: C09-r17
+  rows:
+  - app07-p011-r17
+  decision: confirm
+  note: «هوا یا گاز کربنیک» applies to r17 (and r18); r17's machine condition already has it.
 - id: C09
   rows:
   - app07-p011-r18
@@ -380,6 +386,7 @@ decisions:
   note: Material with no subgroup, as extracted. Extruded polystyrene (XPS) is a different product from
     the expanded polystyrene (EPS) subgroup above it; page 11 prints it as a separate dashed heading after
     the EPS rows end. The M19_Bavaghar workbook (secondary) also lists XPS separately from EPS.
+  basis: model_inferred
 - id: C10
   rows:
   - app07-p013-r18

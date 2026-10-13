@@ -121,6 +121,7 @@ def crosscheck(candidates: list[dict[str, Any]]) -> dict[str, Any]:
         by_page.setdefault(c["pdf_page"], []).append(c)
     disagreements: list[dict[str, Any]] = []
     compared = Counter[str]()
+    exact: list[dict[str, str]] = []
     unmatched: list[str] = []
     for page_id in CROSSCHECK_PAGES:
         rows = sc.verified_rows(refs[page_id])
@@ -137,7 +138,10 @@ def crosscheck(candidates: list[dict[str, Any]]) -> dict[str, Any]:
             if cand is None:
                 unmatched.append(ref.id)
                 continue
-            for name, got, ok in _compare(ref, cand):
+            results = _compare(ref, cand)
+            if all(ok for _, _, ok in results):
+                exact.append({"reference_item": ref.id, "candidate_id": cand["candidate_id"]})
+            for name, got, ok in results:
                 compared[name] += 1
                 if not ok:
                     disagreements.append({"reference_item": ref.id,
@@ -147,6 +151,7 @@ def crosscheck(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     rows_total = sum(len(sc.verified_rows(refs[p])) for p in CROSSCHECK_PAGES)
     rows_with_disagreement = len({d["reference_item"] for d in disagreements})
     return {"reference_rows": rows_total, "unmatched_reference_rows": unmatched,
+            "rows_matching_exactly": len(exact), "exact_matches": exact,
             "fields_compared": dict(compared), "rows_with_disagreement": rows_with_disagreement,
             "by_field": dict(Counter(d["field"] for d in disagreements)),
             "disagreements": disagreements}  # fmt: skip
@@ -193,18 +198,18 @@ def build(plan: dict[str, Any], *, model: str, responses: Path, out: Path) -> di
     _write_jsonl(out / "raw_rows.jsonl", raw_rows)
     _write_jsonl(out / "candidates_machine.jsonl", candidates)  # before owner decisions
     machine_check = crosscheck(candidates)
-    decisions = dec.load_decisions() if dec.DECISIONS_PATH.is_file() else {"decisions": []}
-    candidates = dec.apply_decisions(candidates, decisions)
-    _write_jsonl(out / "candidates.jsonl", candidates)
+    candidates = dec.apply_decisions(candidates, dec.load_all())
     check = crosscheck(candidates)
+    dec.add_benchmark_basis(candidates, {m["candidate_id"] for m in check["exact_matches"]})
+    _write_jsonl(out / "candidates.jsonl", candidates)
     suspicious = [{"candidate_id": c["candidate_id"], "pdf_page": c["pdf_page"],
                    "row_y": c["row_y"], "flags": c["suspicious"],
-                   "owner_review": c["owner_review"]}
+                   "review": c["review"]}
                   for c in candidates if c["suspicious"]]  # fmt: skip
     summary = _summary(model, plan, pages, candidates, check)
     summary["crosscheck_machine_layer"] = {k: v for k, v in machine_check.items()
                                            if k != "disagreements"}  # fmt: skip
-    summary["owner_review"] = dec.review_summary(candidates)
+    summary["review"] = dec.review_summary(candidates)
     for name, obj in (("suspicious_rows.json", suspicious), ("crosscheck.json", check),
                       ("crosscheck_machine.json", machine_check),
                       ("summary.json", summary)):  # fmt: skip
@@ -316,16 +321,18 @@ def _row_html(c: dict[str, Any], bad: set[str]) -> str:
     flags = "<br>".join(f"<span class='fl'>⚑ {_e(f['code'])}: {_e(f['detail'])}</span>"
                         for f in c["suspicious"])  # fmt: skip
     notes = "<br>".join(_e(n) for n in c["normalization_notes"])
-    review = c.get("owner_review") or {}
-    if review.get("decisions"):
-        flags += (f"<br><span class='dn'>owner: {_e(review['status'])} "
-                  f"({_e(', '.join(review['decisions']))})</span>")  # fmt: skip
+    review = c.get("review") or {}
+    if review.get("basis"):
+        flags += (f"<br><span class='dn'>{_e(review['status'])}: "
+                  f"{_e(', '.join(review['basis']))}"
+                  f"{' (' + ', '.join(review['decisions']) + ')' if review['decisions'] else ''}"
+                  "</span>")  # fmt: skip
     fn = {k: c.get(k) for k in a7_footnote_keys() if c.get(k)}
     dens = (
         f"{_e(c['parsed_density_qualifier'] or '')} {_e(c['parsed_density_min'])}"
         f"{' – ' + _e(c['parsed_density_max']) if c['parsed_density_kind'] == 'range' else ''}"
     )
-    open_flag = c["suspicious"] and review.get("status") != "owner_reviewed"
+    open_flag = c["suspicious"] and review.get("status") != "reviewed"
     cls = " class='flag'" if open_flag else ""
     mark = " bad" if c["candidate_id"] in bad else ""
     return (f"<tr{cls} id='{c['candidate_id']}'><td class='num{mark}'>{c['source_row_order']}</td>"

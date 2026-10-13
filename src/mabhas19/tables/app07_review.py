@@ -270,8 +270,8 @@ def build_entries(candidates: list[dict[str, Any]], raw_rows: dict[tuple[str, in
         disagreements.setdefault(d["candidate_id"], []).append(d)
     entries = []
     for i, c in enumerate(candidates):
-        if not c["suspicious"] or c.get("owner_review", {}).get("status") == "owner_reviewed":
-            continue  # only flagged rows the owner has not resolved
+        if not c["suspicious"] or c.get("review", {}).get("status") == "reviewed":
+            continue  # only flagged rows nobody has resolved
         prev = candidates[i - 1] if i > 0 else None
         nxt = candidates[i + 1] if i + 1 < len(candidates) else None
         raw = raw_rows[(c["raw_ref"]["request_id"], c["raw_ref"]["row_index"])]

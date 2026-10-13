@@ -1,0 +1,56 @@
+schema_version: 1
+table_id: m19-ed5-1404-app07.material_thermal_properties
+title: Appendix 7 – thermal properties of common building materials
+doc_id: m19-ed5-1404-app07
+source:
+  path: sources/mabhas19/ed5-1404/appendices/m19-ed5-1404-app07-v1.pdf
+  version: v1
+  sha256: f3e8e5c3f59ca25e3831cffe245a1d0b5081043bbe4aff91de5f76086b158031
+  pdf_pages:
+  - 3
+  - 13
+  printed_pages:
+  - 2
+  - 12
+  authority: official PDF; the M19_Bavaghar workbook was a secondary cross-check only
+columns:
+  density: dry density, kg/m3
+  thermal_conductivity: effective thermal conductivity, W/m.K
+extraction:
+  method: gemini_whole_page
+  model: gemini-3.8-flash
+  post_processing: mabhas19.tables.app07 (deterministic)
+  numbers: parsed from the raw transcription with the non-guessing parser; never inferred or repaired
+review:
+  files:
+  - path: eval/extraction/review/app07-owner-decisions.yaml
+    sha256: 500c20a5b8cb39dffd8fb2c791e6ab705b5025f7b1d71f8656461dfa531eaefe
+  - path: eval/extraction/review/app07-assistant-review.yaml
+    sha256: 712d0a781949d236a01e45c31f42e42c8abec2c2c0d294cd5ad75722f0eee269
+  benchmark_references: eval/extraction/reference/app07-p003|p006|p013.yaml
+  status_precedence:
+  - benchmark_human_verified
+  - project_owner_reviewed
+  - assistant_reviewed
+  - model_inferred
+counts:
+  records: 207
+  verification_status:
+    benchmark_human_verified: 56
+    assistant_reviewed: 76
+    project_owner_reviewed: 75
+  rows_with_basis:
+    benchmark_human_verified: 56
+    project_owner_reviewed: 85
+    assistant_reviewed: 76
+    model_inferred: 5
+  fields_changed_by_review: 20
+rules:
+  display_name: 'derived: (subgroup, or category name without its number) + material; never replaces the
+    stored hierarchy'
+  inheritance: material continues within the same category and subgroup; a value row without its own label
+    continues the leaf label above (2 rows, owner-confirmed)
+known_limitations:
+- footnote texts are not included; only footnote reference numbers
+- display_name is verbose for self-contained names (e.g. metals, polymers)
+- category 14 is kept as printed («فلزت»), see curated/source_issues.yaml SI-0006

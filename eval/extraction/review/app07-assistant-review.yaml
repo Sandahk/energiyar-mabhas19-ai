@@ -1,0 +1,162 @@
+# Appendix 7 assistant review (Phase 2C): kept apart from the project owner's decisions.
+doc_id: m19-ed5-1404-app07
+reviewed_by: assistant (independent review of the review_remaining_76 package against the source crops)
+reported_by: project_owner
+reviewed_on: '2026-10-13'
+basis_default: assistant_reviewed
+scope: 'The 76 rows outside the verified benchmark pages that no owner decision covered. All accepted:
+  no numeric corrections, no source-hierarchy corrections; category/subgroup/material/condition structure
+  kept; display_name rule unchanged.'
+decisions:
+- id: R01
+  rows:
+  - app07-p004-r01
+  - app07-p004-r02
+  - app07-p004-r03
+  decision: confirm
+  note: ACCEPT (PDF p4 (p004-r01–p004-r03, 3 rows))
+- id: R02
+  rows:
+  - app07-p004-r04
+  - app07-p004-r06
+  - app07-p004-r07
+  - app07-p004-r08
+  decision: confirm
+  note: ACCEPT (PDF p4 (p004-r04–p004-r08, 4 rows))
+- id: R03
+  rows:
+  - app07-p007-r01
+  - app07-p007-r02
+  - app07-p007-r03
+  - app07-p007-r04
+  - app07-p007-r05
+  - app07-p007-r06
+  - app07-p007-r07
+  - app07-p007-r08
+  - app07-p007-r09
+  - app07-p007-r10
+  decision: confirm
+  note: ACCEPT (PDF p7 (p007-r01–p007-r10, 10 rows))
+- id: R04
+  rows:
+  - app07-p007-r11
+  - app07-p007-r12
+  - app07-p007-r13
+  - app07-p007-r14
+  - app07-p007-r15
+  - app07-p007-r16
+  - app07-p007-r17
+  - app07-p007-r18
+  - app07-p007-r19
+  - app07-p007-r20
+  decision: confirm
+  note: ACCEPT (PDF p7 (p007-r11–p007-r20, 10 rows))
+- id: R05
+  rows:
+  - app07-p007-r21
+  - app07-p007-r22
+  - app07-p007-r23
+  - app07-p007-r24
+  - app07-p007-r25
+  decision: confirm
+  note: ACCEPT (PDF p7 (p007-r21–p007-r25, 5 rows))
+- id: R06
+  rows:
+  - app07-p008-r07
+  decision: confirm
+  note: ACCEPT (PDF p8 (p008-r07, 1 rows))
+- id: R07
+  rows:
+  - app07-p008-r17
+  - app07-p008-r18
+  decision: confirm
+  note: ACCEPT (PDF p8 (p008-r17–p008-r18, 2 rows))
+- id: R08
+  rows:
+  - app07-p009-r06
+  - app07-p009-r07
+  - app07-p009-r08
+  decision: confirm
+  note: ACCEPT (PDF p9 (p009-r06–p009-r08, 3 rows))
+- id: R09
+  rows:
+  - app07-p009-r09
+  decision: confirm
+  note: ACCEPT (PDF p9 (p009-r09, 1 rows))
+- id: R10
+  rows:
+  - app07-p009-r10
+  - app07-p009-r11
+  - app07-p009-r12
+  decision: confirm
+  note: ACCEPT (PDF p9 (p009-r10–p009-r12, 3 rows))
+- id: R11
+  rows:
+  - app07-p009-r13
+  - app07-p009-r14
+  - app07-p009-r15
+  - app07-p009-r16
+  - app07-p009-r17
+  - app07-p009-r18
+  - app07-p009-r19
+  - app07-p009-r20
+  - app07-p009-r21
+  - app07-p009-r22
+  decision: confirm
+  note: ACCEPT (PDF p9 (p009-r13–p009-r22, 10 rows))
+- id: R12
+  rows:
+  - app07-p009-r23
+  - app07-p009-r24
+  - app07-p009-r25
+  - app07-p009-r26
+  - app07-p009-r27
+  decision: confirm
+  note: ACCEPT (PDF p9 (p009-r23–p009-r27, 5 rows))
+- id: R13
+  rows:
+  - app07-p010-r01
+  - app07-p010-r02
+  - app07-p010-r03
+  decision: confirm
+  note: ACCEPT (PDF p10 (p010-r01–p010-r03, 3 rows))
+- id: R14
+  rows:
+  - app07-p010-r04
+  - app07-p010-r05
+  - app07-p010-r06
+  decision: confirm
+  note: ACCEPT (PDF p10 (p010-r04–p010-r06, 3 rows))
+- id: R15
+  rows:
+  - app07-p010-r07
+  - app07-p010-r08
+  - app07-p010-r09
+  - app07-p010-r10
+  - app07-p010-r11
+  - app07-p010-r12
+  decision: confirm
+  note: ACCEPT (PDF p10 (p010-r07–p010-r12, 6 rows))
+- id: R16
+  rows:
+  - app07-p010-r13
+  - app07-p010-r14
+  - app07-p010-r15
+  decision: confirm
+  note: ACCEPT (PDF p10 (p010-r13–p010-r15, 3 rows))
+- id: R17
+  rows:
+  - app07-p010-r16
+  - app07-p010-r19
+  decision: confirm
+  note: ACCEPT (PDF p10 (p010-r16–p010-r19, 2 rows))
+- id: R18
+  rows:
+  - app07-p011-r01
+  decision: confirm
+  note: ACCEPT (PDF p11 (p011-r01, 1 rows))
+- id: R19
+  rows:
+  - app07-p012-r05
+  decision: confirm
+  note: ACCEPT (PDF p12 (p012-r05, 1 rows))

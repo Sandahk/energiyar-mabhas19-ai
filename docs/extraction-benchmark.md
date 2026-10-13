@@ -369,3 +369,57 @@ All 59 successful requests completed on the first attempt (no 429, 503 or timeou
 | Whole page or crop? | Equal numeric accuracy; whole page is cheaper per row and returns structure; crops are useful as an independent second read. |
 | Production readiness | Numbers: strong evidence on this benchmark, still subject to verification. Labels/structure: not production-ready without post-processing and review. |
 | Not yet benchmarked with Gemini | Appendices 1–4, 9, the main PDF scan, and plain-text transcription. |
+
+# Phase 2C – Appendix 7 candidate extraction
+
+```bash
+# whole-page Gemini on PDF pages 3-13 (cached pages are reused; refuses if the estimate >= $1)
+uv run --group vision-gemini python -m mabhas19.cli.extract_app07 --allow-external
+uv run python -m mabhas19.cli.extract_app07        # offline rebuild from cached responses
+uv run python -m mabhas19.cli.review_app07         # review material for open suspicious rows
+uv run python -m mabhas19.cli.owner_review_app07   # owner decision sheets (HTML, PDF, PNG)
+```
+
+Outputs go to `data/processed/app07/<model>/` (git-ignored). Nothing is written to `curated/`.
+
+## Run
+
+| Item | Value |
+|---|---|
+| Table pages | PDF 3–13 (printed ۲–۱۲); p1 cover, p2 prose |
+| Gemini calls | 8 new (p4, p5, p7–p12) + 3 reused from Phase 2B (p3, p6, p13) |
+| Cost | estimate $0.23–$0.36; actual $0.2646 (10,824 in / 19,291 out / 49,072 thinking tokens) |
+| Candidate rows | 207; all densities and conductivities parsed, none rejected |
+| Row count check | Gemini rows = value rows counted from vector glyphs on every page |
+
+## Layers
+
+1. **Raw**: byte copies of the Gemini responses and every model row unchanged (`raw/`, `raw_rows.jsonl`).
+2. **Machine candidates** (`candidates_machine.jsonl`): deterministic post-processing in
+   `mabhas19.tables.app07`. Label lines are classified by printed form (numbered category,
+   undashed `:` subgroup, dashed `:` heading, `key: value` / mix-ratio condition, item), footnote
+   markers are separated, inheritance follows printed structure only, numbers are parsed from the
+   raw cell text with the non-guessing parser. Status `machine_extracted_pending_review`.
+3. **Owner-reviewed candidates** (`candidates.jsonl`): the decisions in
+   `eval/extraction/review/app07-owner-decisions.yaml` applied by `mabhas19.tables.app07_decisions`.
+   Label fields only; each changed field keeps `<field>_machine`; a decision whose expected machine
+   value no longer matches is refused. A derived `display_name` (subgroup, or category name, +
+   material) is added without replacing the stored hierarchy.
+
+## Review outcome (2026-10-13)
+
+| Item | Result |
+|---|---|
+| Suspicious rows | 36 flagged, 36 resolved (35 by the owner, C09 subgroup delegated to Claude) |
+| Fields changed by decisions | 20 (category text C04, condition readings C05/C09, subgroup C06/C10, material C10) |
+| Leaf-label inheritance | 2 rows (p4 r05, r15), both confirmed; the rule applies to no other row |
+| Material continuation outside verified pages | 39 rows in 13 runs, all confirmed |
+| Cross-check vs 56 verified rows | machine layer 9 label disagreements; reviewed layer 0; numbers 0 throughout |
+| Not reviewed | 122 rows (46 on verified pages, matching the references; 76 unflagged elsewhere) |
+
+## Secondary cross-check: M19_Bavaghar workbook
+
+The workbook's «پیوست هفتم» sheet (71 rows, private, kept under the ignored `files/`) is a
+secondary check only. 64 rows match a candidate exactly on density and λ. The 7 others were checked
+against the PDF and are workbook errors (e.g. «۱۷۰۰» for the printed «۱۷۷۰ تا ۲۰۰۰», λ 0.025 that
+does not appear in the 5th edition); the PDF is authoritative.

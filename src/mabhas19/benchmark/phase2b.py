@@ -15,6 +15,7 @@ import statistics
 import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -108,6 +109,7 @@ class Response:
     usage: dict[str, int | None] = field(default_factory=dict)
     attempts: list[dict[str, Any]] = field(default_factory=list)
     text: str | None = None
+    received_at: str | None = None  # UTC ISO time of the successful answer (newer runs only)
 
 
 # --------------------------------------------------------------------------- requests
@@ -232,6 +234,7 @@ class Caller:
             resp.latency_s = round(result.seconds, 2)
             resp.usage = dict(result.usage)
             resp.text = scrub(result.text)
+            resp.received_at = datetime.now(UTC).isoformat(timespec="seconds")
             resp.attempts.append({"attempt": attempt, "error": None})
             break
         return self._store(req, resp)

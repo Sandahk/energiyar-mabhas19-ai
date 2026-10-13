@@ -39,3 +39,6 @@ logs/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# --- Local working files (private inputs, e.g. workbooks, returned review sheets) ---
+files/

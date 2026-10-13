@@ -1,0 +1,400 @@
+# Appendix 7 owner-review decisions (Phase 2C). Applied deterministically on top of the
+# machine candidate layer; every 'set' records the machine value it replaces ('was').
+doc_id: m19-ed5-1404-app07
+reviewed_by: project_owner
+reviewed_on: '2026-10-13'
+basis: Owner visual review of the Phase 2C review sheets (source crops of the official PDF); written decisions
+  of 2026-10-13. The official PDF is authoritative; the M19_Bavaghar workbook is a secondary cross-check
+  only.
+scope: Structure and labels only. No numeric value is changed by these decisions.
+display_name_rule: display_name = (subgroup if present, else category name without its number) + ' ' +
+  material; derived, never replaces the stored hierarchy.
+decisions:
+- id: A-p004-r05
+  rows:
+  - app07-p004-r05
+  decision: confirm
+  note: Target row continues the previous row's label (leaf inheritance).
+- id: A-p004-r15
+  rows:
+  - app07-p004-r15
+  decision: confirm
+  note: Target row continues the previous row's label (leaf inheritance).
+- id: B01
+  rows:
+  - app07-p008-r01
+  - app07-p008-r02
+  decision: confirm
+  note: 'Material «بلوط، الش، زبان گنجشک، زیزفون، قان یاغوشه، درختان میوه‌دار» applies to all highlighted
+    rows. Owner note: «چوب درخت‌های صمغی بسیار سنگین» is a sibling of «بلوط، الش...».'
+- id: B02
+  rows:
+  - app07-p008-r08
+  - app07-p008-r09
+  decision: confirm
+  note: Material «چوب‌های سنگین» applies to all highlighted rows.
+- id: B03
+  rows:
+  - app07-p008-r10
+  - app07-p008-r11
+  - app07-p008-r12
+  - app07-p008-r13
+  - app07-p008-r14
+  - app07-p008-r15
+  - app07-p008-r16
+  decision: confirm
+  note: Material «صفحات تخته چندلا» applies to all highlighted rows.
+- id: B04
+  rows:
+  - app07-p008-r19
+  - app07-p008-r20
+  - app07-p009-r01
+  - app07-p009-r02
+  decision: confirm
+  note: Material «صفحات با ذرات چوب (نئوپان)» applies to all highlighted rows.
+- id: B05
+  rows:
+  - app07-p009-r03
+  - app07-p009-r04
+  - app07-p009-r05
+  decision: confirm
+  note: Material «پانل‌های ساخته‌شده از الیاف چوب» applies to all highlighted rows.
+- id: B06
+  rows:
+  - app07-p010-r17
+  - app07-p010-r18
+  decision: confirm
+  note: Material «سنگ ساینده» applies to all highlighted rows.
+- id: B07
+  rows:
+  - app07-p011-r02
+  - app07-p011-r03
+  - app07-p011-r04
+  decision: confirm
+  note: Material «اسفنج شیشه (شیشه متخلخل)» applies to all highlighted rows.
+- id: B08
+  rows:
+  - app07-p011-r09
+  - app07-p011-r10
+  - app07-p011-r11
+  - app07-p011-r12
+  - app07-p011-r13
+  - app07-p011-r14
+  - app07-p011-r15
+  - app07-p011-r16
+  decision: confirm
+  note: Material «پلی‌استایرن برش خورده در بلوک‌های قالبی تولیدشده به‌صورت منقطع، یا قالب‌گیری شدهٔ ممتد
+    بدون پوستهٔ سطحی» applies to all highlighted rows.
+- id: B09
+  rows:
+  - app07-p012-r01
+  - app07-p012-r02
+  decision: confirm
+  note: Material «پلی‌وینیل کلراید (PVC) منبسط‌شده» applies to all highlighted rows.
+- id: B10
+  rows:
+  - app07-p012-r03
+  - app07-p012-r04
+  decision: confirm
+  note: Material «صفحات ممتد منبسط شده با گاز HCFC و / یا پنتان» applies to all highlighted rows.
+- id: B11
+  rows:
+  - app07-p012-r06
+  - app07-p012-r07
+  decision: confirm
+  note: Material «صفحات با عایق تزریق‌شده به‌صورت ممتد بین دو ورق فلزی» applies to all highlighted rows.
+- id: B12
+  rows:
+  - app07-p012-r08
+  - app07-p012-r09
+  - app07-p012-r10
+  - app07-p012-r11
+  - app07-p012-r12
+  - app07-p012-r13
+  - app07-p012-r14
+  decision: confirm
+  note: Material «پشم‌سنگ» applies to all highlighted rows.
+- id: B13
+  rows:
+  - app07-p012-r15
+  - app07-p012-r16
+  - app07-p012-r17
+  - app07-p012-r18
+  - app07-p012-r19
+  - app07-p012-r20
+  - app07-p012-r21
+  - app07-p012-r22
+  decision: confirm
+  note: Material «پشم‌شیشه» applies to all highlighted rows.
+- id: C01
+  rows:
+  - app07-p003-r01
+  decision: confirm
+  note: Keep material empty; the category heading copied into the material field is not a material.
+- id: C02
+  rows:
+  - app07-p004-r09
+  - app07-p004-r10
+  - app07-p004-r11
+  - app07-p004-r12
+  - app07-p004-r13
+  - app07-p004-r14
+  - app07-p004-r15
+  decision: confirm
+  note: 'Trailing 1 is footnote 1. Placement correct: the lightweight-concrete phrase is the material/context;
+    density/cement sub-heading plus the row-specific item are the condition.'
+- id: C03
+  rows:
+  - app07-p005-r01
+  decision: confirm
+  note: 'Split correct: subgroup, material and condition stay separate; full name via derived display_name
+    = subgroup + material.'
+- id: C04
+  rows:
+  - app07-p006-r15
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r16
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r17
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r18
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r19
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r20
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C04
+  rows:
+  - app07-p006-r21
+  decision: set
+  note: Use the verified category text (footnote 2 kept in category_footnote_refs).
+  set:
+  - field: category
+    was: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکن
+    now: ۳. بتونهٔ درزها، مواد آب‌بندی و گرماشکنی
+- id: C05
+  rows:
+  - app07-p008-r01
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی نرمال متوسط kg/m3 ۶۵۰ تا ۸۰۰ و رطوبت ۱۵ درصد
+    now: چگالی نرمال متوسط ۶۵۰ تا ۸۰۰ kg/m3 و رطوبت ۱۵ درصد
+    parts:
+    - text: چگالی نرمال متوسط ۶۵۰ تا ۸۰۰ kg/m3 و رطوبت ۱۵ درصد
+      role: leaf
+- id: C05
+  rows:
+  - app07-p008-r02
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی نرمال متوسط kg/m3 ۵۰۰ تا ۶۵۰ و رطوبت ۱۵ درصد
+    now: چگالی نرمال متوسط ۵۰۰ تا ۶۵۰ kg/m3 و رطوبت ۱۵ درصد
+    parts:
+    - text: چگالی نرمال متوسط ۵۰۰ تا ۶۵۰ kg/m3 و رطوبت ۱۵ درصد
+      role: leaf
+- id: C05
+  rows:
+  - app07-p008-r03
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی طبیعی بیش از ۷۰۰ kg/m3
+    now: چگالی طبیعی بیش از ۷۰۰ kg/m3
+    parts:
+    - text: چگالی طبیعی بیش از ۷۰۰ kg/m3
+      role: leaf
+- id: C05
+  rows:
+  - app07-p008-r04
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی طبیعی ۵۰۰kg/m3 تا ۶۰۰
+    now: چگالی طبیعی ۵۰۰ تا ۶۰۰ kg/m3
+    parts:
+    - text: چگالی طبیعی ۵۰۰ تا ۶۰۰ kg/m3
+      role: leaf
+- id: C05
+  rows:
+  - app07-p008-r05
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی طبیعی ۳۵۰kg/m3 تا ۵۰۰
+    now: چگالی طبیعی ۳۵۰ تا ۵۰۰ kg/m3
+    parts:
+    - text: چگالی طبیعی ۳۵۰ تا ۵۰۰ kg/m3
+      role: leaf
+- id: C05
+  rows:
+  - app07-p008-r06
+  decision: set
+  note: Logical reading of the mixed Latin/Persian condition accepted; structure correct.
+  set:
+  - field: condition
+    was: چگالی طبیعی ۳۵۰kg/m3 تا ۵۰۰
+    now: چگالی طبیعی ۳۵۰ تا ۵۰۰ kg/m3
+    parts:
+    - text: چگالی طبیعی ۳۵۰ تا ۵۰۰ kg/m3
+      role: leaf
+- id: C06
+  rows:
+  - app07-p010-r20
+  decision: set
+  note: Category-level material, no subgroup.
+  set:
+  - field: subgroup
+    was: سنگ‌های چخماق (فلینت) و سنگ‌های ساینده و پومیس
+    now: null
+- id: C07
+  rows:
+  - app07-p011-r05
+  - app07-p011-r06
+  - app07-p011-r07
+  - app07-p011-r08
+  decision: confirm
+  note: «الیافی» and «سلولزی» are materials; r06 continues «الیافی», r08 continues «سلولزی»; display name
+    = category + material.
+- id: C08
+  rows:
+  - app07-p011-r09
+  - app07-p011-r10
+  - app07-p011-r11
+  - app07-p011-r12
+  - app07-p011-r13
+  - app07-p011-r14
+  - app07-p011-r15
+  - app07-p011-r16
+  decision: confirm
+  note: Sub-category/material grouping; the eight following condition rows inherit it.
+- id: C09
+  rows:
+  - app07-p011-r18
+  decision: set
+  note: «هوا یا گاز کربنیک» applies to r17 and r18.
+  set:
+  - field: condition
+    was: ضخامت بیش از ۶۰ میلی‌متر
+    now: هوا یا گاز کربنیک؛ ضخامت بیش از ۶۰ میلی‌متر
+    parts:
+    - text: هوا یا گاز کربنیک
+      role: sub_heading
+    - text: ضخامت بیش از ۶۰ میلی‌متر
+      role: leaf
+- id: C09
+  rows:
+  - app07-p011-r19
+  decision: set
+  note: HCFC is a sibling heading; this row's values are on the HCFC line.
+  set:
+  - field: condition
+    was: HCFC - :CFC -
+    now: HCFC
+    parts:
+    - text: HCFC
+      role: sub_heading
+- id: C09
+  rows:
+  - app07-p011-r20
+  decision: set
+  note: CFC is another sibling heading; r20 and r21 sit under CFC.
+  set:
+  - field: condition
+    was: بدون پوسته سطحی
+    now: CFC؛ بدون پوسته سطحی
+    parts:
+    - text: CFC
+      role: sub_heading
+    - text: بدون پوسته سطحی
+      role: leaf
+- id: C09
+  rows:
+  - app07-p011-r21
+  decision: set
+  note: CFC is another sibling heading; r20 and r21 sit under CFC.
+  set:
+  - field: condition
+    was: با پوسته سطحی
+    now: CFC؛ با پوسته سطحی
+    parts:
+    - text: CFC
+      role: sub_heading
+    - text: با پوسته سطحی
+      role: leaf
+- id: C09-subgroup
+  rows:
+  - app07-p011-r17
+  - app07-p011-r18
+  - app07-p011-r19
+  - app07-p011-r20
+  - app07-p011-r21
+  decision: confirm
+  decided_by: 'claude (delegated by project_owner on 2026-10-13: ''move on with the best answer'')'
+  note: Material with no subgroup, as extracted. Extruded polystyrene (XPS) is a different product from
+    the expanded polystyrene (EPS) subgroup above it; page 11 prints it as a separate dashed heading after
+    the EPS rows end. The M19_Bavaghar workbook (secondary) also lists XPS separately from EPS.
+- id: C10
+  rows:
+  - app07-p013-r18
+  decision: set
+  note: Apply the verified structure.
+  set:
+  - field: material
+    was: گچ قطعات پیش‌ساختهٔ گچی با روکش مقوایی گچ با سبک‌دانه یا با الیاف معدنی
+    now: گچ قطعات پیش‌ساختهٔ گچی با روکش مقوایی
+- id: C10
+  rows:
+  - app07-p013-r19
+  decision: set
+  note: 'Apply the verified structure: the subgroup starts the grouping for r19.'
+  set:
+  - field: subgroup
+    was: null
+    now: گچ با سبک‌دانه یا با الیاف معدنی

@@ -1,0 +1,234 @@
+# Main Mabhas 19 text: assistant review decisions (2026-10-16). Raw text is never changed;
+# every per-block correction is guarded by the expected block text (sha256) and exact counts.
+doc_id: m19-ed5-1404-main
+reviewed_by: assistant (review of review_main_corpus.html/.pdf crops)
+reported_by: project_owner
+reviewed_on: '2026-10-16'
+basis_default: assistant_reviewed
+approved_rules:
+  M1: leading alphabetic list marker «X(» -> «X)»; exceptions p40 «سیم(», p43 «شود(.» reclassified as
+    continuation text
+  G1: BNazanin glyph 95 (inked, mapped to U+0020) -> «پ»
+  G2: BNazanin glyph 112 (inked, mapped to U+0020) -> «چ»
+  B1: «)Latin(» -> «(Latin)»
+  C1: table caption numbers reordered to start with ۱۹ (p64 ۱۹-۲-۱, p90 ۱۹-۵-۲)
+decisions:
+- id: S-p029-b006
+  block: main-p029-b006
+  decision: replace
+  expect_text_sha256: bd2ce9de3154fcadea1e47f0161e6a4ac5b08e989805b753e9fd80c73976ae31
+  replacements:
+  - from: جز ئی
+    to: جزئی
+    count: 2
+  - from: اس ت
+    to: است
+    count: 2
+  - from: دس تگاه
+    to: دستگاه
+    count: 1
+  - from: ص دم
+    to: صدم
+    count: 1
+  note: Joined extraction-created splits, each visible as one word in the source crop.
+- id: S-p043-b012
+  block: main-p043-b012
+  decision: replace
+  expect_text_sha256: 566a1a417f48ed5ce411ae34f3e7ab960391403e29587e09293a71b7362349ce
+  replacements:
+  - from: خارجی ،
+    to: خارجی،
+    count: 1
+  - from: )دی وار ، سقف ی ا کف(
+    to: (دیوار، سقف یا کف)
+    count: 1
+  - from: لا ی ه‌های
+    to: لایه‌های
+    count: 1
+  - from: می‌شود) به
+    to: می‌شود (به
+    count: 1
+  note: Joined extraction-created splits, each visible as one word in the source crop. Also the mirrored
+    brackets around the Persian «(دیوار، سقف یا کف)» and «(به ۱۹-۵-۱-۱ رجوع», as printed.
+- id: S-p043-b015
+  block: main-p043-b015
+  decision: replace
+  expect_text_sha256: b679b64160edec3c549c8e2350bc070ca89267132fad9deab1bf2485583a2cd1
+  replacements:
+  - from: نوع ی عا یق
+    to: نوعی عایق
+    count: 1
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+  - from: م ی‌شود
+    to: می‌شود
+    count: 2
+  note: Joined extraction-created splits, each visible as one word in the source crop.
+- id: S-p049-b010
+  block: main-p049-b010
+  decision: replace
+  expect_text_sha256: cf2089e32b79c79872cd38b8ae806fa21646a243a99d1db09b7337cc329ce6d9
+  replacements:
+  - from: ش رایطی
+    to: شرایطی
+    count: 1
+  - from: اس ت
+    to: است
+    count: 1
+  - from: س رعت
+    to: سرعت
+    count: 1
+  - from: )مطابق استاندارد ISO7730:2005(
+    to: (مطابق استاندارد ISO7730:2005)
+    count: 1
+  note: Joined extraction-created splits, each visible as one word in the source crop. Also the mirrored
+    brackets around «(مطابق استاندارد ISO7730:2005)», as printed.
+- id: S-p061-b005
+  block: main-p061-b005
+  decision: replace
+  expect_text_sha256: baa6ce6e07186aec5fa1d509c4245bdaca3713e49e0372c0cd75b412e5715cf4
+  replacements:
+  - from: مسئولی ن
+    to: مسئولین
+    count: 1
+  - from: ع ملیات
+    to: عملیات
+    count: 1
+  - from: غ یرمجاز
+    to: غیرمجاز
+    count: 1
+  - from: مسئو لیت
+    to: مسئولیت
+    count: 1
+  note: Joined extraction-created splits, each visible as one word in the source crop.
+- id: S-p076-b010
+  block: main-p076-b010
+  decision: replace
+  expect_text_sha256: 215a7d02f089422dff448b28525aba22d4a12deac3ac494b8b51963045f34945
+  replacements:
+  - from: اطمی نان
+    to: اطمینان
+    count: 1
+  - from: نت ایج
+    to: نتایج
+    count: 1
+  - from: محدود یت
+    to: محدودیت
+    count: 1
+  - from: طبی عی
+    to: طبیعی
+    count: 1
+  - from: مانن د
+    to: مانند
+    count: 1
+  - from: مکانیک ی و الکتریک ی
+    to: مکانیکی و الکتریکی
+    count: 1
+  - from: تح لیل
+    to: تحلیل
+    count: 1
+  note: Joined extraction-created splits, each visible as one word in the source crop.
+- id: S-p015-b007
+  block: main-p015-b007
+  decision: replace
+  expect_text_sha256: bc9ae1e5b64c5753439f29cecc34e4c71910b23ad77c759db2312175a0a515fc
+  replacements:
+  - from: اجر ا
+    to: اجرا
+    count: 1
+  note: 'TOC entry: «اجر ا» -> «اجرا»; the leader dots are legitimate.'
+- id: S-p002-b002
+  block: main-p002-b002
+  decision: replace
+  expect_text_sha256: 0c2b0a8b096dc610c56b28bdaa6913b5d9cea77efe4c2afba984fc0dd0115c22
+  replacements:
+  - from: 'ع ن و ا ن و ن ا م پ د ی د آ و ر : موق کرنرتارت‌ل مسلّای‌خ تسمااخنت موازانر ا یت‌ر ارنا :ه موب
+      حشثهر نسواززدی‌ه.م مدیریت انرژی در ساختمان/ تهیه کننده دفتر مقررات ملّی'
+    to: 'عنوان و نام پدیدآور : مقررات ملّی ساختمان ایران: مبحث نوزدهم مدیریت انرژی در ساختمان/ تهیه کننده
+      دفتر مقررات ملّی و کنترل ساختمان وزارت راه و شهرسازی.'
+    count: 1
+  note: 'Guarded visual transcription of one catalogue line (garbled by the repair; its second printed
+    line was missing). The source is normally typeset: no letter-spacing kept.'
+- id: O-p005
+  block: main-p005-b003
+  decision: exclude_from_retrieval
+  reason: Scanned administrative notification (ابلاغیه), not regulation text. Kept as front-matter provenance
+    with its low-confidence OCR; no Gemini read.
+- id: F-p073
+  decision: merge_formula
+  blocks:
+  - main-p073-b006
+  - main-p073-b005
+  - main-p073-b007
+  new_block: main-p073-f01
+  formula:
+    plain: R = E_actual / E_ideal
+    latex: R = \frac{E_{actual}}{E_{ideal}}
+  expect_texts:
+    main-p073-b006: 𝑅 =
+    main-p073-b005: 𝐸𝑎𝑐𝑡𝑢𝑎𝑙
+    main-p073-b007: 𝐸𝑖𝑑𝑒𝑎𝑙
+  note: One fraction drawn as three text fragments; fragments kept with provenance.
+- id: U-rule
+  decision: classify
+  classes:
+    main-p001-b003: front_matter_heading
+    main-p001-b004: front_matter_heading
+    main-p001-b005: front_matter_heading
+    main-p003-b002: front_matter_heading
+    main-p005-b002: front_matter_heading
+    main-p007-b002: front_matter_heading
+    main-p007-b003: list_heading
+    main-p007-b011: list_heading
+    main-p007-b016: list_heading
+    main-p007-b019: list_heading
+    main-p009-b002: front_matter_heading
+    main-p015-b002: front_matter_heading
+    main-p015-b003: front_matter_heading
+    main-p017-b019: appendix_list
+    main-p017-b020: appendix_list
+    main-p017-b021: appendix_list
+    main-p017-b022: toc_continuation
+    main-p017-b023: appendix_list
+    main-p017-b024: appendix_list
+    main-p017-b025: appendix_list
+    main-p017-b026: appendix_list
+    main-p017-b027: appendix_list
+    main-p017-b028: appendix_list
+    main-p019-b008: english_gloss
+    main-p022-b010: english_gloss
+    main-p024-b012: english_gloss
+    main-p026-b004: english_gloss
+    main-p026-b007: english_gloss
+    main-p027-b006: english_gloss
+    main-p041-b007: english_gloss
+    main-p041-b010: english_gloss
+    main-p043-b006: english_gloss
+    main-p066-b005: english_gloss
+    main-p084-b004: caption_continuation
+    main-p146-b001: appendix_list
+    main-p146-b003: appendix_list
+    main-p146-b004: appendix_list
+    main-p146-b005: appendix_list
+    main-p146-b006: appendix_list
+    main-p146-b007: appendix_list
+    main-p146-b008: appendix_list
+    main-p146-b009: appendix_list
+    main-p146-b010: appendix_list
+    main-p146-b011: appendix_list
+    main-p146-b012: appendix_list
+    main-p146-b013: appendix_list
+    main-p146-b014: appendix_list
+    main-p146-b015: appendix_list
+  note: 48 lines classified by position and form, accepted as a group.
+- id: U-reviewed
+  decision: classify
+  classes:
+    main-p002-b005: publication_metadata
+    main-p003-b008: signature_name
+    main-p003-b009: signature_title
+    main-p009-b005: emphasis
+    main-p014-b006: signature_name
+    main-p014-b007: signature_title
+  note: Six lines reviewed individually.

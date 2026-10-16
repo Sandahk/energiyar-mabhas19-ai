@@ -1,0 +1,44 @@
+# Appendix 2 assistant review (Phase 2D): city names only.
+doc_id: m19-ed5-1404-app02
+reviewed_by: assistant (review of the review_app02_suspicious_cities.pdf crops)
+reported_by: project_owner
+reviewed_on: '2026-10-14'
+basis_default: assistant_reviewed
+scope: 'The 22 suspicious city names (Gemini vs Tesseract disagreements and uncorroborated Gemini readings).
+  City names only: climate codes are never changed by review.'
+decisions:
+- id: A2-r03
+  rows:
+  - app02-p002-r03
+  decision: set
+  note: Printed source name is «آقاجاری»; Gemini read «آغاجاری».
+  set:
+  - field: city
+    was: آغاجاری
+    now: آقاجاری
+- id: A2-accept
+  rows:
+  - app02-p002-r13
+  - app02-p002-r21
+  - app02-p002-r22
+  - app02-p002-r23
+  - app02-p002-r24
+  - app02-p002-r27
+  - app02-p003-r10
+  - app02-p003-r19
+  - app02-p003-r20
+  - app02-p003-r21
+  - app02-p003-r23
+  - app02-p003-r24
+  - app02-p003-r25
+  - app02-p003-r27
+  - app02-p003-r28
+  - app02-p004-r04
+  - app02-p004-r08
+  - app02-p004-r09
+  - app02-p004-r13
+  - app02-p004-r16
+  - app02-p004-r20
+  decision: confirm
+  note: Gemini reading accepted for rows 13, 21, 22, 23, 24, 27, 37, 46, 47, 48, 50, 51, 52, 54, 55, 60,
+    64, 65, 69, 72, 76.

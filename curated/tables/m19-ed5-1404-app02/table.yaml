@@ -1,0 +1,50 @@
+schema_version: 1
+table_id: m19-ed5-1404-app02.city_climate_classes
+title: Appendix 2 – climate classification of Iranian cities
+doc_id: m19-ed5-1404-app02
+source:
+  path: sources/mabhas19/ed5-1404/appendices/m19-ed5-1404-app02-v1.pdf
+  version: v1
+  sha256: 8e40c4f80eb1db38874380160a167342a5ec75512842ebd424708e954ec0d4fe
+  pdf_pages:
+  - 2
+  - 4
+  printed_pages:
+  - 1
+  - 3
+  authority: official PDF
+columns:
+  row_number: printed row number (ردیف)
+  city: city name (نام شهر)
+  climate_class: climate class (رده اقلیمی), ASHRAE 169 style code
+extraction:
+  row_number: PDF text layer
+  climate_class: PDF text layer; whitespace removed, never remapped
+  city: Gemini whole-page read (gemini-3.8-flash); Tesseract cell read as an independent second read
+review:
+  files:
+  - path: eval/extraction/review/app02-assistant-review.yaml
+    sha256: 720ff00e73e613a568bdb5ef65a94af32ec636a3e238644416321db60e5b817b
+counts:
+  records: 76
+  verification_status:
+    machine_corroborated: 54
+    assistant_reviewed: 22
+  climate_class:
+    0B: 12
+    1B: 5
+    2A: 1
+    2B: 12
+    3A: 10
+    3B: 11
+    4A: 7
+    4B: 15
+    5B: 2
+    5C: 1
+  city_names_changed_by_review: 1
+source_issues:
+- 'SI-0001: row 5 «اردبیل» is classed 5C, kept as printed'
+- 'SI-0002: appendix 3 has no 5C column'
+notes:
+- 'PDF p4 prints a note under the table (paraphrased, not transcribed): classes for many more weather
+  stations are being analysed and will be added per ANSI/ASHRAE 169-2020.'

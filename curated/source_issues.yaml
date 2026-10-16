@@ -33,7 +33,7 @@ issues:
     raised_by: "Phase 1/2A audit (Claude)"
 
   - id: SI-0003
-    status: unresolved
+    status: resolved
     title: "Appendix 3 rows 1-2: comparison operator direction visually ambiguous"
     locations:
       - {doc_id: m19-ed5-1404-app03, pdf_pages: [2, 3, 4, 5]}
@@ -44,6 +44,20 @@ issues:
     do_not: ["infer the operator direction", "present either row as the larger/smaller building without verification"]
     raised_on: 2026-10-04
     raised_by: "Phase 2A reference transcription (Claude)"
+    resolution:
+      resolved_on: 2026-10-16
+      basis: assistant_reviewed
+      method: >-
+        Assistant visual review of tight crops of the drawn labels in all four tables (D, C, B,
+        A). The PDF has no character code for the operator (vector outlines only); the reading
+        was taken from the printed glyphs, not inferred from the meaning of the rows.
+      canonical_readings:
+        row_1: "مسکونی ≥ ۳۰۰۰ مترمربع"  # operator ≥
+        row_2: "مسکونی < ۳۰۰۰ مترمربع"  # operator <
+      evidence:
+        decisions: "eval/extraction/review/app03-assistant-review.yaml (A3-r01, A3-r02: vector_evidence)"
+        curated_table: "curated/tables/m19-ed5-1404-app03/occupancy_types.jsonl (app03-occ-01, app03-occ-02)"
+        raw_transcriptions: "all Gemini and Tesseract readings kept per table in the curated readings"
 
   - id: SI-0004
     status: unresolved

@@ -1,0 +1,71 @@
+schema_version: 1
+table_id: m19-ed5-1404-app03.max_energy_use_intensity
+title: Appendix 3 – maximum energy-use intensity by occupancy, climate class and energy rating
+doc_id: m19-ed5-1404-app03
+source:
+  path: sources/mabhas19/ed5-1404/appendices/m19-ed5-1404-app03-v1.pdf
+  version: v1
+  sha256: 04a2a23f45ced84d6dbe01d39d05793e68a0e9371d3a3cc500db375d7faef517
+  pdf_pages:
+  - 2
+  - 5
+  printed_pages:
+  - 1
+  - 4
+  authority: official PDF
+tables:
+  D:
+    pdf_page: 2
+    printed_page: ۱
+  C:
+    pdf_page: 3
+    printed_page: ۲
+  B:
+    pdf_page: 4
+    printed_page: ۳
+  A:
+    pdf_page: 5
+    printed_page: ۴
+unit: kWh/m2.yr
+climate_classes:
+- 0B
+- 1B
+- 2A
+- 2B
+- 3A
+- 3B
+- 4A
+- 4B
+- 5B
+missing_climate_classes:
+  5C:
+    source_issue_refs:
+    - SI-0002
+    - SI-0001
+    note: no 5C column in any table; no value exists for 5C and none is produced
+extraction:
+  max_eui: PDF text layer (exact); each value assigned to the climate label printed at the head of its
+    own column
+  climate_class: PDF text layer header
+  energy_rating: PDF text layer caption
+  occupancy: Gemini whole-page read (gemini-3.8-flash) per table; Tesseract cell read as corroboration
+    only
+review:
+  files:
+  - path: eval/extraction/review/app03-assistant-review.yaml
+    sha256: d60fe94ae1d2a6d73484ebd6321c19fe70a06deea77f52359a996aa85a0bf870
+  SI-0003: 'operator rows 1-2 resolved by assistant visual review: canonical readings «≥» (row 1) and
+    «<» (row 2); raw transcriptions and vector evidence kept'
+counts:
+  occupancy_types: 34
+  max_eui_records: 1224
+  occupancy_verification_status:
+    assistant_reviewed: 17
+    machine_corroborated: 17
+  eui_value_corroboration:
+    independent_gemini_read_agrees: 1224
+    strict_D>C>B>A: 1224
+  occupancy_labels_changed_by_review: 5
+notes:
+- Each table caption carries footnote 1 stating that the values are to be revised and added to this appendix
+  (paraphrased, not transcribed).

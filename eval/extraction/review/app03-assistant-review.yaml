@@ -1,0 +1,477 @@
+# Appendix 3 assistant review (Phase 2E): occupancy labels only.
+doc_id: m19-ed5-1404-app03
+reviewed_by: assistant (visual review of review_app03_occupancy_labels.pdf crops)
+reported_by: project_owner
+reviewed_on: '2026-10-16'
+basis_default: assistant_reviewed
+scope: 'Occupancy labels at the 17 flagged positions, applied to all four ratings. Labels only: EUI values
+  and climate classes are never changed by review.'
+decisions:
+- id: A3-r01
+  rows:
+  - app03-D-r01
+  - app03-C-r01
+  - app03-B-r01
+  - app03-A-r01
+  decision: set_label
+  label: مسکونی ≥ ۳۰۰۰ مترمربع
+  was:
+    app03-D-r01: مسکونی ≥ ۳۰۰۰ مترمربع
+    app03-C-r01: مسکونی ۳۰۰۰ مترمربع
+    app03-B-r01: مسکونی ≥ ۳۰۰۰ مترمربع
+    app03-A-r01: مسکونی ≥ ۳۰۰۰ مترمربع
+  note: Canonical source reading «≥» chosen by assistant visual review of the tight crops in all four
+    tables.
+  source_issue_resolution:
+    SI-0003:
+      status: resolved_by_assistant_visual_review
+      canonical_operator: ≥
+      note: Raw Gemini/Tesseract transcriptions and the vector evidence are kept; the PDF has no character
+        code for the operator.
+  vector_evidence:
+    D:
+      pdf_page: 2
+      tight_crop_pt:
+      - 432.3
+      - 146.3
+      - 461.9
+      - 160.8
+      outlines_in_drawing_order:
+      - seq: 284
+        x0: 452.5
+        x1: 457.6
+        segments: 11
+      - seq: 285
+        x0: 445.1
+        x1: 446.6
+        segments: 4
+      - seq: 286
+        x0: 449.5
+        x1: 451.1
+        segments: 4
+      - seq: 287
+        x0: 435.1
+        x1: 439.0
+        segments: 27
+      - seq: 288
+        x0: 440.6
+        x1: 442.2
+        segments: 4
+    C:
+      pdf_page: 3
+      tight_crop_pt:
+      - 432.3
+      - 147.4
+      - 461.9
+      - 162.1
+      outlines_in_drawing_order:
+      - seq: 180
+        x0: 452.5
+        x1: 457.6
+        segments: 11
+      - seq: 181
+        x0: 445.1
+        x1: 446.6
+        segments: 4
+      - seq: 182
+        x0: 449.5
+        x1: 451.1
+        segments: 4
+      - seq: 183
+        x0: 435.1
+        x1: 439.0
+        segments: 27
+      - seq: 184
+        x0: 440.6
+        x1: 442.2
+        segments: 4
+    B:
+      pdf_page: 4
+      tight_crop_pt:
+      - 432.3
+      - 130.9
+      - 461.9
+      - 145.6
+      outlines_in_drawing_order:
+      - seq: 179
+        x0: 452.5
+        x1: 457.6
+        segments: 11
+      - seq: 180
+        x0: 445.1
+        x1: 446.6
+        segments: 4
+      - seq: 181
+        x0: 449.5
+        x1: 451.1
+        segments: 4
+      - seq: 182
+        x0: 435.1
+        x1: 439.0
+        segments: 27
+      - seq: 183
+        x0: 440.6
+        x1: 442.2
+        segments: 4
+    A:
+      pdf_page: 5
+      tight_crop_pt:
+      - 432.3
+      - 130.9
+      - 461.9
+      - 145.6
+      outlines_in_drawing_order:
+      - seq: 179
+        x0: 452.5
+        x1: 457.6
+        segments: 11
+      - seq: 180
+        x0: 445.1
+        x1: 446.6
+        segments: 4
+      - seq: 181
+        x0: 449.5
+        x1: 451.1
+        segments: 4
+      - seq: 182
+        x0: 435.1
+        x1: 439.0
+        segments: 27
+      - seq: 183
+        x0: 440.6
+        x1: 442.2
+        segments: 4
+- id: A3-r02
+  rows:
+  - app03-D-r02
+  - app03-C-r02
+  - app03-B-r02
+  - app03-A-r02
+  decision: set_label
+  label: مسکونی < ۳۰۰۰ مترمربع
+  was:
+    app03-D-r02: مسکونی < ۳۰۰۰ مترمربع
+    app03-C-r02: مسکونی > ۳۰۰۰ مترمربع
+    app03-B-r02: مسکونی < ۳۰۰۰ مترمربع
+    app03-A-r02: مسکونی < ۳۰۰۰ مترمربع
+  note: Canonical source reading «<» chosen by assistant visual review of the tight crops in all four
+    tables.
+  source_issue_resolution:
+    SI-0003:
+      status: resolved_by_assistant_visual_review
+      canonical_operator: <
+      note: Raw Gemini/Tesseract transcriptions and the vector evidence are kept; the PDF has no character
+        code for the operator.
+  vector_evidence:
+    D:
+      pdf_page: 2
+      tight_crop_pt:
+      - 432.0
+      - 160.8
+      - 462.2
+      - 175.6
+      outlines_in_drawing_order:
+      - seq: 327
+        x0: 454.3
+        x1: 458.4
+        segments: 21
+      - seq: 328
+        x0: 434.4
+        x1: 438.2
+        segments: 27
+      - seq: 329
+        x0: 439.9
+        x1: 441.6
+        segments: 4
+      - seq: 330
+        x0: 444.4
+        x1: 446.0
+        segments: 4
+      - seq: 331
+        x0: 448.8
+        x1: 450.5
+        segments: 4
+    C:
+      pdf_page: 3
+      tight_crop_pt:
+      - 432.0
+      - 162.1
+      - 462.2
+      - 176.8
+      outlines_in_drawing_order:
+      - seq: 223
+        x0: 454.3
+        x1: 458.4
+        segments: 22
+      - seq: 224
+        x0: 444.4
+        x1: 446.0
+        segments: 4
+      - seq: 225
+        x0: 448.8
+        x1: 450.5
+        segments: 4
+      - seq: 226
+        x0: 434.4
+        x1: 438.2
+        segments: 27
+      - seq: 227
+        x0: 439.9
+        x1: 441.6
+        segments: 4
+    B:
+      pdf_page: 4
+      tight_crop_pt:
+      - 432.0
+      - 145.6
+      - 462.2
+      - 160.3
+      outlines_in_drawing_order:
+      - seq: 222
+        x0: 454.3
+        x1: 458.4
+        segments: 22
+      - seq: 223
+        x0: 444.4
+        x1: 446.0
+        segments: 4
+      - seq: 224
+        x0: 448.8
+        x1: 450.5
+        segments: 4
+      - seq: 225
+        x0: 434.4
+        x1: 438.2
+        segments: 27
+      - seq: 226
+        x0: 439.9
+        x1: 441.6
+        segments: 4
+    A:
+      pdf_page: 5
+      tight_crop_pt:
+      - 432.0
+      - 145.6
+      - 462.2
+      - 160.3
+      outlines_in_drawing_order:
+      - seq: 222
+        x0: 454.3
+        x1: 458.4
+        segments: 22
+      - seq: 223
+        x0: 444.4
+        x1: 446.0
+        segments: 4
+      - seq: 224
+        x0: 448.8
+        x1: 450.5
+        segments: 4
+      - seq: 225
+        x0: 434.4
+        x1: 438.2
+        segments: 27
+      - seq: 226
+        x0: 439.9
+        x1: 441.6
+        segments: 4
+- id: A3-r05
+  rows:
+  - app03-D-r05
+  - app03-C-r05
+  - app03-B-r05
+  - app03-A-r05
+  decision: set_label
+  label: اداری خصوصی
+  was:
+    app03-D-r05: اداری خصوصی
+    app03-C-r05: اداری خصوصی
+    app03-B-r05: اداری خصوصی
+    app03-A-r05: اداری خصوصی
+- id: A3-r06
+  rows:
+  - app03-D-r06
+  - app03-C-r06
+  - app03-B-r06
+  - app03-A-r06
+  decision: set_label
+  label: بانک و موسسه مالی
+  was:
+    app03-D-r06: بانک و موسسه مالی
+    app03-C-r06: بانک و موسسه مالی
+    app03-B-r06: بانک و موسسه مالی
+    app03-A-r06: بانک و موسسه مالی
+- id: A3-r07
+  rows:
+  - app03-D-r07
+  - app03-C-r07
+  - app03-B-r07
+  - app03-A-r07
+  decision: set_label
+  label: بیمارستان
+  was:
+    app03-D-r07: بیمارستان
+    app03-C-r07: بیمارستان
+    app03-B-r07: بیمارستان
+    app03-A-r07: بیمارستان
+- id: A3-r08
+  rows:
+  - app03-D-r08
+  - app03-C-r08
+  - app03-B-r08
+  - app03-A-r08
+  decision: set_label
+  label: تشخیص پزشکی آزمایشگاه
+  was:
+    app03-D-r08: تشخیص پزشکی آزمایشگاه
+    app03-C-r08: تشخیص پزشکی آزمایشگاه
+    app03-B-r08: تشخیص پزشکی آزمایشگاه
+    app03-A-r08: تشخیص پزشکی آزمایشگاه
+  note: 'Accepted as printed, unchanged: «تشخیص پزشکی آزمایشگاه». The decision as first written read «آزمایشگاه
+    تشخیص پزشکی» (same words, reversed order); on 2026-10-16 the project owner confirmed accepting the
+    printed text unchanged, without reordering.'
+- id: A3-r09
+  rows:
+  - app03-D-r09
+  - app03-C-r09
+  - app03-B-r09
+  - app03-A-r09
+  decision: set_label
+  label: کلینیک تشخیصی
+  was:
+    app03-D-r09: کلینیک تشخیصی
+    app03-C-r09: کلینیک تشخیصی
+    app03-B-r09: کلینیک تشخیصی
+    app03-A-r09: کلینیک تشخیصی
+- id: A3-r10
+  rows:
+  - app03-D-r10
+  - app03-C-r10
+  - app03-B-r10
+  - app03-A-r10
+  decision: set_label
+  label: کلینیک بدون بستری بیمار
+  was:
+    app03-D-r10: کلینیک بدون بستری بیمار
+    app03-C-r10: کلینیک بدون بستری بیمار
+    app03-B-r10: کلینیک بدون بستری بیمار
+    app03-A-r10: کلینیک بدون بستری بیمار
+- id: A3-r11
+  rows:
+  - app03-D-r11
+  - app03-C-r11
+  - app03-B-r11
+  - app03-A-r11
+  decision: set_label
+  label: مطب پزشکی
+  was:
+    app03-D-r11: مطب پزشکی
+    app03-C-r11: مطب پزشکی
+    app03-B-r11: مطب پزشکی
+    app03-A-r11: مطب پزشکی
+- id: A3-r13
+  rows:
+  - app03-D-r13
+  - app03-C-r13
+  - app03-B-r13
+  - app03-A-r13
+  decision: set_label
+  label: دانشگاه و آموزش عالی
+  was:
+    app03-D-r13: دانشگاه و آموزش عالی
+    app03-C-r13: دانشگاه و آموزش عالی
+    app03-B-r13: دانشگاه و آموزش عالی
+    app03-A-r13: دانشگاه و آموزش عالی
+- id: A3-r15
+  rows:
+  - app03-D-r15
+  - app03-C-r15
+  - app03-B-r15
+  - app03-A-r15
+  decision: set_label
+  label: دبستان و پیش دبستان
+  was:
+    app03-D-r15: دبستان و پیش دبستان
+    app03-C-r15: دبستان و پیش دبستان
+    app03-B-r15: دبستان و پیش دبستان
+    app03-A-r15: دبستان و پیش دبستان
+- id: A3-r17
+  rows:
+  - app03-D-r17
+  - app03-C-r17
+  - app03-B-r17
+  - app03-A-r17
+  decision: set_label
+  label: کتابخانه
+  was:
+    app03-D-r17: کتابخانه
+    app03-C-r17: کتابخانه
+    app03-B-r17: کتابخانه
+    app03-A-r17: کتابخانه
+- id: A3-r23
+  rows:
+  - app03-D-r23
+  - app03-C-r23
+  - app03-B-r23
+  - app03-A-r23
+  decision: set_label
+  label: هایپر مارکت/ سوپر مارکت
+  was:
+    app03-D-r23: هایپر مارکت/ سوپر مارکت
+    app03-C-r23: هایپر مارکت/ سوپر مارکت
+    app03-B-r23: هایپر مارکت/ سوپر مارکت
+    app03-A-r23: هایپر مارکت/ سوپر مارکت
+  note: «سوپر» is correct (Gemini); Tesseract's «سویر» is wrong.
+- id: A3-r24
+  rows:
+  - app03-D-r24
+  - app03-C-r24
+  - app03-B-r24
+  - app03-A-r24
+  decision: set_label
+  label: فست فود
+  was:
+    app03-D-r24: فست فود
+    app03-C-r24: فست فود
+    app03-B-r24: فست فود
+    app03-A-r24: فست فود
+- id: A3-r28
+  rows:
+  - app03-D-r28
+  - app03-C-r28
+  - app03-B-r28
+  - app03-A-r28
+  decision: set_label
+  label: کلانتری/ آتش نشانی
+  was:
+    app03-D-r28: کلانتری/ آتش نشانی
+    app03-C-r28: کلانتری / آتش نشانی
+    app03-B-r28: کلانتری / آتش نشانی
+    app03-A-r28: کلانتری / آتش نشانی
+  note: Canonicalized to the printed spacing «کلانتری/ آتش نشانی» for all four ratings.
+- id: A3-r29
+  rows:
+  - app03-D-r29
+  - app03-C-r29
+  - app03-B-r29
+  - app03-A-r29
+  decision: set_label
+  label: دفتر پست
+  was:
+    app03-D-r29: دفتر پست
+    app03-C-r29: دفتر پست
+    app03-B-r29: دفتر پست
+    app03-A-r29: دفتر پست
+- id: A3-r31
+  rows:
+  - app03-D-r31
+  - app03-C-r31
+  - app03-B-r31
+  - app03-A-r31
+  decision: set_label
+  label: تعمیرگاه خودرو
+  was:
+    app03-D-r31: تعمیرگاه خودرو
+    app03-C-r31: تعمیرگاه خودرو
+    app03-B-r31: تعمیرگاه خودرو
+    app03-A-r31: تعمیرگاه خودرو

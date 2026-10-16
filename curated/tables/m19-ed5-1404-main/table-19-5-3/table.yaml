@@ -1,0 +1,61 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-5-3
+doc_id: m19-ed5-1404-main
+table_number: 19-5-3
+caption:
+  text: 'جدول ۱۹-۵-۳: حداقل بازدهی مجاز برای تجهیزات سرمایش و گرمایش مركزی'
+  blocks:
+  - main-p099-b004
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 99
+printed_page: '80'
+corpus_blocks:
+  caption: main-p099-b004
+  table: main-p099-b005
+bbox:
+- 56.9
+- 110.1
+- 404.4
+- 533.9
+grid:
+  rows: 20
+  cols: 6
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 1
+  row_label_cols:
+  - 0
+  - 1
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: null
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 116
+  records: 19
+  cell_verification_status:
+    assistant_reviewed: 7
+    machine_extracted: 109
+  corrected_label_cells: 7
+source_issues: {}
+header_cells:
+- main-t19-5-3-r00c00
+- main-t19-5-3-r00c01
+- main-t19-5-3-r00c02
+- main-t19-5-3-r00c03
+- main-t19-5-3-r00c04
+- main-t19-5-3-r00c05
+notes:
+- Standard numbers are kept exactly as displayed; the order of their components is bidi-ambiguous and
+  is not inferred.
+- Dash = no printed value (never zero).
+- metric is taken only from the printed % sign, IE class or a metric named in the specification text (COP/EEI/SEER).

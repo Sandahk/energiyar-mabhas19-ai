@@ -1,0 +1,68 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-2-1
+doc_id: m19-ed5-1404-main
+table_number: 19-2-1
+caption:
+  text: 'جدول ۱۹-۲-۱: زمان‌بندی الزام اجرا ی بخش‌های مختلف ویرایش پنجم مبحث نوزدهم برای گروه‌های ساختما
+    نی'
+  blocks:
+  - main-p064-b002
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 64
+printed_page: '45'
+corpus_blocks:
+  caption: main-p064-b002
+  table: main-p064-b004
+bbox:
+- 36.0
+- 78.1
+- 624.4
+- 391.9
+grid:
+  rows: 23
+  cols: 26
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 2
+  row_label_cols:
+  - 0
+  - 1
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: PDF image soft-mask identity
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 539
+  records: 480
+  cell_verification_status:
+    machine_extracted: 535
+    assistant_reviewed: 3
+    rule_corrected: 1
+  corrected_label_cells: 3
+source_issues: {}
+symbol_semantics: unresolved_in_source
+symbol_values:
+- check_mark
+- cross_mark
+symbol_note: Symbols are recorded by printed shape only. Neither the table nor the surrounding text defines
+  them; no boolean or requirement status is derived.
+footnotes:
+- marker: الف
+  on_cell: main-t19-2-1-r01c00
+  text: الف معیار تعیین گروه ساختمان در این جدول، ماده ۱۲ آیین‌نامه اجرایی قانون نظام مهندسی و کنترل ساختمان
+    مصوب ۱۳۷۵ است.
+  cell: main-t19-2-1-r22c00
+header_cells:
+- main-t19-2-1-r00c00
+- main-t19-2-1-r01c00
+- main-t19-2-1-r01c01
+year_note: years are counted from the notification of this edition (no calendar year)

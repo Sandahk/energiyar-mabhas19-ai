@@ -1,0 +1,95 @@
+schema_version: 1
+doc_id: m19-ed5-1404-main
+tables:
+- table: 19-2-1
+  dir: table-19-2-1
+  pdf_page: 64
+  printed_page: '45'
+  records: 480
+  cells: 539
+  source_issues: []
+- table: 19-3-1
+  dir: table-19-3-1
+  pdf_page: 67
+  printed_page: '48'
+  records: 6
+  cells: 21
+  source_issues:
+  - SI-0002
+- table: 19-3-2
+  dir: table-19-3-2
+  pdf_page: 68
+  printed_page: '49'
+  records: 31
+  cells: 160
+  source_issues:
+  - SI-0009
+  - SI-0010
+- table: 19-3-3
+  dir: table-19-3-3
+  pdf_page: 74
+  printed_page: '55'
+  records: 4
+  cells: 10
+  source_issues: []
+- table: 19-5-1
+  dir: table-19-5-1
+  pdf_page: 84
+  printed_page: '65'
+  records: 60
+  cells: 76
+  source_issues:
+  - SI-0002
+- table: 19-5-2
+  dir: table-19-5-2
+  pdf_page: 90
+  printed_page: '71'
+  records: 45
+  cells: 65
+  source_issues:
+  - SI-0002
+- table: 19-5-3
+  dir: table-19-5-3
+  pdf_page: 99
+  printed_page: '80'
+  records: 19
+  cells: 116
+  source_issues: []
+- table: 19-5-4
+  dir: table-19-5-4
+  pdf_page: 100
+  printed_page: '81'
+  records: 11
+  cells: 72
+  source_issues: []
+- table: 19-5-5
+  dir: table-19-5-5
+  pdf_page: 107
+  printed_page: '88'
+  records: 4
+  cells: 15
+  source_issues: []
+- table: 19-5-6
+  dir: table-19-5-6
+  pdf_page: 115
+  printed_page: '96'
+  records: 7
+  cells: 16
+  source_issues: []
+- table: 19-5-7
+  dir: table-19-5-7
+  pdf_page: 116
+  printed_page: '97'
+  records: 7
+  cells: 16
+  source_issues: []
+totals:
+  tables: 11
+  cells: 1106
+  records: 674
+  corrected_cells: 30
+  numeric_values: 140
+  dashes: 11
+  inequality_bounds: 18
+  cross_mark: 181
+  check_mark: 299

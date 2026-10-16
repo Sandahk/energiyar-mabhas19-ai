@@ -1,0 +1,55 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-5-5
+doc_id: m19-ed5-1404-main
+table_number: 19-5-5
+caption:
+  text: 'جدول ۱۹-۵-۵: حداكثر دمای آبگرم مصرفی در نقطه مصرف'
+  blocks:
+  - main-p107-b005
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 107
+printed_page: '88'
+corpus_blocks:
+  caption: main-p107-b005
+  table: main-p107-b012
+bbox:
+- 124.6
+- 207.8
+- 336.6
+- 286.8
+grid:
+  rows: 5
+  cols: 3
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 1
+  row_label_cols:
+  - 0
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: null
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 15
+  records: 4
+  cell_verification_status:
+    assistant_reviewed: 2
+    machine_extracted: 13
+  corrected_label_cells: 2
+source_issues: {}
+header_cells:
+- main-t19-5-5-r00c00
+- main-t19-5-5-r00c01
+- main-t19-5-5-r00c02
+unit:
+  printed: درجه سانتیگراد
+  source_cell: main-t19-5-5-r00c02

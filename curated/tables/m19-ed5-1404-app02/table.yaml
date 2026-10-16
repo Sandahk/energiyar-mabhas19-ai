@@ -45,6 +45,8 @@ counts:
 source_issues:
 - 'SI-0001: row 5 «اردبیل» is classed 5C, kept as printed'
 - 'SI-0002: appendix 3 has no 5C column'
+- 'SI-0009: row 7 «اصفهان» is 4B here and 3B in main table 19-3-2; unresolved, both kept, neither declared
+  correct'
 notes:
 - 'PDF p4 prints a note under the table (paraphrased, not transcribed): classes for many more weather
   stations are being analysed and will be added per ANSI/ASHRAE 169-2020.'

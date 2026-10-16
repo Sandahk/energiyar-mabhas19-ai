@@ -25,6 +25,9 @@ from mabhas19.text.normalize import normalize_for_comparison, normalize_for_sear
 STATUS = "machine_extracted_pending_review"
 CLIMATE_CODE = re.compile(r"^[0-8][ABC]$")  # ASHRAE 169 climate zone + moisture regime
 SOURCE_ISSUES_BY_CODE = {"5C": ["SI-0001", "SI-0002"]}  # see curated/source_issues.yaml
+# Backlinks to unresolved cross-document inconsistencies (no value is changed by them):
+# SI-0009 = Isfahan is 4B here but 3B in main table 19-3-2.
+SOURCE_ISSUES_BY_ROW = {"app02-p002-r07": ["SI-0009"]}
 _PERSIAN_LETTERS = re.compile(r"[؀-ۿ‌ ()]+")  # e.g. «تهران (مهرآباد)»
 _DISPLAY_FOLDS = {"ك": "ک", "ي": "ی"}  # Arabic kaf/yeh -> Persian (display-safe)
 
@@ -110,7 +113,8 @@ def build_record(row: TextRow, printed_page: str, gemini: VisualRead | None,
         "climate_code_raw": row.code_raw, "climate_code": code.value,
         "climate_code_valid": code.valid,
         "climate_code_visual_read": gemini.code_raw if gemini else None,
-        "source_issue_refs": SOURCE_ISSUES_BY_CODE.get(code.value or "", []),
+        "source_issue_refs": SOURCE_ISSUES_BY_CODE.get(code.value or "", [])
+        + SOURCE_ISSUES_BY_ROW.get(f"app02-p{row.pdf_page:03d}-r{row.row_order:02d}", []),
         "provenance": {
             "row_number": "pdf_text_layer", "climate_code": "pdf_text_layer",
             "city": gemini.source if gemini else None,

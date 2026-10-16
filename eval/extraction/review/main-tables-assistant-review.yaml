@@ -1,0 +1,304 @@
+# Guarded label corrections for the main-document tables (assistant_reviewed).
+schema_version: 1
+basis_default: assistant_reviewed
+approval:
+  approved_on: 2026-10-16
+  by: project owner (visual check against the printed source)
+  scope: all 29 per-cell corrections below plus the rule-B1 cell main-t19-2-1-r01c24 (30 cells)
+  status_kept: assistant_reviewed
+  decisions:
+    - "«%۲۰» in table 19-5-2 stays as printed in source-facing text; its bidi/order flag is kept"
+    - "printed spellings in kept_as_printed are not editorially modernized"
+    - "table 19-2-1 symbols stay check_mark / cross_mark; symbol_semantics unresolved_in_source"
+scope: label cells of the 11 main-document tables (never numeric value cells)
+allowed_kinds:
+- split_word
+- mirrored_parentheses
+kept_as_printed:
+  note: spacing visible in the print, not corrected
+  cells:
+    main-t19-5-2-r05c01: حد اکثر
+    main-t19-5-3-r17c01: خنک کن
+    main-t19-5-4-r05c02: دودکش دار
+    main-t19-5-4-r03c02: غیر چگالشی
+    main-t19-5-6-r00c01: در صد
+    main-t19-5-6-r02c00: بزرگتر
+    main-t19-5-3-r10c01: پمپهای
+    main-t19-5-3-r13c02: ۱۲۰وات
+not_corrected:
+  percent_sign_order: PF band labels of 19-5-2 (r06c00-r09c00) read «%۲۰» in logical order; percent-sign
+    order is not an approved correction kind — kept, flagged
+decisions:
+- id: L-19-2-1-r00c11
+  cell: main-t19-2-1-r00c11
+  kind: split_word
+  expect_text_sha256: 091a4f6f726fb9fb98da39d6c912bbc946c5fcfdb3b2e564e5718a356475a832
+  replacements:
+  - from: هو ا
+    to: هوا
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-2-1-r01c01
+  cell: main-t19-2-1-r01c01
+  kind: split_word
+  expect_text_sha256: 378cdcc1b88d0653d4ddcac1113c8d6359cc86d23a7d68dfed832286a3cc364f
+  replacements:
+  - from: اجر ا
+    to: اجرا
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-2-1-r22c00
+  cell: main-t19-2-1-r22c00
+  kind: split_word
+  expect_text_sha256: b7f3d75d0bd7995b25f71737666ce2f4bc1a8f104b15be0affef4fd882d194de
+  replacements:
+  - from: آیی ن‌نامه
+    to: آیین‌نامه
+    count: 1
+  - from: مهندس ی
+    to: مهندسی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-1-r01c00
+  cell: main-t19-5-1-r01c00
+  kind: split_word
+  expect_text_sha256: 3ab72df0d98384e85f9fd76eae2e9ce530d667101af5c1a151fefa6b1752ef9f
+  replacements:
+  - from: خارج ی
+    to: خارجی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-1-r03c00
+  cell: main-t19-5-1-r03c00
+  kind: split_word
+  expect_text_sha256: dbf6fddbc44c036e992275b5bba68888d63dd471fd78158cf7ce23240c1eaa4a
+  replacements:
+  - from: خارج ی
+    to: خارجی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-1-r05c00
+  cell: main-t19-5-1-r05c00
+  kind: split_word
+  expect_text_sha256: fb5c48b2f2dcb0567bcc89ea73fb4993641b7a3b34c659ab36daf82485c40bf7
+  replacements:
+  - from: خارج ی
+    to: خارجی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-2-r01c00
+  cell: main-t19-5-2-r01c00
+  kind: split_word
+  expect_text_sha256: 09cd2920ceeb719787ccc7e4031914113dd8a93a5e7dc604818c92e6ddf628d7
+  replacements:
+  - from: حرار تی
+    to: حرارتی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-2-r11c00
+  cell: main-t19-5-2-r11c00
+  kind: split_word
+  expect_text_sha256: ddc9c05269a248f6150e9e82298478715c2b45c4dad91a2bdf6495c6deabf93b
+  replacements:
+  - from: حرار تی
+    to: حرارتی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-2-r12c00
+  cell: main-t19-5-2-r12c00
+  kind: split_word
+  expect_text_sha256: 5ace71bfdcffec0785703a2871bac815fab933b35853c16d18b7b43940efbd3a
+  replacements:
+  - from: خورشی دی
+    to: خورشیدی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r00c00
+  cell: main-t19-5-3-r00c00
+  kind: split_word
+  expect_text_sha256: 65f99aaa08c3e4530c7263d87fc6dfe40eed3070d8d71cf77dab3c9fadd2d494
+  replacements:
+  - from: ردی ف
+    to: ردیف
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r02c01
+  cell: main-t19-5-3-r02c01
+  kind: split_word
+  expect_text_sha256: 6e79566955bb3cb15642df89bb843c6f9279761ab4d8042aa28057409ac1d0a1
+  replacements:
+  - from: غیرچگالش ی
+    to: غیرچگالشی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r04c01
+  cell: main-t19-5-3-r04c01
+  kind: split_word
+  expect_text_sha256: 8cad81cd6509fad3b51a9dee3fbb61ddfadcdc9f3d680049e59e58374bb090ee
+  replacements:
+  - from: د یگ
+    to: دیگ
+    count: 1
+  - from: ری هیت‌دار
+    to: ری‌هیت‌دار
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r08c01
+  cell: main-t19-5-3-r08c01
+  kind: split_word
+  expect_text_sha256: 3f7ee9d4e344496480549266283aca7fa4c6c0985bbb5fe2a49a592acfe65b45
+  replacements:
+  - from: ی ا
+    to: یا
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r13c02
+  cell: main-t19-5-3-r13c02
+  kind: mirrored_parentheses
+  expect_text_sha256: bc152d53f790c7a2cad5ff8ff91795417405cd73977b592422ba05ce23db4b8d
+  replacements:
+  - from: )به غیر از ۷۵ تا ۲۰۰ کیلووات(
+    to: (به غیر از ۷۵ تا ۲۰۰ کیلووات)
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r17c01
+  cell: main-t19-5-3-r17c01
+  kind: split_word
+  expect_text_sha256: cfeaf23879bccf9e5375db3af27d4e42faefde059b8213b1349ee3eb8f9a1487
+  replacements:
+  - from: برج های
+    to: برج‌های
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-3-r17c02
+  cell: main-t19-5-3-r17c02
+  kind: split_word
+  expect_text_sha256: 694872463f7ab34812c24a64c17cd5a29d325a62b27d9455a50cf6b3c05229b5
+  replacements:
+  - from: جر یان
+    to: جریان
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-4-r00c00
+  cell: main-t19-5-4-r00c00
+  kind: split_word
+  expect_text_sha256: 65f99aaa08c3e4530c7263d87fc6dfe40eed3070d8d71cf77dab3c9fadd2d494
+  replacements:
+  - from: ردی ف
+    to: ردیف
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-4-r01c02
+  cell: main-t19-5-4-r01c02
+  kind: split_word
+  expect_text_sha256: 24379a806e6d239281e14b22088bc69074ec27cb9097105f8692dc61d54975ec
+  replacements:
+  - from: مخزن دار
+    to: مخزن‌دار
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-4-r02c02
+  cell: main-t19-5-4-r02c02
+  kind: split_word+mirrored_parentheses
+  expect_text_sha256: 6d7bd2360745e8b2a48a3a203911b44ef806417f38bff3ff69b7cddfce6d7981
+  replacements:
+  - from: م خزن
+    to: مخزن
+    count: 1
+  - from: )فوری(
+    to: (فوری)
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-4-r03c02
+  cell: main-t19-5-4-r03c02
+  kind: split_word
+  expect_text_sha256: 73d46d81dff49359a481a21d58d9379235ee1b7bb00c31c414879910efa5734c
+  replacements:
+  - from: نام ی
+    to: نامی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-5-r00c00
+  cell: main-t19-5-5-r00c00
+  kind: split_word
+  expect_text_sha256: 65f99aaa08c3e4530c7263d87fc6dfe40eed3070d8d71cf77dab3c9fadd2d494
+  replacements:
+  - from: ردی ف
+    to: ردیف
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-5-r00c02
+  cell: main-t19-5-5-r00c02
+  kind: mirrored_parentheses
+  expect_text_sha256: 9929acc021056dea62e842a2fbe4be00a2034ac088b2c2587728ae733775174c
+  replacements:
+  - from: )درجه سانتیگراد(
+    to: (درجه سانتیگراد)
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-6-r01c00
+  cell: main-t19-5-6-r01c00
+  kind: split_word
+  expect_text_sha256: 4d09d98ba3bd81c0bec40adc1d2f1757ea8a61a6e02a82c1600c846bcf304f32
+  replacements:
+  - from: کوچک تر
+    to: کوچک‌تر
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-6-r03c00
+  cell: main-t19-5-6-r03c00
+  kind: split_word
+  expect_text_sha256: b4a0d30b507f5b8527113749761ffa38b139f5ecd0de1f7d62587a267a718931
+  replacements:
+  - from: کوچک تر
+    to: کوچک‌تر
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-7-r00c00
+  cell: main-t19-5-7-r00c00
+  kind: mirrored_parentheses
+  expect_text_sha256: c2837ac5f236535ca2bbc8fc7cc66cd7428683026df77a9b4bf74f4fcb550954
+  replacements:
+  - from: )فضا(
+    to: (فضا)
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-7-r00c01
+  cell: main-t19-5-7-r00c01
+  kind: split_word
+  expect_text_sha256: 200018c185cf70846f2fdd66e8852cd47f219e2d8ac431fd5ec6fbd502923aa4
+  replacements:
+  - from: ضری ب ی کنواختی
+    to: ضریب یکنواختی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-7-r02c00
+  cell: main-t19-5-7-r02c00
+  kind: split_word
+  expect_text_sha256: 6c603ebe4055bad958206fd27d1cbcce554f2f46bc3b587eaec16820f9256e23
+  replacements:
+  - from: عموم ی
+    to: عمومی
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-7-r05c00
+  cell: main-t19-5-7-r05c00
+  kind: split_word
+  expect_text_sha256: 4b2d46989361fae2058045f61c32b8fa04d22b332f16516462589e69ac591b99
+  replacements:
+  - from: بیمارستان ها
+    to: بیمارستان‌ها
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)
+- id: L-19-5-7-r06c00
+  cell: main-t19-5-7-r06c00
+  kind: split_word
+  expect_text_sha256: 55b29cad64cc5e8ab6b8b476541cd92fe8528aaee945d790df2516aa5c66ec25
+  replacements:
+  - from: آزما یشگاه
+    to: آزمایشگاه
+    count: 1
+  - from: فعالیت های
+    to: فعالیت‌های
+    count: 1
+  evidence: assistant visual review of the source crop (200-400 dpi)

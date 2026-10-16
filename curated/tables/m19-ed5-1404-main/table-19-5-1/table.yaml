@@ -1,0 +1,62 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-5-1
+doc_id: m19-ed5-1404-main
+table_number: 19-5-1
+caption:
+  text: 'جدول ۱۹-۵-۱: حداقل میزان مجاز مقاومت حرارتی (R-Value) بخش‌های پوسته خارجی غیرنورگذر در اقلیم‌های
+    مختلف (m2.k/W)'
+  blocks:
+  - main-p084-b003
+  - main-p084-b004
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 84
+printed_page: '65'
+corpus_blocks:
+  caption: main-p084-b003
+  table: main-p084-b008
+bbox:
+- 75.0
+- 107.5
+- 386.8
+- 359.5
+grid:
+  rows: 21
+  cols: 6
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 1
+  row_label_cols: []
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: null
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 76
+  records: 60
+  cell_verification_status:
+    machine_extracted: 73
+    assistant_reviewed: 3
+  corrected_label_cells: 3
+source_issues:
+  SI-0002: Appendix 3 has no 5C column; main tables print a combined «5B, 5C» group (applicability recorded
+    as printed, not extended to appendix 3)
+unit:
+  printed: m2.k/W
+  source_block: main-p084-b004
+  note: unit printed on the caption's second line
+header_cells:
+- main-t19-5-1-r00c00
+- main-t19-5-1-r00c01
+- main-t19-5-1-r00c02
+- main-t19-5-1-r00c03
+- main-t19-5-1-r00c04
+- main-t19-5-1-r00c05

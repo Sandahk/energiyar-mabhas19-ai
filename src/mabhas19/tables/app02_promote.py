@@ -31,6 +31,10 @@ from mabhas19.tables import app02_decisions as dec
 
 DOC_ID = "m19-ed5-1404-app02"
 TABLE_ID = "m19-ed5-1404-app02.city_climate_classes"
+APP02_SI_0009 = (
+    "SI-0009: row 7 «اصفهان» is 4B here and 3B in main table 19-3-2; unresolved, "
+    "both kept, neither declared correct"
+)
 RECORDS_FILE = "city_climate_classes.jsonl"
 META_FILE = "table.yaml"
 EXPECTED_ROWS = 76
@@ -122,7 +126,8 @@ def table_metadata(records: list[dict[str, Any]], model: str) -> dict[str, Any]:
                                                 for r in records),
         },
         "source_issues": ["SI-0001: row 5 «اردبیل» is classed 5C, kept as printed",
-                          "SI-0002: appendix 3 has no 5C column"],
+                          "SI-0002: appendix 3 has no 5C column",
+                          APP02_SI_0009],
         "notes": ["PDF p4 prints a note under the table (paraphrased, not transcribed): "
                   "classes for many more weather stations are being analysed and will be "
                   "added per ANSI/ASHRAE 169-2020."],

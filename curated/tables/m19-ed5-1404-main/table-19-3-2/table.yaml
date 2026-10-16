@@ -1,0 +1,125 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-3-2
+doc_id: m19-ed5-1404-main
+table_number: 19-3-2
+caption:
+  text: 'جدول ۱۹-۳-۲: دسته‌بند ی اقلیمی شهرهای مركز استان‌های ایران'
+  blocks:
+  - main-p068-b003
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 68
+printed_page: '49'
+corpus_blocks:
+  caption: main-p068-b003
+  table: main-p068-b004
+bbox:
+- 96.0
+- 82.4
+- 365.5
+- 552.9
+grid:
+  rows: 32
+  cols: 5
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 1
+  row_label_cols:
+  - 0
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: null
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 160
+  records: 31
+  cell_verification_status:
+    machine_extracted: 160
+  corrected_label_cells: 0
+source_issues:
+  SI-0009: 'Isfahan: table 19-3-2 = 3B, Appendix 2 (app02-p002-r07) = 4B; unresolved, both preserved,
+    neither declared correct'
+  SI-0010: Kerman WMO code printed «۴۸۸۴۱۰»; anomalous relative to the pattern of the other codes; preserved
+    exactly as printed
+header_cells:
+- main-t19-3-2-r00c00
+- main-t19-3-2-r00c01
+- main-t19-3-2-r00c02
+- main-t19-3-2-r00c03
+- main-t19-3-2-r00c04
+lookup:
+  by_city_normalized:
+    تبریز: main-t19-3-2-r01
+    ارومیه: main-t19-3-2-r02
+    اردبیل: main-t19-3-2-r03
+    اصفهان: main-t19-3-2-r04
+    کرج: main-t19-3-2-r05
+    ایلام: main-t19-3-2-r06
+    بوشهر: main-t19-3-2-r07
+    تهران: main-t19-3-2-r08
+    شهرکرد: main-t19-3-2-r09
+    بیرجند: main-t19-3-2-r10
+    مشهد: main-t19-3-2-r11
+    بجنورد: main-t19-3-2-r12
+    اهواز: main-t19-3-2-r13
+    زنجان: main-t19-3-2-r14
+    سمنان: main-t19-3-2-r15
+    زاهدان: main-t19-3-2-r16
+    شیراز: main-t19-3-2-r17
+    قزوین: main-t19-3-2-r18
+    قم: main-t19-3-2-r19
+    سنندج: main-t19-3-2-r20
+    کرمان: main-t19-3-2-r21
+    کرمانشاه: main-t19-3-2-r22
+    یاسوج: main-t19-3-2-r23
+    گرگان: main-t19-3-2-r24
+    رشت: main-t19-3-2-r25
+    خرم اباد: main-t19-3-2-r26
+    ساری: main-t19-3-2-r27
+    اراک: main-t19-3-2-r28
+    بندرعباس: main-t19-3-2-r29
+    همدان: main-t19-3-2-r30
+    یزد: main-t19-3-2-r31
+  by_wmo_code:
+    '407060': main-t19-3-2-r01
+    '407120': main-t19-3-2-r02
+    '407080': main-t19-3-2-r03
+    '408000': main-t19-3-2-r04
+    '407807': main-t19-3-2-r05
+    '407800': main-t19-3-2-r06
+    '408570': main-t19-3-2-r07
+    '407540': main-t19-3-2-r08
+    '407980': main-t19-3-2-r09
+    '408090': main-t19-3-2-r10
+    '407450': main-t19-3-2-r11
+    '407230': main-t19-3-2-r12
+    '408110': main-t19-3-2-r13
+    '407290': main-t19-3-2-r14
+    '407570': main-t19-3-2-r15
+    '408560': main-t19-3-2-r16
+    '408480': main-t19-3-2-r17
+    '407310': main-t19-3-2-r18
+    '407700': main-t19-3-2-r19
+    '407470': main-t19-3-2-r20
+    '488410': main-t19-3-2-r21
+    '407660': main-t19-3-2-r22
+    '408360': main-t19-3-2-r23
+    '407380': main-t19-3-2-r24
+    '407190': main-t19-3-2-r25
+    '407820': main-t19-3-2-r26
+    '407826': main-t19-3-2-r27
+    '407690': main-t19-3-2-r28
+    '408750': main-t19-3-2-r29
+    '407680': main-t19-3-2-r30
+    '408210': main-t19-3-2-r31
+notes:
+- Station codes are identifiers (text), never numbers.
+- Not merged with Appendix 2; see SI-0009 for the Isfahan conflict.

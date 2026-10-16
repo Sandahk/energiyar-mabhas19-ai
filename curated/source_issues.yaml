@@ -115,3 +115,34 @@ issues:
     do_not: ["silently correct the source text"]
     raised_on: 2026-10-04
     raised_by: "Phase 2A repair investigation (Claude)"
+
+  - id: SI-0009
+    status: unresolved
+    title: "Isfahan climate class differs between main table 19-3-2 and Appendix 2"
+    locations:
+      - {doc_id: m19-ed5-1404-main, pdf_pages: [68], table: "19-3-2", record: main-t19-3-2-r04}
+      - {doc_id: m19-ed5-1404-app02, pdf_pages: [2], record: app02-p002-r07}
+    description: >-
+      Main table 19-3-2 (printed page ۴۹), row 4 «اصفهان» (WMO code ۴۰۸۰۰۰), gives climate
+      class «3B». Appendix 2, row 7 «اصفهان», gives climate class «4B». Both are read from the
+      PDF text layer and confirmed visually. Both values are preserved; neither is declared
+      correct and neither overrides the other.
+    do_not: ["declare either class correct", "overwrite either record with the other",
+             "answer an Isfahan climate-class question without citing both sources"]
+    raised_on: 2026-10-16
+    raised_by: "Main-table audit (Claude); confirmed by the project owner"
+    former_candidate_id: "SI-0004 (candidate)"
+
+  - id: SI-0010
+    status: unresolved
+    title: "Main table 19-3-2: Kerman station code is anomalous relative to the other codes"
+    locations:
+      - {doc_id: m19-ed5-1404-main, pdf_pages: [68], table: "19-3-2", record: main-t19-3-2-r21}
+    description: >-
+      Row 21 «کرمان» prints the WMO station code «۴۸۸۴۱۰». The other 30 codes in the column
+      begin «۴۰». The code is preserved exactly as printed.
+    do_not: ["replace or correct ۴۸۸۴۱۰", "derive a code from the pattern of the other rows",
+             "use the station code as a numeric value"]
+    raised_on: 2026-10-16
+    raised_by: "Main-table audit (Claude); confirmed by the project owner"
+    former_candidate_id: "SI-0005 (candidate)"

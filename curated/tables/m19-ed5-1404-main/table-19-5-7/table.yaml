@@ -1,0 +1,63 @@
+schema_version: 1
+status: curated
+table_id: m19-ed5-1404-main.t19-5-7
+doc_id: m19-ed5-1404-main
+table_number: 19-5-7
+caption:
+  text: 'جدول ۱۹-۵-۷: حداقل میزان یکنواختی قابل قبول نور مصنوع ی (U=Emax (Emin) / Eavg)'
+  blocks:
+  - main-p116-b007
+  note: curated corpus caption text (machine text; known split words not corrected here)
+pdf_page: 116
+printed_page: '97'
+corpus_blocks:
+  caption: main-p116-b007
+  table: main-p116-b010
+bbox:
+- 76.8
+- 295.0
+- 410.6
+- 394.5
+grid:
+  rows: 8
+  cols: 2
+  column_order: right_to_left (col 0 = rightmost)
+  header_rows: 1
+  row_label_cols:
+  - 0
+source:
+  path: sources/mabhas19/ed5-1404/main/m19-ed5-1404-main-v1.pdf
+  version: v1
+  sha256: 8e3347c38e75fee3952fedab3a0deb4139f8b23777f66ec27c3052edb9c9adce
+methods:
+  grid: pymupdf find_tables(strategy=lines_strict)
+  text: 'PDF text layer, repair_v1 (+ B1); labels: guarded assistant corrections from source crops'
+  numbers: Decimal-safe parse of the printed token ('/' decimal separator kept in the printed text)
+  symbols: null
+review:
+  file: eval/extraction/review/main-tables-assistant-review.yaml
+  sha256: c4e8685bd4f2a522d372cc9c39d74bd3edd69e973d9dbb36ddcd7add688820f4
+  basis: assistant_reviewed
+counts:
+  cells: 16
+  records: 7
+  cell_verification_status:
+    assistant_reviewed: 5
+    machine_extracted: 11
+  corrected_label_cells: 5
+source_issues: {}
+header_cells:
+- main-t19-5-7-r00c00
+- main-t19-5-7-r00c01
+unit: null
+source_statements:
+- source: table caption
+  block: main-p116-b007
+  text: 'جدول ۱۹-۵-۷: حداقل میزان یکنواختی قابل قبول نور مصنوع ی (U=Emax (Emin) / Eavg)'
+- source: body text (item ذ)
+  block: main-p116-b006
+  text: 'ذ) ضریب یکنواختی توزیع نور مصنوع ی در فضا های مختلف )نسبت روشنایی پرنورترین یا کم‌نورترین
+
+    نقطه هر فضا به متوسط میزان روشنایی( باید بیش‌تر از اعداد مندرج در جدول ۱۹-۵-۷ باشد .'
+ambiguity: The caption prints «U=Emax (Emin) / Eavg»; the body text says the ratio of the brightest OR
+  dimmest point to the average. Not resolved; no formula is chosen.

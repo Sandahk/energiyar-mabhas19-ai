@@ -27,6 +27,12 @@ review:
       L1: 60
       T1: 10
       per_block: 83
+  structure:
+    file: eval/extraction/review/main-structure-review.yaml
+    sha256: db51b8b73152d4139f443214dbd50aade36ffc8e31767c8b830834d4de264fbd
+    approved_on: '2026-10-18'
+    counts:
+      definition_body_relabels: 136
 counts:
   pages_by_role:
     front_matter: 10
@@ -37,10 +43,10 @@ counts:
   blocks: 1632
   blocks_by_kind:
     page_number: 132
-    paragraph: 200
+    paragraph: 336
     heading_unnumbered: 53
     figure: 8
-    footnote: 356
+    footnote: 220
     ocr_text: 1
     list_item: 411
     toc_entry: 70

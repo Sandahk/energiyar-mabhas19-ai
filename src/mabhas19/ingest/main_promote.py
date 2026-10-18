@@ -28,8 +28,10 @@ from mabhas19.core.paths import MANIFEST_PATH, REPO_ROOT
 from mabhas19.ingest.main_decisions import (
     DECISIONS_PATH,
     ERRATA_PATH,
+    STRUCTURE_PATH,
     load_decisions,
     load_errata,
+    load_structure,
 )
 from mabhas19.tables.main_audit import TABLES
 from mabhas19.tables.main_extract import caption
@@ -51,15 +53,49 @@ EXPECTED_RULES = {
 }
 EXPECTED_ERRATA = {"blocks": 178, "candidates": 259, "B2": 106, "L1": 60, "T1": 10, "per_block": 83}
 BLOCK_FIELDS = (
-    "block_id", "doc_id", "pdf_page", "printed_page", "printed_page_confidence", "page_role",
-    "kind", "structural_class", "section_number", "heading_level", "section_path", "bbox",
-    "extraction_method", "text_raw", "text_repair_v1", "text_before_review", "text",
-    "text_normalized", "applied_rules", "decisions", "verification", "retrieval",
-    "resolved_flags", "open_flags", "confidence", "font_size", "line_count", "formula",
-    "fragments", "merged_into", "continues_previous_block", "retrieval_exclusion",
-    "ocr_mean_confidence", "rows", "cols", "table_index", "figure_index",
-    "embedded_symbol_images", "text_before_errata", "caption_block", "errata",
-)  # fmt: skip
+    "block_id",
+    "doc_id",
+    "pdf_page",
+    "printed_page",
+    "printed_page_confidence",
+    "page_role",
+    "kind",
+    "structural_class",
+    "section_number",
+    "heading_level",
+    "section_path",
+    "bbox",
+    "extraction_method",
+    "text_raw",
+    "text_repair_v1",
+    "text_before_review",
+    "text",
+    "text_normalized",
+    "applied_rules",
+    "decisions",
+    "verification",
+    "retrieval",
+    "resolved_flags",
+    "open_flags",
+    "confidence",
+    "font_size",
+    "line_count",
+    "formula",
+    "fragments",
+    "merged_into",
+    "continues_previous_block",
+    "retrieval_exclusion",
+    "ocr_mean_confidence",
+    "rows",
+    "cols",
+    "table_index",
+    "figure_index",
+    "embedded_symbol_images",
+    "text_before_errata",
+    "caption_block",
+    "errata",
+    "reclassification",
+)
 
 
 def _load(path: Path) -> list[dict[str, Any]]:
@@ -91,21 +127,28 @@ def _validate_blocks(blocks: list[dict[str, Any]]) -> list[str]:
             problems.append(f"{b['block_id']}: body block without section path")
     for t in (b for b in blocks if b["kind"] == "table"):
         tr = pymupdf.Rect(t["bbox"])
-        leaked = [b["block_id"] for b in blocks if b["pdf_page"] == t["pdf_page"] and b.get("text")
-                  and b["kind"] not in ("table_caption", "running_header", "page_number")
-                  and tr.contains(pymupdf.Rect(b["bbox"]))]  # fmt: skip
+        leaked = [
+            b["block_id"]
+            for b in blocks
+            if b["pdf_page"] == t["pdf_page"]
+            and b.get("text")
+            and b["kind"] not in ("table_caption", "running_header", "page_number")
+            and tr.contains(pymupdf.Rect(b["bbox"]))
+        ]
         if leaked:
             problems.append(f"{t['block_id']}: prose blocks inside the table {leaked}")
     return problems
 
 
-def _validate_corpus(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
-                     summary: dict[str, Any]) -> list[str]:  # fmt: skip
+def _validate_corpus(
+    blocks: list[dict[str, Any]], pages: list[dict[str, Any]], summary: dict[str, Any]
+) -> list[str]:
     problems: list[str] = []
     if len(pages) != EXPECTED_PAGES:
         problems.append(f"{len(pages)} pages, expected {EXPECTED_PAGES}")
-    rules = Counter(r["rule"] for b in blocks for r in b.get("applied_rules", [])
-                    for _ in range(r["count"]))  # fmt: skip
+    rules = Counter(
+        r["rule"] for b in blocks for r in b.get("applied_rules", []) for _ in range(r["count"])
+    )
     if dict(rules) != EXPECTED_RULES:
         problems.append(f"rule applications {dict(rules)} differ from {EXPECTED_RULES}")
     decided = {d for b in blocks for d in b["verification"]["decisions"]}
@@ -122,6 +165,7 @@ def _validate_corpus(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
     if applied != {d["id"] for d in errata}:
         problems.append("errata decisions not all applied")
     problems += _validate_errata(errata)
+    problems += _validate_structure(blocks)
     checks = summary["heading_checks"]
     if checks["audit_headings_found"] != checks["audit_headings"]:
         problems.append("audit headings not all found")
@@ -145,8 +189,31 @@ def _validate_errata(errata: list[dict[str, Any]]) -> list[str]:
     return []
 
 
-def validate(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
-             summary: dict[str, Any]) -> list[str]:  # fmt: skip
+EXPECTED_RELABELS = 136
+
+
+def _validate_structure(blocks: list[dict[str, Any]]) -> list[str]:
+    """Every audited relabel applied: footnote -> paragraph + definition_body, nothing else."""
+    problems = []
+    expected = {d["id"]: d["block"] for d in load_structure()["decisions"]}
+    applied = {r["id"]: b for b in blocks for r in b.get("reclassification", [])}
+    if set(applied) != set(expected) or len(expected) != EXPECTED_RELABELS:
+        problems.append(
+            f"definition-body relabels: {len(applied)} applied, {len(expected)} decided"
+        )
+    for rid, b in applied.items():
+        if (b["block_id"], b["kind"], b.get("structural_class")) != (
+            expected.get(rid),
+            "paragraph",
+            "definition_body",
+        ):
+            problems.append(f"{rid}: not relabelled as paragraph/definition_body")
+    return problems
+
+
+def validate(
+    blocks: list[dict[str, Any]], pages: list[dict[str, Any]], summary: dict[str, Any]
+) -> list[str]:
     """Problems that block the promotion (empty list = promotable)."""
     return _validate_blocks(blocks) + _validate_corpus(blocks, pages, summary)
 
@@ -154,37 +221,63 @@ def validate(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
 def corpus_metadata(blocks: list[dict[str, Any]], summary: dict[str, Any]) -> dict[str, Any]:
     version = load_manifest(MANIFEST_PATH).get(DOC_ID).current
     return {
-        "schema_version": 1, "doc_id": DOC_ID,
+        "schema_version": 1,
+        "doc_id": DOC_ID,
         "title": "Mabhas 19 (5th edition, 1404) – main text, candidate-reviewed corpus",
-        "source": {"path": f"sources/{version.path}", "version": version.version,
-                   "sha256": version.sha256, "pages": EXPECTED_PAGES},
-        "methods": {"text": "repair_v1 (glyph-evidence text-layer repair)",
-                    "glyph_rules": "G1/G2: BNazanin glyphs 95/112 drawn with ink but mapped to "
-                                   "U+0020 -> «پ»/«چ»",
-                    "text_rules": "M1 list markers, B1 Latin brackets, C1 caption numbers",
-                    "ocr": "Tesseract on the one scanned region (PDF page 5), excluded from "
-                           "retrieval", "tables": "ruled-table references only (cells pending)"},
-        "review": {"file": DECISIONS_PATH.relative_to(REPO_ROOT).as_posix(),
-                   "sha256": sha256_file(DECISIONS_PATH), "basis": "assistant_reviewed",
-                   "errata": {"file": ERRATA_PATH.relative_to(REPO_ROOT).as_posix(),
-                              "sha256": sha256_file(ERRATA_PATH), "approved_on": "2026-10-17",
-                              "counts": EXPECTED_ERRATA}},
-        "counts": {"pages_by_role": summary["pages_by_role"], "blocks": len(blocks),
-                   "blocks_by_kind": dict(Counter(b["kind"] for b in blocks)),
-                   "verification_status": summary["verification_status"],
-                   "retrieval_included": summary["retrieval"]["included"],
-                   "rule_applications": summary["rule_applications"],
-                   "headings": summary["headings"], "sections": summary["sections"]},
-        "text_layers": {"text_raw": "text-layer characters, content-stream order (damaged)",
-                        "text_repair_v1": "machine repair before any approved rule",
-                        "text_before_review": "after approved rules, before a per-block decision",
-                        "text_before_errata": "final text before the 2026-10-17 errata",
-                        "text": "final reviewed text"},
-    }  # fmt: skip
+        "source": {
+            "path": f"sources/{version.path}",
+            "version": version.version,
+            "sha256": version.sha256,
+            "pages": EXPECTED_PAGES,
+        },
+        "methods": {
+            "text": "repair_v1 (glyph-evidence text-layer repair)",
+            "glyph_rules": "G1/G2: BNazanin glyphs 95/112 drawn with ink but mapped to "
+            "U+0020 -> «پ»/«چ»",
+            "text_rules": "M1 list markers, B1 Latin brackets, C1 caption numbers",
+            "ocr": "Tesseract on the one scanned region (PDF page 5), excluded from retrieval",
+            "tables": "ruled-table references only (cells pending)",
+        },
+        "review": {
+            "file": DECISIONS_PATH.relative_to(REPO_ROOT).as_posix(),
+            "sha256": sha256_file(DECISIONS_PATH),
+            "basis": "assistant_reviewed",
+            "errata": {
+                "file": ERRATA_PATH.relative_to(REPO_ROOT).as_posix(),
+                "sha256": sha256_file(ERRATA_PATH),
+                "approved_on": "2026-10-17",
+                "counts": EXPECTED_ERRATA,
+            },
+            "structure": {
+                "file": STRUCTURE_PATH.relative_to(REPO_ROOT).as_posix(),
+                "sha256": sha256_file(STRUCTURE_PATH),
+                "approved_on": "2026-10-18",
+                "counts": {"definition_body_relabels": EXPECTED_RELABELS},
+            },
+        },
+        "counts": {
+            "pages_by_role": summary["pages_by_role"],
+            "blocks": len(blocks),
+            "blocks_by_kind": dict(Counter(b["kind"] for b in blocks)),
+            "verification_status": summary["verification_status"],
+            "retrieval_included": summary["retrieval"]["included"],
+            "rule_applications": summary["rule_applications"],
+            "headings": summary["headings"],
+            "sections": summary["sections"],
+        },
+        "text_layers": {
+            "text_raw": "text-layer characters, content-stream order (damaged)",
+            "text_repair_v1": "machine repair before any approved rule",
+            "text_before_review": "after approved rules, before a per-block decision",
+            "text_before_errata": "final text before the 2026-10-17 errata",
+            "text": "final reviewed text",
+        },
+    }
 
 
-def build_preview(corpus_dir: Path) -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any],
-                                             list[str]]:  # fmt: skip
+def build_preview(
+    corpus_dir: Path,
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any], list[str]]:
     blocks = _load(corpus_dir / "blocks.jsonl")
     pages = _load(corpus_dir / "pages.jsonl")
     summary = json.loads((corpus_dir / "summary.json").read_text(encoding="utf-8"))
@@ -197,8 +290,9 @@ def build_preview(corpus_dir: Path) -> tuple[dict[str, list[dict[str, Any]]], di
     return files, corpus_metadata(blocks, summary), validate(blocks, pages, summary)
 
 
-def write_files(files: dict[str, list[dict[str, Any]]], meta: dict[str, Any],
-                root: Path) -> list[Path]:  # fmt: skip
+def write_files(
+    files: dict[str, list[dict[str, Any]]], meta: dict[str, Any], root: Path
+) -> list[Path]:
     written = []
     for rel, rows in files.items():
         path = root / rel
@@ -208,8 +302,11 @@ def write_files(files: dict[str, list[dict[str, Any]]], meta: dict[str, Any],
                 fh.write(json.dumps(r, ensure_ascii=False) + "\n")
         written.append(path)
     meta_path = root / f"text/{DOC_ID}/corpus.yaml"
-    meta_path.write_text(yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
-                         encoding="utf-8", newline="\n")  # fmt: skip
+    meta_path.write_text(
+        yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
+        encoding="utf-8",
+        newline="\n",
+    )
     return [*written, meta_path]
 
 
@@ -234,8 +331,9 @@ def table_caption_updates(blocks: list[dict[str, Any]], curated: Path) -> dict[s
     return out
 
 
-def validate_captions(updates: dict[str, dict[str, Any]], blocks: list[dict[str, Any]],
-                      curated: Path) -> list[str]:  # fmt: skip
+def validate_captions(
+    updates: dict[str, dict[str, Any]], blocks: list[dict[str, Any]], curated: Path
+) -> list[str]:
     problems = []
     by_id = {b["block_id"]: b for b in blocks}
     changed = set()
@@ -243,17 +341,18 @@ def validate_captions(updates: dict[str, dict[str, Any]], blocks: list[dict[str,
         rel = (TABLES_DIR / f"table-{spec.number}" / "table.yaml").as_posix()
         old: dict[str, Any] = yaml.safe_load((curated / rel).read_text(encoding="utf-8"))
         new: dict[str, Any] = updates.get(rel, old)
-        if {k: v for k, v in new.items() if k != "caption"} != \
-                {k: v for k, v in old.items() if k != "caption"}:  # fmt: skip
+        if {k: v for k, v in new.items() if k != "caption"} != {
+            k: v for k, v in old.items() if k != "caption"
+        }:
             problems.append(f"{rel}: changes outside the caption")
         if new["caption"]["text"] != old["caption"]["text"]:
             changed.add(spec.number)
         if new["caption"]["text"] != caption(spec, by_id)["text"]:
             problems.append(f"{spec.number}: structured caption differs from the corpus")
-    if changed != CAPTION_SYNC:
-        problems.append(
-            f"caption text changed for {sorted(changed)}, expected {sorted(CAPTION_SYNC)}"
-        )
+    # only the errata-synchronized captions may ever differ from the curated table.yaml
+    # (they changed once, on 2026-10-17; after that every promotion must leave them equal)
+    if changed - CAPTION_SYNC:
+        problems.append(f"caption text changed for {sorted(changed - CAPTION_SYNC)}")
     cap51 = updates.get((TABLES_DIR / "table-19-5-1" / "table.yaml").as_posix(), {}).get("caption")
     if not cap51 or [p["kind"] for p in cap51.get("parts", [])] != [
         "table_caption",
@@ -268,7 +367,10 @@ def write_table_yaml(updates: dict[str, dict[str, Any]], root: Path) -> list[Pat
     for rel, meta in updates.items():
         path = root / rel
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
-                        encoding="utf-8", newline="\n")  # fmt: skip
+        path.write_text(
+            yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
+            encoding="utf-8",
+            newline="\n",
+        )
         written.append(path)
     return written

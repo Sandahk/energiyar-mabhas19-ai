@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,7 @@ from mabhas19.text.normalize import normalize_for_search
 
 DECISIONS_PATH = EVAL_DIR / "extraction" / "review" / "main-assistant-review.yaml"
 ERRATA_PATH = EVAL_DIR / "extraction" / "review" / "main-errata-review.yaml"
+STRUCTURE_PATH = EVAL_DIR / "extraction" / "review" / "main-structure-review.yaml"
 # B2/L1/T1 are applied only to the reviewed cases listed in the errata file, never generically
 APPROVED_RULES = frozenset({"M1", "M1-exception", "G1", "G2", "B1", "C1", "B2", "L1", "T1"})
 EXTRACTION_FIXES = frozenset({"K1"})  # classification fixes of the extractor itself
@@ -63,6 +65,33 @@ def load_errata(path: Path = ERRATA_PATH) -> dict[str, Any]:
     return load_decisions(path)
 
 
+def load_structure(path: Path = STRUCTURE_PATH) -> dict[str, Any]:
+    return load_decisions(path)
+
+
+def _apply_reclassification(block: dict[str, Any], d: dict[str, Any]) -> None:
+    """Guarded structural relabel: kind and structural class only. Text, ID, retrieval,
+    section path and the text-verification status are untouched; the change is recorded in
+    ``reclassification`` (not as a text-review decision)."""
+    if block["kind"] != d["from_kind"]:
+        raise DecisionError(
+            f"{d['id']}: {block['block_id']} is {block['kind']}, expected {d['from_kind']} (stale)"
+        )
+    if _sha(block["text"]) != d["expect_text_sha256"]:
+        raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the audit (stale)")
+    block["kind"] = d["to_kind"]
+    block["structural_class"] = d["structural_class"]
+    block.setdefault("reclassification", []).append(
+        {
+            "id": d["id"],
+            "from_kind": d["from_kind"],
+            "to_kind": d["to_kind"],
+            "structural_class": d["structural_class"],
+            "basis": d["basis"],
+        }
+    )
+
+
 def _apply_errata(block: dict[str, Any], d: dict[str, Any]) -> None:
     """One guarded errata entry: expected text, exact counts, expected result."""
     text = block["text"]
@@ -70,8 +99,10 @@ def _apply_errata(block: dict[str, Any], d: dict[str, Any]) -> None:
         raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the review (stale)")
     for r in d["replacements"]:
         if text.count(r["from"]) != r["count"]:
-            raise DecisionError(f"{d['id']}: «{r['from']}» found {text.count(r['from'])} times, "
-                                f"expected {r['count']}")  # fmt: skip
+            raise DecisionError(
+                f"{d['id']}: «{r['from']}» found {text.count(r['from'])} times, "
+                f"expected {r['count']}"
+            )
         text = text.replace(r["from"], r["to"])
         if r["rule"]:
             block.setdefault("applied_rules", []).append(
@@ -89,9 +120,13 @@ def _apply_errata(block: dict[str, Any], d: dict[str, Any]) -> None:
     if "reclassify" in d:
         block["kind"] = d["reclassify"]["kind"]
         block["caption_block"] = d["reclassify"]["caption_block"]
-    block["errata"] = {"id": d["id"], "candidates": sorted(
-        {c for r in d["replacements"] for c in r["candidates"]}
-        | set(d.get("reclassify", {}).get("candidates", [])))}  # fmt: skip
+    block["errata"] = {
+        "id": d["id"],
+        "candidates": sorted(
+            {c for r in d["replacements"] for c in r["candidates"]}
+            | set(d.get("reclassify", {}).get("candidates", []))
+        ),
+    }
 
 
 def _sha(text: str) -> str:
@@ -99,8 +134,9 @@ def _sha(text: str) -> str:
 
 
 def _note(block: dict[str, Any], decision: dict[str, Any], basis: str) -> None:
-    block.setdefault("decisions", []).append({"id": decision["id"], "basis": basis,
-                                              "type": decision["decision"]})  # fmt: skip
+    block.setdefault("decisions", []).append(
+        {"id": decision["id"], "basis": basis, "type": decision["decision"]}
+    )
 
 
 def _replace(block: dict[str, Any], d: dict[str, Any], basis: str) -> None:
@@ -109,8 +145,10 @@ def _replace(block: dict[str, Any], d: dict[str, Any], basis: str) -> None:
         raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the review (stale)")
     for r in d["replacements"]:
         if text.count(r["from"]) != r["count"]:
-            raise DecisionError(f"{d['id']}: «{r['from']}» found {text.count(r['from'])} times, "
-                                f"expected {r['count']}")  # fmt: skip
+            raise DecisionError(
+                f"{d['id']}: «{r['from']}» found {text.count(r['from'])} times, "
+                f"expected {r['count']}"
+            )
         text = text.replace(r["from"], r["to"])
     block["text_before_review"] = block["text"]
     block["text"] = text
@@ -129,16 +167,33 @@ def _merge_formula(blocks: list[dict[str, Any]], d: dict[str, Any], basis: str) 
     y0 = min(p["bbox"][1] for p in parts)
     x1 = max(p["bbox"][2] for p in parts)
     y1 = max(p["bbox"][3] for p in parts)
-    merged = {**{k: first[k] for k in ("doc_id", "pdf_page", "printed_page",
-                                       "printed_page_confidence", "page_role", "section_path")},
-              "block_id": d["new_block"], "kind": "formula", "section_number": None,
-              "extraction_method": "merged_formula_fragments",
-              "text_raw": "\n".join(p["text_raw"] for p in parts),
-              "text_repair_v1": "\n".join(p["text_repair_v1"] for p in parts),
-              "text": d["formula"]["plain"], "text_normalized": normalize_for_search(
-                  d["formula"]["plain"]), "formula": d["formula"],
-              "fragments": [p["block_id"] for p in parts], "bbox": [x0, y0, x1, y1],
-              "flags": [], "applied_rules": [], "confidence": "medium"}  # fmt: skip
+    merged = {
+        **{
+            k: first[k]
+            for k in (
+                "doc_id",
+                "pdf_page",
+                "printed_page",
+                "printed_page_confidence",
+                "page_role",
+                "section_path",
+            )
+        },
+        "block_id": d["new_block"],
+        "kind": "formula",
+        "section_number": None,
+        "extraction_method": "merged_formula_fragments",
+        "text_raw": "\n".join(p["text_raw"] for p in parts),
+        "text_repair_v1": "\n".join(p["text_repair_v1"] for p in parts),
+        "text": d["formula"]["plain"],
+        "text_normalized": normalize_for_search(d["formula"]["plain"]),
+        "formula": d["formula"],
+        "fragments": [p["block_id"] for p in parts],
+        "bbox": [x0, y0, x1, y1],
+        "flags": [],
+        "applied_rules": [],
+        "confidence": "medium",
+    }
     _note(merged, d, basis)
     for p in parts:
         p["kind"] = "formula_fragment"
@@ -147,8 +202,12 @@ def _merge_formula(blocks: list[dict[str, Any]], d: dict[str, Any], basis: str) 
     blocks.insert(blocks.index(parts[-1]) + 1, merged)
 
 
-def apply_decisions(blocks: list[dict[str, Any]], doc: dict[str, Any],
-                    errata: dict[str, Any] | None = None) -> list[dict[str, Any]]:  # fmt: skip
+def apply_decisions(
+    blocks: list[dict[str, Any]],
+    doc: dict[str, Any],
+    errata: dict[str, Any] | None = None,
+    structure: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     out = [copy.deepcopy(b) for b in blocks]
     by_id = {b["block_id"]: b for b in out}
     basis = doc.get("basis_default", "assistant_reviewed")
@@ -172,17 +231,17 @@ def apply_decisions(blocks: list[dict[str, Any]], doc: dict[str, Any],
                 _note(by_id[bid], d, basis)
         else:
             raise DecisionError(f"{d['id']}: unknown decision type {kind!r}")
-    for d in (errata or {}).get("decisions", []):
-        if d["block"] not in by_id:
-            raise DecisionError(f"{d['id']}: unknown block {d['block']}")
-        _apply_errata(by_id[d["block"]], d)
+    _apply_per_block(by_id, errata, _apply_errata)
+    _apply_per_block(by_id, structure, _apply_reclassification)
     for b in out:
         finalize(b)
     return out
 
 
-RESOLVED_BY = {"unnumbered_bold_line": "structural_class", "ocr_scanned_region":
-               "retrieval_exclusion"}  # fmt: skip
+RESOLVED_BY = {
+    "unnumbered_bold_line": "structural_class",
+    "ocr_scanned_region": "retrieval_exclusion",
+}
 STATUS_FLAGS = frozenset({"table_pending_structured_extraction", "figure_not_transcribed"})
 
 
@@ -207,12 +266,30 @@ def finalize(b: dict[str, Any]) -> None:
         status = "rule_corrected"
     else:
         status = "machine_extracted"
-    basis = sorted({d["basis"] for d in decided} | ({"assistant_reviewed_rule"} if set(rules)
-                   & APPROVED_RULES else set()) | ({"extraction_fix"} if set(rules)
-                   & EXTRACTION_FIXES else set()))  # fmt: skip
-    b["verification"] = {"status": status, "basis": basis, "rules": rules,
-                         "decisions": [d["id"] for d in decided]}  # fmt: skip
+    basis = sorted(
+        {d["basis"] for d in decided}
+        | ({"assistant_reviewed_rule"} if set(rules) & APPROVED_RULES else set())
+        | ({"extraction_fix"} if set(rules) & EXTRACTION_FIXES else set())
+    )
+    b["verification"] = {
+        "status": status,
+        "basis": basis,
+        "rules": rules,
+        "decisions": [d["id"] for d in decided],
+    }
     reason = b.get("retrieval_exclusion") or NOT_RETRIEVED_KINDS.get(b["kind"])
     if b.get("text") in (None, "") and reason is None:
         reason = "no text"
     b["retrieval"] = {"include": reason is None, "reason": reason}
+
+
+def _apply_per_block(
+    by_id: dict[str, dict[str, Any]],
+    doc: dict[str, Any] | None,
+    apply: Callable[[dict[str, Any], dict[str, Any]], None],
+) -> None:
+    """Apply a per-block decision layer (errata, structural relabels) in file order."""
+    for d in (doc or {}).get("decisions", []):
+        if d["block"] not in by_id:
+            raise DecisionError(f"{d['id']}: unknown block {d['block']}")
+        apply(by_id[d["block"]], d)

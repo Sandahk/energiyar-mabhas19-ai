@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from mabhas19.ingest.main_corpus import refresh_section_titles
-from mabhas19.ingest.main_decisions import DecisionError, _apply_errata
+from mabhas19.ingest.main_decisions import DecisionError, _apply_errata, _apply_reclassification
 from mabhas19.ingest.main_errata import Finding, errata_decisions, replacements, space_compounds
 
 
@@ -16,8 +16,13 @@ def _sha(t: str) -> str:
 
 
 def _entry(text: str, reps: list[dict[str, Any]], result: str) -> dict[str, Any]:
-    return {"id": "ER-x", "block": "b", "expect_text_sha256": _sha(text),
-            "result_text_sha256": _sha(result), "replacements": reps}  # fmt: skip
+    return {
+        "id": "ER-x",
+        "block": "b",
+        "expect_text_sha256": _sha(text),
+        "result_text_sha256": _sha(result),
+        "replacements": reps,
+    }
 
 
 def test_brackets_are_applied_before_word_joins() -> None:
@@ -99,10 +104,18 @@ def test_errata_decisions_pin_text_and_result() -> None:
 
 def test_section_titles_follow_the_corrected_heading() -> None:
     path = [{"number": "19-1-94", "title": "قدیمی )x("}]
-    heading = {"kind": "heading", "section_number": "19-1-94", "text": "۱۹-۱-۹۴ جدید (x)",
-               "section_path": path}  # fmt: skip
-    body = {"kind": "paragraph", "section_number": None, "text": "متن",
-            "section_path": [dict(path[0])]}  # fmt: skip
+    heading = {
+        "kind": "heading",
+        "section_number": "19-1-94",
+        "text": "۱۹-۱-۹۴ جدید (x)",
+        "section_path": path,
+    }
+    body = {
+        "kind": "paragraph",
+        "section_number": None,
+        "text": "متن",
+        "section_path": [dict(path[0])],
+    }
     blocks: list[dict[str, Any]] = [heading, body]
     refresh_section_titles(blocks)
     assert [b["section_path"][0]["title"] for b in blocks] == ["جدید (x)", "جدید (x)"]
@@ -112,3 +125,41 @@ def test_section_titles_follow_the_corrected_heading() -> None:
 def test_space_compounds_lists_printed_spacing() -> None:
     freq = Counter({"شبیه": 5, "سازی": 5, "شبیه\u200cسازی": 9})
     assert space_compounds("شبیه سازی", freq) == Counter({"شبیه سازی": 1})
+
+
+def _relabel(text: str, **kw: Any) -> dict[str, Any]:
+    return {
+        "id": "DB-x",
+        "block": "b",
+        "from_kind": "footnote",
+        "to_kind": "paragraph",
+        "structural_class": "definition_body",
+        "basis": "assistant_reviewed_structure",
+        "expect_text_sha256": _sha(text),
+        **kw,
+    }
+
+
+def test_reclassification_changes_kind_only() -> None:
+    text = "Thermal Comfort\nوضعیتی است"
+    block: dict[str, Any] = {
+        "block_id": "b",
+        "kind": "footnote",
+        "text": text,
+        "verification": {"status": "machine_extracted", "decisions": []},
+    }
+    _apply_reclassification(block, _relabel(text))
+    assert (block["kind"], block["structural_class"], block["text"]) == (
+        "paragraph",
+        "definition_body",
+        text,
+    )
+    assert block["verification"] == {"status": "machine_extracted", "decisions": []}
+    assert block["reclassification"][0]["from_kind"] == "footnote"
+
+
+def test_reclassification_is_guarded() -> None:
+    with pytest.raises(DecisionError):
+        _apply_reclassification({"block_id": "b", "kind": "paragraph", "text": "x"}, _relabel("x"))
+    with pytest.raises(DecisionError):
+        _apply_reclassification({"block_id": "b", "kind": "footnote", "text": "y"}, _relabel("x"))

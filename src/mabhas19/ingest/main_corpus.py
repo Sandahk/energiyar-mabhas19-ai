@@ -40,7 +40,12 @@ from mabhas19.ingest.main_blocks import (
     section_level,
     toc_entry,
 )
-from mabhas19.ingest.main_decisions import apply_decisions, load_decisions, load_errata
+from mabhas19.ingest.main_decisions import (
+    apply_decisions,
+    load_decisions,
+    load_errata,
+    load_structure,
+)
 from mabhas19.ingest.repair.glyphs import (
     Cluster,
     detect_kashida_glyphs,
@@ -379,7 +384,7 @@ def build(out: Path, engine: OcrEngine | None) -> dict[str, Any]:
                                                        for r in recs)})  # fmt: skip
         assign_hierarchy(ctx, blocks)
         machine_layer = blocks
-        blocks = apply_decisions(blocks, load_decisions(), load_errata())
+        blocks = apply_decisions(blocks, load_decisions(), load_errata(), load_structure())
         refresh_section_titles(blocks)
         toc = toc_entries(blocks)
         checks = heading_checks(ctx, blocks, toc)

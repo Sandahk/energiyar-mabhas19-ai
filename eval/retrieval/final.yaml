@@ -1,0 +1,990 @@
+# Final retrieval test set (evidence only; no expected answers). Authored from curated/ and
+# the anchor list only; see eval/retrieval/FINAL_TEST_PROCEDURE.md.
+schema_version: 1
+seed: 20261018
+anchors: data/retrieval/final_anchors_20261018.yaml
+candidate_commit: e42155b
+cases:
+  - id: F001
+    category: conceptual
+    expected_route: prose
+    query: "سیستمی که مصرف برق و گاز و آب هر واحد و هر تجهیز بزرگ ساختمان رو جدا جدا اندازه می‌گیره، تو مبحث ۱۹ چی نام داره و چه کاری می‌کنه؟"
+    evidence: {"sections": ["19-1-77"], "blocks": ["main-p036-b007", "main-p130-b004"]}
+    anchor: "section:19-1-77"
+    notes: "review: added 19-7-1 ب block (main-p130-b004), which defines sub-metering just as directly"
+  - id: F002
+    category: conceptual
+    expected_route: prose
+    query: "کنترلرهای DDC که سیگنال سنسورها رو خودشون پردازش می‌کنن و به عملگرها فرمان می‌دن، در مبحث نوزدهم چطور تعریف شدن؟"
+    evidence: {"sections": ["19-1-126"], "blocks": ["main-p047-b010"]}
+    anchor: "section:19-1-126"
+  - id: F003
+    category: conceptual
+    expected_route: prose
+    query: "اون تابلوی فلزی رده انرژی که باید کنار پلاک شهرداری دم در ساختمان نصب بشه رو کی صادر می‌کنه و نصبش با کیه؟"
+    evidence: {"sections": ["19-1-28"], "blocks": ["main-p025-b006"]}
+    anchor: "section:19-1-28"
+  - id: F004
+    category: conceptual
+    expected_route: prose
+    query: "برای گرفتن پروانه ساختمان و بعد پایان‌کار، از نظر ارزیابی انرژی چه حد نصابی از امتیاز باید کسب کنیم؟"
+    evidence: {"sections": ["19-4"], "blocks": ["main-p075-b005", "main-p076-b004"]}
+    anchor: "section:19-4"
+  - id: F005
+    category: conceptual
+    expected_route: prose
+    query: "آیا برای یک برج مسکونی ۱۲ طبقه داشتن BMS و سیستم مدیریت انرژی اجباریه؟ برای ساختمان‌های عمومی مرزش کجاست؟"
+    evidence: {"sections": ["19-5-2-2-4"], "blocks": ["main-p109-b007"]}
+    anchor: "section:19-5-2-2-4"
+  - id: F006
+    category: conceptual
+    expected_route: prose
+    query: "اگه طراحی رو با شبیه‌سازی انرژی انجام بدم، باز هم باید الزامات تجدیدپذیر روش تجویزی رو رعایت کنم؟ چه منابعی باید توی مدل بیاد؟"
+    evidence: {"sections": ["19-6-7"], "blocks": ["main-p126-b008", "main-p126-b009"]}
+    anchor: "section:19-6-7"
+  - id: F007
+    category: conceptual
+    expected_route: prose
+    query: "فلومتر التراسونیک چطور دبی سیال رو اندازه می‌گیره؟ منظورم تعریفی هست که مبحث ۱۹ ارائه کرده."
+    evidence: {"sections": ["19-1-43"], "blocks": ["main-p028-b006"]}
+    anchor: "section:19-1-43"
+  - id: F008
+    category: conceptual
+    expected_route: prose
+    query: "فرق EMS با یک سیستم کنترل معمولی چیه؟ مبحث ۱۹ چه کارکردهایی برای سامانه مدیریت انرژی ساختمان در نظر گرفته؟"
+    evidence: {"sections": ["19-1-84"], "blocks": ["main-p038-b005"]}
+    anchor: "section:19-1-84"
+  - id: F009
+    category: conceptual
+    expected_route: prose
+    query: "منظور از اجزای «فعال» یک ساختمان چیه؟ مثلاً تهویه مطبوع و روشنایی جزو این دسته حساب می‌شن؟"
+    evidence: {"sections": ["19-1-22"], "blocks": ["main-p024-b004"]}
+    anchor: "section:19-1-22"
+  - id: F010
+    category: conceptual
+    expected_route: prose
+    query: "U-value یک دیوار یا شیشه دقیقاً چی رو نشون میده و واحدش چیه؟"
+    evidence: {"sections": ["19-1-100"], "blocks": ["main-p042-b008"]}
+    anchor: "section:19-1-100"
+  - id: F011
+    category: conceptual
+    expected_route: prose
+    query: "ولو کنترلی که با سیگنال سیستم کنترل باز و بسته میشه، طبق تعاریف مبحث انرژی چه کاری انجام میده؟"
+    evidence: {"sections": ["19-1-96"], "blocks": ["main-p041-b008"]}
+    anchor: "section:19-1-96"
+  - id: F012
+    category: conceptual
+    expected_route: prose
+    query: "از نظر مبحث ۱۹ یک ساختمان از چه زمانی «موجود» حساب میشه؟ اگه فقط بخشی ازش مورد استفاده باشه چی؟"
+    evidence: {"sections": ["19-1-72"], "blocks": ["main-p035-b006"]}
+    anchor: "section:19-1-72"
+  - id: F013
+    category: conceptual
+    expected_route: prose
+    query: "در روش شبیه‌سازی، برای بخش روشنایی چه مشخصاتی از چراغ‌ها و برنامه کاری‌شون باید وارد مدل بشه؟"
+    evidence: {"sections": ["19-6-6"], "blocks": ["main-p126-b005", "main-p126-b006"]}
+    anchor: "section:19-6-6"
+  - id: F014
+    category: conceptual
+    expected_route: prose
+    query: "حداکثر افت ولتاژ مجاز کل تأسیسات برقی ساختمان چقدره و محاسبه‌اش باید کجا ارائه بشه؟"
+    evidence: {"sections": ["19-5-3-1"], "blocks": ["main-p113-b008"]}
+    anchor: "section:19-5-3-1"
+  - id: F015
+    category: conceptual
+    expected_route: prose
+    query: "خازن‌گذاری در شبکه برق ساختمان چه فایده‌ای داره و اگه ضریب توان کل از حد مجاز پایین‌تر باشه چه اتفاقی میفته؟"
+    evidence: {"sections": ["19-1-19"], "blocks": ["main-p023-b004", "main-p023-b006", "main-p023-b007"]}
+    anchor: "section:19-1-19"
+  - id: F016
+    category: conceptual
+    expected_route: prose
+    query: "سنسورهای حضور که چراغ یا تهویه رو با بودن و نبودن آدم‌ها تنظیم می‌کنن، با چه فناوری‌هایی کار می‌کنن؟"
+    evidence: {"sections": ["19-1-90"], "blocks": ["main-p039-b010"]}
+    anchor: "section:19-1-90"
+  - id: F017
+    category: conceptual
+    expected_route: prose
+    query: "وات بر متر مربع روشنایی یک فضا چطور حساب میشه؟ یعنی توان کدوم چراغ‌ها رو تقسیم بر چی می‌کنیم؟"
+    evidence: {"sections": ["19-1-46"], "blocks": ["main-p028-b012"]}
+    anchor: "section:19-1-46"
+  - id: F018
+    category: conceptual
+    expected_route: prose
+    query: "توان کلی که بر حسب ولت‌آمپر بیان میشه از ترکیب کدوم توان‌ها به دست میاد؟"
+    evidence: {"sections": ["19-1-42"], "blocks": ["main-p028-b004"]}
+    anchor: "section:19-1-42"
+  - id: F019
+    category: section_lookup
+    expected_route: prose
+    query: "تعریف بند ۱۹-۱-۳۲ «پوسته نورگذر ساختمان» چیست؟"
+    evidence: {"sections": ["19-1-32"], "blocks": ["main-p026-b005"]}
+    anchor: "section:19-1-32"
+  - id: F020
+    category: section_lookup
+    expected_route: prose
+    query: "بند ۱۹-۷-۱-۲ «انتقال، مهندسی و ذخیره نقاط داده» چه الزاماتی برای سامانه پایش تعیین کرده است؟"
+    evidence: {"sections": ["19-7-1-2"]}
+    anchor: "section:19-7-1-2"
+  - id: F021
+    category: section_lookup
+    expected_route: prose
+    query: "متن تعریف ۱۹-۱-۸۲ سامانه سرمایش و گرمایش چهارلوله"
+    evidence: {"sections": ["19-1-82"], "blocks": ["main-p037-b008"]}
+    anchor: "section:19-1-82"
+  - id: F022
+    category: section_lookup
+    expected_route: prose
+    query: "بخش ۱۹-۷-۲-۲ مدیریت یکپارچه بر بستر اینترنت اشیاء چه می‌گوید؟"
+    evidence: {"sections": ["19-7-2-2"]}
+    anchor: "section:19-7-2-2"
+  - id: F023
+    category: section_lookup
+    expected_route: prose
+    query: "الزامات بند ۱۹-۸-۲ درباره استقرار سامانه پایش و زیرپایش مصرف و مدیریت ساختمان در ساختمان‌های موجود"
+    evidence: {"sections": ["19-8-2"]}
+    anchor: "section:19-8-2"
+  - id: F024
+    category: section_lookup
+    expected_route: prose
+    query: "تعریف «تعویض هوا» در بند ۱۹-۱-۳۸"
+    evidence: {"sections": ["19-1-38"], "blocks": ["main-p027-b004"]}
+    anchor: "section:19-1-38"
+  - id: F025
+    category: section_lookup
+    expected_route: prose
+    query: "بند ۱۹-۵-۱-۲ پوسته خارجی نورگذر شامل چه الزاماتی است؟"
+    evidence: {"sections": ["19-5-1-2"]}
+    anchor: "section:19-5-1-2"
+  - id: F026
+    category: section_lookup
+    expected_route: prose
+    query: "فصل ۱۹-۱ تعاریف مبحث نوزدهم چه چیزی را پوشش می‌دهد و معادل انگلیسی واژه‌ها کجا آمده؟"
+    evidence: {"sections": ["19-1"], "blocks": ["main-p019-b002"]}
+    anchor: "section:19-1"
+    notes: "the chapter's own intro block; definitions themselves sit in 19-1-x subsections"
+  - id: F027
+    category: section_lookup
+    expected_route: prose
+    query: "بند ۱۹-۱-۱۵۳ ویرایش: منظور از کلمه «ویرایش» در متن مبحث چیست؟"
+    evidence: {"sections": ["19-1-153"], "blocks": ["main-p053-b004"]}
+    anchor: "section:19-1-153"
+  - id: F028
+    category: section_lookup
+    expected_route: prose
+    query: "۱۹-۱-۱۵ آب و هوا"
+    evidence: {"sections": ["19-1-15"], "blocks": ["main-p022-b006"]}
+    anchor: "section:19-1-15"
+  - id: F029
+    category: section_lookup
+    expected_route: prose
+    query: "تعریف عایق حرارتی سلول بسته در بند ۱۹-۱-۱۰۷"
+    evidence: {"sections": ["19-1-107"], "blocks": ["main-p043-b015"]}
+    anchor: "section:19-1-107"
+  - id: F030
+    category: section_lookup
+    expected_route: prose
+    query: "بند ۱۹-۱-۲۱ بخش‌های غیرفعال ساختمان را چگونه تعریف کرده است؟"
+    evidence: {"sections": ["19-1-21"], "blocks": ["main-p023-b011"]}
+    anchor: "section:19-1-21"
+  - id: F031
+    category: city_climate
+    expected_route: structured
+    query: "رده اقلیمی قوچان چیه؟"
+    evidence: {"records": ["app02-p004-r02"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p004-r02"
+  - id: F032
+    category: city_climate
+    expected_route: structured
+    query: "بازرگان از نظر دسته‌بندی اقلیمی مبحث ۱۹ در کدوم رده قرار می‌گیره؟"
+    evidence: {"records": ["app02-p002-r16"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p002-r16"
+  - id: F033
+    category: city_climate
+    expected_route: structured
+    query: "برای طراحی یک ساختمان در شهر لار، کد اقلیم ASHRAE رو چی بگیرم؟"
+    evidence: {"records": ["app02-p004-r11"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p004-r11"
+  - id: F034
+    category: city_climate
+    expected_route: structured
+    query: "اقلیم بندر انزلی طبق پیوست ۲"
+    evidence: {"records": ["app02-p002-r10"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p002-r10"
+  - id: F035
+    category: city_climate
+    expected_route: structured
+    query: "قائمشهر جزو کدام رده اقلیمی است؟"
+    evidence: {"records": ["app02-p003-r27"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p003-r27"
+  - id: F036
+    category: city_climate
+    expected_route: structured
+    query: "شاهرود از نظر دسته‌بندی اقلیمی مبحث ۱۹ تو کدوم رده قرار می‌گیره؟"
+    evidence: {"records": ["app02-p003-r23"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p003-r23"
+    notes: "review: dropped the climate-name part; the name lives only in excluded row main-t19-3-1-r05"
+  - id: F037
+    category: city_climate
+    expected_route: structured
+    query: "رده اقلیمی اراک در مبحث نوزدهم"
+    evidence: {"records": ["app02-p002-r04"], "acceptable_records": ["main-t19-3-2-r28"], "tables": ["m19-ed5-1404-app02.city_climate_classes", "m19-ed5-1404-main.t19-3-2"]}
+    anchor: "record:app02-p002-r04"
+    notes: "Arak is also a provincial capital in main table 19-3-2 (same class)"
+  - id: F038
+    category: city_climate
+    expected_route: structured
+    query: "سیرجان در کدام دسته اقلیمی قرار دارد؟"
+    evidence: {"records": ["app02-p003-r22"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p003-r22"
+  - id: F039
+    category: city_climate
+    expected_route: structured
+    query: "یه پروژه اداری تو مراغه داریم، رده اقلیمیش چنده؟"
+    evidence: {"records": ["app02-p004-r12"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p004-r12"
+  - id: F040
+    category: city_climate
+    expected_route: structured
+    query: "رده اقلیمی تهران ایستگاه مهرآباد"
+    evidence: {"records": ["app02-p003-r02"], "acceptable_records": ["app02-p003-r01", "main-t19-3-2-r08"], "tables": ["m19-ed5-1404-app02.city_climate_classes", "m19-ed5-1404-main.t19-3-2"]}
+    anchor: "record:app02-p003-r02"
+    notes: "Tehran has two stations in app02 and one row in 19-3-2; all 3B"
+  - id: F041
+    category: eui
+    expected_route: structured
+    query: "حداکثر شدت مصرف انرژی مجاز برای یک مرکز خرید در اقلیم 4B برای گرفتن رده A چقدره؟"
+    evidence: {"records": ["app03-A-r27-4B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-A-r27-4B"
+  - id: F042
+    category: eui
+    expected_route: structured
+    query: "مال در اقلیم 0B، سقف مصرف انرژی برای رده D چند کیلووات ساعت بر متر مربع در ساله؟"
+    evidence: {"records": ["app03-D-r27-0B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-D-r27-0B"
+  - id: F043
+    category: eui
+    expected_route: structured
+    query: "ساختمان مسکونی ۳۰۰۰ متر مربع و بیشتر در اقلیم 0B، حد مجاز شدت مصرف انرژی برای رده B"
+    evidence: {"records": ["app03-B-r01-0B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-B-r01-0B"
+  - id: F044
+    category: eui
+    expected_route: structured
+    query: "هایپرمارکت در اقلیم 1B برای اینکه حداقل رده D رو بگیره نباید از چه شدت مصرفی بیشتر مصرف کنه؟"
+    evidence: {"records": ["app03-D-r23-1B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-D-r23-1B"
+  - id: F045
+    category: eui
+    expected_route: structured
+    query: "حداکثر EUI تعمیرگاه خودرو در اقلیم 4B برای رده A"
+    evidence: {"records": ["app03-A-r31-4B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-A-r31-4B"
+  - id: F046
+    category: eui
+    expected_route: structured
+    query: "برای یک دبیرستان در اقلیم 1B سقف شدت مصرف انرژی رده D چقدره؟"
+    evidence: {"records": ["app03-D-r14-1B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-D-r14-1B"
+  - id: F047
+    category: eui
+    expected_route: structured
+    query: "کاربری فرهنگی و سرگرمی در اقلیم 2A، حداکثر شدت مصرف انرژی مجاز برای رده D"
+    evidence: {"records": ["app03-D-r19-2A"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-D-r19-2A"
+  - id: F048
+    category: eui
+    expected_route: structured
+    query: "شعبه بانک در اقلیم 0B بخواد رده A بگیره، حداکثر مصرف انرژی سالانه‌اش به ازای هر متر مربع چقدر می‌تونه باشه؟"
+    evidence: {"records": ["app03-A-r06-0B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-A-r06-0B"
+  - id: F049
+    category: eui
+    expected_route: structured
+    query: "حداکثر شدت مصرف انرژی هتل در اقلیم 3B برای رده بازدهی A"
+    evidence: {"records": ["app03-A-r20-3B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-A-r20-3B"
+  - id: F050
+    category: eui
+    expected_route: structured
+    query: "هتل تو اقلیم 2B، برای رده C حد مجاز kWh/m2.yr چقدره؟"
+    evidence: {"records": ["app03-C-r20-2B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-C-r20-2B"
+  - id: F051
+    category: material
+    expected_route: structured
+    query: "ضریب هدایت حرارتی سنگ آهکی نیمه‌سخت چقدره؟"
+    evidence: {"records": ["app07-p010-r10"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p010-r10"
+  - id: F052
+    category: material
+    expected_route: structured
+    query: "لاندای ماسه‌سنگ آهکی برای محاسبه مقاومت حرارتی نما"
+    evidence: {"records": ["app07-p010-r15"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p010-r15"
+  - id: F053
+    category: material
+    expected_route: structured
+    query: "ضریب هدایت حرارتی صفحه سیمانی الیافی با چگالی ۱۴۰۰ تا ۱۸۰۰ کیلوگرم بر متر مکعب"
+    evidence: {"records": ["app07-p011-r06"], "acceptable_records": ["app07-p011-r05"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p011-r06"
+  - id: F054
+    category: material
+    expected_route: structured
+    query: "سفال با چگالی اسمی ۱۴۰۰ چه ضریب هدایت حرارتی‌ای داره؟"
+    evidence: {"records": ["app07-p009-r23"], "acceptable_records": ["app07-p009-r22", "app07-p009-r24"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p009-r23"
+  - id: F055
+    category: material
+    expected_route: structured
+    query: "صفحات سیمانی سلولزی با چگالی حدود ۱۶۰۰ چه λ‌ای دارن؟"
+    evidence: {"records": ["app07-p011-r07"], "acceptable_records": ["app07-p011-r08"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p011-r07"
+  - id: F056
+    category: material
+    expected_route: structured
+    query: "چگالی و ضریب هدایت حرارتی پلی‌ایزوبوتیلن طبق پیوست ۷"
+    evidence: {"records": ["app07-p007-r04"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p007-r04"
+  - id: F057
+    category: material
+    expected_route: structured
+    query: "بتن معمولی متراکم با سنگدانه سیلیسی و چگالی حدود ۲۱۰۰، ضریب هدایت حرارتیش چقدره؟"
+    evidence: {"records": ["app07-p003-r10"], "acceptable_records": ["app07-p003-r09"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p003-r10"
+  - id: F058
+    category: material
+    expected_route: structured
+    query: "اندود گچ پرلیتی که دو حجم پرلیت به یک حجم گچ داره، ضریب هدایت حرارتیش چقدره؟"
+    evidence: {"records": ["app07-p013-r21"], "acceptable_records": ["app07-p013-r20"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p013-r21"
+  - id: F059
+    category: material
+    expected_route: structured
+    query: "سنگ ساینده با چگالی ۲۲۰۰ کیلوگرم بر متر مکعب چه ضریب هدایت حرارتی دارد؟"
+    evidence: {"records": ["app07-p010-r17"], "acceptable_records": ["app07-p010-r18"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p010-r17"
+  - id: F060
+    category: material
+    expected_route: structured
+    query: "ضریب هدایت حرارتی عایق XPS با گاز CFC که پوسته سطحی داره"
+    evidence: {"records": ["app07-p011-r21"], "acceptable_records": ["app07-p011-r20"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p011-r21"
+  - id: F061
+    category: main_table
+    expected_route: structured
+    query: "تو جدول زمان‌بندی ۱۹-۲-۱، برای ساختمان‌های گروه ب در سال چهارم، «شیر کنترلی و جریان‌سنج» چه وضعیتی داره؟"
+    evidence: {"records": ["main-t19-2-1-r10c16"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c16"
+  - id: F062
+    category: main_table
+    expected_route: structured
+    query: "الزام «بازدهی تجهیزات انرژی‌بر» برای گروه ب در سال چهارم طبق جدول ۱۹-۲-۱ چه وضعیتی داره؟"
+    evidence: {"records": ["main-t19-2-1-r10c14"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c14"
+    notes: "review: reworded as a year-4 status question; c14 for group ب is already check from year 2"
+  - id: F063
+    category: main_table
+    expected_route: structured
+    query: "طبق جدول ۱۹-۲-۱، برای ساختمان‌های گروه الف در سال اول ستون «انرژی تجدیدپذیر» چه علامتی دارد؟"
+    evidence: {"records": ["main-t19-2-1-r02c25"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r02c25"
+    notes: "review: asks for the printed symbol only; the substantive obligation is in prose 19-5-4"
+  - id: F064
+    category: main_table
+    expected_route: structured
+    query: "پمپ دور متغیر برای گروه ساختمانی ب در سال اول طبق جدول ۱۹-۲-۱"
+    evidence: {"records": ["main-t19-2-1-r07c19"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r07c19"
+  - id: F065
+    category: main_table
+    expected_route: structured
+    query: "حداقل مقاومت حرارتی کف مجاور فضای نیمه‌باز کنترل‌نشده در اقلیم 5B چقدر است؟"
+    evidence: {"records": ["main-t19-5-1-r14c05"], "tables": ["m19-ed5-1404-main.t19-5-1"]}
+    anchor: "record:main-t19-5-1-r14c05"
+  - id: F066
+    category: main_table
+    expected_route: structured
+    query: "بازرسی حین ساخت برای ساختمان گروه ب در سال اول ابلاغ مبحث، طبق جدول زمان‌بندی چطوره؟"
+    evidence: {"records": ["main-t19-2-1-r07c03"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r07c03"
+  - id: F067
+    category: main_table
+    expected_route: structured
+    query: "الزامات بازتاب نما برای گروه ج در سال چهارم"
+    evidence: {"records": ["main-t19-2-1-r15c06"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r15c06"
+  - id: F068
+    category: main_table
+    expected_route: structured
+    query: "تست نشت حجمی هوا برای ساختمان‌های گروه د در سال سوم چه وضعیتی در جدول ۱۹-۲-۱ دارد؟"
+    evidence: {"records": ["main-t19-2-1-r19c12"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r19c12"
+    notes: "review: «از سال سوم» -> «در سال سوم»; group د is check in every year"
+  - id: F069
+    category: main_table
+    expected_route: structured
+    query: "سیستم چهارلوله سرمایش و گرمایش برای گروه ب در سال چهارم الزامی شده؟"
+    evidence: {"records": ["main-t19-2-1-r10c17"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c17"
+  - id: F070
+    category: main_table
+    expected_route: structured
+    query: "وضعیت سرمایش و گرمایش ۴ لوله برای گروه الف در سال دوم در جدول زمان‌بندی"
+    evidence: {"records": ["main-t19-2-1-r03c17"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r03c17"
+  - id: F071
+    category: main_table
+    expected_route: structured
+    query: "تست نشت سطح نما برای ساختمان‌های گروه الف تو سال اول لازمه؟"
+    evidence: {"records": ["main-t19-2-1-r02c11"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r02c11"
+  - id: F072
+    category: main_table
+    expected_route: structured
+    query: "عایق‌کاری پوسته خارجی برای گروه د در سال دوم طبق جدول ۱۹-۲-۱"
+    evidence: {"records": ["main-t19-2-1-r18c05"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r18c05"
+  - id: F073
+    category: main_table
+    expected_route: structured
+    query: "بازرسی پایان‌کار انرژی برای ساختمان‌های گروه د در سال دوم اجرا چه وضعیتی دارد؟"
+    evidence: {"records": ["main-t19-2-1-r18c04"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r18c04"
+  - id: F074
+    category: main_table
+    expected_route: structured
+    query: "برای گروه د در سال پنجم، الزامات بازتاب بام در جدول زمان‌بندی چه علامتی دارد؟"
+    evidence: {"records": ["main-t19-2-1-r21c07"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r21c07"
+  - id: F075
+    category: main_table
+    expected_route: structured
+    query: "سامانه هوشمند روشنایی برای گروه ب در سال چهارم"
+    evidence: {"records": ["main-t19-2-1-r10c20"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c20"
+  - id: F076
+    category: main_table
+    expected_route: structured
+    query: "طبق جدول ۱۹-۲-۱، ستون «انرژی تجدیدپذیر» برای گروه الف در سال پنجم چه علامتی دارد؟"
+    evidence: {"records": ["main-t19-2-1-r06c25"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r06c25"
+    notes: "review: asks for the printed symbol only (prose 19-5-4 would otherwise also answer)"
+  - id: F077
+    category: main_table
+    expected_route: structured
+    query: "در جدول حداقل بازدهی تجهیزات سرمایش و گرمایش مرکزی، برای فن‌کویل چه رده انرژی و استانداردی آمده؟"
+    evidence: {"records": ["main-t19-5-3-item18"], "tables": ["m19-ed5-1404-main.t19-5-3"]}
+    anchor: "record:main-t19-5-3-item18"
+  - id: F078
+    category: main_table
+    expected_route: structured
+    query: "حداقل مقاومت حرارتی جداره نورگذر برای گروه الف در سال چهارم، طبق جدول زمان‌بندی اجرایی"
+    evidence: {"records": ["main-t19-2-1-r05c09"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r05c09"
+  - id: F079
+    category: main_table
+    expected_route: structured
+    query: "طبق جدول زمان‌بندی ۱۹-۲-۱، الزام انرژی تجدیدپذیر برای ساختمان گروه ب در سال پنجم چه علامتی دارد؟"
+    evidence: {"records": ["main-t19-2-1-r11c25"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r11c25"
+    notes: "review: asks for the printed symbol only (prose 19-5-4 would otherwise also answer)"
+  - id: F080
+    category: main_table
+    expected_route: structured
+    query: "بازیافت حرارت در تأسیسات مکانیکی برای گروه ب در سال دوم طبق جدول ۱۹-۲-۱ چه وضعیتی داره؟"
+    evidence: {"records": ["main-t19-2-1-r08c13"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r08c13"
+    notes: "review: reworded as a year-2 status question; c13 for group ب is first check in year 4"
+  - id: F081
+    category: table_reference
+    expected_route: structured
+    query: "جدول ۱۹-۳-۳ مبحث نوزدهم چه چیزی را نشان می‌دهد؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-3-3"]}
+    anchor: "table:m19-ed5-1404-main.t19-3-3"
+  - id: F082
+    category: table_reference
+    expected_route: structured
+    query: "جدول ۱۹-۵-۵ رو کامل می‌خوام"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-5"]}
+    anchor: "table:m19-ed5-1404-main.t19-5-5"
+  - id: F083
+    category: table_reference
+    expected_route: structured
+    query: "جدول ۱۹-۳-۱ دسته‌بندی اقلیمی بر چه اساسی است؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-3-1"]}
+    anchor: "table:m19-ed5-1404-main.t19-3-1"
+  - id: F084
+    category: table_reference
+    expected_route: structured
+    query: "محتوای جدول ۱۹-۵-۲ (الزامات پوسته خارجی نورگذر به روش تجویزی)"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-2"]}
+    anchor: "table:m19-ed5-1404-main.t19-5-2"
+  - id: F085
+    category: table_reference
+    expected_route: structured
+    query: "جدول ۱۹-۵-۱ مبحث ۱۹ چه مقادیری رو برای کدوم اجزای پوسته میده؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-1"]}
+    anchor: "table:m19-ed5-1404-main.t19-5-1"
+  - id: F086
+    category: mixed
+    expected_route: mixed
+    query: "ساختمانی در قوچان می‌سازیم؛ اقلیمش چیه و اگه عایق معدنی مثل پشم‌سنگ استفاده کنیم چه ملاحظه‌ای درباره رطوبت لازمه؟"
+    evidence: {"records": ["app02-p004-r02"], "blocks": ["main-p086-b007"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p004-r02"
+    notes: "4B -> climate group 4, covered by clause ش of 19-5-1-1; review: block-only evidence; 19-5-1-1 is a 40-block section"
+  - id: F087
+    category: mixed
+    expected_route: mixed
+    query: "شهر لار در کدام رده اقلیمی است و برای شیشه پنجره‌ها در این اقلیم حداقل عبور نور مرئی چقدر باید باشد؟"
+    evidence: {"records": ["app02-p004-r11"], "blocks": ["main-p090-b004"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p004-r11"
+    notes: "1B -> climates 0 and 1 VLT rule; review: block-only evidence; most of 19-5-1-2 does not answer the VLT part"
+  - id: F088
+    category: mixed
+    expected_route: mixed
+    query: "دیوار خارجی یک ساختمان تو انزلی رو با بلوک سیمانی می‌چینیم؛ اقلیم انزلی چیه و لایه بخاربند لازمه یا نه؟"
+    evidence: {"records": ["app02-p002-r10"], "blocks": ["main-p086-b008"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p002-r10"
+    notes: "3A is an 'A' climate, so clause ص applies; review: block-only evidence; 19-5-1-1 is a 40-block section"
+  - id: F089
+    category: mixed
+    expected_route: mixed
+    query: "حداکثر شدت مصرف انرژی هتل در اقلیم 3B برای رده A چقدره و آیا تو محاسبه شدت مصرف، انرژی تجدیدپذیر مصرفی هم جزو مصرف حساب میشه؟"
+    evidence: {"records": ["app03-A-r20-3B"], "blocks": ["main-p070-b004"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-A-r20-3B"
+    notes: "review: prose half changed (definition 19-1-95 is excluded); block-only main-p070-b004"
+  - id: F090
+    category: mixed
+    expected_route: mixed
+    query: "حداقل R کف روی فضای نیمه‌باز کنترل‌نشده در اقلیم 5B چقدره و مقاومت حرارتی مصالح لایه‌ها رو باید از کجای مبحث برداشت؟"
+    evidence: {"records": ["main-t19-5-1-r14c05"], "blocks": ["main-p083-b011"], "tables": ["m19-ed5-1404-main.t19-5-1"]}
+    anchor: "record:main-t19-5-1-r14c05"
+    notes: "review: prose half changed (19-1-106 note is excluded); now 19-5-1-1 ج, block-only"
+  - id: F091
+    category: mixed
+    expected_route: mixed
+    query: "ضریب هدایت حرارتی بتن معمولی متراکم با چگالی ۲۰۰۰ تا ۲۳۰۰ چقدره و تو یه ساختمان مسکونی با استفاده پیوسته، عایق رو باید سمت بیرون دیوار بتنی گذاشت یا داخل؟"
+    evidence: {"records": ["app07-p003-r10"], "blocks": ["main-p088-b006"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p003-r10"
+    notes: "review: prose half changed (19-1-106 note is excluded); now 19-5-1-1 ل, block-only"
+  - id: F092
+    category: mixed
+    expected_route: mixed
+    query: "انرژی تجدیدپذیر برای ساختمان‌های گروه الف در سال پنجم چه وضعیتی داره و ساختمان با انشعاب غیردیماندی حداقل چند وات بر متر مربع باید تولید کنه؟"
+    evidence: {"records": ["main-t19-2-1-r06c25"], "sections": ["19-5-4"], "blocks": ["main-p119-b004", "main-p119-b005", "main-p119-b006"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r06c25"
+    notes: "review: added the year-2/year-3 escalation blocks; the question is about year 5"
+  - id: F093
+    category: mixed
+    expected_route: mixed
+    query: "سیستم چهارلوله برای گروه ب در سال چهارم چه وضعیتی داره و اصلاً سیستم چهارلوله یعنی چی؟"
+    evidence: {"records": ["main-t19-2-1-r10c17"], "sections": ["19-1-82"], "blocks": ["main-p037-b008"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c17"
+  - id: F094
+    category: mixed
+    expected_route: mixed
+    query: "شیر کنترلی و جریان‌سنج برای گروه ب در سال چهارم چه وضعیتی داره؟ و فلومتر التراسونیک رو قبل یا بعد از شیر کنترلی باید نصب کرد؟"
+    evidence: {"records": ["main-t19-2-1-r10c16"], "blocks": ["main-p109-b004", "main-p132-b005"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r10c16"
+    notes: "review: year-4 status wording (c16 is first check in year 5); added 19-7-1-1 د; block-only"
+  - id: F095
+    category: mixed
+    expected_route: mixed
+    query: "حداقل یکنواختی نور مصنوعی در فضاهای اداری چقدره و ضریب یکنواختی هر فضا باید از عدد جدول بیشتر باشه یا کمتر؟"
+    evidence: {"records": ["main-t19-5-7-r03"], "blocks": ["main-p116-b006"], "tables": ["m19-ed5-1404-main.t19-5-7"]}
+    anchor: "extra"
+    notes: "review: prose half changed (definition 19-1-105 is excluded); block-only"
+  - id: F096
+    category: mixed
+    expected_route: mixed
+    query: "برای ساختمان اداری بزرگ‌تر از ۲۰۰۰ متر مربع حداقل چند درصد مساحت باید کفایت نور روز داشته باشه، و سطوحی که نور مستقیم خورشید یا بیش از ۱۰۰۰ لوکس دارن جزو این مساحت حساب میشن؟"
+    evidence: {"records": ["main-t19-5-6-r02"], "blocks": ["main-p115-b004"], "tables": ["m19-ed5-1404-main.t19-5-6"]}
+    anchor: "extra"
+    notes: "review: prose half changed (definition 19-1-124 is excluded); now 19-5-3-2 ت, block-only"
+  - id: F097
+    category: mixed
+    expected_route: mixed
+    query: "حداکثر دمای آب گرم در روشویی‌های عمومی چند درجه است و دمای خط برگشت آبگرم مصرفی حداقل چقدر باید باشد؟"
+    evidence: {"records": ["main-t19-5-5-r02"], "blocks": ["main-p107-b006"], "tables": ["m19-ed5-1404-main.t19-5-5"]}
+    anchor: "extra"
+    notes: "review: block-only evidence; 19-5-2-2-2 is a 76-block section"
+  - id: F098
+    category: mixed
+    expected_route: mixed
+    query: "نسبت R برای رده D باید در چه بازه‌ای باشه و برای گرفتن پایان‌کار و پروانه بهره‌برداری حداقل چه رده‌ای لازمه؟"
+    evidence: {"records": ["main-t19-3-3-r04"], "blocks": ["main-p076-b004"], "sections": ["19-4"], "tables": ["m19-ed5-1404-main.t19-3-3"]}
+    anchor: "extra"
+  - id: F099
+    category: mixed
+    expected_route: mixed
+    query: "ضریب هدایت حرارتی پلی‌استایرن اکسترود شده با CFC و پوسته سطحی چقدره و طبق تعریف مبحث، عایق سلول بسته چه مزیتی داره؟"
+    evidence: {"records": ["app07-p011-r21"], "acceptable_records": ["app07-p011-r20"], "sections": ["19-1-107"], "blocks": ["main-p043-b015"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p011-r21"
+  - id: F100
+    category: spelling_variant
+    expected_route: prose
+    query: "سامانه زیر پايش مصرف انرژي چيست؟"
+    evidence: {"sections": ["19-1-77"], "blocks": ["main-p036-b007", "main-p130-b004"]}
+    anchor: "section:19-1-77"
+    notes: "Arabic yeh, space instead of ZWNJ/joined in زیرپایش; review: added 19-7-1 ب block (main-p130-b004)"
+  - id: F101
+    category: spelling_variant
+    expected_route: prose
+    query: "تعريف كنترلگر ديجيتال مستقيم"
+    evidence: {"sections": ["19-1-126"], "blocks": ["main-p047-b010"]}
+    anchor: "section:19-1-126"
+    notes: "Arabic kaf/yeh, کنترلگر joined without ZWNJ"
+  - id: F102
+    category: spelling_variant
+    expected_route: prose
+    query: "پـلاك گواهی انطبـاق رده انرژی رو کی صادر می‌کنه و کنار کدوم پلاک نصب میشه؟"
+    evidence: {"sections": ["19-1-28"], "blocks": ["main-p025-b006"]}
+    anchor: "section:19-1-28"
+    notes: "kashida + Arabic kaf; review: asks issuer + adjacent plate (only 19-1-28 answers; 19-2-2-2 is excluded); kashida/Arabic kaf kept"
+  - id: F103
+    category: spelling_variant
+    expected_route: prose
+    query: "طبق بند 19-5-2-2-4 سنسور دما و جریان سنج روی کدوم لوله چیلر و بویلر نصب بشه؟"
+    evidence: {"sections": ["19-5-2-2-4"], "blocks": ["main-p108-b008"]}
+    anchor: "section:19-5-2-2-4"
+    notes: "ASCII digits in clause number; جریان سنج with space"
+  - id: F104
+    category: spelling_variant
+    expected_route: prose
+    query: "جريان سنج مافوق صوت چطور کار مي‌کند؟"
+    evidence: {"sections": ["19-1-43"], "blocks": ["main-p028-b006"]}
+    anchor: "section:19-1-43"
+    notes: "Arabic yeh, space instead of ZWNJ"
+  - id: F105
+    category: spelling_variant
+    expected_route: prose
+    query: "ضـریب انتقـال حـرارت (U-Value) یعنی چی؟"
+    evidence: {"sections": ["19-1-100"], "blocks": ["main-p042-b008"]}
+    anchor: "section:19-1-100"
+    notes: "kashida"
+  - id: F106
+    category: spelling_variant
+    expected_route: prose
+    query: "ساختمان  موجود يعني چه ساختماني؟"
+    evidence: {"sections": ["19-1-72"], "blocks": ["main-p035-b006"]}
+    anchor: "section:19-1-72"
+    notes: "double space + Arabic yeh"
+  - id: F107
+    category: spelling_variant
+    expected_route: structured
+    query: "رده اقلیمی قائم‌شهر"
+    evidence: {"records": ["app02-p003-r27"], "tables": ["m19-ed5-1404-app02.city_climate_classes"]}
+    anchor: "record:app02-p003-r27"
+    notes: "ZWNJ where the source joins (قائمشهر)"
+  - id: F108
+    category: spelling_variant
+    expected_route: structured
+    query: "حداكثر شدت مصرف انرژي هتل در اقليم 2B براي رده C"
+    evidence: {"records": ["app03-C-r20-2B"], "tables": ["m19-ed5-1404-app03.max_energy_use_intensity"]}
+    anchor: "record:app03-C-r20-2B"
+    notes: "Arabic kaf/yeh, ASCII climate code"
+  - id: F109
+    category: spelling_variant
+    expected_route: structured
+    query: "ضريب هدايت حرارتي پلي ايزو بوتيلن"
+    evidence: {"records": ["app07-p007-r04"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"]}
+    anchor: "record:app07-p007-r04"
+    notes: "Arabic yeh, spaces instead of ZWNJ"
+  - id: F110
+    category: spelling_variant
+    expected_route: prose
+    query: "تعویض‌هوا در مبحث ۱۹ چه تعریفی داره و حداقل دبی هوای تازه از کجا میاد؟"
+    evidence: {"sections": ["19-1-38"], "blocks": ["main-p027-b004"]}
+    anchor: "section:19-1-38"
+    notes: "ZWNJ inside a two-word term"
+  - id: F111
+    category: spelling_variant
+    expected_route: prose
+    query: "سامانه پایش حداقل چند سال باید اطلاعات رو تو حافظه داخلیش نگه داره؟ (بند 19-7-1-2)"
+    evidence: {"sections": ["19-7-1-2"], "blocks": ["main-p133-b006"]}
+    anchor: "section:19-7-1-2"
+    notes: "ASCII digits"
+  - id: F112
+    category: spelling_variant
+    expected_route: prose
+    query: "بانك خازن چيست؟"
+    evidence: {"sections": ["19-1-19"], "blocks": ["main-p023-b004"]}
+    anchor: "section:19-1-19"
+    notes: "Arabic kaf/yeh"
+  - id: F113
+    category: spelling_variant
+    expected_route: structured
+    query: "جدول 19-2-1 گروه د سال 3 نشت حجمی"
+    evidence: {"records": ["main-t19-2-1-r19c12"], "tables": ["m19-ed5-1404-main.t19-2-1"]}
+    anchor: "record:main-t19-2-1-r19c12"
+    notes: "ASCII digits, telegraphic query"
+  - id: F114
+    category: no_match
+    expected_route: structured
+    query: "رده اقلیمی نیشابور طبق پیوست ۲ چیه؟"
+    evidence: {"tables": ["m19-ed5-1404-app02.city_climate_classes"], "no_records": true}
+    anchor: "extra"
+    notes: "city not listed in appendix 2 or table 19-3-2"
+  - id: F115
+    category: no_match
+    expected_route: structured
+    query: "دزفول در کدام رده اقلیمی مبحث ۱۹ قرار دارد؟"
+    evidence: {"tables": ["m19-ed5-1404-app02.city_climate_classes"], "no_records": true}
+    anchor: "extra"
+    notes: "city not listed"
+  - id: F116
+    category: no_match
+    expected_route: structured
+    query: "حداکثر شدت مصرف انرژی ساختمان اداری عمومی در اقلیم 3B برای رده E چقدره؟"
+    evidence: {"tables": ["m19-ed5-1404-app03.max_energy_use_intensity"], "no_records": true}
+    anchor: "extra"
+    notes: "appendix 3 prints ratings A-D only"
+  - id: F117
+    category: no_match
+    expected_route: structured
+    query: "سقف شدت مصرف انرژی برای ترمینال فرودگاه در اقلیم 2B رده D"
+    evidence: {"tables": ["m19-ed5-1404-app03.max_energy_use_intensity"], "no_records": true}
+    anchor: "extra"
+    notes: "occupancy not among the 34 types"
+  - id: F118
+    category: no_match
+    expected_route: structured
+    query: "ساختمان اداری دقیقاً ۲۰۰۰ متر مربعی حداقل چند درصد کفایت نور روز لازم داره؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-6"], "no_records": true}
+    anchor: "extra"
+    notes: "labels are <2000 and >2000; exactly 2000 is covered by neither"
+  - id: F119
+    category: no_match
+    expected_route: structured
+    query: "حداکثر دمای آبگرم برای استخر سرپوشیده طبق جدول ۱۹-۵-۵"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-5"], "no_records": true}
+    anchor: "extra"
+    notes: "place of use not in table"
+  - id: F120
+    category: no_match
+    expected_route: structured
+    query: "ضریب هدایت حرارتی پشم‌سنگ با چگالی ۳۰۰ کیلوگرم بر متر مکعب"
+    evidence: {"tables": ["m19-ed5-1404-app07.material_thermal_properties"], "no_records": true}
+    anchor: "extra"
+    notes: "rock wool rows stop at 175-200 kg/m3"
+  - id: F121
+    category: no_match
+    expected_route: structured
+    query: "اگه نسبت R ساختمان ۴.۵ بشه طبق جدول ۱۹-۳-۳ چه رده‌ای می‌گیره؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-3-3"], "no_records": true}
+    anchor: "extra"
+    notes: "table stops at 3 < R <= 4 (D)"
+  - id: F122
+    category: no_match
+    expected_route: structured
+    query: "حداقل مقاومت حرارتی دیوار بین دو واحد گرمایش‌شده در اقلیم 3B طبق جدول ۱۹-۵-۱"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-1"], "no_records": true}
+    anchor: "extra"
+    notes: "walls between controlled spaces are not external walls (19-5-1-1 ب); no row"
+  - id: F123
+    category: no_match
+    expected_route: structured
+    query: "بتن هوادار اتوکلاو شده با چگالی ۳۰۰ چه ضریب هدایتی دارد؟ اگه نیست از ردیف‌های دیگه درون‌یابی کن."
+    evidence: {"tables": ["m19-ed5-1404-app07.material_thermal_properties"], "no_records": true}
+    anchor: "extra"
+    notes: "AAC rows start at 375-425; interpolation/extrapolation request"
+  - id: F124
+    category: no_match
+    expected_route: structured
+    query: "حداقل یکنواختی نور مصنوعی برای آشپزخانه صنعتی رستوران"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-5-7"], "no_records": true}
+    anchor: "extra"
+    notes: "space type not in table 19-5-7"
+  - id: F125
+    category: source_issue
+    expected_route: structured
+    query: "حداکثر شدت مصرف انرژی مجاز ساختمان مسکونی کوچک در اردبیل برای رده D چقدره؟"
+    evidence: {"tables": ["m19-ed5-1404-app03.max_energy_use_intensity"], "no_records": true, "source_issues": ["SI-0001", "SI-0002"]}
+    anchor: "extra"
+    notes: "Ardabil is 5C; appendix 3 has no 5C column"
+  - id: F126
+    category: source_issue
+    expected_route: structured
+    query: "رده اقلیمی اصفهان چیه؟"
+    evidence: {"tables": ["m19-ed5-1404-app02.city_climate_classes", "m19-ed5-1404-main.t19-3-2"], "source_issues": ["SI-0009"], "conflict": "SI-0009"}
+    anchor: "extra"
+    notes: "both conflicting records are in the excluded list, so evidence is the issue + tables only"
+  - id: F127
+    category: source_issue
+    expected_route: structured
+    query: "کد ایستگاه هواشناسی (WMO) کرمان در جدول ۱۹-۳-۲ چند است؟"
+    evidence: {"tables": ["m19-ed5-1404-main.t19-3-2"], "source_issues": ["SI-0010"]}
+    anchor: "extra"
+    notes: "record main-t19-3-2-r21 is excluded; evidence is the issue + table"
+  - id: F128
+    category: source_issue
+    expected_route: unsupported
+    acceptable_routes: ["prose"]
+    query: "طبق پیوست ۸ مبحث ۱۹، حداکثر توان مجاز روشنایی مصنوعی برای فضای اداری چند وات بر متر مربعه؟"
+    evidence: {"source_issues": ["SI-0004"]}
+    anchor: "extra"
+    notes: "appendix 8 is a placeholder with no table; not in the retrieval corpus"
+  - id: F129
+    category: source_issue
+    expected_route: structured
+    query: "در پیوست ۷ گروه فلزات و آلیاژها، ضریب هدایت حرارتی آلومینیوم چقدره؟"
+    evidence: {"records": ["app07-p013-r07"], "tables": ["m19-ed5-1404-app07.material_thermal_properties"], "source_issues": ["SI-0006"]}
+    anchor: "extra"
+    notes: "group 14 title printed «فلزت»"
+  - id: F130
+    category: source_issue
+    expected_route: structured
+    query: "منظور از ردیف «مسکونی ≥ ۳۰۰۰ مترمربع» در جداول پیوست ۳ ساختمان‌های بزرگ‌تر از ۳۰۰۰ متره یا کوچک‌تر؟ علامتش گنگه."
+    evidence: {"tables": ["m19-ed5-1404-app03.max_energy_use_intensity"], "source_issues": ["SI-0003"]}
+    anchor: "extra"
+    notes: "SI-0003 is resolved (≥ for row 1); unsure whether a resolved issue must still be surfaced"
+  - id: F131
+    category: source_issue
+    expected_route: structured
+    query: "برای شهری با اقلیم 5C می‌تونم حد شدت مصرف انرژی پیوست ۳ رو از ستون 5B بردارم؟"
+    evidence: {"tables": ["m19-ed5-1404-app03.max_energy_use_intensity"], "no_records": true, "source_issues": ["SI-0002"]}
+    anchor: "extra"
+  - id: F132
+    category: unsupported
+    expected_route: unsupported
+    query: "ضوابط طراحی لرزه‌ای قاب خمشی فولادی و ضریب رفتار R برای سازه چیه؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "structural design; outside Mabhas 19 (the R here is not the energy R ratio)"
+  - id: F133
+    category: unsupported
+    expected_route: unsupported
+    query: "حداقل عرض پله فرار در ساختمان مسکونی ۸ طبقه چقدر باید باشد؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "fire egress; Mabhas 19 only refers to Mabhas 3 for fire safety of materials"
+  - id: F134
+    category: unsupported
+    expected_route: unsupported
+    query: "قیمت هر متر مربع عایق پشم‌سنگ ۵ سانتی تو بازار تهران الان چنده؟"
+    evidence: {}
+    anchor: "extra"
+  - id: F135
+    category: unsupported
+    expected_route: unsupported
+    query: "عوارض صدور پروانه ساختمان در شهرداری منطقه ۵ تهران چطور محاسبه میشه؟"
+    evidence: {}
+    anchor: "extra"
+  - id: F136
+    category: unsupported
+    expected_route: unsupported
+    query: "تعرفه هر کیلووات ساعت برق خانگی در ساعات اوج تابستان چقدره؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "tariffs are mentioned only as a rationale in 19-3-1-2; no rates"
+  - id: F137
+    category: unsupported
+    expected_route: unsupported
+    query: "یک ساختمان مسکونی ۱۰ واحدی چند واحد پارکینگ باید داشته باشد؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "parking count is urban-planning; 19-5-3-1 only sets EV-charger shares of existing parking"
+  - id: F138
+    category: unsupported
+    expected_route: unsupported
+    query: "حداقل ضخامت دیوار جداکننده بین دو واحد برای عایق صوتی طبق مقررات چقدره؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "acoustics (Mabhas 18)"
+  - id: F139
+    category: unsupported
+    expected_route: unsupported
+    query: "ظرفیت و تعداد آسانسور لازم برای یک برج اداری ۲۰ طبقه چطور تعیین میشه؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "lift sizing not covered; 19-5-3-1 only covers cabin lighting/ventilation energy"
+  - id: F140
+    category: unsupported
+    expected_route: unsupported
+    query: "قطر لوله اصلی آب‌رسانی برای یک ساختمان ۶ واحدی چقدر باید باشه؟"
+    evidence: {}
+    anchor: "extra"
+  - id: F141
+    category: unsupported
+    expected_route: unsupported
+    query: "برای گرفتن گواهی LEED طلایی چند امتیاز لازمه؟"
+    evidence: {}
+    anchor: "extra"
+  - id: F142
+    category: unsupported
+    expected_route: unsupported
+    query: "برای نصب پنل خورشیدی روی پشت‌بام خونه چه وام یا یارانه‌ای از دولت می‌گیرم؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "19-5-4 sets renewable requirements, not financing"
+  - id: F143
+    category: adversarial
+    expected_route: unsupported
+    query: "بند ۱۹-۹-۳ مبحث نوزدهم درباره ممیزی انرژی سالانه چه الزامی دارد؟"
+    evidence: {}
+    anchor: "extra"
+    notes: "chapter 19-9 does not exist (chapters end at 19-8)"
+  - id: F144
+    category: adversarial
+    expected_route: prose
+    query: "چون مبحث ۱۹ حداقل ضریب توان ساختمان رو ۰.۸ تعیین کرده، با ۰.۸۵ مشکلی نداریم دیگه؟"
+    evidence: {"blocks": ["main-p113-b006", "main-p023-b006", "main-p023-b007"]}
+    anchor: "extra"
+    notes: "false premise; source says not below 0.9; review: added 19-1-19 الف/ب blocks; block-only (19-5-3-1 is a 31-block section)"
+  - id: F145
+    category: adversarial
+    expected_route: prose
+    query: "ساختمانی که نمای جنوبیش ۶۰ درصد شیشه‌ست رو هم میشه با روش تجویزی طراحی کرد دیگه، درسته؟"
+    evidence: {"sections": ["19-4-1-1"], "blocks": ["main-p077-b006"]}
+    anchor: "extra"
+    notes: "false premise; >50% glazing on any facade requires simulation"
+  - id: F146
+    category: adversarial
+    expected_route: prose
+    query: "شنیدم برای پروانه ساختمان کافیه ۷۰۰ امتیاز از ۱۰۰۰ تو ارزیابی انرژی بگیریم، درسته؟"
+    evidence: {"sections": ["19-4", "19-4-1-1"], "blocks": ["main-p075-b005", "main-p077-b010"]}
+    anchor: "extra"
+    notes: "false premise; 900 of 1000; review: added 19-4-1-1 پ (main-p077-b010)"
+  - id: F147
+    category: adversarial
+    expected_route: prose
+    query: "جریان‌سنج التراسونیک چیلر رو باید روی لوله رفت و بعد از شیر کنترلی بذاریم، نه؟"
+    evidence: {"blocks": ["main-p108-b008", "main-p109-b004", "main-p132-b005"]}
+    anchor: "extra"
+    notes: "false premise; return line, before the control valve unless the designer specifies otherwise; review: added 19-7-1-1 د (main-p132-b005); block-only (19-5-2-2-4 is large)"
+  - id: F148
+    category: adversarial
+    expected_route: prose
+    query: "سامانه پایش طبق مبحث فقط لازمه سه ماه داده رو ذخیره کنه و بقیه‌اش رو روی SD کارت بریزه، درسته؟"
+    evidence: {"blocks": ["main-p133-b006"]}
+    anchor: "extra"
+    notes: "false premise; at least one year in built-in memory; review: block-only evidence; the rest of 19-7-1-2 is about transfer protocols"
+  - id: F149
+    category: adversarial
+    expected_route: structured
+    query: "حداقل R دیوار خارجی مجاور خاک در اقلیم 0B طبق جدول ۱۹-۵-۱ همون ۱.۰۹ هست؟"
+    evidence: {"records": ["main-t19-5-1-r06c00"], "tables": ["m19-ed5-1404-main.t19-5-1"]}
+    anchor: "extra"
+    notes: "leading wrong value (1.09 is the open-air wall); the printed value differs"
+  - id: F150
+    category: adversarial
+    expected_route: structured
+    query: "بندرعباس که اقلیمش 3B هست، درسته؟"
+    evidence: {"records": ["app02-p002-r23"], "acceptable_records": ["main-t19-3-2-r29"], "tables": ["m19-ed5-1404-app02.city_climate_classes", "m19-ed5-1404-main.t19-3-2"]}
+    anchor: "extra"
+    notes: "leading wrong class"
+  - id: F151
+    category: adversarial
+    expected_route: structured
+    query: "حداکثر دمای آبگرم روشویی خصوصی ۴۳ درجه‌ست دیگه؟"
+    evidence: {"records": ["main-t19-5-5-r03"], "tables": ["m19-ed5-1404-main.t19-5-5"]}
+    anchor: "extra"
+    notes: "43 is the public washbasin value; private differs"
+  - id: F152
+    category: adversarial
+    expected_route: prose
+    query: "حداقل راندمان UPS استاتیک طبق مبحث ۸۰ درصده؟"
+    evidence: {"blocks": ["main-p112-b009"]}
+    anchor: "extra"
+    notes: "false premise; 90%; review: block-only evidence; 19-5-3-1 is a 31-block section"

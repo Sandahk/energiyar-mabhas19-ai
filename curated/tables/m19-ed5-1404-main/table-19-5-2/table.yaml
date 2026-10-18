@@ -4,10 +4,10 @@ table_id: m19-ed5-1404-main.t19-5-2
 doc_id: m19-ed5-1404-main
 table_number: 19-5-2
 caption:
-  text: 'جدول ۱۹-۵-۲: الزامات پوسته خارج ی نورگذر به روش تجویری برای اقلی م‌های مختلف'
+  text: 'جدول ۱۹-۵-۲: الزامات پوسته خارجی نورگذر به روش تجویری برای اقلیم‌های مختلف'
   blocks:
   - main-p090-b005
-  note: curated corpus caption text (machine text; known split words not corrected here)
+  note: curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)
 pdf_page: 90
 printed_page: '71'
 corpus_blocks:

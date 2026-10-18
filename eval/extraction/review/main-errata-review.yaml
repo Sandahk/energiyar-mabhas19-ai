@@ -1,0 +1,2811 @@
+# Approved main-corpus errata (guarded; applied by main_decisions.apply_errata).
+schema_version: 1
+scope: curated main corpus errata (approved review package, 2026-10-17)
+basis_default: assistant_reviewed
+approved_on: '2026-10-17'
+review_package: data/processed/main_errata/ (candidates.jsonl, review_main_errata.html)
+rules:
+  B2: mirrored «)…(» pair -> «(…)», reviewed cases only
+  L1: two non-word fragments joined, reviewed cases only
+  T1: tanwin re-attached to its letter, reviewed cases only
+no_generic_rule: 'no unrestricted kashida-gap rule: only the listed reviewed cases apply'
+counts:
+  confirmed_candidates: 259
+  by_rule:
+    B2: 106
+    per_block: 83
+    L1: 60
+    T1: 10
+  kept_as_printed: 8
+  rejected: 8
+  blocks: 178
+decisions:
+- id: ER-p001-b006
+  block: main-p001-b006
+  expect_text_sha256: 24dd8ec11c10a0a0d649ad527c1fdc3c9802831cc1b61156d05af72882f7369c
+  result_text_sha256: e4756613eef7fadb12622cad87ca6043b3ea0425b417820aa81206139813502d
+  replacements:
+  - from: )۱۴۰۴(
+    to: (۱۴۰۴)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p001-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p002-b012
+  block: main-p002-b012
+  expect_text_sha256: 6eca42cd13ed996b82ed2cbcaa156d57e017db8e31e1bce2389c5b0690df7d15
+  result_text_sha256: 88ef82ebc56a7707b50720023dddaa029b5b03dcc23df686c0038fd1fefb2116
+  replacements:
+  - from: عل‌می
+    to: علمی
+    count: 1
+    rule: null
+    candidates:
+    - E-p002-b012-01
+    basis: assistant_reviewed
+- id: ER-p002-b013
+  block: main-p002-b013
+  expect_text_sha256: 17646fa12222bf6e22475dea45888dbfe23c10e4f411921feeb8975999662e62
+  result_text_sha256: 6b739851c38ff556aac7e92a9f2b59b930c9fc10bc6720d61f19137faf0d7eec
+  replacements:
+  - from: کل‌یه
+    to: کلیه
+    count: 1
+    rule: null
+    candidates:
+    - E-p002-b013-01
+    basis: assistant_reviewed
+- id: ER-p003-b003
+  block: main-p003-b003
+  expect_text_sha256: ad6b2f4e4c1d643013fd3b185b7278ac36b7e91de173244103da706a957432bc
+  result_text_sha256: 3f9632a4173bb940ae352deaf24e9d88b00896179ce61f9a63d616f447b8d424
+  replacements:
+  - from: پا یدار
+    to: پایدار
+    count: 1
+    rule: null
+    candidates:
+    - E-p003-b003-01
+    basis: assistant_reviewed
+  - from: زیست‌مح یطی
+    to: زیست‌محیطی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p003-b003-02
+    basis: assistant_reviewed_rule
+- id: ER-p003-b004
+  block: main-p003-b004
+  expect_text_sha256: 04184fbef6f4721402ec610f3d4f604d4120dc03a379d4685b10b3b0c5f8a139
+  result_text_sha256: c6489a0e8f29732a3a81ea522baf6b28eda76d1d72ff7b701c5e4639221493a7
+  replacements:
+  - from: تنظ یم
+    to: تنظیم
+    count: 1
+    rule: L1
+    candidates:
+    - E-p003-b004-01
+    basis: assistant_reviewed_rule
+  - from: داخل ی
+    to: داخلی
+    count: 1
+    rule: null
+    candidates:
+    - E-p003-b004-02
+    basis: assistant_reviewed
+- id: ER-p003-b005
+  block: main-p003-b005
+  expect_text_sha256: 8d4a98a43aa690712511b00dd1325f5342bc76bd41ff6ddd398fdf4c2e405a33
+  result_text_sha256: d36505c3fcabb40ae6680c13aecf6e560b90ff349d512865003779af16ca6cd7
+  replacements:
+  - from: ع ملی
+    to: عملی
+    count: 1
+    rule: null
+    candidates:
+    - E-p003-b005-01
+    basis: assistant_reviewed
+- id: ER-p003-b006
+  block: main-p003-b006
+  expect_text_sha256: 85aa1a925a3cdb785e2fcfa530c1a5e48c5b12d075b20a0708b71da3d51d0d18
+  result_text_sha256: 3504eb05c023203e6b51598687c603c5c20bd1f650689f9fdda1c98364ef8e59
+  replacements:
+  - from: نهادها ی
+    to: نهادهای
+    count: 1
+    rule: L1
+    candidates:
+    - E-p003-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p003-b007
+  block: main-p003-b007
+  expect_text_sha256: 132a75f58d659a4c41ab0d30cfa9ff65e9dbfdf200586ec52b9edfa39a7f799f
+  result_text_sha256: d1bf258ad22b63c478af75d71b8cd0c7d0caa2fd58c97a197a5009ada5186776
+  replacements:
+  - from: پا یان
+    to: پایان
+    count: 1
+    rule: null
+    candidates:
+    - E-p003-b007-01
+    basis: assistant_reviewed
+  - from: م ی‌نما یم
+    to: می‌نمایم
+    count: 1
+    rule: null
+    candidates:
+    - E-p003-b007-02
+    basis: assistant_reviewed
+- id: ER-p007-b002
+  block: main-p007-b002
+  expect_text_sha256: ee8900d343f120fc12c96a48a4d48787ad7939bed507d45d6df74a99e5351085
+  result_text_sha256: 212648b6785124a3442889e68a8193b2c122e9871a4c22b28f863ac5bbfae9cd
+  replacements:
+  - from: ) ۱۴۰۴(
+    to: ( ۱۴۰۴)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p007-b002-01
+    basis: assistant_reviewed_rule
+- id: ER-p007-b020
+  block: main-p007-b020
+  expect_text_sha256: 3168d52a9860c806b6d76ae6fcdbf6dd079638851abfb3fed5a961e73bd3897b
+  result_text_sha256: fea5a4e0b4ba201f82bd7e8c92ff808e58a7b97d577067e4f6577763e9edd1ac
+  replacements:
+  - from: مقرر ات
+    to: مقررات
+    count: 1
+    rule: L1
+    candidates:
+    - E-p007-b020-01
+    basis: assistant_reviewed_rule
+- id: ER-p009-b008
+  block: main-p009-b008
+  expect_text_sha256: bd5fb67ffe01d868c4c871bd22d621bf0b7ba4eaf77dbd739d0a31b2c2a715b4
+  result_text_sha256: ad0376422b7ff0e80b00fc4bc847706008da2c42489a1260d77b414227b6007b
+  replacements:
+  - from: ')بایدها و
+
+      نبایدها('
+    to: '(بایدها و
+
+      نبایدها)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p009-b008-01
+    basis: assistant_reviewed_rule
+  - from: )ساز و کار اجرا(
+    to: (ساز و کار اجرا)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p009-b008-02
+    basis: assistant_reviewed_rule
+  - from: )ضمانت اجرایی(
+    to: (ضمانت اجرایی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p009-b008-03
+    basis: assistant_reviewed_rule
+  - from: )توجیه پذیری(
+    to: (توجیه پذیری)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p009-b008-04
+    basis: assistant_reviewed_rule
+- id: ER-p011-b002
+  block: main-p011-b002
+  expect_text_sha256: 1ce3a1654d64e90fb5d35b73917a2c0df663c5649b5687d9b8882662ccdad908
+  result_text_sha256: 792f9d9accc4e043cc25587e122254564b480b046179faf99469004215c0ee90
+  replacements:
+  - from: گران‌ق یمت
+    to: گران‌قیمت
+    count: 1
+    rule: null
+    candidates:
+    - E-p011-b002-01
+    basis: assistant_reviewed
+- id: ER-p012-b004
+  block: main-p012-b004
+  expect_text_sha256: 79a2fff2909aca11beb39a20746130fa54120a6371e598824db85301dabd5467
+  result_text_sha256: 0ae7065cf10993610642b94736f312e36dc007f81059ddee533b9cbd7621cf74
+  replacements:
+  - from: ش ده
+    to: شده
+    count: 1
+    rule: L1
+    candidates:
+    - E-p012-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p014-b002
+  block: main-p014-b002
+  expect_text_sha256: 7183c5f3e49726fa71b86f20187fba98cb84a0a4f770154cb36480120ca79b5d
+  result_text_sha256: f4b9beb470451d65d45d3aafc09fb597097f1dff3d63fa9f5eb6155d5c627ead
+  replacements:
+  - from: )مراقبت و نگهداری ساختمان‌ها(
+    to: (مراقبت و نگهداری ساختمان‌ها)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p014-b002-01
+    basis: assistant_reviewed_rule
+- id: ER-p017-b019
+  block: main-p017-b019
+  expect_text_sha256: aa183c4e14047ff3139556fa4c0650c34271c7000ccf0904427d17622df1267c
+  result_text_sha256: 0e3a0289ab95473e0fdbf8525aa2bd5f513a79a4b5f8cba614440ff2e05b7747
+  replacements:
+  - from: )معادل انگلیسی(
+    to: (معادل انگلیسی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p017-b019-01
+    basis: assistant_reviewed_rule
+- id: ER-p017-b021
+  block: main-p017-b021
+  expect_text_sha256: 07700411cb93a63563a108ee0232f33e861a9a0318efb736337e0c0f86ef1ff7
+  result_text_sha256: 2afb705468a164571e25942a1cc2b4bf2ef4692ccb174d7e4ee789db82b5f70d
+  replacements:
+  - from: اقلیم‌ها ی
+    to: اقلیم‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p017-b021-01
+    basis: assistant_reviewed
+- id: ER-p017-b024
+  block: main-p017-b024
+  expect_text_sha256: 9d956bde64b2600bd4ef13b231ace9b9c277241a650dbee6c665087e92e5f712
+  result_text_sha256: e838b945e13c398ffa0e95f38430fd4b4fc985ad6a9f7556315336013defaad5
+  replacements:
+  - from: ارزیا بی
+    to: ارزیابی
+    count: 1
+    rule: null
+    candidates:
+    - E-p017-b024-01
+    basis: assistant_reviewed
+  - from: تجوی زی
+    to: تجویزی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p017-b024-02
+    basis: assistant_reviewed_rule
+- id: ER-p019-b004
+  block: main-p019-b004
+  expect_text_sha256: 30eb677e7496e02312eb93ae1823dd6e9a35ce5c153c80af53555eb0720db4fa
+  result_text_sha256: 1810b1b92008365d5f4ef4002a4c98062fe7fdf4f2e832839dbbe4c921e806a1
+  replacements:
+  - from: بررس ی
+    to: بررسی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p019-b004-01
+    basis: assistant_reviewed_rule
+  - from: ش امل
+    to: شامل
+    count: 1
+    rule: L1
+    candidates:
+    - E-p019-b004-03
+    basis: assistant_reviewed_rule
+- id: ER-p019-b006
+  block: main-p019-b006
+  expect_text_sha256: 88c7f55d7993e06781738319fed5776dab7b4270ff04ba628c7b93d26d69e2cc
+  result_text_sha256: 6658e7a74e844ac028b60388c5f748e609fed52e2c5be2d3105165a57ce596b9
+  replacements:
+  - from: )معمولاً ۳۰ سال(
+    to: (معمولاً ۳۰ سال)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p019-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p020-b005
+  block: main-p020-b005
+  expect_text_sha256: 527f5aac31493c1ea9e056b22a73cc8ba63d9edfe229ddaaf50c4691f8671acf
+  result_text_sha256: 31e4064643dd7093ebd08887ab147b666e828087fb12baae6c97ef6353ff4dc9
+  replacements:
+  - from: دستیا بی
+    to: دستیابی
+    count: 1
+    rule: null
+    candidates:
+    - E-p020-b005-01
+    basis: assistant_reviewed
+- id: ER-p020-b011
+  block: main-p020-b011
+  expect_text_sha256: f6a330453057c3ce28cb6aea1eeee9541c49e8ecd1ac095f2c66c62e944dfdd2
+  result_text_sha256: 45ec4f02d2e5e8e5d694a2c267437b703ea731b2f6d705fb6e205cab03a614f3
+  replacements:
+  - from: ')برق، گاز،
+
+      سوخت‌های فسیلی و تجدیدپذیر('
+    to: '(برق، گاز،
+
+      سوخت‌های فسیلی و تجدیدپذیر)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p020-b011-03
+    basis: assistant_reviewed_rule
+  - from: )مانند نیروگاه‌ها(
+    to: (مانند نیروگاه‌ها)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p020-b011-04
+    basis: assistant_reviewed_rule
+  - from: نمی‌ش ود
+    to: نمی‌شود
+    count: 1
+    rule: L1
+    candidates:
+    - E-p020-b011-01
+    basis: assistant_reviewed_rule
+  - from: ص رفاً
+    to: صرفاً
+    count: 1
+    rule: null
+    candidates:
+    - E-p020-b011-02
+    basis: assistant_reviewed
+- id: ER-p021-b010
+  block: main-p021-b010
+  expect_text_sha256: 5865e1382a97cddb7fe396a6e80687c34687529be69eafa4a776fa0584b55c33
+  result_text_sha256: bea08dfca9d553bec38999d4cb16a0e6ffa32c32188d044b2c5f0ee777938afc
+  replacements:
+  - from: )مطابق با استاندارد ISO 13602-1:2002(
+    to: (مطابق با استاندارد ISO 13602-1:2002)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p021-b010-01
+    basis: assistant_reviewed_rule
+- id: ER-p022-b008
+  block: main-p022-b008
+  expect_text_sha256: b01de5c60c56fc0d9f0592474361a9b5c51fb4678778bfdec897b46fc744b0b2
+  result_text_sha256: dec5326f0d795997ff4743858ebad7e741eaddfdc2c678deaef7fffdcf8e17fb
+  replacements:
+  - from: ')مطابق با استاندارد ISO
+
+      )7730:2005'
+    to: '(مطابق با استاندارد ISO
+
+      7730:2005)'
+    count: 1
+    rule: null
+    candidates:
+    - E-p022-b008-01
+    basis: assistant_reviewed
+- id: ER-p023-b011
+  block: main-p023-b011
+  expect_text_sha256: f337b6e61dd685603e12f3b92142ec9a5d73eb7de058d74797711539bf54abc5
+  result_text_sha256: 239fa2474aa6f9eb90f19cd49179c0584a645c006abb3c45a6c5d30f2106d136
+  replacements:
+  - from: مناس ب
+    to: مناسب
+    count: 1
+    rule: L1
+    candidates:
+    - E-p023-b011-01
+    basis: assistant_reviewed_rule
+  - from: فض اهای
+    to: فضاهای
+    count: 1
+    rule: L1
+    candidates:
+    - E-p023-b011-02
+    basis: assistant_reviewed_rule
+  - from: اس تفاده
+    to: استفاده
+    count: 1
+    rule: null
+    candidates:
+    - E-p023-b011-03
+    basis: assistant_reviewed
+- id: ER-p024-b008
+  block: main-p024-b008
+  expect_text_sha256: 9b78c4113af987b30fc2f4167fc6b3facd79776d77538572889b3a019fedf705
+  result_text_sha256: 50b10c746a090e4496c04a0e162b26d4ac348ea8a6b9db0f743a2e5c666e332e
+  replacements:
+  - from: )بالاترین(
+    to: (بالاترین)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p024-b008-02
+    basis: assistant_reviewed_rule
+  - from: )پایین‌ترین(
+    to: (پایین‌ترین)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p024-b008-03
+    basis: assistant_reviewed_rule
+  - from: غ یرمسکونی
+    to: غیرمسکونی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p024-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p024-b010
+  block: main-p024-b010
+  expect_text_sha256: 228b14eb2f5a7695574bd9d8675e54631d063b9025eb8e65782a7bb61b99a965
+  result_text_sha256: 989eb9c645eafa6dfb834788d477a5ea05c16c27250b3c5e887dc433907305ae
+  replacements:
+  - from: اس ت
+    to: است
+    count: 1
+    rule: null
+    candidates:
+    - E-p024-b010-01
+    basis: assistant_reviewed
+  - from: به‌ص ورت
+    to: به‌صورت
+    count: 1
+    rule: L1
+    candidates:
+    - E-p024-b010-02
+    basis: assistant_reviewed_rule
+  - from: بررس ی
+    to: بررسی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p024-b010-03
+    basis: assistant_reviewed_rule
+  - from: بهینه‌س ازی
+    to: بهینه‌سازی
+    count: 1
+    rule: null
+    candidates:
+    - E-p024-b010-04
+    basis: assistant_reviewed
+- id: ER-p027-b004
+  block: main-p027-b004
+  expect_text_sha256: a95366cc04d61d3c1cb8e792bdce3226709800f3c955d7f98f449c0fb69e8646
+  result_text_sha256: e590a555ccee36043d021d52f9403be0d003ed002d3891ccf23a53f75a89f24a
+  replacements:
+  - from: )دبی هوای تازه(
+    to: (دبی هوای تازه)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p027-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p028-b006
+  block: main-p028-b006
+  expect_text_sha256: 5ee18da87ee6642d9825edf8c8b838f4b674824bb565730722edafb4b57f906d
+  result_text_sha256: 757421254b66a005819c3b9fb7398cbfd4d42f829c1be7b23901497d1918389d
+  replacements:
+  - from: )دبی(
+    to: (دبی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p028-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p029-b003
+  block: main-p029-b003
+  expect_text_sha256: 80e16d32ab0e6750a11a3a0b57700c3bd62bc9b28aa7bbd79c9219902c9a65bf
+  result_text_sha256: 2b2c8145b5e63aac27a1049de40dea17f81742bcc4be420fd7d32dd9f59d05e0
+  replacements:
+  - from: )گاز، نفت، زغال‌سنگ(
+    to: (گاز، نفت، زغال‌سنگ)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p029-b003-01
+    basis: assistant_reviewed_rule
+  - from: )خورشید، باد، آب(
+    to: (خورشید، باد، آب)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p029-b003-02
+    basis: assistant_reviewed_rule
+- id: ER-p030-b006
+  block: main-p030-b006
+  expect_text_sha256: 72ba15db1510f83403bb2d2ee733142df4335c72fda062cb1972764dd93f24dd
+  result_text_sha256: 12f3ef8c4baef4f9d147e9018f44c009c2fd3defb7fbeb15aab7ca0ea356165b
+  replacements:
+  - from: گ رمایش
+    to: گرمایش
+    count: 1
+    rule: L1
+    candidates:
+    - E-p030-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p030-b008
+  block: main-p030-b008
+  expect_text_sha256: d340b515d0f3199852b7f9abd52bf002a961b880bc05f513a5b6266e7e3bda23
+  result_text_sha256: d68a70c5d34252aa38d1fdf8cc9e0bd172c51ef1acdf141b7fbe9db9c2f19aa8
+  replacements:
+  - from: )کنتراست(
+    to: (کنتراست)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p030-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p031-b007
+  block: main-p031-b007
+  expect_text_sha256: 6637839a02cb3aa5035f001c6e20f221554c18a630962f9dcde57982993c66aa
+  result_text_sha256: ef41316cede5595e1a59b92274bd16af8a069ee9a0958158bf97a0209fc43dcc
+  replacements:
+  - from: اس تفاده
+    to: استفاده
+    count: 1
+    rule: null
+    candidates:
+    - E-p031-b007-01
+    basis: assistant_reviewed
+- id: ER-p032-b004
+  block: main-p032-b004
+  expect_text_sha256: 5e1877202e6e3f9b466dff1c0dd7e4d6150341c4c7f49aea4359f884c78ccfb1
+  result_text_sha256: 1fd667457fae2c9094256b1b03a2f2f906b3ebd71af2247602e3ff1a6ce2662e
+  replacements:
+  - from: ')مانند منابع انرژی
+
+      تجدیدپذیر، برق، گاز یا سوخت('
+    to: '(مانند منابع انرژی
+
+      تجدیدپذیر، برق، گاز یا سوخت)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p032-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p032-b008
+  block: main-p032-b008
+  expect_text_sha256: 112067bfbc0c3f0c805f38977f13207d70d53fc10ee5843f01abeaac12e149f7
+  result_text_sha256: 04fae11dd5cd39f979e5e0a568c7f2ff63b24de9340790df94b992b39c30e49d
+  replacements:
+  - from: ')منطبق با مبحث
+
+      نوزدهم('
+    to: '(منطبق با مبحث
+
+      نوزدهم)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p032-b008-01
+    basis: assistant_reviewed_rule
+  - from: ) کم مصرف(
+    to: ( کم مصرف)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p032-b008-02
+    basis: assistant_reviewed_rule
+  - from: )بسیار کم مصرف(
+    to: (بسیار کم مصرف)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p032-b008-03
+    basis: assistant_reviewed_rule
+  - from: )مصرف نزدیک به صفر(
+    to: (مصرف نزدیک به صفر)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p032-b008-04
+    basis: assistant_reviewed_rule
+- id: ER-p033-b004
+  block: main-p033-b004
+  expect_text_sha256: 53b098e4f75d37eef1a626c4d4f842de68ab840849f8d8573498ede28c8597be
+  result_text_sha256: 4fdf521eebb5e929071a61bb02909e9a9954817862162b3fbe41398dda24598a
+  replacements:
+  - from: غ یرقابل
+    to: غیرقابل
+    count: 1
+    rule: L1
+    candidates:
+    - E-p033-b004-01
+    basis: assistant_reviewed_rule
+  - from: غ یرمجاز
+    to: غیرمجاز
+    count: 1
+    rule: L1
+    candidates:
+    - E-p033-b004-02
+    basis: assistant_reviewed_rule
+- id: ER-p033-b007
+  block: main-p033-b007
+  expect_text_sha256: fb182f09b1f6dd959e024467deca0cb828dac7a78082342d6d24acf66358a30a
+  result_text_sha256: d5c854ce696df7763db721ccf2b4d40b7e621263edd2d06249c455c939c6da75
+  replacements:
+  - from: ')۱۰ درجه
+
+      سانتی‌گراد('
+    to: '(۱۰ درجه
+
+      سانتی‌گراد)'
+    count: 2
+    rule: B2
+    candidates:
+    - E-p033-b007-05
+    - E-p033-b007-06
+    basis: assistant_reviewed_rule
+  - from: اس تاندارد
+    to: استاندارد
+    count: 1
+    rule: null
+    candidates:
+    - E-p033-b007-01
+    basis: assistant_reviewed
+  - from: دس ته‌بندی
+    to: دسته‌بندی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p033-b007-02
+    basis: assistant_reviewed_rule
+  - from: س انتی‌گراد
+    to: سانتی‌گراد
+    count: 1
+    rule: L1
+    candidates:
+    - E-p033-b007-03
+    basis: assistant_reviewed_rule
+  - from: باش د
+    to: باشد
+    count: 1
+    rule: L1
+    candidates:
+    - E-p033-b007-04
+    basis: assistant_reviewed_rule
+  - from: هواش ناس ی
+    to: هواشناسی
+    count: 1
+    rule: null
+    candidates:
+    - E-p033-b007-07
+    basis: assistant_reviewed
+  - from: اس اس
+    to: اساس
+    count: 1
+    rule: null
+    candidates:
+    - E-p033-b007-08
+    basis: assistant_reviewed
+  - from: بیش تر
+    to: بیشتر
+    count: 1
+    rule: null
+    candidates:
+    - E-p033-b007-09
+    basis: assistant_reviewed
+- id: ER-p033-b010
+  block: main-p033-b010
+  expect_text_sha256: f135df90b47be15999ecc6b3d144977beaac119e00a9475cf7d58d54d40a135a
+  result_text_sha256: 359a89d3b000a5df7ce362b7fd694a398779f45a23e2d9ac40dd58c206309311
+  replacements:
+  - from: )۱۸/۳ درجه سانتی گراد(
+    to: (۱۸/۳ درجه سانتی گراد)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p033-b010-01
+    basis: assistant_reviewed_rule
+  - from: )۱۸/۳ درجه سانتی‌گراد(
+    to: (۱۸/۳ درجه سانتی‌گراد)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p033-b010-02
+    basis: assistant_reviewed_rule
+- id: ER-p034-b007
+  block: main-p034-b007
+  expect_text_sha256: fd35e678e57b148da4548156869da2033b5a453c613ce1ec50ccf41faa4342ab
+  result_text_sha256: 86488f223c56d28af4f688d76980f17a2e330455190ff5fb7484742b4956eeb8
+  replacements:
+  - from: ')تعری ف فوق طبق آیی ن‌نامه اجرایی ماده ۱۸ قانون اصلاح الگوی مصرف مصوب هیأت وزیران بوده و معیارهای
+      ارزیابی و
+
+      رتبه‌بندی ساختمان سبز در پیوست «۴» بیان شده است.('
+    to: '(تعری ف فوق طبق آیی ن‌نامه اجرایی ماده ۱۸ قانون اصلاح الگوی مصرف مصوب هیأت وزیران بوده و معیارهای
+      ارزیابی و
+
+      رتبه‌بندی ساختمان سبز در پیوست «۴» بیان شده است.)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p034-b007-03
+    basis: assistant_reviewed_rule
+  - from: تعری ف
+    to: تعریف
+    count: 1
+    rule: L1
+    candidates:
+    - E-p034-b007-01
+    basis: assistant_reviewed_rule
+  - from: آیی ن‌نامه
+    to: آیین‌نامه
+    count: 1
+    rule: L1
+    candidates:
+    - E-p034-b007-02
+    basis: assistant_reviewed_rule
+- id: ER-p036-b009
+  block: main-p036-b009
+  expect_text_sha256: 45367e91990dc88c3ef751a3550157b078a34ddbb1fa8dc45adaa5be0f11777f
+  result_text_sha256: 642c1e3be770422fb7d336455d7eade9dab8c06f650e90492cb0c3ac1e02f71b
+  replacements:
+  - from: بهینه‌س ازی
+    to: بهینه‌سازی
+    count: 1
+    rule: null
+    candidates:
+    - E-p036-b009-01
+    basis: assistant_reviewed
+  - from: مص رف
+    to: مصرف
+    count: 1
+    rule: L1
+    candidates:
+    - E-p036-b009-02
+    basis: assistant_reviewed_rule
+  - from: س وخت
+    to: سوخت
+    count: 1
+    rule: L1
+    candidates:
+    - E-p036-b009-03
+    basis: assistant_reviewed_rule
+  - from: انتش ار
+    to: انتشار
+    count: 1
+    rule: L1
+    candidates:
+    - E-p036-b009-04
+    basis: assistant_reviewed_rule
+- id: ER-p036-b011
+  block: main-p036-b011
+  expect_text_sha256: 3db40d7835ee586dfeb895b693bf5c4ee92a722a4fd27db13800047013cfa172
+  result_text_sha256: 3d77546451deedd072a0a82a62c5fbe58cb706e223890573019a4e72d7e4fe07
+  replacements:
+  - from: ')مانند گاز
+
+      طبیعی، زیست‌توده یا سوخت های دیگر('
+    to: '(مانند گاز
+
+      طبیعی، زیست‌توده یا سوخت های دیگر)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p036-b011-01
+    basis: assistant_reviewed_rule
+- id: ER-p037-b008
+  block: main-p037-b008
+  expect_text_sha256: 6d91dd6e5b4f8f971c45fbf1ee5003d3e6531448561275175a418bb251c1f06e
+  result_text_sha256: dd92e0b4d7e693152cf5c7d40d18a2b22adba9b98d256bd364f7aca4e81c3f5f
+  replacements:
+  - from: )سرمایش(
+    to: (سرمایش)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b008-01
+    basis: assistant_reviewed_rule
+  - from: )گرمایش(
+    to: (گرمایش)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b008-02
+    basis: assistant_reviewed_rule
+- id: ER-p037-b010
+  block: main-p037-b010
+  expect_text_sha256: 673509a9e49454052cf18c6a4458cd98d5f9ac61baf160cd50c35eb4cf6ae5d2
+  result_text_sha256: 2aa87f7db35752ef6b3fa381178ca7d9b4f8e35e2085c279dcc31cbed178cbe4
+  replacements:
+  - from: )سیکل بسته(
+    to: (سیکل بسته)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b010-05
+    basis: assistant_reviewed_rule
+  - from: )سیکل باز(
+    to: (سیکل باز)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b010-06
+    basis: assistant_reviewed_rule
+  - from: )رادیاتور، فن‌کویل و ...(
+    to: (رادیاتور، فن‌کویل و ...)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b010-07
+    basis: assistant_reviewed_rule
+  - from: ')پمپهای
+
+      سیرکولاسیون مبدل حرارتی آب‌گرم و برگشت آب‌گرم بهداشتی('
+    to: '(پمپهای
+
+      سیرکولاسیون مبدل حرارتی آب‌گرم و برگشت آب‌گرم بهداشتی)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p037-b010-08
+    basis: assistant_reviewed_rule
+  - from: دس تگاهی
+    to: دستگاهی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p037-b010-01
+    basis: assistant_reviewed_rule
+  - from: اس ت
+    to: است
+    count: 1
+    rule: null
+    candidates:
+    - E-p037-b010-02
+    basis: assistant_reviewed
+  - from: بهداش تی
+    to: بهداشتی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p037-b010-03
+    basis: assistant_reviewed_rule
+  - from: س یرکولاس یون
+    to: سیرکولاسیون
+    count: 1
+    rule: null
+    candidates:
+    - E-p037-b010-04
+    basis: assistant_reviewed
+  - from: مش عل
+    to: مشعل
+    count: 1
+    rule: null
+    candidates:
+    - E-p037-b010-09
+    basis: assistant_reviewed
+- id: ER-p038-b003
+  block: main-p038-b003
+  expect_text_sha256: 256e01e5a9f9e505f0098e65b2a7f613e81d3e72e0a90110df6edbe2dca0b716
+  result_text_sha256: 682e7cece8c9a58d12ebbafe3f9a62e82bca88f6d21e8258c05f0200eec89d5a
+  replacements:
+  - from: )کنترل(
+    to: (کنترل)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p038-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p038-b011
+  block: main-p038-b011
+  expect_text_sha256: 97a76a68d325311ce9332f59db495b75b9a6db6324fe56099e8da87b29aef7a6
+  result_text_sha256: 601d77beefe5a0546cec3ba1074dbdd10325d5201da47cc3d78d883abdd9880d
+  replacements:
+  - from: )کنترل(
+    to: (کنترل)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p038-b011-03
+    basis: assistant_reviewed_rule
+  - from: س امانه‌های
+    to: سامانه‌های
+    count: 1
+    rule: L1
+    candidates:
+    - E-p038-b011-01
+    basis: assistant_reviewed_rule
+  - from: س اختمان
+    to: ساختمان
+    count: 1
+    rule: L1
+    candidates:
+    - E-p038-b011-02
+    basis: assistant_reviewed_rule
+- id: ER-p040-b004
+  block: main-p040-b004
+  expect_text_sha256: 99e05eeb3660119af25b39f8898b5721cc6335715fcabc98732fc28f3394e72b
+  result_text_sha256: 66918b3793256fa4ea5833cf99a20d5c99ab297a57c48320cbf0d39a1b350548
+  replacements:
+  - from: )از جمله
+    to: (از جمله
+    count: 1
+    rule: null
+    candidates:
+    - E-p040-b004-01
+    basis: assistant_reviewed
+- id: ER-p040-b005
+  block: main-p040-b005
+  expect_text_sha256: 3de883a877870a17b69887dd6e7b8416ff8961930eea9ccec164a80de1c05a1e
+  result_text_sha256: 7f21681f7ecc7e63ff187d5b4bf1b7ef6ee581bf3cedb56cec09fd81ebee29d7
+  replacements:
+  - from: سیم(
+    to: سیم)
+    count: 1
+    rule: null
+    candidates:
+    - E-p040-b005-01
+    basis: assistant_reviewed
+- id: ER-p040-b009
+  block: main-p040-b009
+  expect_text_sha256: 2c5bbcd3ab710e5b3216dc2e6d418e6c99e7901bb18d2dd924963be08af670c5
+  result_text_sha256: db03ac3d01181fc87d4b28dc3d7aa48ad28759e14748cf5622bbb94971749559
+  replacements:
+  - from: )واحدهای پردازشی(
+    to: (واحدهای پردازشی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p040-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p040-b010
+  block: main-p040-b010
+  expect_text_sha256: 099c57e6812b6c56640a91bffb993c4a1cd016127f5869a973a9537a1fb5bb6f
+  result_text_sha256: 4e540c1dac95d77327105e0b76136797acd85888bd16e1d62eedec045c87feeb
+  replacements:
+  - from: )شبیه‌سازی(
+    to: (شبیه‌سازی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p040-b010-01
+    basis: assistant_reviewed_rule
+- id: ER-p041-b003
+  block: main-p041-b003
+  expect_text_sha256: d40a39777371f6128bdd5b4ab87a4940be28e028240309d914e4f412f2ba371f
+  result_text_sha256: 277d9021fb8e5888981e0f78d9c5816aabf53185699c8eefb1cd0a18f34a81f4
+  replacements:
+  - from: س ناریوهای
+    to: سناریوهای
+    count: 1
+    rule: null
+    candidates:
+    - E-p041-b003-01
+    basis: assistant_reviewed
+- id: ER-p042-b003
+  block: main-p042-b003
+  expect_text_sha256: d444974a6bdaa6a0d532d095608050e5bc45bd50c2d45a5e679cdaae433c0820
+  result_text_sha256: 135b3a047d78e85135111ab13dfd467c8a83e9fe03ce437a5289de15d6a3c6d4
+  replacements:
+  - from: )در این تعریف
+    to: (در این تعریف
+    count: 1
+    rule: null
+    candidates:
+    - E-p042-b003-01
+    basis: assistant_reviewed
+- id: ER-p042-b004
+  block: main-p042-b004
+  expect_text_sha256: c8b002c899422660ceb01488f1874aeb39d45a8497a7a792340d6a040818044b
+  result_text_sha256: 450d5b27c238c9cfe72f9b55968fb56c2ea155d051178dbf887ee8f88b59eb21
+  replacements:
+  - from: مورد نظر نیست.(
+    to: مورد نظر نیست.)
+    count: 1
+    rule: null
+    candidates:
+    - E-p042-b004-01
+    basis: assistant_reviewed
+- id: ER-p042-b006
+  block: main-p042-b006
+  expect_text_sha256: 0f5922a6eeaec0e1b7358af8c704e00e494e99fab0a52779aa663c33c087b58e
+  result_text_sha256: 7b3f93608344b2b4e573696de00971b6c9050061c8b9d1231cd29611fcd27742
+  replacements:
+  - from: )دبی(
+    to: (دبی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p042-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p042-b008
+  block: main-p042-b008
+  expect_text_sha256: 780d2804ad30ed7ccf744779ad89056dca949c481a4c27787319d320d5aad906
+  result_text_sha256: 7237de22f97d5605f61203868f672a6ffd40f9f22f4ee996f1df6a174cfa747c
+  replacements:
+  - from: ')مانند دیوار، سقف، کف یا
+
+      شیشه('
+    to: '(مانند دیوار، سقف، کف یا
+
+      شیشه)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p042-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p042-b014
+  block: main-p042-b014
+  expect_text_sha256: 424d552d60b48cfc38480476d9661eb92ba670c509022b5779a10eb72dc8f54c
+  result_text_sha256: fae98865119c2158ab9cd85e3db668b31d0f5a15a0c99f654a16dd70687d1565
+  replacements:
+  - from: )گرمایش یا سرمایش(
+    to: (گرمایش یا سرمایش)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p042-b014-01
+    basis: assistant_reviewed_rule
+- id: ER-p043-b004
+  block: main-p043-b004
+  expect_text_sha256: 1caac534f615bbfc176ef8bbb13b361dee49cb8332a281eb8fe5f4df279ddd97
+  result_text_sha256: 0e2c5252ae2a3705c07fa96025ca438fa7967797c3812177a6aa63aff0425b5c
+  replacements:
+  - from: رسا نایی
+    to: رسانایی
+    count: 1
+    rule: null
+    candidates:
+    - E-p043-b004-01
+    basis: assistant_reviewed
+- id: ER-p043-b007
+  block: main-p043-b007
+  expect_text_sha256: 393e51d568e4f2b754c6371e9f969d2df5c1d63841c36ad087aa34476f63c0af
+  result_text_sha256: 47b2e04072d7c92f06809433ac8888cdc8cd6d5e9e74dd287a2039cb9dc62668
+  replacements:
+  - from: )یا حداکثر(
+    to: (یا حداکثر)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p043-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p043-b009
+  block: main-p043-b009
+  expect_text_sha256: c1b28c783d5d8596b384105f8527446889cbb68ef67025465233f500d8df81ae
+  result_text_sha256: 594feaed3338749c9c27882073f6325c6de6803bd476ff49f0e2187d99ed17d3
+  replacements:
+  - from: )مطابق تعریف استانداردهای ملّی ایران و ISO, ASTM, EN(
+    to: (مطابق تعریف استانداردهای ملّی ایران و ISO, ASTM, EN)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p043-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p043-b010
+  block: main-p043-b010
+  expect_text_sha256: 8586244d7551aa23ace3e02cd2befc2ae95fefa4e5c824e07ae941550baa4d7d
+  result_text_sha256: a9c1579715f34cec5a35d6be682970bed7406ffa11e4645dfda20fce0f660306
+  replacements:
+  - from: س اختمانی
+    to: ساختمانی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p043-b010-01
+    basis: assistant_reviewed_rule
+- id: ER-p043-b011
+  block: main-p043-b011
+  expect_text_sha256: 2d5f88fc165320ff77a413121b7cd91a5cae700d60a95fddf0807310b2bcd0a0
+  result_text_sha256: 8af3691e0c994f9ec407dd107c7c6fe0a1b83e36a5ef6c6a7b220907b117196b
+  replacements:
+  - from: )مطابق استاندارد ISO 10456(
+    to: (مطابق استاندارد ISO 10456)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p043-b011-01
+    basis: assistant_reviewed_rule
+- id: ER-p043-b013
+  block: main-p043-b013
+  expect_text_sha256: c6c2cd26aa202f25564eb9b69d1c3d93b6104aff6fcc5c87f64a6fab7956f6fc
+  result_text_sha256: e7d918c094154be01e6dbab7fab32c17b1aedabc726b2234c8b78d9730ebf843
+  replacements:
+  - from: شود(.
+    to: شود).
+    count: 1
+    rule: null
+    candidates:
+    - E-p043-b013-01
+    basis: assistant_reviewed
+- id: ER-p044-b004
+  block: main-p044-b004
+  expect_text_sha256: fd8d0b1d986489b4cb7cdd484ba0e2b8979e83db86c126c09a435202268251db
+  result_text_sha256: d836ae79a5fb01eec728b21fa8d4a2b7bfe18b337bc2df37c7d8dd1edf18b7a4
+  replacements:
+  - from: )دیوارها، سقف، کف و پنجره‌ها(
+    to: (دیوارها، سقف، کف و پنجره‌ها)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p044-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p044-b007
+  block: main-p044-b007
+  expect_text_sha256: ce7e6533c4cf9a93085d447423bf2005b35be08e6a930d1819e5fd35cf733f26
+  result_text_sha256: cd87c4c6f32eb00562f8358d24e7ad03a22f47482666935791ccd573e921a7e8
+  replacements:
+  - from: ر ا
+    to: را
+    count: 2
+    rule: L1
+    candidates:
+    - E-p044-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p045-b006
+  block: main-p045-b006
+  expect_text_sha256: 517738ea9c5ad3b2fb1e4774b06dc5c23d46575d9a815e97c95f00b23541c535
+  result_text_sha256: 9e89ab22496c13b7b474cac9605daa37099b40e9e8555e5ed23f14933628d909
+  replacements:
+  - from: ')مانند درز انقطاع هوابندشده بین دو ساختمان، راه پله‌ها، دالان‌ها، فضای تهویه نشده زیر بام
+
+      تخت و شیبدار، پیلوت محصور و پارکینگ‌هایی که فاقد پایانه‌های گرمایشی و سرمایشی‌اند('
+    to: '(مانند درز انقطاع هوابندشده بین دو ساختمان، راه پله‌ها، دالان‌ها، فضای تهویه نشده زیر بام
+
+      تخت و شیبدار، پیلوت محصور و پارکینگ‌هایی که فاقد پایانه‌های گرمایشی و سرمایشی‌اند)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p045-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p046-b004
+  block: main-p046-b004
+  expect_text_sha256: 02c0d91533c85ea04f496db2f21684b7354df9eb84db89f33eee5c5e5968bd07
+  result_text_sha256: 92eba4bbd8c85b1f625f7a14cfb5e9a8a39ac0726e2ff1fbfc5f6f61833e0ba8
+  replacements:
+  - from: )قله(
+    to: (قله)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p046-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p048-b004
+  block: main-p048-b004
+  expect_text_sha256: a919b15d6c52a4d754eb265af338836a9073face9ace760f36e4a55b0f9e622a
+  result_text_sha256: 5bf28f973910a0b3464b6a7281e773af48ab6fffd32c20a0e74da5412f96cffc
+  replacements:
+  - from: )دبی(
+    to: (دبی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p048-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p048-b006
+  block: main-p048-b006
+  expect_text_sha256: 9d8b49c126ae94376368a6e46c29367fed35c502beb0a515a7de1f3555eebd29
+  result_text_sha256: 19dfd14a2a11c1fa88ccecb596ca4340a7ad071a247f28577a844afcb80cca4d
+  replacements:
+  - from: )دبی(
+    to: (دبی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p048-b006-01
+    basis: assistant_reviewed_rule
+  - from: PT100 / PT1000) IEC60751)
+    to: IEC60751 (PT100 / PT1000)
+    count: 1
+    rule: null
+    candidates:
+    - E-p048-b006-02
+    basis: assistant_reviewed
+- id: ER-p048-b008
+  block: main-p048-b008
+  expect_text_sha256: d1042a74f858a363c91d14ec9874787921ff6a0629a3036f74ac2a8566f0ac2f
+  result_text_sha256: d1562271f2f0dfd8ae7800d498d61492f81d6fb194466dcb8d5b087c8b6b5463
+  replacements:
+  - from: )دبی(
+    to: (دبی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p048-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p048-b011
+  block: main-p048-b011
+  expect_text_sha256: 1d3a59cf22342c3c2180d45f93c060fd68dca17f9240a59a25e8f19adbe9b9e6
+  result_text_sha256: 9e4a12b8ffb667f32eb149d07e6c99d4c6bd72862d7812ff190774ce5bfd775b
+  replacements:
+  - from: PT100 / PT1000) IEC60751)
+    to: IEC60751 (PT100 / PT1000)
+    count: 1
+    rule: null
+    candidates:
+    - E-p048-b011-02
+    basis: assistant_reviewed
+  - from: مط ابق
+    to: مطابق
+    count: 1
+    rule: L1
+    candidates:
+    - E-p048-b011-01
+    basis: assistant_reviewed_rule
+- id: ER-p049-b006
+  block: main-p049-b006
+  expect_text_sha256: e163f50e81a809c1d81d9c8691c677adb14faa26429d9eb7d6acc82c632fbe74
+  result_text_sha256: 9efcd04222868504a674fd6cdf616e27a83f577c9b5e2cdc578d94a60248aa8f
+  replacements:
+  - from: اش اره
+    to: اشاره
+    count: 1
+    rule: L1
+    candidates:
+    - E-p049-b006-01
+    basis: assistant_reviewed_rule
+  - from: تص ریح
+    to: تصریح
+    count: 1
+    rule: L1
+    candidates:
+    - E-p049-b006-02
+    basis: assistant_reviewed_rule
+- id: ER-p049-b012
+  block: main-p049-b012
+  expect_text_sha256: 31b61d2daf0e9ad9819e26c81b09027de034ef6afcae2e96fdd73c983f1185f0
+  result_text_sha256: 75d00e00324fccdc2c251e4777786e7cb50641cd31e65c418fc6b3835f136134
+  replacements:
+  - from: )از طراحی تا تخریب(
+    to: (از طراحی تا تخریب)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p049-b012-01
+    basis: assistant_reviewed_rule
+  - from: )معماران، مهندسان، پیمانکاران و مالکان(
+    to: (معماران، مهندسان، پیمانکاران و مالکان)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p049-b012-02
+    basis: assistant_reviewed_rule
+  - from: ')مطابق با استاندارد
+
+      )ISO 19650'
+    to: '(مطابق با استاندارد
+
+      ISO 19650)'
+    count: 1
+    rule: null
+    candidates:
+    - E-p049-b012-03
+    basis: assistant_reviewed
+- id: ER-p051-b006
+  block: main-p051-b006
+  expect_text_sha256: 6e359202358fbb26185a935580f3237fe33a3985e2ccc46928f664e0e488cc24
+  result_text_sha256: 145a2af37f367d3d47add53afbef89869db0ca544c62cd1f712dd6921693e0d6
+  replacements:
+  - from: ')مطابق
+
+      ماده ۳۳ قانون نطام مهندسی و کنترل ساختمان مصوب ۱۳۷۴('
+    to: '(مطابق
+
+      ماده ۳۳ قانون نطام مهندسی و کنترل ساختمان مصوب ۱۳۷۴)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p051-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p051-b010
+  block: main-p051-b010
+  expect_text_sha256: 5d343c9e9c2af48a138b84dd53b40bf3f2e0ca193ff4b548a8a81d99c200b3da
+  result_text_sha256: 53de0c3d64af05cc25cb7285ecb808a2bb59b4ca859f5fc834c338a6df210f53
+  replacements:
+  - from: )از مایع به جامد یا بالعکس(
+    to: (از مایع به جامد یا بالعکس)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p051-b010-01
+    basis: assistant_reviewed_rule
+- id: ER-p052-b004
+  block: main-p052-b004
+  expect_text_sha256: 00fe434d159d3a1ebb3f9cf8eacbbe92f7559c6d874ba7bf096c7c3fc1765a91
+  result_text_sha256: b6231632c0210e752fa8e428f7ab88ddae9a61c2079966a5966bda1f826301e1
+  replacements:
+  - from: ') حاصل تقسیم فاصله سطح بیرونی پنجره از
+
+      سطح بیرونی نما به ارتفاع پنجره('
+    to: '( حاصل تقسیم فاصله سطح بیرونی پنجره از
+
+      سطح بیرونی نما به ارتفاع پنجره)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p052-b004-02
+    basis: assistant_reviewed_rule
+- id: ER-p052-b014
+  block: main-p052-b014
+  expect_text_sha256: 22d765968ca86765ae9b2f88663a27d5165a1970a3b2872619f8499397536671
+  result_text_sha256: fde09fb39ab538f96a75afd692cc7ba9b3393f537b48b73e8aa3889531f4dffe
+  replacements:
+  - from: سا مانه
+    to: سامانه
+    count: 1
+    rule: L1
+    candidates:
+    - E-p052-b014-01
+    basis: assistant_reviewed_rule
+- id: ER-p055-b004
+  block: main-p055-b004
+  expect_text_sha256: d1694e28dfa27a426e9387299e3381551c6789ab10fe741b5cdb72969ffec822
+  result_text_sha256: 4ae2318448eea2b5fc924907a8952886e1e13c7ed84d39b70643772182251660
+  replacements:
+  - from: )پوسته خارجی(
+    to: (پوسته خارجی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p055-b004-02
+    basis: assistant_reviewed_rule
+  - from: )تأسیسات مکانیکی و الکتریکی(
+    to: (تأسیسات مکانیکی و الکتریکی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p055-b004-03
+    basis: assistant_reviewed_rule
+  - from: )تولید، بهره‌برداری، تخریب و بازیافت(
+    to: (تولید، بهره‌برداری، تخریب و بازیافت)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p055-b004-04
+    basis: assistant_reviewed_rule
+  - from: غ یرفعال
+    to: غیرفعال
+    count: 1
+    rule: L1
+    candidates:
+    - E-p055-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p055-b005
+  block: main-p055-b005
+  expect_text_sha256: 3347eb2993ac3ef127c168e77d27ac09751f9227a8d72fd70c500842b16cc93e
+  result_text_sha256: 2b012f1d2dc0b249becb4a2f3e555778ff5a23eb4807e410a2c909cd0d8a704c
+  replacements:
+  - from: غ یرنورگذر
+    to: غیرنورگذر
+    count: 1
+    rule: L1
+    candidates:
+    - E-p055-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p055-b007
+  block: main-p055-b007
+  expect_text_sha256: 7a8253c0d017c3f707559f214b1f1062b8dab0480fee2cf5a5db43abfc6919ef
+  result_text_sha256: 12c4978aad36eb15e6749b4e39835e11627209cd610e02cd7a720699c75329b2
+  replacements:
+  - from: مصرف ی
+    to: مصرفی
+    count: 1
+    rule: null
+    candidates:
+    - E-p055-b007-01
+    basis: assistant_reviewed
+- id: ER-p055-b008
+  block: main-p055-b008
+  expect_text_sha256: 1489dc542a8274fc79b3f152a64d4821a8707f3a1bc1a616697889293aaa01ac
+  result_text_sha256: a542a0a451389788c673845d27a655de7733cfe9fd9cf6430ae33dc27e7ee46c
+  replacements:
+  - from: برق ی
+    to: برقی
+    count: 1
+    rule: null
+    candidates:
+    - E-p055-b008-01
+    basis: assistant_reviewed
+- id: ER-p055-b009
+  block: main-p055-b009
+  expect_text_sha256: b8629fdc2241bc91f520e3f62816ce72415f131c92e64dcfc3831bd740f46f04
+  result_text_sha256: 7e45daa065cae1f92fb0eaa3127181888941761e8bf68409d4d389fa6e20f595
+  replacements:
+  - from: روشنا یی
+    to: روشنایی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p055-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p055-b011
+  block: main-p055-b011
+  expect_text_sha256: de75e708f0f0e12edf1388cea36afba33e90066e836eb8d4befd537debbcff27
+  result_text_sha256: 4a2f5f4c6dd2d20ac55ac642d59c3366839ff1cc11d663b9ebc90a31c0667c30
+  replacements:
+  - from: پا یش
+    to: پایش
+    count: 1
+    rule: null
+    candidates:
+    - E-p055-b011-01
+    basis: assistant_reviewed
+- id: ER-p055-b014
+  block: main-p055-b014
+  expect_text_sha256: 10b2f354ae8d3d79980420e80e05c1038ec9542f7833e10e0b4a040e4fad7cb8
+  result_text_sha256: faf8a0194a7b3e85606320b8c9ac8024f91371d20211a6a57e01a418434ef1d2
+  replacements:
+  - from: )تولید، بهره برداری و تخریب(
+    to: (تولید، بهره برداری و تخریب)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p055-b014-01
+    basis: assistant_reviewed_rule
+- id: ER-p057-b006
+  block: main-p057-b006
+  expect_text_sha256: e71a702ca02f1dbfbddb5fd9e04d47cc349f8fb6f84ad68060d953c7671a4c48
+  result_text_sha256: 328c93d1e91b2840833afcea529d14f407e458d7bae78914e40f1cb1de1853a8
+  replacements:
+  - from: )کنترل(
+    to: (کنترل)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p057-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p058-b004
+  block: main-p058-b004
+  expect_text_sha256: 9415e46dcfc93403c591c45b32dc859836ec017520217d3cee6458cf81df776a
+  result_text_sha256: 523b66b18061637b5d61247f8c4dbc6c03d01e27cdea1256edb8dc75bbc18ff8
+  replacements:
+  - from: )حفاظت ساختمان ها در مقابل حریق(
+    to: (حفاظت ساختمان ها در مقابل حریق)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p058-b004-01
+    basis: assistant_reviewed_rule
+  - from: )سامانه گاز طبیعی در ساختمان(
+    to: (سامانه گاز طبیعی در ساختمان)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p058-b004-02
+    basis: assistant_reviewed_rule
+- id: ER-p058-b006
+  block: main-p058-b006
+  expect_text_sha256: a399808a0e7d7aca56dc6953680f1b49d01b7fc032ef0bc860d66a092bfbb82a
+  result_text_sha256: 04cc3564b39acbcb4c53c89bef5bf144c6beb594ce507e4d84242dfd574c6545
+  replacements:
+  - from: )در مراحل طراحی، محاسبه، نظارت، اجرا و بهره برداری(
+    to: (در مراحل طراحی، محاسبه، نظارت، اجرا و بهره برداری)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p058-b006-02
+    basis: assistant_reviewed_rule
+  - from: )در مراحل مراقبت و نگهداری، بهسازی، تعمیرات و بازسازی(
+    to: (در مراحل مراقبت و نگهداری، بهسازی، تعمیرات و بازسازی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p058-b006-03
+    basis: assistant_reviewed_rule
+  - from: هم ان
+    to: همان
+    count: 1
+    rule: null
+    candidates:
+    - E-p058-b006-01
+    basis: assistant_reviewed
+- id: ER-p058-b007
+  block: main-p058-b007
+  expect_text_sha256: 3469015af7ef96d3573038b09f9aa43699b5e7fe0654115efeded6757adac447
+  result_text_sha256: f33ed7893fdfbec2d96c943b1f7b12d3ef223eb64e04126dc7a5cbb8be514ab1
+  replacements:
+  - from: الزام ی
+    to: الزامی
+    count: 1
+    rule: null
+    candidates:
+    - E-p058-b007-01
+    basis: assistant_reviewed
+- id: ER-p060-b005
+  block: main-p060-b005
+  expect_text_sha256: 96c62251b70f36210ee608b1263800b18e9f931e6a79d36b14aea45ddd9869fe
+  result_text_sha256: 6a279813606ad049363149d7ed0ef63163380358327fd09584fe8d1da9630b4a
+  replacements:
+  - from: )اصلاحی ۱۳۹۴/۱۲/۰۲(
+    to: (اصلاحی ۱۳۹۴/۱۲/۰۲)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p060-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p061-b004
+  block: main-p061-b004
+  expect_text_sha256: 4c471f1926f1b7e0c1dd4f4416587c419ecf5c17df7b9c71451dfa325762e4c9
+  result_text_sha256: ed57dba10f41d3d04aa59adfb6e3845727128d077da61bd7dc767c3ddecdd74d
+  replacements:
+  - from: شهردار ی
+    to: شهرداری
+    count: 2
+    rule: L1
+    candidates:
+    - E-p061-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p063-b003
+  block: main-p063-b003
+  expect_text_sha256: e0d1bf295a3b4d76f805c5bafe28a15360f3316d00d0f8670a6d8bcd093c6fba
+  result_text_sha256: c0de403ccce614b3d44bfe7b325c68d1e34a7de933bdfd182b8c309066082bc9
+  replacements:
+  - from: ع ملیات
+    to: عملیات
+    count: 1
+    rule: null
+    candidates:
+    - E-p063-b003-01
+    basis: assistant_reviewed
+- id: ER-p063-b004
+  block: main-p063-b004
+  expect_text_sha256: fbadfe8e3e8828c90f9cefcdcd8bdc24a834a2b4ef247608109d3fac7fe2ee1b
+  result_text_sha256: 2031d74e7e4d2707919878a1724e34e2ad7d5b60afe8b25accabb43cdad093e0
+  replacements:
+  - from: دستی ابی
+    to: دستیابی
+    count: 1
+    rule: null
+    candidates:
+    - E-p063-b004-01
+    basis: assistant_reviewed
+- id: ER-p063-b006
+  block: main-p063-b006
+  expect_text_sha256: fed25ccb1f879a04d8cfcf0dd0487af1ba16a65edb4c25a1ae2fc69550b01b0c
+  result_text_sha256: d8d7d7556220f0728c0fee6432dd9c9af3538a5d0ce951d501ddaf5411ed2bf6
+  replacements:
+  - from: با ید
+    to: باید
+    count: 1
+    rule: null
+    candidates:
+    - E-p063-b006-01
+    basis: assistant_reviewed
+- id: ER-p063-b007
+  block: main-p063-b007
+  expect_text_sha256: af2313a276e1c0dfadfb44e0c060f849f2ecf968575d1bbeffed756d55df6408
+  result_text_sha256: 0bcdd66394a45193adcbae88181ac24c235132052f33a4f0c00948a8ea98e1ef
+  replacements:
+  - from: به‌غ یر
+    to: به‌غیر
+    count: 1
+    rule: null
+    candidates:
+    - E-p063-b007-01
+    basis: assistant_reviewed
+- id: ER-p064-b002
+  block: main-p064-b002
+  expect_text_sha256: afdf6f6cc0780f8c30f26f3d7252b9ed1bac7f18e2b25e1267e8c537daf02f8e
+  result_text_sha256: 5c29dea20982c939bfc37982f08107423f8edaa41e919f4d449bb5f2d1bb0c9a
+  replacements:
+  - from: اجرا ی
+    to: اجرای
+    count: 1
+    rule: null
+    candidates:
+    - E-p064-b002-01
+    basis: assistant_reviewed
+  - from: ساختما نی
+    to: ساختمانی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p064-b002-02
+    basis: assistant_reviewed_rule
+- id: ER-p065-b003
+  block: main-p065-b003
+  expect_text_sha256: 2ff75eab3b8580256096e9b99e4b13a8b65d914065f582616ed5a760023ed644
+  result_text_sha256: d40910be30d4e3da94aea81dbf3dcabcd5342cd9959c983895a25fa6d1c35e2c
+  replacements:
+  - from: بازده ی
+    to: بازدهی
+    count: 1
+    rule: null
+    candidates:
+    - E-p065-b003-01
+    basis: assistant_reviewed
+- id: ER-p066-b003
+  block: main-p066-b003
+  expect_text_sha256: 5de11c6aab86e9c6234076660b33ebcd2aaa5f66bb97b8ddf268335799fb7cc8
+  result_text_sha256: 5a17d9164146727edb81ff9b588c74feec7ad4517f227786d3d2412cc6372dde
+  replacements:
+  - from: م تشکل
+    to: متشکل
+    count: 1
+    rule: null
+    candidates:
+    - E-p066-b003-01
+    basis: assistant_reviewed
+- id: ER-p066-b007
+  block: main-p066-b007
+  expect_text_sha256: 924896b1df47e2be2b80076e29bfcd39088b1ca69dea110adc5e3316f86e2c8a
+  result_text_sha256: 8e6e7c87de8fb97e513220a63527519670eb8c8d8ec96d846fc04badb5df3ada
+  replacements:
+  - from: گرما یش
+    to: گرمایش
+    count: 1
+    rule: null
+    candidates:
+    - E-p066-b007-01
+    basis: assistant_reviewed
+- id: ER-p066-b012
+  block: main-p066-b012
+  expect_text_sha256: 52d2789c55548c929f07bbb5f165218b0798612e432eff1afc900bbb5426e620
+  result_text_sha256: ab12af5450ad07f565bba1daafe446c36dbb28ef5f0a0364b89968acf496e81d
+  replacements:
+  - from: مع یار
+    to: معیار
+    count: 1
+    rule: L1
+    candidates:
+    - E-p066-b012-01
+    basis: assistant_reviewed_rule
+  - from: تع یین
+    to: تعیین
+    count: 1
+    rule: L1
+    candidates:
+    - E-p066-b012-02
+    basis: assistant_reviewed_rule
+- id: ER-p067-b003
+  block: main-p067-b003
+  expect_text_sha256: c607acc2c0163b0821dce8b8e3c3beb37a59cd7990685bea576b369d6500d8b0
+  result_text_sha256: 92c34037f6c01e07de0dbb45bc49375ea3ebc2c9a0115ba436279c1939a8d8be
+  replacements:
+  - from: گرمای ش
+    to: گرمایش
+    count: 1
+    rule: null
+    candidates:
+    - E-p067-b003-01
+    basis: assistant_reviewed
+- id: ER-p068-b003
+  block: main-p068-b003
+  expect_text_sha256: 5b74c94dd2bbd1f1db838cdaeffe72e42ee9c76f68ee5c90fd4c01dce43237f2
+  result_text_sha256: 530d2ea8019cf0231ea93839eb85397f3fdb7bada8e1ed99bf98e6a3341d24cf
+  replacements:
+  - from: دسته‌بند ی
+    to: دسته‌بندی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p068-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p069-b005
+  block: main-p069-b005
+  expect_text_sha256: 37f7fbd4a49fab00c4c06925c08fbb42324d1d896e949fe998dd542f4a0d85f1
+  result_text_sha256: a74e95d9c79907b1350c83e2f36d1a89a764d03df84bfd7dfdea947fa59e9d59
+  replacements:
+  - from: )پیوست«۳»(
+    to: (پیوست«۳»)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p069-b005-01
+    basis: assistant_reviewed_rule
+  - from: )مسکونی(
+    to: (مسکونی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p069-b005-02
+    basis: assistant_reviewed_rule
+  - from: )غیرمسکونی(
+    to: (غیرمسکونی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p069-b005-03
+    basis: assistant_reviewed_rule
+- id: ER-p069-b007
+  block: main-p069-b007
+  expect_text_sha256: b642a42438938440ba94c73164d68d248ce09981c193c37322d3fc7a9ae61332
+  result_text_sha256: 228e18bc8b0cb96be75e856639e10698c67c0e638d8d64c7e409a59a80a65eee
+  replacements:
+  - from: د یگر
+    to: دیگر
+    count: 1
+    rule: L1
+    candidates:
+    - E-p069-b007-01
+    basis: assistant_reviewed_rule
+  - from: به‌غ یر
+    to: به‌غیر
+    count: 1
+    rule: null
+    candidates:
+    - E-p069-b007-02
+    basis: assistant_reviewed
+- id: ER-p070-b005
+  block: main-p070-b005
+  expect_text_sha256: 8a2a31d8fe85d89715e075e34e753da8a4a1c4facfbdebaf199ebcf396ea6f4b
+  result_text_sha256: 9bc332e8b328d2c0ef38481df271a8bb788f459a78d3cb4ccaa77b48b2de6569
+  replacements:
+  - from: )بارز(
+    to: (بارز)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p070-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p071-b006
+  block: main-p071-b006
+  expect_text_sha256: 433bcc1176eed1376da851735306b8c0541ce2062b0efa5991c9b413bc08b9b7
+  result_text_sha256: d93973406b87a221f6e450ff4997b065e3bb1a88da21cb3b2d8a8a740273fda6
+  replacements:
+  - from: تمام ی
+    to: تمامی
+    count: 1
+    rule: null
+    candidates:
+    - E-p071-b006-01
+    basis: assistant_reviewed
+- id: ER-p072-b007
+  block: main-p072-b007
+  expect_text_sha256: 47bab1b3c1bbb74a6bb9a5eb4864b39cb46dba0c358df69cf7cf3a3d9ed72956
+  result_text_sha256: a43329842bae8b4bd4271be6c05cdbd30d4e447e4df866d91ec9036d49c421c8
+  replacements:
+  - from: فس یلی
+    to: فسیلی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p072-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p073-b012
+  block: main-p073-b012
+  expect_text_sha256: 64a31892ca0e9438159f046ce440c44fc2d25d84458c4c7630b55aa919881ee9
+  result_text_sha256: d958cf4a08b717ede80d91c2e9bdeebe192a002bb89d0981b372fcf5a4e87af0
+  replacements:
+  - from: گرد د
+    to: گردد
+    count: 1
+    rule: null
+    candidates:
+    - E-p073-b012-01
+    basis: assistant_reviewed
+- id: ER-p074-b004
+  block: main-p074-b004
+  expect_text_sha256: c7e34db09912adf841556269376e4e13f067c6f9ab25a92e6f9277c8ba8ded31
+  result_text_sha256: d60458df85b6ad98b666958937505e1c73927d5819374e26241a0ae74fbabf94
+  replacements:
+  - from: م ی‌دهد
+    to: می‌دهد
+    count: 1
+    rule: L1
+    candidates:
+    - E-p074-b004-01
+    basis: assistant_reviewed_rule
+  - from: طی فی
+    to: طیفی
+    count: 1
+    rule: null
+    candidates:
+    - E-p074-b004-02
+    basis: assistant_reviewed
+- id: ER-p074-b007
+  block: main-p074-b007
+  expect_text_sha256: 4804ab4239d87f46cdbe02a456894be84d235410e083c2faeef9f942b19ba5af
+  result_text_sha256: c7c8f3113eaf658e5a558a5e2a01674143430681ce72fcdde8656d91b62b2df3
+  replacements:
+  - from: )پیوست«۳»(
+    to: (پیوست«۳»)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p074-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p076-b007
+  block: main-p076-b007
+  expect_text_sha256: 2051a746a2e88595b2caceb56b5b58bdb57334c46fadb6a4c6de87baaf850550
+  result_text_sha256: 8ffde3fd1d49db8bc813859a04129b0e4422cbd0c763c627ac3a7033c17cac4a
+  replacements:
+  - from: ')به‌جز ساختمان هایی که نسبت مساحت جداره نورگذر به کل مساحت نما
+
+      حتی در یکی از نماهای ساختمان بیشتر از %۵۰ باشد ۱('
+    to: '(به‌جز ساختمان هایی که نسبت مساحت جداره نورگذر به کل مساحت نما
+
+      حتی در یکی از نماهای ساختمان بیشتر از %۵۰ باشد ۱)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p076-b007-02
+    basis: assistant_reviewed_rule
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p076-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p077-b007
+  block: main-p077-b007
+  expect_text_sha256: 1015dc1650c498aab29352e5deddf4b2c4cb70365d909eb5a4f7ef52ac0cac8e
+  result_text_sha256: 8bcac87b886bec1c2e92997d3afe23a62f4f710d06a0c95eb853467c91b8eaba
+  replacements:
+  - from: ها ی
+    to: های
+    count: 1
+    rule: null
+    candidates:
+    - E-p077-b007-01
+    basis: assistant_reviewed
+- id: ER-p078-b004
+  block: main-p078-b004
+  expect_text_sha256: 1c22fb46a7cd8c8b5d6373d560bec60cb9b4afc3cb9690abb731ce630af37e2d
+  result_text_sha256: 13d45ae2400c194a36b009e2d961f79079869733c021a3ccd08130dac32a9d4c
+  replacements:
+  - from: )شبیه سازی(
+    to: (شبیه سازی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p078-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p078-b007
+  block: main-p078-b007
+  expect_text_sha256: 7d46fb3a8df11eb0479739c011d60e69f118b4b04495bd9b4bf80e736c11de97
+  result_text_sha256: c25586b078030473317f4a17b8bed12d9a5ff4f6b550ba3a2ea5b26ba99d8640
+  replacements:
+  - from: )پیوست«۳»(
+    to: (پیوست«۳»)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p078-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p079-b004
+  block: main-p079-b004
+  expect_text_sha256: b2cc705e0ac63b409b88c994b9fb4a8bfe464224fe619c349e0c0c4393afd5b4
+  result_text_sha256: 16560a31bd6b3de7e7883676ae8bdd2425eabffc73e9831120c69b0ac1a911f4
+  replacements:
+  - from: نقشه‌ها ی
+    to: نقشه‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p079-b004-01
+    basis: assistant_reviewed
+- id: ER-p079-b009
+  block: main-p079-b009
+  expect_text_sha256: 7779cf177c801c940a38c4cbddd8de931fc373a93d1faa51a295ea1d0a96e974
+  result_text_sha256: 235d7d479a9dbe5e5a19bb36b4ea6c79b1f13f710475f239fe3e474bcd204654
+  replacements:
+  - from: ')بر حسب کیلووات
+
+      ساعت بر متر مربع در سال('
+    to: '(بر حسب کیلووات
+
+      ساعت بر متر مربع در سال)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p079-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p081-b003
+  block: main-p081-b003
+  expect_text_sha256: a43ee5b736a242e44aeecac9b0cd5a2e1056f3e2bebcf535576a6f48f8fb8a55
+  result_text_sha256: fabd89c02c13be9c2011654b5e753e269c1e4067e7e3895baee28261ffeaf9f9
+  replacements:
+  - from: محدود یت
+    to: محدودیت
+    count: 1
+    rule: null
+    candidates:
+    - E-p081-b003-01
+    basis: assistant_reviewed
+- id: ER-p083-b003
+  block: main-p083-b003
+  expect_text_sha256: 3a8766ee1dd4a90775f076e12a3da4352932a72674d53e16c07b1c1d5fb6b838
+  result_text_sha256: a754250771341a59b95d2bec8466b1674f768bcb167501c36f26dfafdfeadcd5
+  replacements:
+  - from: )محافظت ساختمان در برابر حریق(
+    to: (محافظت ساختمان در برابر حریق)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p083-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p084-b004
+  block: main-p084-b004
+  expect_text_sha256: 1a498309b77b0c981f50c6de678d445654baf3100e0e0f0fcfdcdbc75805c193
+  result_text_sha256: 1a498309b77b0c981f50c6de678d445654baf3100e0e0f0fcfdcdbc75805c193
+  replacements: []
+  reclassify:
+    kind: caption_continuation
+    caption_block: main-p084-b003
+    candidates:
+    - E-p084-b004-01
+- id: ER-p084-b005
+  block: main-p084-b005
+  expect_text_sha256: b51328878458d918de8b5c16c2695d816cffa8730123289e012bcf7916c7545a
+  result_text_sha256: 9c8ada27d855ceded4a605e2f45b61602dab0288d23bb59ae8e5e1707e7fd6e4
+  replacements:
+  - from: ) شکل ۱۹-۵-۱(
+    to: ( شکل ۱۹-۵-۱)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p084-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p086-b006
+  block: main-p086-b006
+  expect_text_sha256: 69d86edea2fd3db59aabacd84431c9a35e9d308ed9c226d57d6c48384025f9e9
+  result_text_sha256: 778996fc2a97b4fed414c837d3d2f9c5f1a37856c440f558d81ec616686d4f73
+  replacements:
+  - from: )مانند پشم‌های معدنی و عایق‌های دارای الیاف کوتاه(
+    to: (مانند پشم‌های معدنی و عایق‌های دارای الیاف کوتاه)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p086-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p090-b003
+  block: main-p090-b003
+  expect_text_sha256: 77bbd89ce013924e94feedbf5970925eb99621d409996aec90a92de6ba8d27b7
+  result_text_sha256: a58cd4ece58cd6b4e3d9769d5554c3e9af28a3c1c242e8c086341fa95fe50d3f
+  replacements:
+  - from: PF)۱)
+    to: (PF)¹
+    count: 1
+    rule: null
+    candidates:
+    - E-p090-b003-01
+    basis: assistant_reviewed
+- id: ER-p090-b005
+  block: main-p090-b005
+  expect_text_sha256: bd78710fe34c5ba898c049b7c7c77b3eca79c9a766e00077f550ac7b9e22e642
+  result_text_sha256: d9c421c8ffaa43d7f0937f46e075c3166867f92fa3e6ca1f2b4f488dedcebc7f
+  replacements:
+  - from: خارج ی
+    to: خارجی
+    count: 1
+    rule: null
+    candidates:
+    - E-p090-b005-01
+    basis: assistant_reviewed
+  - from: اقلی م‌های
+    to: اقلیم‌های
+    count: 1
+    rule: L1
+    candidates:
+    - E-p090-b005-02
+    basis: assistant_reviewed_rule
+- id: ER-p092-b005
+  block: main-p092-b005
+  expect_text_sha256: 98b4deb0dcd04909ece0b248105cf52722fd04ae397267af18fae2df44627df9
+  result_text_sha256: 6c9119cfe46cde1f36fb41e7a7958101bb71b3a6578ec333ac6998bc6019861b
+  replacements:
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p092-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p092-b006
+  block: main-p092-b006
+  expect_text_sha256: 76f2fe51da3022dfd191acbc9e7821925280ffb36022304ebecdca62b1036609
+  result_text_sha256: f17e79f6f549dda0923e485aa1efe2373496a87b3d8add5d3906525f18be3033
+  replacements:
+  - from: )وانت، کامیون، چرخ دستی و ....(
+    to: (وانت، کامیون، چرخ دستی و ....)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p092-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p092-b009
+  block: main-p092-b009
+  expect_text_sha256: a10a3a11e17022f6aa7557118c6d0a98b14f7d272b0af230c94474dbe58c88da
+  result_text_sha256: 0f9e60eb9c803764d689e0e5ac1104352973c2769a86fc3e3e66a54c348fd9cd
+  replacements:
+  - from: )با احتساب همکف(
+    to: (با احتساب همکف)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p092-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p093-b004
+  block: main-p093-b004
+  expect_text_sha256: 74782e8207f461d32c990ebc3a5ccd8d56b196345b8fb67ee8edabf36174fd0f
+  result_text_sha256: 15817741b6840886e9dba1960b2b3bf3c4e90ab88ba585a53df935fc07e2c693
+  replacements:
+  - from: )با احتساب همکف(
+    to: (با احتساب همکف)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p093-b004-02
+    basis: assistant_reviewed_rule
+  - from: شانزده م
+    to: شانزدهم
+    count: 1
+    rule: null
+    candidates:
+    - E-p093-b004-01
+    basis: assistant_reviewed
+- id: ER-p093-b006
+  block: main-p093-b006
+  expect_text_sha256: 2684f1303e2e9fb14fce94542d5f5db80d546f7d11217544ebe3ad6a77ad96a8
+  result_text_sha256: 287685bf498cac783ea9eb9834cabbb3bfc035e6b5d95355ac7daef103b1ab48
+  replacements:
+  - from: 5 ac/h)۱)
+    to: (5 ac/h)¹
+    count: 1
+    rule: null
+    candidates:
+    - E-p093-b006-02
+    basis: assistant_reviewed
+- id: ER-p093-b008
+  block: main-p093-b008
+  expect_text_sha256: e3c282ff12e97f8318b5a7965aeefe8b209c42066d4771ac6f7de0339a127038
+  result_text_sha256: 9cb920370ce7643b1580e38e9a14739aaab4be6ca76ab21f1c811f5b55a42580
+  replacements:
+  - from: )شامل مکان آزمایش اول(
+    to: (شامل مکان آزمایش اول)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p093-b008-02
+    basis: assistant_reviewed_rule
+  - from: آزم ون
+    to: آزمون
+    count: 1
+    rule: null
+    candidates:
+    - E-p093-b008-01
+    basis: assistant_reviewed
+- id: ER-p095-b004
+  block: main-p095-b004
+  expect_text_sha256: 6c7f183961c3a9f12385035790b592a091fde041b9beaeca7777cba7e7caeb58
+  result_text_sha256: 980b1511c173260fab286345e7cb7ba3bf0f5e8149807444b5e78c939f8d7475
+  replacements:
+  - from: )تأسیسات مکانیکی(
+    to: (تأسیسات مکانیکی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p095-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p095-b005
+  block: main-p095-b005
+  expect_text_sha256: 62bd7e696d8f3da41c76d516f33e68a3842b96f28cca9e95ce9a3868aedb5a09
+  result_text_sha256: 64f8a55e4b41b815cafed6d627b07b6d75e01f7ebbad98459ebd29f0f98a0b53
+  replacements:
+  - from: )گازوئیل، نفت و ...(
+    to: (گازوئیل، نفت و ...)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p095-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p096-b004
+  block: main-p096-b004
+  expect_text_sha256: fb2f5b6b7de7dd7a4b5ed9b5e8a25e5baa3e9de8466446b3f2bbfea1ae0ac6d4
+  result_text_sha256: 764b7d7d3b34b7eab857eab52797a3a0c6da34861de5d8b78645b433ddc50118
+  replacements:
+  - from: ')شامل
+
+      پوسته مجاور فضای کنترل‌شده اعم از دیوار، سقف، کف، تجهیزات و مبلمان ثابت('
+    to: '(شامل
+
+      پوسته مجاور فضای کنترل‌شده اعم از دیوار، سقف، کف، تجهیزات و مبلمان ثابت)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p096-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p096-b006
+  block: main-p096-b006
+  expect_text_sha256: 35146e5e65510b176f63b2ebb07b3dceb8a35064b85df509afe27be7697e5d6a
+  result_text_sha256: c8009dc593f1bd2fac0fa91c9c8c88376582155e674ff4c2b0906cfb4b10d3ef
+  replacements:
+  - from: سامانه‌ها ی
+    to: سامانه‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p096-b006-01
+    basis: assistant_reviewed
+- id: ER-p096-b008
+  block: main-p096-b008
+  expect_text_sha256: f2ab997f802dfe5d5eb256dc76f614579dd3a6d6c02c7825a1a7ca4c644b2060
+  result_text_sha256: b2cf37d7d6e1926aa74fafa5498ead9e4c46bd29f1e003eb49721a6d80611fd5
+  replacements:
+  - from: ')مانند دیتا
+
+      سنترها('
+    to: '(مانند دیتا
+
+      سنترها)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p096-b008-02
+    basis: assistant_reviewed_rule
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p096-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p097-b009
+  block: main-p097-b009
+  expect_text_sha256: 590186b657754107cdf5b989471c44f888fe0291609fd7623e3474ffd6d144a0
+  result_text_sha256: 1e02da2e485e0a0dbde1a870ef4bf0d4b7e3556c8024103d14bb7ac62ce3306c
+  replacements:
+  - from: ')مانند آبگرمکن خورشیدی،
+
+      آب گرم حاصل از CHP و ...('
+    to: '(مانند آبگرمکن خورشیدی،
+
+      آب گرم حاصل از CHP و ...)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p097-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p097-b010
+  block: main-p097-b010
+  expect_text_sha256: ab16e31a64fe375094928dae5b992b98adac1f2cf3e278c1968b7ed643d64009
+  result_text_sha256: 4d99e802bd9ff8f61bc5309043f92a48a7956c14e0d6cf35e0fe775c1e323f4d
+  replacements:
+  - from: )سامانه گاز طبیعی در ساختمان(
+    to: (سامانه گاز طبیعی در ساختمان)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p097-b010-03
+    basis: assistant_reviewed_rule
+  - from: تعبی ه
+    to: تعبیه
+    count: 1
+    rule: null
+    candidates:
+    - E-p097-b010-01
+    basis: assistant_reviewed
+  - from: سامانه‌ها ی
+    to: سامانه‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p097-b010-02
+    basis: assistant_reviewed
+- id: ER-p098-b004
+  block: main-p098-b004
+  expect_text_sha256: 286c07de91036e01233b4e8eff754f16927fce2b35cd72f79f63f343c1069b63
+  result_text_sha256: fd12fe2b862279e8718ddf0f003446677bf892efa65da28898c38aeb562bc761
+  replacements:
+  - from: سا مانه
+    to: سامانه
+    count: 1
+    rule: L1
+    candidates:
+    - E-p098-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p100-b008
+  block: main-p100-b008
+  expect_text_sha256: 5c119fb0c884d968efdb8d70a9392295601d55e5614e6a4fb433a597b5bb97a9
+  result_text_sha256: e69d873fa5c617b1326446f8703753188c0907f514d860c616a7654d0832899f
+  replacements:
+  - from: بازرسی‌ها ی
+    to: بازرسی‌های
+    count: 1
+    rule: L1
+    candidates:
+    - E-p100-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p101-b006
+  block: main-p101-b006
+  expect_text_sha256: 3f87f00ab68a5a8fa7769552cef06014ae5a9e315e5f2f18dfe9cace48120c10
+  result_text_sha256: 58d899b226bd9e52752d64c733515fba28988a640ae3545b3ce1927cc477e210
+  replacements:
+  - from: )مانند پشم‌های معدنی و عایق‌های دارای الیاف کوتاه(
+    to: (مانند پشم‌های معدنی و عایق‌های دارای الیاف کوتاه)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p101-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p102-b003
+  block: main-p102-b003
+  expect_text_sha256: 9a62e2e23a9ce5ba643bcaffe1537f77e8d4a0fbc8c9ac6d0876120f6c74e558
+  result_text_sha256: 23cb05eb963c9f19f8fc9164100e290475a602bbdc0fd509bbd189846b868de1
+  replacements:
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p102-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p103-b003
+  block: main-p103-b003
+  expect_text_sha256: 17f2da755be57141b6353d68be09c37c593284f04ba3237c883a3e68fde75c01
+  result_text_sha256: 253383e7069d7cea96d2412685dfcf62d4770c843c730e8774313d4266f675d5
+  replacements:
+  - from: )چهار لوله(
+    to: (چهار لوله)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p103-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p103-b005
+  block: main-p103-b005
+  expect_text_sha256: 270ca66eefb0e18247be88df771777231945799d794621f20b842196ace3399a
+  result_text_sha256: 37fa833763ead81322f1b119de0c3abe2f8b603fe5efb3b003096b90a94ed750
+  replacements:
+  - from: سامانه‌ها ی
+    to: سامانه‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p103-b005-01
+    basis: assistant_reviewed
+- id: ER-p103-b008
+  block: main-p103-b008
+  expect_text_sha256: 4164ebf657c00de3a62fc8cd6c96736351d3ae65bfd879b5342347489f10e351
+  result_text_sha256: 756b54c3e40ba58c82604bd4540d5b9759714cfd14115cc31b394a1bfb56134f
+  replacements:
+  - from: )مانند ساختمان‌های اداری(
+    to: (مانند ساختمان‌های اداری)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p103-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p103-b009
+  block: main-p103-b009
+  expect_text_sha256: 954fec49a2b294788511b092f276169af2b7a235a6b161426b9ce6d0625627f0
+  result_text_sha256: a8cc5a5ecd8787b8ad99e2264a1a94c3a05966ca8583943ef3f18d35ff56f553
+  replacements:
+  - from: ')به‌غیر از مدار اولیه
+
+      سامانه‌های اولیه و ثانویه۵('
+    to: '(به‌غیر از مدار اولیه
+
+      سامانه‌های اولیه و ثانویه۵)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p103-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p104-b004
+  block: main-p104-b004
+  expect_text_sha256: 6719af362e3219b840909a26bff268d4ab07c5766184d502c3241e5f4e80ce58
+  result_text_sha256: 0f1e905c744f71e90b4a674c530d81f23449bdc81f3eb346f9c32eaa23498c09
+  replacements:
+  - from: صرفا ً
+    to: صرفاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p104-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p104-b005
+  block: main-p104-b005
+  expect_text_sha256: e10956a0ab5f894e59bd54b75574f2cf0103b97c7fcca008711e2e510448d72b
+  result_text_sha256: 40b08d179c1bbef813c27b3db13d1c1923f353d106716d1096eb104753bae60f
+  replacements:
+  - from: )همچنین فضاهای مختلف هر بخش که دارای زمان بهره‌برداری یکسان نیستند(
+    to: (همچنین فضاهای مختلف هر بخش که دارای زمان بهره‌برداری یکسان نیستند)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p104-b005-01
+    basis: assistant_reviewed_rule
+  - from: )دوراهه۴ یا سه‌راهه ۵(
+    to: (دوراهه۴ یا سه‌راهه ۵)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p104-b005-02
+    basis: assistant_reviewed_rule
+- id: ER-p105-b009
+  block: main-p105-b009
+  expect_text_sha256: 3ce90594854ee11eaf7cb3dab9ed576f68d6f7b670a17c83c308f67887b086f2
+  result_text_sha256: 19892eb5861cbab3a75b909b5050018e96f222a603a2e3d378f3177c5fdadfae
+  replacements:
+  - from: سامانه‌ها ی
+    to: سامانه‌های
+    count: 1
+    rule: null
+    candidates:
+    - E-p105-b009-01
+    basis: assistant_reviewed
+- id: ER-p108-b007
+  block: main-p108-b007
+  expect_text_sha256: e3a9c10b75fcf54fe07afc0eae4e05f6ab23da1b49dcea40637783a0d31934d6
+  result_text_sha256: 7fc7242073812937bbfdaaa5ac0a36ebac778e0dda961a2eb1e2a55afe3fcd48
+  replacements:
+  - from: مد یریت
+    to: مدیریت
+    count: 1
+    rule: L1
+    candidates:
+    - E-p108-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p110-b008
+  block: main-p110-b008
+  expect_text_sha256: 24cd4cd3417ea45d3b97f5a5beb44865e0e6f39c5f06ee1d7f52d81262383380
+  result_text_sha256: 07a8546b124a646a8cb09f4ae1ce704ea3f6f7430a677d714ff24c5dc1016a3c
+  replacements:
+  - from: )برق، گاز، گازوئیل، تجدیدپذیر، باطری‌خانه و ....(
+    to: (برق، گاز، گازوئیل، تجدیدپذیر، باطری‌خانه و ....)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p110-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p110-b011
+  block: main-p110-b011
+  expect_text_sha256: 1a84aeb7452d9c972e1916f4abd4046ff1c8196cf7c5c9d5f4d47cfd3562f4a2
+  result_text_sha256: bcd5c187734ae556b481916ba304d0af73dd25c2b02f90f656432c77fb0d680f
+  replacements:
+  - from: ق ابلیت
+    to: قابلیت
+    count: 1
+    rule: L1
+    candidates:
+    - E-p110-b011-01
+    basis: assistant_reviewed_rule
+- id: ER-p111-b006
+  block: main-p111-b006
+  expect_text_sha256: 9d96a8a3916d13b8d080c3396fcd1125122ab599383f218c274685e91ae9e4e4
+  result_text_sha256: 1536284a38cdd768fadddd58ba572dbac13ce3c40d853ce43dfb48be48c480d8
+  replacements:
+  - from: مشترکا ً
+    to: مشترکاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p111-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p111-b007
+  block: main-p111-b007
+  expect_text_sha256: 1ba5ce2e4d9be2f38f690769ea3633cb4c61ec04b1a88ade37adf0da3ad5e230
+  result_text_sha256: 480b1599df45cc7caf62855512c633212618d1f51d2f44044f339f2ce0305dea
+  replacements:
+  - from: )برق، گاز، گازوئیل، تجدیدپذیر، باطری‌خانه و ....(
+    to: (برق، گاز، گازوئیل، تجدیدپذیر، باطری‌خانه و ....)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p111-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p112-b010
+  block: main-p112-b010
+  expect_text_sha256: 579740103b8adcf7de5dcfefea616a432e8c003d577bf15f1797e09009df1bd5
+  result_text_sha256: 9bad88e165a3951c6e3f234e6e448e909a8d2a2cbd1eb5d64c594867689775b1
+  replacements:
+  - from: ')به‌غیر از روشنایی صفحات نمایش و علامت‌های هشدار
+
+      دهنده('
+    to: '(به‌غیر از روشنایی صفحات نمایش و علامت‌های هشدار
+
+      دهنده)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p112-b010-01
+    basis: assistant_reviewed_rule
+- id: ER-p113-b009
+  block: main-p113-b009
+  expect_text_sha256: dc75a8e577d04c60e4c5ea1e5ed61930c33dbaed175dda78e007d904e322b0c9
+  result_text_sha256: eca77b221eb3aff3b58218a638c0dec0c3cb419f249b5c7ddda467fe1f985027
+  replacements:
+  - from: )ر.ک.
+    to: (ر.ک.
+    count: 1
+    rule: null
+    candidates:
+    - E-p113-b009-01
+    basis: assistant_reviewed
+- id: ER-p113-b010
+  block: main-p113-b010
+  expect_text_sha256: 20ad8c92a3b8cafcb9e17268f948186490730df9e0a7663d728b25f2a19b2ac2
+  result_text_sha256: ef919599e3d6a7a51cfc5927f459fa2cf61f58cf8b9ce2f3b2650a01c4423b99
+  replacements:
+  - from: ۱۳۹۵(
+    to: ۱۳۹۵)
+    count: 1
+    rule: null
+    candidates:
+    - E-p113-b010-01
+    basis: assistant_reviewed
+- id: ER-p114-b004
+  block: main-p114-b004
+  expect_text_sha256: 0944cc15acff696951b2577fbcd8f4fc016f774a4e9a81be86a2a263f86c7417
+  result_text_sha256: eee24fef352a7ac764b00a4b65f61637c3d4ae7c2a45d246d70b8e4517049fb4
+  replacements:
+  - from: (6.2 kVA (30A at 208/240V
+    to: 6.2 kVA (30A at 208/240V)
+    count: 1
+    rule: null
+    candidates:
+    - E-p114-b004-01
+    basis: assistant_reviewed
+- id: ER-p114-b005
+  block: main-p114-b005
+  expect_text_sha256: 1a699d3ab3b46bbe265d7c381c00afe2e266a3e327bd596779050d21ee2b3c0d
+  result_text_sha256: 39ce5b2e59d5b2cf2a35d66e3185d47912b1531c4cd0e702380829374a7c29d3
+  replacements:
+  - from: (8.3kVA (40A at 208/240V
+    to: 8.3kVA (40A at 208/240V)
+    count: 1
+    rule: null
+    candidates:
+    - E-p114-b005-01
+    basis: assistant_reviewed
+- id: ER-p115-b008
+  block: main-p115-b008
+  expect_text_sha256: 695687757c0295c057799b66d64c1313a2d97d628835107b5ab9a30e13a5dd1e
+  result_text_sha256: e776e9f310c576479b07c651d3c82353ab1892d58365fa431c8e944a64edd075
+  replacements:
+  - from: )از طلوع تا غروب خورشید(
+    to: (از طلوع تا غروب خورشید)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p115-b008-01
+    basis: assistant_reviewed_rule
+- id: ER-p116-b003
+  block: main-p116-b003
+  expect_text_sha256: 4951852448ccfb1576faad25de65aab673fab16c6abe99bb80879397e449c84b
+  result_text_sha256: 23af52434714030073d67f1f40d5e4f3dfe4239f7919b126435e4b6c49968dd3
+  replacements:
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p116-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p116-b006
+  block: main-p116-b006
+  expect_text_sha256: c343c9b753f0bb1a26f5f16ad4cabca992783def0c9510c66718b8d654cf7267
+  result_text_sha256: 2df41682fb9a4b4fb1101a4c1ffc5d9ce1ad58417f398142dab37cac6f490965
+  replacements:
+  - from: ')نسبت روشنایی پرنورترین یا کم‌نورترین
+
+      نقطه هر فضا به متوسط میزان روشنایی('
+    to: '(نسبت روشنایی پرنورترین یا کم‌نورترین
+
+      نقطه هر فضا به متوسط میزان روشنایی)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p116-b006-02
+    basis: assistant_reviewed_rule
+  - from: مصنوع ی
+    to: مصنوعی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p116-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p116-b007
+  block: main-p116-b007
+  expect_text_sha256: 84704e9cda468ba97d4b43e91dbefe902b38527f79822ebd317415ceb6ca5ce8
+  result_text_sha256: 8ba84b8459a85b06db97920c9ea29bc7986fb69f8bbfcff6cea176bfe46c8ab0
+  replacements:
+  - from: مصنوع ی
+    to: مصنوعی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p116-b007-01
+    basis: assistant_reviewed_rule
+- id: ER-p117-b003
+  block: main-p117-b003
+  expect_text_sha256: 3a96202cc9c6c65aaffdf409b79c9ec22e705177d7068a682e35be6260f0df47
+  result_text_sha256: b0ed834204d63b38120d87eb8796b455e8f02f2df7dbc93edfe371fbe2efcfa2
+  replacements:
+  - from: ها ی
+    to: های
+    count: 1
+    rule: null
+    candidates:
+    - E-p117-b003-01
+    basis: assistant_reviewed
+- id: ER-p118-b005
+  block: main-p118-b005
+  expect_text_sha256: abf96413952150672b63cb578f1f7b9b1d1fed11cbf30701914285688740cdf3
+  result_text_sha256: 1c8ede716403aaf0a2d324e059c20044c42f2e1fafed2f7e2f8e99bd93c82fac
+  replacements:
+  - from: لامپ های
+    to: لامپهای
+    count: 1
+    rule: null
+    candidates:
+    - E-p118-b005-01
+    basis: assistant_reviewed
+- id: ER-p119-b007
+  block: main-p119-b007
+  expect_text_sha256: 86b042d2a27e822aa991a8008ff02883c776d08031533819b1c99b064ac05081
+  result_text_sha256: 0495977b570b86ab41b6a8dca1f3a8f56947b287d3342f7fe2234e95a34f620e
+  replacements:
+  - from: خورش یدی
+    to: خورشیدی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p119-b007-01
+    basis: assistant_reviewed_rule
+  - from: خورشید ی
+    to: خورشیدی
+    count: 1
+    rule: null
+    candidates:
+    - E-p119-b007-02
+    basis: assistant_reviewed
+  - from: تجدیدپذ یر
+    to: تجدیدپذیر
+    count: 1
+    rule: null
+    candidates:
+    - E-p119-b007-03
+    basis: assistant_reviewed
+  - from: با ید
+    to: باید
+    count: 1
+    rule: null
+    candidates:
+    - E-p119-b007-04
+    basis: assistant_reviewed
+  - from: ابلاغ ی
+    to: ابلاغی
+    count: 1
+    rule: null
+    candidates:
+    - E-p119-b007-05
+    basis: assistant_reviewed
+- id: ER-p121-b003
+  block: main-p121-b003
+  expect_text_sha256: 4b9f8ea5209c1aa03831791e4c69ab7c01d7321a208b5ddf362c604a7e9eb0fa
+  result_text_sha256: e2f6c360e12b286190416192a05b97bdda462e39ec44ae33b1d5602983fd8fc1
+  replacements:
+  - from: )شبیه سازی(
+    to: (شبیه سازی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p121-b003-01
+    basis: assistant_reviewed_rule
+  - from: )به‌غیر از مواردی که مطابق فصل پنجم استفاده از روش تجویزی غیرمجاز بیان شده است(
+    to: (به‌غیر از مواردی که مطابق فصل پنجم استفاده از روش تجویزی غیرمجاز بیان شده است)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p121-b003-02
+    basis: assistant_reviewed_rule
+- id: ER-p124-b004
+  block: main-p124-b004
+  expect_text_sha256: bd309d85ae4e47a1fd9593612d2a94a866e5bac7f524616ac183239afe9cf335
+  result_text_sha256: d957fe77dcc5aae462d21ce6d7d9338f99e2e7b139bc4530fa37d3de203529c3
+  replacements:
+  - from: )از جمله مواد و مصالح(
+    to: (از جمله مواد و مصالح)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p124-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p125-b004
+  block: main-p125-b004
+  expect_text_sha256: 1d1c8476c3c23b47926aaba3d7f16a5c48e6d1f40cb36b86fdd9be7d75465c20
+  result_text_sha256: 0e56f6f8d39a7d1d61902b3be5345c862a15d5aedff758d7f771c4449a1af6a6
+  replacements:
+  - from: دقیقا ً
+    to: دقیقاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p125-b004-01
+    basis: assistant_reviewed_rule
+- id: ER-p125-b005
+  block: main-p125-b005
+  expect_text_sha256: 0e23d5729685028333ed2b9cf799345ee7ea3b1c72d59517f2a79b06651f4440
+  result_text_sha256: 2e596faaeaa7af88a3307d206b977e1bd70f41191a0f9038d6b1b74d46549861
+  replacements:
+  - from: کاملا ً
+    to: کاملاً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p125-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p125-b009
+  block: main-p125-b009
+  expect_text_sha256: c6c9d4059545a1eb1b855a985f68867c70dc3deedd4119ae2f18847d82c795cc
+  result_text_sha256: 17de1acd3de2da8346b6b0c6b9ac41c59cb5de850dded7210dfeab464cdd79ad
+  replacements:
+  - from: عینا ً
+    to: عیناً
+    count: 1
+    rule: T1
+    candidates:
+    - E-p125-b009-01
+    basis: assistant_reviewed_rule
+- id: ER-p127-b012
+  block: main-p127-b012
+  expect_text_sha256: 1291e2019dca343167e4928ba02b1e8dc3a46482245cb9167c26983d735b6190
+  result_text_sha256: d62c3de46dfb1eb6d6e7102070cddf83f17a61ad488779aef37f9d1f1bebdbdf
+  replacements:
+  - from: ')کیلووات
+
+      ساعت برای برق، متر مکعب برای گاز و لیتر برای گازوئیل('
+    to: '(کیلووات
+
+      ساعت برای برق، متر مکعب برای گاز و لیتر برای گازوئیل)'
+    count: 1
+    rule: B2
+    candidates:
+    - E-p127-b012-01
+    basis: assistant_reviewed_rule
+- id: ER-p130-b003
+  block: main-p130-b003
+  expect_text_sha256: ad55c8edba9309626a1f6489d4e67a8423ce380bd226b18e9946cba4c6989a4d
+  result_text_sha256: cb32d290ebd482f2fc155e8ff91c53716a8e464a98f4a0de92afd4b2c91e2fe6
+  replacements:
+  - from: حامل‌ها ی
+    to: حامل‌های
+    count: 1
+    rule: L1
+    candidates:
+    - E-p130-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p130-b005
+  block: main-p130-b005
+  expect_text_sha256: d5f00cbb38090d59259c35b63561b517ac1e113d34a9a60c82866e1fef0f3252
+  result_text_sha256: a38340e0d98626d556228bd1e987cdb08f62294f65ea3740843ea6077615b0ee
+  replacements:
+  - from: مرکز ی
+    to: مرکزی
+    count: 1
+    rule: null
+    candidates:
+    - E-p130-b005-01
+    basis: assistant_reviewed
+- id: ER-p131-b009
+  block: main-p131-b009
+  expect_text_sha256: d53246855e629a90d4e44f7feb85b41d2073de74f88b408a56de521833a6786a
+  result_text_sha256: edbd38349cd16df22e2795cea4bac12096d112ced69e4f23af4fb0cb52f1700b
+  replacements:
+  - from: ع ملیات
+    to: عملیات
+    count: 1
+    rule: null
+    candidates:
+    - E-p131-b009-01
+    basis: assistant_reviewed
+- id: ER-p133-b003
+  block: main-p133-b003
+  expect_text_sha256: a37cd99dd6755746028665f82cd4928137f02baa1d4b2e833f26cf932b3f2a76
+  result_text_sha256: 9297d70baa4de8079a2c3a975db1db21f6e89c75e6ef01ad74cba2a6540e88ef
+  replacements:
+  - from: ر ا
+    to: را
+    count: 1
+    rule: L1
+    candidates:
+    - E-p133-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p134-b011
+  block: main-p134-b011
+  expect_text_sha256: 5b9d8fcfc9c05237980f6c3811f819de4c8bf88600fdc1c193721e881323139d
+  result_text_sha256: 6a3156f6ce6b7613958d6dbae0369e3d04a0ba96e178727fd55bae07999d00d6
+  replacements:
+  - from: مص ارف
+    to: مصارف
+    count: 1
+    rule: L1
+    candidates:
+    - E-p134-b011-01
+    basis: assistant_reviewed_rule
+- id: ER-p137-b009
+  block: main-p137-b009
+  expect_text_sha256: 2a096c387138a7af1f5633f43549e17d44dfcb2fec8ef652f450cb409484752b
+  result_text_sha256: f23be57c4b12a2420e5b7c48c48087592cf98c2a4108903a99e776f9074d5dc9
+  replacements:
+  - from: مستم ر
+    to: مستمر
+    count: 1
+    rule: null
+    candidates:
+    - E-p137-b009-01
+    basis: assistant_reviewed
+- id: ER-p138-b005
+  block: main-p138-b005
+  expect_text_sha256: 83f46d4b92ab113e2d5e6ab6b39cdf38d3e8dac6579ee7f615b879643a81eeec
+  result_text_sha256: cfe910dd41ad85d25cd7a9ede72f80ee9729d2e1e9b57c957628671691b83140
+  replacements:
+  - from: )دیجیتال‌سازی(
+    to: (دیجیتال‌سازی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p138-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p139-b003
+  block: main-p139-b003
+  expect_text_sha256: cf24c77e3acbbc927d210ba19825ed26a5d5c52185812f1bbdcb8c5f82470514
+  result_text_sha256: 8f02b3f93ba7b7046b172e3823120c120db85e1957112e30cf59b80a52aa8319
+  replacements:
+  - from: دسترس ی
+    to: دسترسی
+    count: 1
+    rule: null
+    candidates:
+    - E-p139-b003-01
+    basis: assistant_reviewed
+  - from: ع ملیاتی
+    to: عملیاتی
+    count: 1
+    rule: null
+    candidates:
+    - E-p139-b003-02
+    basis: assistant_reviewed
+- id: ER-p144-b006
+  block: main-p144-b006
+  expect_text_sha256: d1bb04b6cec4b843b2f6f0e4e6bfa101c41682e6c09081fb8c5e35bf9b966526
+  result_text_sha256: 0b768eabc42b6de5f68ca93794f7233eaeae5042016d861a9b3870e58f39ae27
+  replacements:
+  - from: اجر ا
+    to: اجرا
+    count: 1
+    rule: L1
+    candidates:
+    - E-p144-b006-01
+    basis: assistant_reviewed_rule
+- id: ER-p146-b003
+  block: main-p146-b003
+  expect_text_sha256: aa183c4e14047ff3139556fa4c0650c34271c7000ccf0904427d17622df1267c
+  result_text_sha256: 0e3a0289ab95473e0fdbf8525aa2bd5f513a79a4b5f8cba614440ff2e05b7747
+  replacements:
+  - from: )معادل انگلیسی(
+    to: (معادل انگلیسی)
+    count: 1
+    rule: B2
+    candidates:
+    - E-p146-b003-01
+    basis: assistant_reviewed_rule
+- id: ER-p146-b005
+  block: main-p146-b005
+  expect_text_sha256: e906b42726f055766462a380165ec9a902f769895f453897d297fee08ed434a2
+  result_text_sha256: 73cd71b82a64ee271eff37c88d274855d8820486bf1cba1a73dc54fe81a7e09a
+  replacements:
+  - from: اقلی م‌های
+    to: اقلیم‌های
+    count: 1
+    rule: L1
+    candidates:
+    - E-p146-b005-01
+    basis: assistant_reviewed_rule
+- id: ER-p146-b009
+  block: main-p146-b009
+  expect_text_sha256: 9d956bde64b2600bd4ef13b231ace9b9c277241a650dbee6c665087e92e5f712
+  result_text_sha256: e838b945e13c398ffa0e95f38430fd4b4fc985ad6a9f7556315336013defaad5
+  replacements:
+  - from: ارزیا بی
+    to: ارزیابی
+    count: 1
+    rule: null
+    candidates:
+    - E-p146-b009-01
+    basis: assistant_reviewed
+  - from: تجوی زی
+    to: تجویزی
+    count: 1
+    rule: L1
+    candidates:
+    - E-p146-b009-02
+    basis: assistant_reviewed_rule

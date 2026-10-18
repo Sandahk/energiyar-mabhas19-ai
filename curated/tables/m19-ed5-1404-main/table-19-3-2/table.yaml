@@ -4,10 +4,10 @@ table_id: m19-ed5-1404-main.t19-3-2
 doc_id: m19-ed5-1404-main
 table_number: 19-3-2
 caption:
-  text: 'جدول ۱۹-۳-۲: دسته‌بند ی اقلیمی شهرهای مركز استان‌های ایران'
+  text: 'جدول ۱۹-۳-۲: دسته‌بندی اقلیمی شهرهای مركز استان‌های ایران'
   blocks:
   - main-p068-b003
-  note: curated corpus caption text (machine text; known split words not corrected here)
+  note: curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)
 pdf_page: 68
 printed_page: '49'
 corpus_blocks:

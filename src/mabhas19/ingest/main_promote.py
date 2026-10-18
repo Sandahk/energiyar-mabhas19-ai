@@ -25,11 +25,31 @@ import yaml
 
 from mabhas19.core.manifest import load_manifest, sha256_file
 from mabhas19.core.paths import MANIFEST_PATH, REPO_ROOT
-from mabhas19.ingest.main_decisions import DECISIONS_PATH, load_decisions
+from mabhas19.ingest.main_decisions import (
+    DECISIONS_PATH,
+    ERRATA_PATH,
+    load_decisions,
+    load_errata,
+)
+from mabhas19.tables.main_audit import TABLES
+from mabhas19.tables.main_extract import caption
 
 DOC_ID = "m19-ed5-1404-main"
 EXPECTED_PAGES = 146
-EXPECTED_RULES = {"M1": 383, "M1-exception": 2, "G1": 49, "G2": 23, "B1": 5, "C1": 2, "K1": 1}
+EXPECTED_RULES = {
+    "M1": 383,
+    "M1-exception": 2,
+    "G1": 49,
+    "G2": 23,
+    "B1": 5,
+    "C1": 2,
+    "K1": 1,
+    # main-corpus errata (2026-10-17): occurrences of the reviewed cases only
+    "B2": 106,
+    "L1": 62,
+    "T1": 10,
+}
+EXPECTED_ERRATA = {"blocks": 178, "candidates": 259, "B2": 106, "L1": 60, "T1": 10, "per_block": 83}
 BLOCK_FIELDS = (
     "block_id", "doc_id", "pdf_page", "printed_page", "printed_page_confidence", "page_role",
     "kind", "structural_class", "section_number", "heading_level", "section_path", "bbox",
@@ -38,7 +58,7 @@ BLOCK_FIELDS = (
     "resolved_flags", "open_flags", "confidence", "font_size", "line_count", "formula",
     "fragments", "merged_into", "continues_previous_block", "retrieval_exclusion",
     "ocr_mean_confidence", "rows", "cols", "table_index", "figure_index",
-    "embedded_symbol_images",
+    "embedded_symbol_images", "text_before_errata", "caption_block", "errata",
 )  # fmt: skip
 
 
@@ -89,15 +109,40 @@ def _validate_corpus(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
     if dict(rules) != EXPECTED_RULES:
         problems.append(f"rule applications {dict(rules)} differ from {EXPECTED_RULES}")
     decided = {d for b in blocks for d in b["verification"]["decisions"]}
-    expected = {d["id"] for d in load_decisions()["decisions"]}
+    errata = load_errata()["decisions"]
+    reviewed = {
+        d["id"]
+        for d in errata
+        if "reclassify" in d or any(not r["rule"] for r in d["replacements"])
+    }
+    expected = {d["id"] for d in load_decisions()["decisions"]} | reviewed
     if decided != expected:
-        problems.append(f"decisions not applied: {sorted(expected - decided)}")
+        problems.append(f"decisions not applied: {sorted(expected ^ decided)}")
+    applied = {b["errata"]["id"] for b in blocks if b.get("errata")}
+    if applied != {d["id"] for d in errata}:
+        problems.append("errata decisions not all applied")
+    problems += _validate_errata(errata)
     checks = summary["heading_checks"]
     if checks["audit_headings_found"] != checks["audit_headings"]:
         problems.append("audit headings not all found")
     if checks["toc_matched_to_body_heading"] != checks["toc_numbered"]:
         problems.append("TOC entries without a body heading")
     return problems
+
+
+def _validate_errata(errata: list[dict[str, Any]]) -> list[str]:
+    reps = [r for d in errata for r in d["replacements"]]
+    cands: dict[str, set[str]] = {}
+    for r in reps:
+        cands.setdefault(r["rule"] or "per_block", set()).update(r["candidates"])
+    cands["per_block"] = cands.get("per_block", set()) | {
+        c for d in errata for c in d.get("reclassify", {}).get("candidates", [])
+    }
+    got = {k: len(v) for k, v in cands.items()}
+    got |= {"blocks": len(errata), "candidates": sum(got.values())}
+    if got != EXPECTED_ERRATA:
+        return [f"errata counts {got} != {EXPECTED_ERRATA}"]
+    return []
 
 
 def validate(blocks: list[dict[str, Any]], pages: list[dict[str, Any]],
@@ -120,7 +165,10 @@ def corpus_metadata(blocks: list[dict[str, Any]], summary: dict[str, Any]) -> di
                     "ocr": "Tesseract on the one scanned region (PDF page 5), excluded from "
                            "retrieval", "tables": "ruled-table references only (cells pending)"},
         "review": {"file": DECISIONS_PATH.relative_to(REPO_ROOT).as_posix(),
-                   "sha256": sha256_file(DECISIONS_PATH), "basis": "assistant_reviewed"},
+                   "sha256": sha256_file(DECISIONS_PATH), "basis": "assistant_reviewed",
+                   "errata": {"file": ERRATA_PATH.relative_to(REPO_ROOT).as_posix(),
+                              "sha256": sha256_file(ERRATA_PATH), "approved_on": "2026-10-17",
+                              "counts": EXPECTED_ERRATA}},
         "counts": {"pages_by_role": summary["pages_by_role"], "blocks": len(blocks),
                    "blocks_by_kind": dict(Counter(b["kind"] for b in blocks)),
                    "verification_status": summary["verification_status"],
@@ -130,6 +178,7 @@ def corpus_metadata(blocks: list[dict[str, Any]], summary: dict[str, Any]) -> di
         "text_layers": {"text_raw": "text-layer characters, content-stream order (damaged)",
                         "text_repair_v1": "machine repair before any approved rule",
                         "text_before_review": "after approved rules, before a per-block decision",
+                        "text_before_errata": "final text before the 2026-10-17 errata",
                         "text": "final reviewed text"},
     }  # fmt: skip
 
@@ -162,3 +211,64 @@ def write_files(files: dict[str, list[dict[str, Any]]], meta: dict[str, Any],
     meta_path.write_text(yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
                          encoding="utf-8", newline="\n")  # fmt: skip
     return [*written, meta_path]
+
+
+# --------------------------------------------------------------------------- table captions
+
+TABLES_DIR = Path("tables") / DOC_ID
+CAPTION_SYNC = frozenset({"19-2-1", "19-3-1", "19-3-2", "19-5-2", "19-5-7"})
+
+
+def table_caption_updates(blocks: list[dict[str, Any]], curated: Path) -> dict[str, dict[str, Any]]:
+    """table.yaml of the structured main tables whose caption follows the corrected corpus
+    (caption text changed, or a caption continuation line is linked). Only ``caption`` changes;
+    cells.jsonl and records.jsonl are never touched."""
+    by_id = {b["block_id"]: b for b in blocks}
+    out = {}
+    for spec in TABLES:
+        rel = (TABLES_DIR / f"table-{spec.number}" / "table.yaml").as_posix()
+        meta = yaml.safe_load((curated / rel).read_text(encoding="utf-8"))
+        cap = caption(spec, by_id)
+        if cap["text"] != meta["caption"]["text"] or "parts" in cap:
+            out[rel] = {**meta, "caption": cap}
+    return out
+
+
+def validate_captions(updates: dict[str, dict[str, Any]], blocks: list[dict[str, Any]],
+                      curated: Path) -> list[str]:  # fmt: skip
+    problems = []
+    by_id = {b["block_id"]: b for b in blocks}
+    changed = set()
+    for spec in TABLES:
+        rel = (TABLES_DIR / f"table-{spec.number}" / "table.yaml").as_posix()
+        old: dict[str, Any] = yaml.safe_load((curated / rel).read_text(encoding="utf-8"))
+        new: dict[str, Any] = updates.get(rel, old)
+        if {k: v for k, v in new.items() if k != "caption"} != \
+                {k: v for k, v in old.items() if k != "caption"}:  # fmt: skip
+            problems.append(f"{rel}: changes outside the caption")
+        if new["caption"]["text"] != old["caption"]["text"]:
+            changed.add(spec.number)
+        if new["caption"]["text"] != caption(spec, by_id)["text"]:
+            problems.append(f"{spec.number}: structured caption differs from the corpus")
+    if changed != CAPTION_SYNC:
+        problems.append(
+            f"caption text changed for {sorted(changed)}, expected {sorted(CAPTION_SYNC)}"
+        )
+    cap51 = updates.get((TABLES_DIR / "table-19-5-1" / "table.yaml").as_posix(), {}).get("caption")
+    if not cap51 or [p["kind"] for p in cap51.get("parts", [])] != [
+        "table_caption",
+        "caption_continuation",
+    ]:
+        problems.append("19-5-1 caption must link main-p084-b004 as caption_continuation")
+    return problems
+
+
+def write_table_yaml(updates: dict[str, dict[str, Any]], root: Path) -> list[Path]:
+    written = []
+    for rel, meta in updates.items():
+        path = root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=100),
+                        encoding="utf-8", newline="\n")  # fmt: skip
+        written.append(path)
+    return written

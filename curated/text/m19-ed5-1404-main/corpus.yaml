@@ -16,6 +16,17 @@ review:
   file: eval/extraction/review/main-assistant-review.yaml
   sha256: 2fe8e7b791375fe6894d400e59a76369bbbe8cb90342aedae06d24dee742556a
   basis: assistant_reviewed
+  errata:
+    file: eval/extraction/review/main-errata-review.yaml
+    sha256: b501eda4945b7e06f2fb47a8788d8dfda93e234090a6fb8041c3a2d9c947491c
+    approved_on: '2026-10-17'
+    counts:
+      blocks: 178
+      candidates: 259
+      B2: 106
+      L1: 60
+      T1: 10
+      per_block: 83
 counts:
   pages_by_role:
     front_matter: 10
@@ -27,7 +38,7 @@ counts:
   blocks_by_kind:
     page_number: 132
     paragraph: 200
-    heading_unnumbered: 54
+    heading_unnumbered: 53
     figure: 8
     footnote: 356
     ocr_text: 1
@@ -42,21 +53,25 @@ counts:
     table: 11
     formula_fragment: 3
     formula: 1
+    caption_continuation: 1
   verification_status:
     page_furniture: 248
-    machine_extracted: 898
-    assistant_reviewed: 67
+    machine_extracted: 796
+    assistant_reviewed: 134
+    rule_corrected: 435
     not_transcribed: 8
-    rule_corrected: 400
     pending_structured_extraction: 11
   retrieval_included: 1291
   rule_applications:
+    B2: 106
+    L1: 62
     M1: 383
     B1: 5
     G2: 23
     G1: 49
     M1-exception: 2
     C1: 2
+    T1: 10
     K1: 1
   headings: 229
   sections: 229
@@ -64,4 +79,5 @@ text_layers:
   text_raw: text-layer characters, content-stream order (damaged)
   text_repair_v1: machine repair before any approved rule
   text_before_review: after approved rules, before a per-block decision
+  text_before_errata: final text before the 2026-10-17 errata
   text: final reviewed text

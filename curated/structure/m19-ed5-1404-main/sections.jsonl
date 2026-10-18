@@ -92,7 +92,7 @@
 {"section_number": "19-1-91", "title": "سنسور دمای تحت شبکه", "level": 2, "heading_block": "main-p040-b003", "first_pdf_page": 40, "last_pdf_page": 40, "blocks": 2}
 {"section_number": "19-1-92", "title": "سنسور سنجش اختلاف فشار", "level": 2, "heading_block": "main-p040-b006", "first_pdf_page": 40, "last_pdf_page": 40, "blocks": 1}
 {"section_number": "19-1-93", "title": "شبکه عصبی مصنوعی", "level": 2, "heading_block": "main-p040-b008", "first_pdf_page": 40, "last_pdf_page": 40, "blocks": 1}
-{"section_number": "19-1-94", "title": "شبیه‌سازی بازدهی انرژی ساختمان )شبیه‌سازی(", "level": 2, "heading_block": "main-p040-b010", "first_pdf_page": 40, "last_pdf_page": 41, "blocks": 2}
+{"section_number": "19-1-94", "title": "شبیه‌سازی بازدهی انرژی ساختمان (شبیه‌سازی)", "level": 2, "heading_block": "main-p040-b010", "first_pdf_page": 40, "last_pdf_page": 41, "blocks": 2}
 {"section_number": "19-1-95", "title": "شدت مصرف انرژی ساختمان", "level": 2, "heading_block": "main-p041-b004", "first_pdf_page": 41, "last_pdf_page": 41, "blocks": 1}
 {"section_number": "19-1-96", "title": "شیر كنترلی", "level": 2, "heading_block": "main-p041-b006", "first_pdf_page": 41, "last_pdf_page": 41, "blocks": 2}
 {"section_number": "19-1-97", "title": "شیر كنترلی دو راهه", "level": 2, "heading_block": "main-p041-b009", "first_pdf_page": 41, "last_pdf_page": 41, "blocks": 2}
@@ -187,7 +187,7 @@
 {"section_number": "19-5-2-2-1", "title": "عایق‌كاری سامانه توزیع", "level": 4, "heading_block": "main-p100-b006", "first_pdf_page": 100, "last_pdf_page": 101, "blocks": 9}
 {"section_number": "19-5-2-2-2", "title": "كنترل تأسیسات", "level": 4, "heading_block": "main-p101-b007", "first_pdf_page": 101, "last_pdf_page": 107, "blocks": 76}
 {"section_number": "19-5-2-2-3", "title": "هوای تازه", "level": 4, "heading_block": "main-p107-b007", "first_pdf_page": 107, "last_pdf_page": 108, "blocks": 9}
-{"section_number": "19-5-2-2-4", "title": "سامانه پایش و مد یریت ساختمان", "level": 4, "heading_block": "main-p108-b007", "first_pdf_page": 108, "last_pdf_page": 111, "blocks": 26}
+{"section_number": "19-5-2-2-4", "title": "سامانه پایش و مدیریت ساختمان", "level": 4, "heading_block": "main-p108-b007", "first_pdf_page": 108, "last_pdf_page": 111, "blocks": 26}
 {"section_number": "19-5-3", "title": "تأسیسات الکتریکی", "level": 2, "heading_block": "main-p111-b004", "first_pdf_page": 111, "last_pdf_page": 118, "blocks": 77}
 {"section_number": "19-5-3-1", "title": "انتقال و توزیع", "level": 3, "heading_block": "main-p111-b008", "first_pdf_page": 111, "last_pdf_page": 114, "blocks": 31}
 {"section_number": "19-5-3-2", "title": "روشنایی طبیعی و مصنوعی", "level": 3, "heading_block": "main-p114-b009", "first_pdf_page": 114, "last_pdf_page": 117, "blocks": 22}

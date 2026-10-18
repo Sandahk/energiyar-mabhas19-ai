@@ -4,11 +4,10 @@ table_id: m19-ed5-1404-main.t19-2-1
 doc_id: m19-ed5-1404-main
 table_number: 19-2-1
 caption:
-  text: 'جدول ۱۹-۲-۱: زمان‌بندی الزام اجرا ی بخش‌های مختلف ویرایش پنجم مبحث نوزدهم برای گروه‌های ساختما
-    نی'
+  text: 'جدول ۱۹-۲-۱: زمان‌بندی الزام اجرای بخش‌های مختلف ویرایش پنجم مبحث نوزدهم برای گروه‌های ساختمانی'
   blocks:
   - main-p064-b002
-  note: curated corpus caption text (machine text; known split words not corrected here)
+  note: curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)
 pdf_page: 64
 printed_page: '45'
 corpus_blocks:

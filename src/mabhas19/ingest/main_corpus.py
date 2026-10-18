@@ -40,7 +40,7 @@ from mabhas19.ingest.main_blocks import (
     section_level,
     toc_entry,
 )
-from mabhas19.ingest.main_decisions import apply_decisions, load_decisions
+from mabhas19.ingest.main_decisions import apply_decisions, load_decisions, load_errata
 from mabhas19.ingest.repair.glyphs import (
     Cluster,
     detect_kashida_glyphs,
@@ -379,7 +379,8 @@ def build(out: Path, engine: OcrEngine | None) -> dict[str, Any]:
                                                        for r in recs)})  # fmt: skip
         assign_hierarchy(ctx, blocks)
         machine_layer = blocks
-        blocks = apply_decisions(blocks, load_decisions())
+        blocks = apply_decisions(blocks, load_decisions(), load_errata())
+        refresh_section_titles(blocks)
         toc = toc_entries(blocks)
         checks = heading_checks(ctx, blocks, toc)
     sections = section_index(blocks)
@@ -424,6 +425,16 @@ def heading_checks(ctx: Context, blocks: list[dict[str, Any]], toc: list[dict[st
     out["toc_matched_to_body_heading"] = sum(n in heading_numbers for n in toc_numbers)
     out["toc_missing_in_body"] = sorted(n for n in toc_numbers if n not in heading_numbers)
     return out
+
+
+def refresh_section_titles(blocks: list[dict[str, Any]]) -> None:
+    """Section titles follow the final (reviewed) heading text; numbers never change."""
+    titles = {b["section_number"]: b["text"].split(maxsplit=1)[1] if " " in b["text"] else ""
+              for b in blocks if b["kind"] == "heading" and b["section_number"]}  # fmt: skip
+    for b in blocks:
+        for part in b.get("section_path") or []:
+            if part["number"] in titles:
+                part["title"] = titles[part["number"]]
 
 
 def section_index(blocks: list[dict[str, Any]]) -> list[dict[str, Any]]:

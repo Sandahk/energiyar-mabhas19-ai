@@ -28,7 +28,9 @@ from mabhas19.ingest.main_blocks import quality_flags
 from mabhas19.text.normalize import normalize_for_search
 
 DECISIONS_PATH = EVAL_DIR / "extraction" / "review" / "main-assistant-review.yaml"
-APPROVED_RULES = frozenset({"M1", "M1-exception", "G1", "G2", "B1", "C1"})
+ERRATA_PATH = EVAL_DIR / "extraction" / "review" / "main-errata-review.yaml"
+# B2/L1/T1 are applied only to the reviewed cases listed in the errata file, never generically
+APPROVED_RULES = frozenset({"M1", "M1-exception", "G1", "G2", "B1", "C1", "B2", "L1", "T1"})
 EXTRACTION_FIXES = frozenset({"K1"})  # classification fixes of the extractor itself
 NOT_RETRIEVED_KINDS = {
     "running_header": "page furniture",
@@ -55,6 +57,41 @@ def load_decisions(path: Path = DECISIONS_PATH) -> dict[str, Any]:
         return {"decisions": [], "basis_default": "assistant_reviewed"}
     doc: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
     return doc
+
+
+def load_errata(path: Path = ERRATA_PATH) -> dict[str, Any]:
+    return load_decisions(path)
+
+
+def _apply_errata(block: dict[str, Any], d: dict[str, Any]) -> None:
+    """One guarded errata entry: expected text, exact counts, expected result."""
+    text = block["text"]
+    if _sha(text) != d["expect_text_sha256"]:
+        raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the review (stale)")
+    for r in d["replacements"]:
+        if text.count(r["from"]) != r["count"]:
+            raise DecisionError(f"{d['id']}: «{r['from']}» found {text.count(r['from'])} times, "
+                                f"expected {r['count']}")  # fmt: skip
+        text = text.replace(r["from"], r["to"])
+        if r["rule"]:
+            block.setdefault("applied_rules", []).append(
+                {"rule": r["rule"], "count": r["count"], "layer": "errata", "decision": d["id"]}
+            )
+    if _sha(text) != d["result_text_sha256"]:
+        raise DecisionError(f"{d['id']}: result differs from the reviewed text")
+    if text != block["text"]:
+        block["text_before_errata"] = block["text"]
+        block["text"] = text
+        block["text_normalized"] = normalize_for_search(text)
+    reviewed = [r for r in d["replacements"] if not r["rule"]]
+    if reviewed or "reclassify" in d:
+        _note(block, {"id": d["id"], "decision": "errata"}, "assistant_reviewed")
+    if "reclassify" in d:
+        block["kind"] = d["reclassify"]["kind"]
+        block["caption_block"] = d["reclassify"]["caption_block"]
+    block["errata"] = {"id": d["id"], "candidates": sorted(
+        {c for r in d["replacements"] for c in r["candidates"]}
+        | set(d.get("reclassify", {}).get("candidates", [])))}  # fmt: skip
 
 
 def _sha(text: str) -> str:
@@ -110,7 +147,8 @@ def _merge_formula(blocks: list[dict[str, Any]], d: dict[str, Any], basis: str) 
     blocks.insert(blocks.index(parts[-1]) + 1, merged)
 
 
-def apply_decisions(blocks: list[dict[str, Any]], doc: dict[str, Any]) -> list[dict[str, Any]]:
+def apply_decisions(blocks: list[dict[str, Any]], doc: dict[str, Any],
+                    errata: dict[str, Any] | None = None) -> list[dict[str, Any]]:  # fmt: skip
     out = [copy.deepcopy(b) for b in blocks]
     by_id = {b["block_id"]: b for b in out}
     basis = doc.get("basis_default", "assistant_reviewed")
@@ -134,6 +172,10 @@ def apply_decisions(blocks: list[dict[str, Any]], doc: dict[str, Any]) -> list[d
                 _note(by_id[bid], d, basis)
         else:
             raise DecisionError(f"{d['id']}: unknown decision type {kind!r}")
+    for d in (errata or {}).get("decisions", []):
+        if d["block"] not in by_id:
+            raise DecisionError(f"{d['id']}: unknown block {d['block']}")
+        _apply_errata(by_id[d["block"]], d)
     for b in out:
         finalize(b)
     return out

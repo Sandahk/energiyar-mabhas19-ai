@@ -817,13 +817,17 @@ ROW_LABEL_COLS = {
 }
 
 
+CAPTION_CONTINUATIONS = {"19-5-1": ["main-p084-b004"]}  # second caption line (unit)
+CAPTION_NOTE = "curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)"
+
+
 def caption(spec: TableSpec, blocks: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    parts = [spec.caption_block] + (["main-p084-b004"] if spec.number == "19-5-1" else [])
-    return {
-        "text": " ".join(blocks[p]["text"] for p in parts),
-        "blocks": parts,
-        "note": "curated corpus caption text (machine text; known split words not corrected here)",
-    }
+    parts = [spec.caption_block, *CAPTION_CONTINUATIONS.get(spec.number, [])]
+    out: dict[str, Any] = {"text": " ".join(blocks[p]["text"] for p in parts), "blocks": parts}
+    if len(parts) > 1:
+        out["parts"] = [{"block": p, "kind": blocks[p]["kind"]} for p in parts]
+    out["note"] = CAPTION_NOTE
+    return out
 
 
 def table_meta(

@@ -4,10 +4,10 @@ table_id: m19-ed5-1404-main.t19-5-7
 doc_id: m19-ed5-1404-main
 table_number: 19-5-7
 caption:
-  text: 'جدول ۱۹-۵-۷: حداقل میزان یکنواختی قابل قبول نور مصنوع ی (U=Emax (Emin) / Eavg)'
+  text: 'جدول ۱۹-۵-۷: حداقل میزان یکنواختی قابل قبول نور مصنوعی (U=Emax (Emin) / Eavg)'
   blocks:
   - main-p116-b007
-  note: curated corpus caption text (machine text; known split words not corrected here)
+  note: curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)
 pdf_page: 116
 printed_page: '97'
 corpus_blocks:

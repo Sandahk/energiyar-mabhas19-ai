@@ -9,7 +9,12 @@ caption:
   blocks:
   - main-p084-b003
   - main-p084-b004
-  note: curated corpus caption text (machine text; known split words not corrected here)
+  parts:
+  - block: main-p084-b003
+    kind: table_caption
+  - block: main-p084-b004
+    kind: caption_continuation
+  note: curated main-corpus caption text (main-corpus errata of 2026-10-17 applied)
 pdf_page: 84
 printed_page: '65'
 corpus_blocks:

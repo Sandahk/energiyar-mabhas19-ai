@@ -17,6 +17,10 @@ dev = [
     "ruff>=0.6",
     "types-pyyaml>=6.0",
 ]
+embeddings = [
+    "sentence-transformers>=5.0",
+    "torch>=2.6",
+]
 ocr-easyocr = [
     "easyocr>=1.7.2",
 ]
@@ -38,6 +42,19 @@ module-name = "mabhas19"
 # Install mypy as pure Python: Windows Application Control on dev machines blocks the
 # mypyc-compiled DLLs shipped in mypy's binary wheels.
 no-binary-package = ["mypy"]
+# The embeddings group takes torch from the CPU wheel index; ocr-easyocr keeps PyPI torch.
+# One environment holds one torch build, so the two groups are declared mutually exclusive
+# rather than letting either change the other's resolution.
+conflicts = [[{ group = "embeddings" }, { group = "ocr-easyocr" }]]
+
+# CPU-only PyTorch (no CUDA runtimes), used by the embeddings group only.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", group = "embeddings" }]
 
 [tool.ruff]
 line-length = 100
@@ -69,6 +86,13 @@ follow_imports = "skip"
 # Optional provider SDKs (dependency groups ocr-easyocr, vision-*) are not installed by default.
 module = ["easyocr", "easyocr.*", "anthropic", "anthropic.*", "google", "google.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Optional local embedding runtime (dependency group embeddings): treated as untyped.
+module = ["torch", "torch.*", "sentence_transformers", "sentence_transformers.*",
+          "transformers", "transformers.*", "huggingface_hub", "huggingface_hub.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

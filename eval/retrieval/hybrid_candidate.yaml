@@ -1,0 +1,49 @@
+# Frozen candidate retrieval architecture for the final test (approved 2026-10-18).
+# No retrieval-quality change (BM25, RRF, weights, synonyms, case rules, router, answerability,
+# decomposition, chunks, model, prefixes) is allowed before the final benchmark is reported.
+# mabhas19.cli.embedding_experiment refuses to run when the live configuration differs.
+architecture: bm25_e5_hybrid_rrf
+baseline_commit: 4ed5105  # frozen v2 deterministic baseline (router, gate, structured lookup)
+
+routing:
+  router: deterministic v2 (entity-aware routing, answerability gate, typed no-match outcomes)
+  decomposition: deterministic v2 mixed-query split into structured_query and prose_query
+  mixed_routes_embed: prose_query
+  structured_lookup: deterministic; embeddings never produce regulatory values
+
+chunks:
+  count: 420
+  fingerprint: 5185579250b12862  # retrieval.vector.chunks_fingerprint (IDs + indexed text)
+  embedded_text: passage prefix + chunk_search_text (section path, heading, block text)
+
+bm25:
+  k1: 1.5
+  b: 0.75
+
+embedding:
+  model_id: intfloat/multilingual-e5-small
+  revision: 614241f622f53c4eeff9890bdc4f31cfecc418b3
+  weights_file: model.safetensors
+  weights_bytes: 470641600
+  weights_sha256: 1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477
+  dimensions: 384
+  max_seq_length: 512
+  query_prefix: "query: "
+  passage_prefix: "passage: "
+  normalized: true
+  similarity: cosine
+  device: cpu
+  token_audit:  # all 420 chunks fit; no truncation
+    min: 8
+    median: 119.5
+    p75: 203
+    p95: 367
+    max: 433
+    truncated: 0
+
+fusion:
+  method: reciprocal_rank_fusion
+  rrf_k: 60
+  depth: 50  # candidates per ranking (BM25, cosine) before fusion
+  weights: none
+  exact_section_numbers: RRF of the exact section-number list and the hybrid prose ranking

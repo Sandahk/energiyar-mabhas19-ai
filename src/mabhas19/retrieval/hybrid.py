@@ -88,11 +88,8 @@ class Retriever:
         for ds in _referenced_tables(refs, self.store):
             result.tables.append(self.store.table_evidence(ds, "direct table reference"))
         if decision.route in ("prose", "mixed"):
-            prose_query = decision.prose_query or norm
-            result.prose = self.lexical.search(prose_query, k)
             sections = [str(r) for r in decision.signals.get("section_ref", []) or []]
-            if sections:
-                result.prose = self._fuse_exact(prose_query, sections, k)
+            result.prose = self._prose(decision.prose_query or norm, sections, k)
         if decision.route in ("structured", "mixed"):
             self._structured(decision.structured_query or norm, decision, refs, result)
         for u in decision.signals.get("unknown_entities", []) or []:
@@ -107,10 +104,19 @@ class Retriever:
             )
         return result
 
+    def rank_prose(self, query: str, k: int) -> list[ProseHit]:
+        """The prose ranking used for a query (BM25 in the baseline)."""
+        return self.lexical.search(query, k)
+
+    def _prose(self, query: str, sections: list[str], k: int) -> list[ProseHit]:
+        if not sections:
+            return self.rank_prose(query, k)
+        return self._fuse_exact(query, sections, k)
+
     def _fuse_exact(self, query: str, refs: list[str], k: int) -> list[ProseHit]:
-        """RRF of the exact section-number list and the BM25 list (ranks only)."""
+        """RRF of the exact section-number list and the prose ranking (ranks only)."""
         exact = [cid for ref in refs for cid in self.numbered.get(ref, [])]
-        bm25 = self.lexical.search(query, max(k, 50))
+        bm25 = self.rank_prose(query, max(k, 50))
         by_id = {h.chunk_id: h for h in bm25}
         chunks = {c.chunk_id: c for c in self.lexical.chunks}
         out = []

@@ -148,7 +148,7 @@ def evaluate(
         if ev.get("blocks") or ev.get("sections"):
             res.has_prose_evidence = True
             res.prose_rank = _prose_rank(r.prose, ev, chunk_sections)
-            res.bm25_rank = _prose_rank(retriever.lexical.search(c["query"], k), ev, chunk_sections)
+            res.bm25_rank = _prose_rank(retriever.rank_prose(c["query"], k), ev, chunk_sections)
         if ev.get("records") or ev.get("tables") or ev.get("no_records"):
             _structured(r, ev, res)
         if ev.get("source_issues"):

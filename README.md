@@ -55,6 +55,17 @@ uv run python -m mabhas19.cli.extraction_benchmark
 
 # Phase 2B: score cached Gemini appendix 7 results offline (no API calls)
 uv run python -m mabhas19.cli.score_app07 --with-tesseract
+
+# Offline retrieval benchmark (BM25 baseline; no model)
+uv run python -m mabhas19.cli.eval_retrieval --set dev
+
+# Hybrid retrieval (BM25 + local multilingual-e5-small, CPU PyTorch; optional group)
+uv run --group embeddings python -m mabhas19.cli.embedding_experiment
 ```
+
+The `embeddings` group installs CPU-only PyTorch from the PyTorch CPU index; `ocr-easyocr` keeps
+PyPI PyTorch, so the two groups are declared conflicting and cannot share one environment.
+`uv run --group …` and `uv sync --inexact --group …` add a group without removing others; a
+plain `uv sync --group …` is exact and removes groups not named on the command line.
 
 Copy `.env.example` to `.env` for local settings. Never commit `.env`.

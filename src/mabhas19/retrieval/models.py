@@ -51,6 +51,10 @@ class ProseHit:
     printed_pages: tuple[str | None, ...]
     matched_terms: list[str]
     text: str
+    # provenance only (set after ranking): source issues linked to the chunk's blocks, and for
+    # each issue the blocks it was inherited from
+    source_issues: list[str] = field(default_factory=list)
+    issue_origins: dict[str, list[str]] = field(default_factory=dict)
 
 
 @dataclass

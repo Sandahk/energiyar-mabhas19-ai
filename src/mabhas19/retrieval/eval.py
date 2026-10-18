@@ -188,6 +188,7 @@ def evaluate(
             exposed = {i for h in r.structured for i in h.source_issues}
             exposed |= {x.issue_id for x in r.conflicts if x.issue_id}
             exposed |= {i for n in r.no_match for i in n.source_issues}
+            exposed |= {i for h in r.prose for i in h.source_issues}
             exposed |= {i for n in r.notes for i in ev["source_issues"] if i in n}
             res.issues_ok = set(ev["source_issues"]) <= exposed
         if ev.get("conflict"):

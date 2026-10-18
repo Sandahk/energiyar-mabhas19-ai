@@ -372,6 +372,13 @@ class StructuredStore:
         self._app07_pos = {r["id"]: i for i, r in enumerate(self.app07)}
         self.issues = {i["id"]: i for i in _yaml(curated / "source_issues.yaml").get("issues", [])}
         self.issue_links = self._quoted_issue_links()
+        # main-text blocks linked to source issues (curated provenance, e.g. SI-0004)
+        self.block_issues: dict[str, list[str]] = {}
+        blocks_path = curated / "text" / "m19-ed5-1404-main" / "blocks.jsonl"
+        if blocks_path.is_file():
+            for b in _jsonl(blocks_path):
+                if b.get("source_issue_refs"):
+                    self.block_issues[b["block_id"]] = list(b["source_issue_refs"])
         missing = self.metas[APP03].get("missing_climate_classes") or {}
         # issues the curated Appendix 3 metadata attaches to each missing climate class
         self.app03_missing_issues = {

@@ -94,6 +94,7 @@ class Retriever:
         if decision.route in ("prose", "mixed"):
             sections = [str(r) for r in decision.signals.get("section_ref", []) or []]
             result.prose = self._prose(decision.prose_query or norm, sections, k)
+            self._attach_block_issues(result.prose)
         if decision.route in ("structured", "mixed"):
             self._structured(decision.structured_query or norm, decision, refs, result)
             if has_words(norm, DERIVATION_REQUEST):
@@ -121,6 +122,17 @@ class Retriever:
         if not sections:
             return self.rank_prose(query, k)
         return self._fuse_exact(query, sections, k)
+
+    def _attach_block_issues(self, hits: list[ProseHit]) -> None:
+        """Provenance only, after ranking: each hit inherits the deduplicated source issues of
+        its own blocks, with the blocks each issue came from (no ranking or text change)."""
+        for h in hits:
+            origins: dict[str, list[str]] = {}
+            for bid in h.block_ids:
+                for issue in self.store.block_issues.get(bid, []):
+                    origins.setdefault(issue, []).append(bid)
+            h.source_issues = list(origins)
+            h.issue_origins = origins
 
     def _fuse_exact(self, query: str, refs: list[str], k: int) -> list[ProseHit]:
         """RRF of the exact section-number list and the prose ranking (ranks only)."""

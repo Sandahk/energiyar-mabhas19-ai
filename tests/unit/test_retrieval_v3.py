@@ -25,7 +25,7 @@ from mabhas19.retrieval.dimensions import (
 )
 from mabhas19.retrieval.entities import etokens, keys, split_number_prefix
 from mabhas19.retrieval.hybrid import Retriever
-from mabhas19.retrieval.models import RetrievalResult
+from mabhas19.retrieval.models import ProseHit, RetrievalResult
 from mabhas19.retrieval.structured import StructuredStore, _density_match
 from mabhas19.text.normalize import normalize_for_search as norm
 
@@ -376,3 +376,51 @@ def test_interpolation_requests_are_refused_by_the_lookup() -> None:
     assert r.route.route == "structured"
     assert r.structured == []
     assert any("never performed" in n for n in r.notes)
+
+
+# ---------------------------------------------------------------- block issues in prose evidence
+
+
+def _chunk_with(block_id: str) -> str:
+    return next(c.chunk_id for c in _retriever().lexical.chunks if block_id in c.block_ids)
+
+
+def _hit_for(chunk_id: str) -> ProseHit:
+    c = next(c for c in _retriever().lexical.chunks if c.chunk_id == chunk_id)
+    hit = ProseHit(
+        c.chunk_id, 1.0, 1, c.block_ids, c.section_path, c.pdf_pages, c.printed_pages, [], c.text
+    )
+    _retriever()._attach_block_issues([hit])
+    return hit
+
+
+def test_chunk_with_a_linked_block_exposes_its_issue() -> None:
+    hit = _hit_for(_chunk_with("main-p118-b008"))
+    assert hit.source_issues == ["SI-0004"]
+    assert hit.issue_origins == {"SI-0004": ["main-p118-b008"]}
+
+
+def test_unrelated_chunk_inherits_no_issue() -> None:
+    hit = _hit_for(_chunk_with("main-p083-b011"))  # Appendix 7 reference, not SI-0004
+    assert hit.source_issues == []
+    assert hit.issue_origins == {}
+
+
+def test_same_issue_from_several_blocks_is_one_id_with_traceable_origins() -> None:
+    chunk = _chunk_with("main-p146-b009")
+    hit = _hit_for(chunk)
+    assert hit.source_issues == ["SI-0004"]
+    linked = [b for b in hit.block_ids if b in _store().block_issues]
+    assert len(linked) >= 2
+    assert hit.issue_origins["SI-0004"] == linked
+
+
+def test_issue_propagation_does_not_change_rankings() -> None:
+    r = _retriever()
+    query = "حداکثر توان مجاز سامانه روشنایی مصنوعی در پیوست ۸"
+    result = r.retrieve(query)
+    plain = r.rank_prose(result.route.prose_query or query, 10)
+    assert [(h.chunk_id, h.score, h.rank) for h in result.prose] == [
+        (h.chunk_id, h.score, h.rank) for h in plain
+    ]
+    assert any("SI-0004" in h.source_issues for h in result.prose)

@@ -51,3 +51,16 @@ sample_anchors(CURATED_DIR, seed=<new seed>, exclude=<IDs used in dev.yaml + hel
    commit; report all metrics and every failure without fixing anything.
 4. Any later change to the system is evaluated on a *new* final set, never by re-tuning on this
    one.
+
+## 6. Route policy for future sets (from the first final adjudication)
+The first final set (`final.yaml`) stays immutable. New sets (final-2 onward) state the
+following ambiguities explicitly with `acceptable_routes` instead of forcing one reading:
+
+- **Unknown entity in a structured question** (a city, occupancy or material not printed in the
+  curated tables): `unsupported` or `structured` with a typed no-match are both correct, provided
+  no record is returned. Example: an unlisted city's climate class.
+- **Interpretation questions about a printed table row** (e.g. what an operator in an Appendix 3
+  label means): `structured`, `mixed` or `prose` are acceptable when the case's evidence is
+  satisfied (table evidence and the relevant source issue).
+- **Record evidence is scored at record level.** List `tables` only when no concrete record is
+  expected; a typed no-match never satisfies expected records.

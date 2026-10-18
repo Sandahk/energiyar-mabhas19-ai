@@ -84,7 +84,8 @@ CATEGORIES: dict[str, tuple[str, ...]] = {
         "جمعیت",
     ),
 }
-_SUFFIXES = ("", "ی", "ها", "های", "ای", "ان", "ات", "ست")  # «ست»: copula («معناست»)
+# «ست»: copula («معناست»); «ش/اش»: possessive («اقلیمش»)
+_SUFFIXES = ("", "ی", "ها", "های", "ای", "ان", "ات", "ست", "ش", "اش")
 
 
 @dataclass(frozen=True)
@@ -106,7 +107,8 @@ def has_words(norm: str, words: Collection[str]) -> list[str]:
                 out.append(w)
             continue
         suffix = "|".join(re.escape(s) for s in _SUFFIXES)
-        if re.search(rf"(?:^|\s){re.escape(wn)}(?:{suffix})(?:\s|$)", norm):
+        # punctuation is a word boundary («اقلیم؟»), letters and digits are not
+        if re.search(rf"(?<!\w){re.escape(wn)}(?:{suffix})(?!\w)", norm):
             out.append(w)
     return out
 

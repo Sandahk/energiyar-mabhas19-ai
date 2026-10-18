@@ -118,8 +118,10 @@ def test_no_eui_is_derived_for_5c() -> None:
     )
     assert hits == []
     assert notes == [NO_5C_NOTE]
-    assert [(n.reason, n.source_issues) for n in no_match] == [
-        ("climate_class_not_in_table", ["SI-0002"])
+    # v3: issues come from the curated Appendix 3 metadata for 5C (SI-0002, SI-0001) and from
+    # the resolved occupancy row used by the lookup («مسکونی ≥ ۳۰۰۰»: SI-0003)
+    assert [(n.reason, sorted(n.source_issues)) for n in no_match] == [
+        ("climate_class_not_in_table", ["SI-0001", "SI-0002", "SI-0003"])
     ]
 
 

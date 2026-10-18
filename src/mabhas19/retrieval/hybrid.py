@@ -19,6 +19,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from mabhas19.indexing.chunking import build_chunks
+from mabhas19.retrieval.answerability import has_words
 from mabhas19.retrieval.lexical import LexicalRetriever
 from mabhas19.retrieval.models import (
     Chunk,
@@ -29,7 +30,7 @@ from mabhas19.retrieval.models import (
     StructuredNoMatch,
 )
 from mabhas19.retrieval.normalization import normalize_query
-from mabhas19.retrieval.router import APPENDIX_TABLES, Router
+from mabhas19.retrieval.router import APPENDIX_TABLES, DERIVATION_REQUEST, Router
 from mabhas19.retrieval.structured import APP02, APP03, APP07, MAIN, MAIN_3_2, StructuredStore
 from mabhas19.text.normalize import normalize_for_search
 
@@ -73,8 +74,11 @@ class Retriever:
     def __init__(self, chunks: list[Chunk], store: StructuredStore) -> None:
         self.lexical = LexicalRetriever(chunks)
         self.store = store
-        self.router = Router(store, self.lexical.index.vocabulary())
         self.numbered = numbered_lines(chunks)
+        sections = {p.number for c in chunks for p in c.section_path if p.number}
+        self.router = Router(
+            store, self.lexical.index.vocabulary(), {str(x) for x in sections} | set(self.numbered)
+        )
 
     @classmethod
     def from_curated(cls, curated: Path, blocks: list[dict[str, object]], doc_id: str) -> Retriever:
@@ -92,6 +96,11 @@ class Retriever:
             result.prose = self._prose(decision.prose_query or norm, sections, k)
         if decision.route in ("structured", "mixed"):
             self._structured(decision.structured_query or norm, decision, refs, result)
+            if has_words(norm, DERIVATION_REQUEST):
+                result.notes.append(
+                    "interpolation/extrapolation is never performed: only printed values are "
+                    "returned"
+                )
         for u in decision.signals.get("unknown_entities", []) or []:
             result.no_match.append(
                 StructuredNoMatch(

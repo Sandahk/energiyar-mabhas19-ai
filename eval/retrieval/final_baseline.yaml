@@ -1,0 +1,75 @@
+# Immutable first unbiased final retrieval result. Never replaced or re-scored by later fixes;
+# any later system is evaluated on a NEW final set (see FINAL_TEST_PROCEDURE.md §5.4).
+schema_version: 1
+status: immutable
+statement: >-
+  First unbiased final benchmark of the retrieval system, run once on the frozen candidate
+  architecture against the untouched, independently authored and reviewed final test set.
+  Nothing was changed after the results were seen.
+
+test_set:
+  file: eval/retrieval/final.yaml
+  sha256: f53a0eebf6183a3606cb5d2204605e7e8cc8f5f2134b12a3d0be8c9645628905
+  commit: f663b32
+  cases: 152
+  prose_evidence_cases: 60
+  anchor_seed: 20261018
+
+code:
+  commit: e42155b  # feat: add multilingual hybrid prose retrieval
+  candidate: eval/retrieval/hybrid_candidate.yaml
+  prose_ranking: BM25 (k1 1.5, b 0.75) + intfloat/multilingual-e5-small, RRF k=60
+  embedding_model:
+    model_id: intfloat/multilingual-e5-small
+    revision: 614241f622f53c4eeff9890bdc4f31cfecc418b3
+    weights_sha256: 1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477
+
+run:
+  id: 20261018T175629Z-final
+  artifacts: data/retrieval/embedding_runs/20261018T175629Z-final/  # git-ignored
+  date: 2026-10-18
+
+headline_metrics:
+  routing_safety:  # identical for BM25, vector and hybrid
+    route_accuracy: 0.632
+    unsupported_precision: 0.133
+    unsupported_recall: 0.308
+    structured_exact_match: 0.839
+    structured_no_match_correctness: 0.615
+    source_issue_exposure: 0.286
+    conflict_exposure: 1.0
+  prose_retrieval:  # Recall@1 / Recall@3 / Recall@5 / MRR, n = 60
+    bm25:
+      intrinsic: [0.717, 0.883, 0.917, 0.808]
+      end_to_end: [0.483, 0.583, 0.617, 0.540]
+    vector:
+      intrinsic: [0.750, 0.900, 0.950, 0.833]
+      end_to_end: [0.533, 0.633, 0.650, 0.586]
+    hybrid:
+      intrinsic: [0.850, 0.917, 0.967, 0.892]
+      end_to_end: [0.567, 0.617, 0.683, 0.604]
+
+decisions:
+  prose_ranking: BM25 + multilingual-e5-small hybrid (RRF k=60) adopted and frozen for the next
+    routing/structured-retrieval cycle
+  vector_only: rejected as production candidate
+  generation_readiness: not ready; routing/entity/answerability layer is the bottleneck
+
+# Post-hoc evaluator findings from the adjudication. They do NOT replace any number above; the
+# immutable original result stands as recorded. Adjudication package (git-ignored):
+# data/retrieval/adjudication/final_adjudication.yaml.
+post_hoc_evaluator_findings:
+  structured_scoring:
+    official_structured_exact_match: 0.839
+    post_hoc_record_level_structured_exact_match: 0.602
+    cause: >-
+      every record-evidence case in final.yaml also lists `tables`, and the original evaluator
+      scored such cases at table level only; a typed no-match for an expected table also passed,
+      so cases that expected concrete records passed with wrong rows or with no rows at all
+    replaces_original_result: false
+  unsupported_scoring:
+    cause: >-
+      the original unsupported precision/recall used strict expected_route labels and did not
+      honor acceptable_routes (e.g. F128: expected unsupported, prose explicitly acceptable,
+      counted as a false negative)
+    replaces_original_result: false

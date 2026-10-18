@@ -28,9 +28,11 @@ from mabhas19.core.paths import MANIFEST_PATH, REPO_ROOT
 from mabhas19.ingest.main_decisions import (
     DECISIONS_PATH,
     ERRATA_PATH,
+    PROVENANCE_PATH,
     STRUCTURE_PATH,
     load_decisions,
     load_errata,
+    load_provenance,
     load_structure,
 )
 from mabhas19.tables.main_audit import TABLES
@@ -95,6 +97,8 @@ BLOCK_FIELDS = (
     "caption_block",
     "errata",
     "reclassification",
+    "source_issue_refs",
+    "provenance_links",
 )
 
 
@@ -166,6 +170,7 @@ def _validate_corpus(
         problems.append("errata decisions not all applied")
     problems += _validate_errata(errata)
     problems += _validate_structure(blocks)
+    problems += _validate_provenance(blocks)
     checks = summary["heading_checks"]
     if checks["audit_headings_found"] != checks["audit_headings"]:
         problems.append("audit headings not all found")
@@ -211,6 +216,30 @@ def _validate_structure(blocks: list[dict[str, Any]]) -> list[str]:
     return problems
 
 
+EXPECTED_PROVENANCE = {"SI-0004": 8}
+
+
+def _validate_provenance(blocks: list[dict[str, Any]]) -> list[str]:
+    """Exactly the reviewed blocks carry each linked issue, each with its typed link."""
+    problems = []
+    decided: dict[str, set[str]] = {}
+    for d in load_provenance()["decisions"]:
+        decided.setdefault(d["issue"], set()).add(d["block"])
+    counts = {issue: len(ids) for issue, ids in decided.items()}
+    if counts != EXPECTED_PROVENANCE:
+        problems.append(f"provenance links {counts} != {EXPECTED_PROVENANCE}")
+    for issue, ids in decided.items():
+        carrying = {b["block_id"] for b in blocks if issue in b.get("source_issue_refs", [])}
+        if carrying != ids:
+            problems.append(f"{issue} on {sorted(carrying ^ ids)} differs from the decisions")
+        for b in blocks:
+            if b["block_id"] in ids and not any(
+                link["issue"] == issue for link in b.get("provenance_links", [])
+            ):
+                problems.append(f"{b['block_id']}: {issue} without a typed provenance link")
+    return problems
+
+
 def validate(
     blocks: list[dict[str, Any]], pages: list[dict[str, Any]], summary: dict[str, Any]
 ) -> list[str]:
@@ -253,6 +282,12 @@ def corpus_metadata(blocks: list[dict[str, Any]], summary: dict[str, Any]) -> di
                 "sha256": sha256_file(STRUCTURE_PATH),
                 "approved_on": "2026-10-18",
                 "counts": {"definition_body_relabels": EXPECTED_RELABELS},
+            },
+            "provenance": {
+                "file": PROVENANCE_PATH.relative_to(REPO_ROOT).as_posix(),
+                "sha256": sha256_file(PROVENANCE_PATH),
+                "approved_on": "2026-10-18",
+                "counts": {"block_issue_links": EXPECTED_PROVENANCE},
             },
         },
         "counts": {

@@ -44,6 +44,7 @@ from mabhas19.ingest.main_decisions import (
     apply_decisions,
     load_decisions,
     load_errata,
+    load_provenance,
     load_structure,
 )
 from mabhas19.ingest.repair.glyphs import (
@@ -384,7 +385,9 @@ def build(out: Path, engine: OcrEngine | None) -> dict[str, Any]:
                                                        for r in recs)})  # fmt: skip
         assign_hierarchy(ctx, blocks)
         machine_layer = blocks
-        blocks = apply_decisions(blocks, load_decisions(), load_errata(), load_structure())
+        blocks = apply_decisions(
+            blocks, load_decisions(), load_errata(), load_structure(), load_provenance()
+        )
         refresh_section_titles(blocks)
         toc = toc_entries(blocks)
         checks = heading_checks(ctx, blocks, toc)

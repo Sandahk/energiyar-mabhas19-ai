@@ -1,0 +1,96 @@
+# Provenance links of main-text blocks to source issues (guarded; applied by main_decisions).
+schema_version: 1
+scope: block-level provenance links to SI-0004 (Appendices 5, 6 and 8 are placeholders)
+approved_on: '2026-10-18'
+basis_default: assistant_reviewed_provenance
+semantics: the block references source material affected by the issue; it does not contain that material.
+  Only source_issue_refs and provenance_links are added; text, IDs, kind, structural class, retrieval
+  eligibility, sections, page metadata and bounding boxes are unchanged.
+audit: data/processed/provenance_si0004/ (audit.json, curated.diff)
+not_linked:
+  front-matter appendix list p17 (main-p017-b024, b025, b027): duplicates the p146 list
+  generic «پیوست‌ها» references (p057, p058, p146-b002, p146-b014): all appendices
+  main-p013-b003: mentions «چک لیست‌ها»; no appendix reference
+counts:
+  blocks: 8
+decisions:
+- id: PV-SI0004-p077-b004
+  block: main-p077-b004
+  expect_text_sha256: f8f9ec40d5777df675782191abf07f480e944c6630dcf3bb6b85de4d3ce635c8
+  expect_pdf_page: 77
+  expect_printed_page: '58'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app05
+  references_appendix: 5
+  reference_kind: substantive
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p078-b014
+  block: main-p078-b014
+  expect_text_sha256: b9461449bb429381b214b3581355c2a88a84f3374fd147ceca41705794af56ed
+  expect_pdf_page: 78
+  expect_printed_page: '59'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app06
+  references_appendix: 6
+  reference_kind: substantive
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p079-b006
+  block: main-p079-b006
+  expect_text_sha256: 048ca884076aa739e2f202c75ed493e16ce12712e54ea8b81b1cfd8849bf5096
+  expect_pdf_page: 79
+  expect_printed_page: '60'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app06
+  references_appendix: 6
+  reference_kind: substantive
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p082-b007
+  block: main-p082-b007
+  expect_text_sha256: b79524cb83a15d237d04bd8c9e28c25e46ae52df35278c2bddbcc592689be94a
+  expect_pdf_page: 82
+  expect_printed_page: '63'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app06
+  references_appendix: 6
+  reference_kind: substantive
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p118-b008
+  block: main-p118-b008
+  expect_text_sha256: 8424e4231e9537ba8405105ad6d0271e2c228bcf00e7ea9fa23206e1ecf942e2
+  expect_pdf_page: 118
+  expect_printed_page: '99'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app08
+  references_appendix: 8
+  reference_kind: substantive
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p146-b009
+  block: main-p146-b009
+  expect_text_sha256: e838b945e13c398ffa0e95f38430fd4b4fc985ad6a9f7556315336013defaad5
+  expect_pdf_page: 146
+  expect_printed_page: '126'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app05
+  references_appendix: 5
+  reference_kind: index
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p146-b010
+  block: main-p146-b010
+  expect_text_sha256: c59acb5269d4b2f10259faedd6afa47d42cafab38e08f015fc229e1552105243
+  expect_pdf_page: 146
+  expect_printed_page: '126'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app06
+  references_appendix: 6
+  reference_kind: index
+  basis: assistant_reviewed_provenance
+- id: PV-SI0004-p146-b012
+  block: main-p146-b012
+  expect_text_sha256: fa192af252be14258315b857eeb797484588d728a674fc1ba2753447402ab9e9
+  expect_pdf_page: 146
+  expect_printed_page: '126'
+  issue: SI-0004
+  references_doc: m19-ed5-1404-app08
+  references_appendix: 8
+  reference_kind: index
+  basis: assistant_reviewed_provenance

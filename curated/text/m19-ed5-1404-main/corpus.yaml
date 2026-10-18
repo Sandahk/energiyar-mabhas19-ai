@@ -33,6 +33,13 @@ review:
     approved_on: '2026-10-18'
     counts:
       definition_body_relabels: 136
+  provenance:
+    file: eval/extraction/review/main-provenance-review.yaml
+    sha256: 37f2c1c7973af1c4f032a0aa21004dafd8ae26e30fd783951f283caeb1dd1f36
+    approved_on: '2026-10-18'
+    counts:
+      block_issue_links:
+        SI-0004: 8
 counts:
   pages_by_role:
     front_matter: 10

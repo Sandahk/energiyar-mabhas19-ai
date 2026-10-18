@@ -9,6 +9,10 @@ Decisions (``eval/extraction/review/main-assistant-review.yaml``):
   fragments are kept (excluded from retrieval) with ``merged_into``;
 * ``classify``: structural class of unnumbered bold lines.
 
+Provenance links (``main-provenance-review.yaml``) add ``source_issue_refs`` and typed
+``provenance_links`` to reviewed blocks that reference source material affected by a source
+issue; text, kind, retrieval and verification are untouched.
+
 Raw text and the repair_v1 text are never changed. Every block gets ``verification``
 (status, basis, rules, decisions), ``retrieval`` (included or not, with a reason) and the
 list of review flags it still carries.
@@ -31,6 +35,10 @@ from mabhas19.text.normalize import normalize_for_search
 DECISIONS_PATH = EVAL_DIR / "extraction" / "review" / "main-assistant-review.yaml"
 ERRATA_PATH = EVAL_DIR / "extraction" / "review" / "main-errata-review.yaml"
 STRUCTURE_PATH = EVAL_DIR / "extraction" / "review" / "main-structure-review.yaml"
+PROVENANCE_PATH = EVAL_DIR / "extraction" / "review" / "main-provenance-review.yaml"
+PROVENANCE_MEANING = (
+    "this block references source material affected by the issue; it does not contain that material"
+)
 # B2/L1/T1 are applied only to the reviewed cases listed in the errata file, never generically
 APPROVED_RULES = frozenset({"M1", "M1-exception", "G1", "G2", "B1", "C1", "B2", "L1", "T1"})
 EXTRACTION_FIXES = frozenset({"K1"})  # classification fixes of the extractor itself
@@ -67,6 +75,35 @@ def load_errata(path: Path = ERRATA_PATH) -> dict[str, Any]:
 
 def load_structure(path: Path = STRUCTURE_PATH) -> dict[str, Any]:
     return load_decisions(path)
+
+
+def load_provenance(path: Path = PROVENANCE_PATH) -> dict[str, Any]:
+    return load_decisions(path)
+
+
+def _apply_provenance(block: dict[str, Any], d: dict[str, Any]) -> None:
+    """Guarded provenance link: adds the issue to ``source_issue_refs`` and a typed link naming
+    the referenced document. Nothing else on the block changes (no text, kind, retrieval or
+    verification decision)."""
+    if _sha(block["text"]) != d["expect_text_sha256"]:
+        raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the audit (stale)")
+    context = (block["pdf_page"], block["printed_page"])
+    if context != (d["expect_pdf_page"], d["expect_printed_page"]):
+        raise DecisionError(f"{d['id']}: {block['block_id']} page context {context} (stale)")
+    refs = block.setdefault("source_issue_refs", [])
+    if d["issue"] not in refs:
+        refs.append(d["issue"])
+    block.setdefault("provenance_links", []).append(
+        {
+            "id": d["id"],
+            "issue": d["issue"],
+            "references_doc": d["references_doc"],
+            "references_appendix": d["references_appendix"],
+            "reference_kind": d["reference_kind"],
+            "meaning": PROVENANCE_MEANING,
+            "basis": d["basis"],
+        }
+    )
 
 
 def _apply_reclassification(block: dict[str, Any], d: dict[str, Any]) -> None:
@@ -207,6 +244,7 @@ def apply_decisions(
     doc: dict[str, Any],
     errata: dict[str, Any] | None = None,
     structure: dict[str, Any] | None = None,
+    provenance: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     out = [copy.deepcopy(b) for b in blocks]
     by_id = {b["block_id"]: b for b in out}
@@ -233,6 +271,7 @@ def apply_decisions(
             raise DecisionError(f"{d['id']}: unknown decision type {kind!r}")
     _apply_per_block(by_id, errata, _apply_errata)
     _apply_per_block(by_id, structure, _apply_reclassification)
+    _apply_per_block(by_id, provenance, _apply_provenance)
     for b in out:
         finalize(b)
     return out

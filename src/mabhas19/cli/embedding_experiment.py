@@ -59,7 +59,10 @@ INVARIANT = (
     "route",
     "route_reasons",
     "route_ok",
-    "structured_exact",
+    "structured_exact_original",
+    "record_exact",
+    "typed_no_match",
+    "table_match",
     "structured_missing",
     "structured_extra",
     "issues_ok",
@@ -193,9 +196,13 @@ def compare(
             "intrinsic": m["bm25_intrinsic"],
             "end_to_end": m["prose_end_to_end"],
             "route_accuracy": m["route_accuracy"],
-            "structured_exact": m["structured_exact"],
-            "structured_no_match": _no_match_rate(results, by_id),
+            "structured_exact_original": m["structured_exact_original"],
+            "structured_no_match_original": _no_match_rate(results, by_id),
+            "record_exact": m["record_exact"],
+            "typed_no_match": m["typed_no_match"],
+            "table_match": m["table_match"],
             "unsupported": m["unsupported"],
+            "unsupported_original": m["unsupported_original"],
             "source_issue_exposure": m["source_issue_exposure"],
             "conflict_exposure": m["conflict_exposure"],
             "by_group": {
@@ -263,11 +270,12 @@ def regression(
 
 
 def _no_match_rate(results: list[CaseResult], by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """Structured cases whose correct outcome is no record (typed no-match or nothing)."""
+    """Historical no-match score of the first final benchmark (original scorer)."""
     vals = [
-        r.structured_exact
+        r.structured_exact_original
         for r in results
-        if (by_id[r.id].get("evidence") or {}).get("no_records") and r.structured_exact is not None
+        if (by_id[r.id].get("evidence") or {}).get("no_records")
+        and r.structured_exact_original is not None
     ]
     return {"rate": round(sum(vals) / len(vals), 3) if vals else None, "n": len(vals)}
 

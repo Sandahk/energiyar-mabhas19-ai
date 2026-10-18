@@ -100,7 +100,8 @@ def test_prose_ranking_mode_changes_nothing_but_prose(set_name: str) -> None:
     assert violations == []
     for key in (
         "route_accuracy",
-        "structured_exact",
+        "record_exact",
+        "typed_no_match",
         "unsupported",
         "source_issue_exposure",
         "conflict_exposure",

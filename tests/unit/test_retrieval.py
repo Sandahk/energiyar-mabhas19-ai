@@ -12,10 +12,16 @@ from mabhas19.retrieval.eval import (
     check_evidence_ids,
     route_matrix,
     unsupported_scores,
+    unsupported_scores_strict,
 )
 from mabhas19.retrieval.hybrid import Retriever, numbered_lines, rrf
 from mabhas19.retrieval.lexical import BM25
-from mabhas19.retrieval.models import RetrievalResult, RouteDecision, StructuredHit
+from mabhas19.retrieval.models import (
+    RetrievalResult,
+    RouteDecision,
+    StructuredHit,
+    StructuredNoMatch,
+)
 from mabhas19.retrieval.normalization import index_terms, tokens
 from mabhas19.retrieval.router import Router
 from mabhas19.retrieval.structured import NO_5C_NOTE, StructuredStore, density_in
@@ -160,19 +166,58 @@ def test_router_is_token_bounded_and_needs_entities() -> None:
 # ---------------------------------------------------------------- evaluation semantics
 
 
-def test_structured_exact_match_semantics() -> None:
-    def result(ids: list[str]) -> RetrievalResult:
-        hits = [StructuredHit("t", "d", i, 1, "1", [], {}, {}, [], "x") for i in ids]
-        return RetrievalResult("q", "q", RouteDecision("structured", []), structured=hits)
+def _result(ids: list[str], no_match: list[str] | None = None) -> RetrievalResult:
+    hits = [StructuredHit("t", "d", i, 1, "1", [], {}, {}, [], "x") for i in ids]
+    nm = [StructuredNoMatch(ds, "unknown_material", "", {}, None) for ds in no_match or []]
+    return RetrievalResult("q", "q", RouteDecision("structured", []), structured=hits, no_match=nm)
 
-    res = CaseResult("R", "c", "q", "structured", "structured", [], True)
-    _structured(result(["a", "b"]), {"records": ["a"], "acceptable_records": ["b"]}, res)
-    assert res.structured_exact
-    _structured(result(["a", "x"]), {"records": ["a"]}, res)
-    assert not res.structured_exact
+
+def _case() -> CaseResult:
+    return CaseResult("R", "c", "q", "structured", "structured", [], True)
+
+
+def test_record_exact_match_semantics() -> None:
+    res = _case()
+    _structured(_result(["a", "b"]), {"records": ["a"], "acceptable_records": ["b"]}, res)
+    assert res.record_exact
+    res = _case()
+    _structured(_result(["a", "x"]), {"records": ["a"]}, res)
+    assert res.record_exact is False
     assert res.structured_extra == ["x"]
-    _structured(result([]), {"no_records": True}, res)
-    assert res.structured_exact
+    res = _case()
+    _structured(_result(["b"]), {"records": ["a"], "acceptable_records": ["b"]}, res)
+    assert res.record_exact is False
+    assert res.structured_missing == ["a"]
+
+
+def test_records_are_scored_at_record_level_even_with_tables() -> None:
+    ev = {"records": ["a"], "tables": ["t"]}
+    wrong = _case()
+    _structured(_result(["z"]), ev, wrong)  # wrong row of the right table
+    assert wrong.record_exact is False
+    assert wrong.structured_exact_original  # the historical scorer accepted it
+    typed = _case()
+    _structured(_result([], no_match=["t"]), ev, typed)  # typed no-match for an expected table
+    assert typed.record_exact is False
+    assert typed.structured_exact_original
+    assert typed.table_match is None
+    assert typed.typed_no_match is None
+
+
+def test_typed_no_match_and_table_match() -> None:
+    ok = _case()
+    _structured(_result([], no_match=["t"]), {"no_records": True, "tables": ["t"]}, ok)
+    assert ok.typed_no_match
+    rows = _case()
+    _structured(_result(["a"]), {"no_records": True, "tables": ["t"]}, rows)
+    assert rows.typed_no_match is False
+    silent = _case()
+    _structured(_result([]), {"no_records": True, "tables": ["t"]}, silent)
+    assert silent.typed_no_match is False  # absence must be typed
+    table = _case()
+    _structured(_result(["a"]), {"tables": ["t"]}, table)
+    assert table.table_match
+    assert table.record_exact is None
 
 
 def test_unknown_evidence_ids_are_reported() -> None:
@@ -198,4 +243,31 @@ def test_route_matrix_and_unsupported_scores() -> None:
     m = route_matrix(rs)
     assert m["unsupported"]["prose"] == 1
     assert m["prose"]["unsupported"] == 1
-    assert unsupported_scores(rs) == {"tp": 1, "fp": 1, "fn": 1, "precision": 0.5, "recall": 0.5}
+    assert unsupported_scores(rs) == {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "allowed_other": 0,
+        "precision": 0.5,
+        "recall": 0.5,
+    }
+
+
+def test_unsupported_scores_honor_acceptable_routes() -> None:
+    rs = [
+        # expected unsupported, prose explicitly acceptable -> neither tp nor fn
+        CaseResult("a", "c", "q", "unsupported", "prose", [], True, ["prose"]),
+        # expected prose, unsupported explicitly acceptable -> tp, not fp
+        CaseResult("b", "c", "q", "prose", "unsupported", [], True, ["unsupported"]),
+        CaseResult("c", "c", "q", "structured", "unsupported", [], False),
+    ]
+    assert unsupported_scores(rs) == {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "allowed_other": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+    }
+    strict = unsupported_scores_strict(rs)
+    assert (strict["tp"], strict["fp"], strict["fn"]) == (0, 2, 1)

@@ -4,11 +4,24 @@ Metrics:
 
 * prose Recall@1/3/5 and MRR, both *intrinsic* (BM25 run for every case with prose
   evidence) and *end-to-end* (only when the router chose a prose path);
-* route accuracy;
-* structured exact match: every required record returned and nothing outside
-  required + acceptable (table-level cases: hits non-empty and all from the expected tables;
-  ``no_records`` cases: nothing returned);
+* route accuracy (``acceptable_routes`` honored);
+* structured evidence, scored by the most specific expectation and reported separately:
+
+  - **record exact** (cases with ``records``): every required record returned and nothing
+    outside required + acceptable; a typed no-match or table evidence never satisfies it;
+  - **typed no-match** (``no_records`` cases): no record returned and a typed no-match for an
+    expected table (or any typed no-match when no table is named);
+  - **table match** (cases with ``tables`` only, no records): hits non-empty and all from the
+    expected tables, or table-level evidence / no-match for an expected table;
+
+* unsupported precision/recall with raw confusion counts, honoring ``acceptable_routes`` (a
+  route the case explicitly allows is neither a false positive nor a false negative);
 * source-issue exposure and conflict exposure.
+
+The original (v1/v2 and first final benchmark) scorer is kept as ``structured_exact_original``
+and ``unsupported_original`` so historical numbers stay reproducible: it scored any case with
+``tables`` at table level even when records were expected, and used strict route labels for
+unsupported scoring.
 """
 
 from __future__ import annotations
@@ -35,9 +48,13 @@ class CaseResult:
     route: str
     route_reasons: list[str]
     route_ok: bool
+    acceptable_routes: list[str] = field(default_factory=list)
     prose_rank: int | None = None  # end-to-end (router-dependent)
     bm25_rank: int | None = None  # intrinsic
-    structured_exact: bool | None = None
+    structured_exact_original: bool | None = None  # historical scorer (see module docstring)
+    record_exact: bool | None = None
+    typed_no_match: bool | None = None
+    table_match: bool | None = None
     structured_missing: list[str] = field(default_factory=list)
     structured_extra: list[str] = field(default_factory=list)
     issues_ok: bool | None = None
@@ -94,24 +111,39 @@ def _prose_rank(
 def _structured(r: RetrievalResult, ev: dict[str, Any], res: CaseResult) -> None:
     got = [h.record_id for h in r.structured]
     res.returned_records = got
-    if ev.get("no_records"):
-        res.structured_exact = not got
+    res.structured_exact_original = _original_structured_exact(r, ev)
+    expected_tables = set(ev.get("tables", []))
+    if ev.get("records"):
+        required = set(ev["records"])
+        ok = required | set(ev.get("acceptable_records", []))
+        res.structured_missing = sorted(required - set(got))
+        res.structured_extra = sorted(set(got) - ok)
+        res.record_exact = not res.structured_missing and not res.structured_extra
+    elif ev.get("no_records"):
         res.structured_extra = got
-        return
+        typed = {n.dataset for n in r.no_match}
+        res.typed_no_match = not got and bool(typed & expected_tables if expected_tables else typed)
+    elif expected_tables:
+        hit_tables = {h.dataset for h in r.structured}
+        table_level = {n.dataset for n in r.no_match} | {t.dataset for t in r.tables}
+        res.table_match = hit_tables <= expected_tables and bool(
+            (hit_tables | table_level) & expected_tables
+        )
+
+
+def _original_structured_exact(r: RetrievalResult, ev: dict[str, Any]) -> bool:
+    """Historical scorer: ``tables`` took precedence over ``records`` (kept for reproducibility
+    of the immutable first final result; do not use for new decisions)."""
+    got = [h.record_id for h in r.structured]
+    if ev.get("no_records"):
+        return not got
     if ev.get("tables"):
-        # table-level evidence: records from the expected tables, or (when no record applies)
-        # a typed no-match / table evidence for an expected table; never records from elsewhere
         expected = set(ev["tables"])
         hit_tables = {h.dataset for h in r.structured}
         table_level = {n.dataset for n in r.no_match} | {t.dataset for t in r.tables}
-        res.structured_exact = hit_tables <= expected and bool(
-            (hit_tables | table_level) & expected
-        )
-        return
+        return hit_tables <= expected and bool((hit_tables | table_level) & expected)
     required, ok = set(ev["records"]), set(ev["records"]) | set(ev.get("acceptable_records", []))
-    res.structured_missing = sorted(required - set(got))
-    res.structured_extra = sorted(set(got) - ok)
-    res.structured_exact = not res.structured_missing and not res.structured_extra
+    return required <= set(got) and set(got) <= ok
 
 
 def evaluate(
@@ -130,6 +162,7 @@ def evaluate(
             r.route.route,
             r.route.reasons,
             r.route.route in {c["expected_route"], *c.get("acceptable_routes", [])},
+            list(c.get("acceptable_routes", [])),
         )
         res.top_chunks = [h.chunk_id for h in r.prose[:5]]
         res.top_evidence = [
@@ -194,14 +227,19 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         ),
         "route_matrix": route_matrix(results),
         "unsupported": unsupported_scores(results),
-        "structured_exact": _rate([r.structured_exact for r in results]),
+        "unsupported_original": unsupported_scores_strict(results),
+        "record_exact": _rate([r.record_exact for r in results]),
+        "typed_no_match": _rate([r.typed_no_match for r in results]),
+        "table_match": _rate([r.table_match for r in results]),
+        "structured_exact_original": _rate([r.structured_exact_original for r in results]),
         "source_issue_exposure": _rate([r.issues_ok for r in results]),
         "conflict_exposure": _rate([r.conflict_ok for r in results]),
         "by_category": {
             cat: {
                 "n": len(rs),
                 "route": _rate([r.route_ok for r in rs])["rate"],
-                "structured_exact": _rate([r.structured_exact for r in rs])["rate"],
+                "record_exact": _rate([r.record_exact for r in rs])["rate"],
+                "typed_no_match": _rate([r.typed_no_match for r in rs])["rate"],
                 "bm25_recall@5": _recall([r.bm25_rank for r in rs if r.has_prose_evidence])[
                     "recall@5"
                 ]
@@ -225,6 +263,37 @@ def route_matrix(results: list[CaseResult]) -> dict[str, dict[str, int]]:
 
 
 def unsupported_scores(results: list[CaseResult]) -> dict[str, Any]:
+    """Unsupported detection honoring acceptable routes, with raw confusion counts.
+
+    tp: routed unsupported where the case allows it; fp: routed unsupported where it does not;
+    fn: expected unsupported but routed to a route the case does not allow; ``allowed_other``:
+    expected unsupported, routed to an explicitly acceptable other route (neither tp nor fn).
+    """
+    tp = fp = fn = allowed_other = 0
+    for r in results:
+        allowed = {r.expected_route, *r.acceptable_routes}
+        if r.route == "unsupported":
+            if "unsupported" in allowed:
+                tp += 1
+            else:
+                fp += 1
+        elif r.expected_route == "unsupported":
+            if r.route in allowed:
+                allowed_other += 1
+            else:
+                fn += 1
+    return {
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "allowed_other": allowed_other,
+        "precision": round(tp / (tp + fp), 3) if tp + fp else None,
+        "recall": round(tp / (tp + fn), 3) if tp + fn else None,
+    }
+
+
+def unsupported_scores_strict(results: list[CaseResult]) -> dict[str, Any]:
+    """Historical scorer: strict expected labels, acceptable routes ignored."""
     tp = sum(1 for r in results if r.expected_route == "unsupported" and r.route == "unsupported")
     fp = sum(1 for r in results if r.expected_route != "unsupported" and r.route == "unsupported")
     fn = sum(1 for r in results if r.expected_route == "unsupported" and r.route != "unsupported")

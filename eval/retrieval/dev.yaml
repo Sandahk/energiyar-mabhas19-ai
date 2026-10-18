@@ -1,0 +1,249 @@
+# Offline retrieval evaluation set (evidence only; no expected answers).
+#
+# Evidence semantics (scored by mabhas19.retrieval.eval):
+#   blocks            prose hit = a returned chunk containing ANY of these curated block IDs
+#   sections          alternative prose evidence: a returned chunk whose section number is listed
+#   records           structured: ALL of these record IDs must be returned
+#   acceptable_records structured: may also be returned without counting as noise
+#   tables            structured, table level: hits must come from these tables (non-empty)
+#   source_issues     must be exposed (hit issue refs, conflict IDs or notes)
+#   conflict          a Conflict carrying this issue ID must be returned
+#   no_records        structured lookup must return no record (value absent in the source)
+# Evidence IDs were taken from the curated files (curated/text, curated/tables), never from a
+# retrieval run. Frozen sources: main corpus 4922e37, main tables f9d7d1d, App.2 c45c637,
+# App.3 07949a6, App.7 6f08c65.
+schema_version: 1
+cases:
+# ---------------------------------------------------------------- exact section / clause lookup
+- {id: R001, category: section_lookup, expected_route: prose,
+   query: "بند ۱۹-۲-۱-۹ درباره پیوست‌ها چه می‌گوید؟",
+   evidence: {blocks: [main-p057-b006]}}
+- {id: R002, category: section_lookup, expected_route: prose,
+   query: "متن بند ۱۹-۲-۲-۳ درباره ضمانت اجرای مقررات ملی ساختمان",
+   evidence: {blocks: [main-p059-b005]}}
+- {id: R003, category: section_lookup, expected_route: prose,
+   query: "بند ۱۹-۲-۴-۱ رده بندی بازدهی انرژی ساختمان‌ها",
+   evidence: {blocks: [main-p062-b004]}}
+- {id: R004, category: section_lookup, expected_route: prose,
+   query: "بخش ۱۹-۵-۱-۳ هوابندی و نشت هوا",
+   evidence: {blocks: [main-p091-b007, main-p091-b008, main-p091-b009, main-p091-b010], sections: [19-5-1-3]}}
+- {id: R005, category: section_lookup, expected_route: prose,
+   query: "تعریف ۱۹-۱-۵۳ خیرگی",
+   evidence: {blocks: [main-p030-b007, main-p030-b008], sections: [19-1-53]}}
+- {id: R006, category: section_lookup, expected_route: prose,
+   query: "بند ۱۹-۲-۱-۱۰ رعایت همزمان الزامات سایر مباحث",
+   evidence: {blocks: [main-p058-b004]}}
+- {id: R007, category: section_lookup, expected_route: prose,
+   query: "۱۹-۶-۲-۱ فایل‌های اقلیمی مورد تأیید",
+   evidence: {blocks: [main-p123-b007, main-p123-b008], sections: [19-6-2-1]}}
+- {id: R008, category: section_lookup, expected_route: prose,
+   query: "بند ۱۹-۲-۳-۱ ارزیابی چرخه عمر ساختمان",
+   evidence: {blocks: [main-p061-b007]}}
+# ---------------------------------------------------------------- conceptual prose
+- {id: R009, category: conceptual, expected_route: prose,
+   query: "آسایش حرارتی چیست؟",
+   evidence: {blocks: [main-p022-b008], sections: [19-1-16, 19-1-135]}}
+- {id: R010, category: conceptual, expected_route: prose,
+   query: "منظور از پل حرارتی چیست",
+   evidence: {sections: [19-1-27]}}
+- {id: R011, category: conceptual, expected_route: prose,
+   query: "انرژی نهفته مصالح به چه معناست",
+   evidence: {sections: [19-1-11]}}
+- {id: R012, category: conceptual, expected_route: prose,
+   query: "ساختمان ایده‌آل چه تعریفی دارد",
+   evidence: {sections: [19-1-67]}}
+- {id: R013, category: conceptual, expected_route: prose,
+   query: "رده بازدهی انرژی ساختمان چگونه تعیین می‌شود",
+   evidence: {blocks: [main-p073-b004, main-p073-f01, main-p073-b011, main-p062-b004], sections: [19-1-62]}}
+- {id: R014, category: conceptual, expected_route: prose,
+   query: "کمترین بازده قابل قبول برای کسب رده D چند برابر شدت مصرف انرژی ساختمان ایده‌آل است",
+   evidence: {blocks: [main-p074-b004]}}
+- {id: R015, category: conceptual, expected_route: prose,
+   query: "شدت مصرف انرژی ساختمان چه تعریفی دارد",
+   evidence: {sections: [19-1-95]}}
+- {id: R016, category: conceptual, expected_route: prose,
+   query: "الزامات آزمون نشت هوا و هوابندی پوسته ساختمان",
+   evidence: {sections: [19-5-1-3]}}
+- {id: R017, category: conceptual, expected_route: prose,
+   query: "کدام فایل‌های اقلیمی برای شبیه‌سازی انرژی قابل قبول هستند",
+   evidence: {sections: [19-6-2-1, 19-6-2]}}
+- {id: R018, category: conceptual, expected_route: prose,
+   query: "ضمانت اجرا و بازدارندگی در صورت عدم رعایت مقررات ملی ساختمان",
+   evidence: {blocks: [main-p059-b005], sections: [19-2-2]}}
+- {id: R019, category: conceptual, expected_route: prose,
+   query: "ضریب عملکرد COP یعنی چه",
+   evidence: {sections: [19-1-103]}}
+- {id: R020, category: conceptual, expected_route: prose,
+   query: "قله‌تراشی در مدیریت مصرف انرژی",
+   evidence: {sections: [19-1-118]}}
+# ---------------------------------------------------------------- city climate lookup
+- {id: R021, category: city_climate, expected_route: structured,
+   query: "رده اقلیمی تبریز",
+   evidence: {records: [app02-p002-r26, main-t19-3-2-r01]}}
+- {id: R022, category: city_climate, expected_route: structured,
+   query: "اقلیم شهر یزد چیست",
+   evidence: {records: [app02-p004-r20, main-t19-3-2-r31]}}
+- {id: R023, category: city_climate, expected_route: structured,
+   query: "دسته‌بندی اقلیمی آبادان",
+   evidence: {records: [app02-p002-r01]}}
+- {id: R024, category: city_climate, expected_route: structured,
+   query: "رده اقلیمی بوشهر",
+   evidence: {records: [app02-p002-r20, main-t19-3-2-r07]}}
+- {id: R025, category: city_climate, expected_route: structured,
+   query: "رده اقلیمی زاهدان",
+   evidence: {records: [main-t19-3-2-r16]}}
+- {id: R026, category: city_climate, expected_route: structured,
+   query: "ایستگاه هواشناسی شیراز و رده اقلیمی آن",
+   evidence: {records: [app02-p003-r25, main-t19-3-2-r17]}}
+# ---------------------------------------------------------------- EUI lookup (Appendix 3)
+- {id: R027, category: eui, expected_route: structured,
+   query: "حداکثر شدت مصرف انرژی مجاز ساختمان اداری در اقلیم 3B برای رده C",
+   evidence: {records: [app03-C-r04-3B, app03-C-r05-3B]}}
+- {id: R028, category: eui, expected_route: structured,
+   query: "شدت مصرف انرژی مجاز دانشگاه و آموزش عالی در اقلیم 0B رده A",
+   evidence: {records: [app03-A-r13-0B]}}
+- {id: R029, category: eui, expected_route: structured,
+   query: "حداکثر شدت مصرف انرژی مسکونی ≥ ۳۰۰۰ مترمربع اقلیم 4B رده D",
+   evidence: {records: [app03-D-r01-4B]}}
+- {id: R030, category: eui, expected_route: structured,
+   query: "شدت مصرف انرژی بیمارستان اقلیم 2A رده B",
+   evidence: {records: [app03-B-r07-2A]}}
+- {id: R031, category: eui, expected_route: structured,
+   query: "شدت مصرف انرژی تجاری فروشگاه اقلیم 2B رده D",
+   evidence: {records: [app03-D-r26-2B]}}
+- {id: R032, category: eui, expected_route: structured,
+   query: "شدت مصرف انرژی مجاز ساختمان مسکونی در اقلیم 1B رده A",
+   evidence: {records: [app03-A-r01-1B, app03-A-r02-1B]}}
+# ---------------------------------------------------------------- material properties (Appendix 7)
+- {id: R033, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی بتن هوادار اتوکلاو شده با چگالی ۴۰۰",
+   evidence: {records: [app07-p006-r11]}}
+- {id: R034, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی پشم سنگ با چگالی ۳۰",
+   evidence: {records: [app07-p012-r09]}}
+- {id: R035, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی گچ و خاک",
+   evidence: {records: [app07-p013-r17]}}
+- {id: R036, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی گرانیت",
+   evidence: {records: [app07-p010-r02]}}
+- {id: R037, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی اندود و ملات آهکی یا سیمانی با چگالی ۱۸۰۰",
+   evidence: {records: [app07-p003-r02, app07-p003-r03]},
+   notes: "1800 is a printed bound of two rows; both must be returned, no inclusivity chosen"}
+- {id: R038, category: material, expected_route: structured,
+   query: "ضریب هدایت حرارتی پلی وینیل کلراید PVC",
+   evidence: {records: [app07-p007-r17], acceptable_records: [app07-p012-r01, app07-p012-r02]}}
+- {id: R039, category: material, expected_route: structured,
+   query: "چگالی و ضریب هدایت حرارتی شیشه",
+   evidence: {records: [app07-p011-r01], acceptable_records: [app07-p011-r02, app07-p011-r03, app07-p011-r04]}}
+# ---------------------------------------------------------------- main-table numeric lookup
+- {id: R040, category: main_table, expected_route: structured,
+   query: "حداقل مقاومت حرارتی دیوار خارجی مجاور فضای باز در اقلیم 3A",
+   evidence: {records: [main-t19-5-1-r02c03]}}
+- {id: R041, category: main_table, expected_route: structured,
+   query: "حداکثر ضریب انتقال حرارت پنجره ثابت در اقلیم 4A",
+   evidence: {records: [main-t19-5-2-r02c04]}}
+- {id: R042, category: main_table, expected_route: structured,
+   query: "حداکثر دمای آبگرم مصرفی در دوش و وان",
+   evidence: {records: [main-t19-5-5-r01]}}
+- {id: R043, category: main_table, expected_route: structured,
+   query: "حداقل درصد مساحت مستقل نور طبیعی DLA برای کاربری آموزشی",
+   evidence: {records: [main-t19-5-6-r05]}}
+- {id: R044, category: main_table, expected_route: structured,
+   query: "حداقل ضریب یکنواختی نور مصنوعی پارکینگ",
+   evidence: {records: [main-t19-5-7-r01]}}
+- {id: R045, category: main_table, expected_route: structured,
+   query: "حداقل بازده بویلر چگالشی",
+   evidence: {records: [main-t19-5-3-item01]}}
+- {id: R046, category: main_table, expected_route: structured,
+   query: "حداقل بازده آبگرمکن گازسوز مخزن دار",
+   evidence: {records: [main-t19-5-4-item01]}}
+- {id: R047, category: main_table, expected_route: structured,
+   query: "معیار روز درجه برای اقلیم 4A",
+   evidence: {records: [main-t19-3-1-r05]}}
+- {id: R048, category: main_table, expected_route: structured,
+   query: "رده بازدهی انرژی C بر اساس نسبت R",
+   evidence: {records: [main-t19-3-3-r03]}}
+- {id: R049, category: main_table, expected_route: structured,
+   query: "حداکثر SHGC برای سطح سایه گیر کمتر از ۲۰ درصد در اقلیم 2A",
+   evidence: {records: [main-t19-5-2-r06c02]}}
+- {id: R050, category: main_table, expected_route: structured,
+   query: "حداقل کلاس بازده الکتروموتور سه فاز تک سرعته بیش از ۱۲۰ وات و کمتر از ۱۰۰۰ کیلووات",
+   evidence: {records: [main-t19-5-3-item12]}}
+# ---------------------------------------------------------------- mixed prose + structured
+- {id: R051, category: mixed, expected_route: mixed,
+   query: "رده اقلیمی اصفهان چیست و دسته‌بندی اقلیم چگونه انجام می‌شود",
+   evidence: {records: [app02-p002-r07, main-t19-3-2-r04], sections: [19-3-1-1],
+              source_issues: [SI-0009], conflict: SI-0009}}
+- {id: R052, category: mixed, expected_route: mixed,
+   query: "حداقل مقاومت حرارتی دیوار خارجی مجاور خاک در اقلیم 5B و روش محاسبه مقاومت حرارتی کل",
+   evidence: {records: [main-t19-5-1-r06c05], blocks: [main-p084-b005, main-p084-b006],
+              source_issues: [SI-0002]}}
+- {id: R053, category: mixed, expected_route: mixed,
+   query: "شدت مصرف انرژی مجاز اداری عمومی اقلیم 3B رده A و روش تعیین رده بازدهی انرژی",
+   evidence: {records: [app03-A-r04-3B], blocks: [main-p073-b004, main-p073-f01, main-p073-b011]}}
+- {id: R054, category: mixed, expected_route: mixed,
+   query: "ضریب هدایت حرارتی پشم شیشه با چگالی ۲۵ و تعریف ضریب هدایت حرارتی",
+   evidence: {records: [app07-p012-r18], sections: [19-1-104]}}
+- {id: R055, category: mixed, expected_route: mixed,
+   query: "حداقل ضریب یکنواختی نور مصنوعی برای کلاس‌های درس و تعریف ضریب یکنواختی",
+   evidence: {records: [main-t19-5-7-r04], blocks: [main-p116-b006, main-p116-b007], sections: [19-1-105]}}
+- {id: R056, category: mixed, expected_route: mixed,
+   query: "حداقل بازده بویلر چگالشی و الزامات تولید و بازیافت در تأسیسات مکانیکی",
+   evidence: {records: [main-t19-5-3-item01], sections: [19-5-2-1]}}
+# ---------------------------------------------------------------- spelling / ZWNJ / digit variants
+- {id: R057, category: spelling_variant, expected_route: prose,
+   query: "شبیه سازی بازدهی انرژی ساختمان",
+   evidence: {sections: [19-1-94, 19-4-1-2, 19-6]}}
+- {id: R058, category: spelling_variant, expected_route: prose,
+   query: "شبیهسازی بازدهی انرژی",
+   evidence: {sections: [19-1-94, 19-4-1-2, 19-6]}}
+- {id: R059, category: spelling_variant, expected_route: prose,
+   query: "حداكثر دمای تنظیمی سامانه گرمايش",
+   evidence: {sections: [19-1-51, 19-1-52]}}
+- {id: R060, category: spelling_variant, expected_route: prose,
+   query: "عایق کاری حرارتی چیست",
+   evidence: {sections: [19-1-108]}}
+- {id: R061, category: spelling_variant, expected_route: prose,
+   query: "بند 19-2-1-9",
+   evidence: {blocks: [main-p057-b006]}}
+- {id: R062, category: spelling_variant, expected_route: prose,
+   query: "آسایش حرارتی مطابق اسـتاندارد ISO 7730",
+   evidence: {blocks: [main-p022-b008]}}
+# ---------------------------------------------------------------- direct table references
+- {id: R063, category: table_reference, expected_route: structured,
+   query: "جدول ۱۹-۵-۱",
+   evidence: {tables: [m19-ed5-1404-main.t19-5-1]}}
+- {id: R064, category: table_reference, expected_route: structured,
+   query: "جدول ۱۹-۳-۲ را نشان بده",
+   evidence: {tables: [m19-ed5-1404-main.t19-3-2]}}
+- {id: R065, category: table_reference, expected_route: structured,
+   query: "جدول ۱۹-۲-۱ گروه ج سال اول شیشه چندجداره",
+   evidence: {records: [main-t19-2-1-r12c08]}}
+- {id: R066, category: table_reference, expected_route: structured,
+   query: "جدول ۱۹-۵-۵",
+   evidence: {tables: [m19-ed5-1404-main.t19-5-5]}}
+# ---------------------------------------------------------------- unresolved source issues
+- {id: R067, category: source_issue, expected_route: structured,
+   query: "رده اقلیمی اصفهان",
+   evidence: {records: [app02-p002-r07, main-t19-3-2-r04], source_issues: [SI-0009], conflict: SI-0009}}
+- {id: R068, category: source_issue, expected_route: structured,
+   query: "کد ایستگاه WMO کرمان",
+   evidence: {records: [main-t19-3-2-r21], acceptable_records: [app02-p004-r05], source_issues: [SI-0010]}}
+- {id: R069, category: source_issue, expected_route: structured,
+   query: "حداکثر شدت مصرف انرژی مسکونی ≥ ۳۰۰۰ مترمربع در اقلیم 5C رده C",
+   evidence: {no_records: true, source_issues: [SI-0002]}}
+- {id: R070, category: source_issue, expected_route: structured,
+   query: "رده اقلیمی اردبیل",
+   evidence: {records: [app02-p002-r05, main-t19-3-2-r03], source_issues: [SI-0001, SI-0002]}}
+- {id: R071, category: source_issue, expected_route: structured,
+   query: "جدول ۱۹-۲-۱ گروه الف سال اول عایق‌کاری پوسته خارجی",
+   evidence: {records: [main-t19-2-1-r02c05]},
+   notes: "symbol must stay check_mark (uninterpreted, no boolean)"}
+# ---------------------------------------------------------------- unsupported
+- {id: R072, category: unsupported, expected_route: unsupported, query: "قیمت آجر در بازار تهران چقدر است", evidence: {}}
+- {id: R073, category: unsupported, expected_route: unsupported, query: "پیش بینی هوا تهران فردا", evidence: {}}
+- {id: R074, category: unsupported, expected_route: unsupported, query: "نرخ مالیات بر ارزش افزوده چند درصد است", evidence: {}}
+- {id: R075, category: unsupported, expected_route: unsupported, query: "قوانین راهنمایی و رانندگی برای موتورسیکلت", evidence: {}}
+- {id: R076, category: unsupported, expected_route: unsupported, query: "تاریخچه معماری دوره ساسانی", evidence: {}}

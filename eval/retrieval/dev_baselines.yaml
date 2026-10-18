@@ -1,0 +1,25 @@
+# Development-set results (eval/retrieval/dev.yaml, 76 cases). These are NOT held-out results:
+# v1 was produced after fixing failures observed on this same set.
+schema_version: 1
+dev_set: eval/retrieval/dev.yaml
+dev_set_sha256: 3cdb5e17f736dbbf2842e1d3abc1acfec23b0a2cc6f3b55614bcba6f84999e49
+runs:
+  v0:
+    description: first run of the offline baseline, before any fix
+    run_dir: data/retrieval/runs/20261018T130853Z
+    bm25_intrinsic: {recall@1: 0.906, recall@3: 1.0, recall@5: 1.0, mrr: 0.948, n: 32}
+    prose_end_to_end: {recall@1: 0.844, recall@3: 0.938, recall@5: 0.938, mrr: 0.885, n: 32}
+    route_accuracy: 0.908
+    structured_exact: 0.911
+    source_issue_exposure: 1.0
+    conflict_exposure: 1.0
+  v1:
+    description: after fixing router substring matching, topic-word normalization, density
+      parsing, the entity requirement for App. 3/7 routing, and exact-section RRF (dev-tuned)
+    run_dir: data/retrieval/runs/20261018T131306Z
+    bm25_intrinsic: {recall@1: 0.906, recall@3: 1.0, recall@5: 1.0, mrr: 0.948, n: 32}
+    prose_end_to_end: {recall@1: 0.938, recall@3: 1.0, recall@5: 1.0, mrr: 0.969, n: 32}
+    route_accuracy: 1.0
+    structured_exact: 1.0
+    source_issue_exposure: 1.0
+    conflict_exposure: 1.0

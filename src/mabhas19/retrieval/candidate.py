@@ -53,8 +53,13 @@ SAFETY = {
     "wrong_extra_rows_expected": 0,
     "dropped_constraints_expected": 0,
 }
-# files that may change after the candidate commit (the frozen test set and its fingerprint)
-SET_FILES = ("eval/retrieval/final4.yaml", "eval/retrieval/final4.sha256")
+# files that may change after the candidate commit: the manifest itself, the frozen test set and
+# its fingerprint
+SET_FILES = (
+    "eval/retrieval/final4_candidate.yaml",
+    "eval/retrieval/final4.yaml",
+    "eval/retrieval/final4.sha256",
+)
 MODULES = (
     "src/mabhas19/indexing/chunking.py",
     "src/mabhas19/retrieval/normalization.py",

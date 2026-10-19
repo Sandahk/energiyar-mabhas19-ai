@@ -35,11 +35,12 @@ review:
       definition_body_relabels: 136
   provenance:
     file: eval/extraction/review/main-provenance-review.yaml
-    sha256: 37f2c1c7973af1c4f032a0aa21004dafd8ae26e30fd783951f283caeb1dd1f36
-    approved_on: '2026-10-18'
+    sha256: 5b14c79e85d9d44f1dd22bbed192d70df37f821b0382af67fc5d6e8ad7386403
+    approved_on: '2026-10-19'
     counts:
       block_issue_links:
         SI-0004: 8
+        SI-0008: 1
 counts:
   pages_by_role:
     front_matter: 10

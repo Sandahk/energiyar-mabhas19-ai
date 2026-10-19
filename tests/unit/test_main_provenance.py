@@ -1,4 +1,4 @@
-"""SI-0004 provenance links: guarded application and the curated result (read-only)."""
+"""Provenance links (SI-0004, SI-0008): guarded application and the curated result."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import yaml
 
 from mabhas19.core.paths import CURATED_DIR
 from mabhas19.ingest.main_decisions import (
+    CONTAINS_ISSUE_TEXT_MEANING,
     PROVENANCE_MEANING,
     DecisionError,
     _apply_provenance,
@@ -78,8 +79,11 @@ def test_provenance_is_guarded() -> None:
 
 def test_decision_file_pins_exactly_the_approved_anchors() -> None:
     decisions = load_provenance()["decisions"]
-    assert {d["block"]: d["references_doc"] for d in decisions} == APPROVED
-    assert {d["issue"] for d in decisions} == {"SI-0004"}
+    si4 = [d for d in decisions if d["issue"] == "SI-0004"]
+    assert {d["block"]: d["references_doc"] for d in si4} == APPROVED
+    assert {d["issue"] for d in decisions} == {"SI-0004", "SI-0008"}
+    (si8,) = [d for d in decisions if d["issue"] == "SI-0008"]
+    assert (si8["block"], si8["reference_kind"]) == ("main-p020-b007", "contains_issue_text")
 
 
 def test_curated_corpus_carries_si0004_on_exactly_the_approved_blocks() -> None:
@@ -103,3 +107,32 @@ def test_issue_registry_is_unchanged_by_the_links() -> None:
         "m19-ed5-1404-app06",
         "m19-ed5-1404-app08",
     }
+
+
+def test_si0008_is_linked_to_exactly_the_block_that_prints_the_misspelling() -> None:
+    blocks = _blocks()
+    carrying = [b for b in blocks if "SI-0008" in b.get("source_issue_refs", [])]
+    assert [b["block_id"] for b in carrying] == ["main-p020-b007"]
+    (b,) = carrying
+    assert "حافظت" in b["text"]  # the anomaly is printed and not corrected
+    (link,) = b["provenance_links"]
+    assert link["reference_kind"] == "contains_issue_text"
+    assert link["meaning"] == CONTAINS_ISSUE_TEXT_MEANING
+    assert link["meaning"] != PROVENANCE_MEANING
+    assert "references_appendix" not in link
+    assert b["retrieval"]["include"]
+
+
+def test_si0004_links_keep_their_reference_meaning() -> None:
+    by_id = {b["block_id"]: b for b in _blocks()}
+    for bid in APPROVED:
+        (link,) = by_id[bid]["provenance_links"]
+        assert link["meaning"] == PROVENANCE_MEANING
+        assert link["reference_kind"] in ("substantive", "index")
+
+
+def test_unknown_provenance_kind_is_refused() -> None:
+    entry = _entry("x") | {"reference_kind": "guess"}
+    with pytest.raises(DecisionError):
+        _apply_provenance({"block_id": "b", "text": "x", "pdf_page": 118, "printed_page": "99"},
+                          entry)  # fmt: skip

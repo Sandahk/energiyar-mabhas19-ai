@@ -3,7 +3,7 @@ schema_version: 1
 description: Mabhas 19 scope map (derived from curated/ plus the reviewed external-domain taxonomy)
 inputs_sha256:
   curated/structure/m19-ed5-1404-main/sections.jsonl: f8c5255c5ded3883d3d35ffd5a83a4e632bd70943f29fdb7e27b490dbe5b58ca
-  curated/text/m19-ed5-1404-main/blocks.jsonl: ad0feedab0604692b176fbfabcef543418e0150931b84eb80d44c179dff4f2da
+  curated/text/m19-ed5-1404-main/blocks.jsonl: 9aefc54390f7d23938ac5e59504753898a2b1c58ad485897022b8f6ac3766195
   eval/retrieval/external_domains.yaml: dc1228f13766fec573d57030f168f362a2e7daed2abf92ab5f734f7baf703505
   curated/tables/**: 11a03df12311feb70d7699c316780068728d1173408d599a9f0483665d3dc2c1
 identifiers:

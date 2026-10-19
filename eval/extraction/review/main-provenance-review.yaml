@@ -1,18 +1,24 @@
 # Provenance links of main-text blocks to source issues (guarded; applied by main_decisions).
 schema_version: 1
-scope: block-level provenance links to SI-0004 (Appendices 5, 6 and 8 are placeholders)
-approved_on: '2026-10-18'
+scope: block-level provenance links to SI-0004 (Appendices 5, 6 and 8 are placeholders) and SI-0008
+  (misspelling «حافظت» printed on PDF page 20)
+approved_on: '2026-10-19'
 basis_default: assistant_reviewed_provenance
-semantics: the block references source material affected by the issue; it does not contain that material.
-  Only source_issue_refs and provenance_links are added; text, IDs, kind, structural class, retrieval
-  eligibility, sections, page metadata and bounding boxes are unchanged.
-audit: data/processed/provenance_si0004/ (audit.json, curated.diff)
+semantics: by reference_kind - substantive/index (SI-0004) the block references source material affected
+  by the issue and does not contain that material; contains_issue_text (SI-0008) the block's printed
+  text contains the anomaly the issue documents, reproduced faithfully and not corrected. Only
+  source_issue_refs and provenance_links are added; text, IDs, kind, structural class, retrieval
+  eligibility, sections, page metadata, bounding boxes and earlier provenance are unchanged.
+audit: data/processed/provenance_si0004/ (audit.json, curated.diff); data/processed/provenance_si0008/
+approvals:
+  SI-0004: '2026-10-18'
+  SI-0008: '2026-10-19'
 not_linked:
   front-matter appendix list p17 (main-p017-b024, b025, b027): duplicates the p146 list
   generic «پیوست‌ها» references (p057, p058, p146-b002, p146-b014): all appendices
   main-p013-b003: mentions «چک لیست‌ها»; no appendix reference
 counts:
-  blocks: 8
+  blocks: 9
 decisions:
 - id: PV-SI0004-p077-b004
   block: main-p077-b004
@@ -93,4 +99,13 @@ decisions:
   references_doc: m19-ed5-1404-app08
   references_appendix: 8
   reference_kind: index
+  basis: assistant_reviewed_provenance
+- id: PV-SI0008-p020-b007
+  block: main-p020-b007
+  expect_text_sha256: 9dac4cee08744d4a19f656e6f3c4daf0d99713fe4b724f6871cb73e1e27986f0
+  expect_pdf_page: 20
+  expect_printed_page: '2'
+  issue: SI-0008
+  references_doc: m19-ed5-1404-main
+  reference_kind: contains_issue_text
   basis: assistant_reviewed_provenance

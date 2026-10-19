@@ -39,6 +39,17 @@ PROVENANCE_PATH = EVAL_DIR / "extraction" / "review" / "main-provenance-review.y
 PROVENANCE_MEANING = (
     "this block references source material affected by the issue; it does not contain that material"
 )
+CONTAINS_ISSUE_TEXT_MEANING = (
+    "this block's printed text contains the anomaly the issue documents; the text is reproduced "
+    "faithfully and not corrected"
+)
+# meaning of a provenance link by its kind: a reference to affected material (SI-0004's
+# «substantive»/«index» references) or the anomaly itself printed in the block (SI-0008)
+PROVENANCE_MEANINGS = {
+    "substantive": PROVENANCE_MEANING,
+    "index": PROVENANCE_MEANING,
+    "contains_issue_text": CONTAINS_ISSUE_TEXT_MEANING,
+}
 # B2/L1/T1 are applied only to the reviewed cases listed in the errata file, never generically
 APPROVED_RULES = frozenset({"M1", "M1-exception", "G1", "G2", "B1", "C1", "B2", "L1", "T1"})
 EXTRACTION_FIXES = frozenset({"K1"})  # classification fixes of the extractor itself
@@ -83,8 +94,10 @@ def load_provenance(path: Path = PROVENANCE_PATH) -> dict[str, Any]:
 
 def _apply_provenance(block: dict[str, Any], d: dict[str, Any]) -> None:
     """Guarded provenance link: adds the issue to ``source_issue_refs`` and a typed link naming
-    the referenced document. Nothing else on the block changes (no text, kind, retrieval or
-    verification decision)."""
+    the document and the link's meaning (by kind). Nothing else on the block changes (no text,
+    kind, retrieval or verification decision)."""
+    if d["reference_kind"] not in PROVENANCE_MEANINGS:
+        raise DecisionError(f"{d['id']}: unknown provenance kind {d['reference_kind']!r}")
     if _sha(block["text"]) != d["expect_text_sha256"]:
         raise DecisionError(f"{d['id']}: {block['block_id']} text changed since the audit (stale)")
     context = (block["pdf_page"], block["printed_page"])
@@ -93,17 +106,19 @@ def _apply_provenance(block: dict[str, Any], d: dict[str, Any]) -> None:
     refs = block.setdefault("source_issue_refs", [])
     if d["issue"] not in refs:
         refs.append(d["issue"])
-    block.setdefault("provenance_links", []).append(
-        {
-            "id": d["id"],
-            "issue": d["issue"],
-            "references_doc": d["references_doc"],
-            "references_appendix": d["references_appendix"],
-            "reference_kind": d["reference_kind"],
-            "meaning": PROVENANCE_MEANING,
-            "basis": d["basis"],
-        }
-    )
+    link: dict[str, Any] = {
+        "id": d["id"],
+        "issue": d["issue"],
+        "references_doc": d["references_doc"],
+    }
+    if "references_appendix" in d:
+        link["references_appendix"] = d["references_appendix"]
+    link |= {
+        "reference_kind": d["reference_kind"],
+        "meaning": PROVENANCE_MEANINGS[d["reference_kind"]],
+        "basis": d["basis"],
+    }
+    block.setdefault("provenance_links", []).append(link)
 
 
 def _apply_reclassification(block: dict[str, Any], d: dict[str, Any]) -> None:

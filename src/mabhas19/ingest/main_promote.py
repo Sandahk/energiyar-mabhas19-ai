@@ -216,7 +216,7 @@ def _validate_structure(blocks: list[dict[str, Any]]) -> list[str]:
     return problems
 
 
-EXPECTED_PROVENANCE = {"SI-0004": 8}
+EXPECTED_PROVENANCE = {"SI-0004": 8, "SI-0008": 1}
 
 
 def _validate_provenance(blocks: list[dict[str, Any]]) -> list[str]:
@@ -286,7 +286,7 @@ def corpus_metadata(blocks: list[dict[str, Any]], summary: dict[str, Any]) -> di
             "provenance": {
                 "file": PROVENANCE_PATH.relative_to(REPO_ROOT).as_posix(),
                 "sha256": sha256_file(PROVENANCE_PATH),
-                "approved_on": "2026-10-18",
+                "approved_on": "2026-10-19",
                 "counts": {"block_issue_links": EXPECTED_PROVENANCE},
             },
         },

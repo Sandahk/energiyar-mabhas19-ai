@@ -4,7 +4,7 @@ description: Mabhas 19 scope map (derived from curated/ plus the reviewed extern
 inputs_sha256:
   curated/structure/m19-ed5-1404-main/sections.jsonl: f8c5255c5ded3883d3d35ffd5a83a4e632bd70943f29fdb7e27b490dbe5b58ca
   curated/text/m19-ed5-1404-main/blocks.jsonl: ad0feedab0604692b176fbfabcef543418e0150931b84eb80d44c179dff4f2da
-  eval/retrieval/external_domains.yaml: 9562104661faf8735decad2108599016a434ecf7775e2eebfe35aaf191aa983b
+  eval/retrieval/external_domains.yaml: dc1228f13766fec573d57030f168f362a2e7daed2abf92ab5f734f7baf703505
   curated/tables/**: 11a03df12311feb70d7699c316780068728d1173408d599a9f0483665d3dc2c1
 identifiers:
   chapters:
@@ -1301,7 +1301,7 @@ supported:
     - کف مجاور نیمه باز کنترل نشده
     - کف مجاور خاک
     - درهای غیرنورگذر لولادار
-    - درهای غیرنورگذر بدون لولا
+    - درهای غیرنورگذر بدونلولا
     rows_19-5-2:
     - حداکثر ضریب انتقال حرارتی u value w m2 k ثابت
     - حداکثر ضریب انتقال حرارتی u value w m2 k متحرک
@@ -1324,23 +1324,23 @@ supported:
     - تولید همزمان حرارت و برق chp یا تولید همزمان برودت حرارت و برق cchp بازدهی حرارتی ناخالص قابل قبول
       در شرایط متوسط دمای سالانه
     - پمپهای گریز از مرکز جریان مختلط و محوری
-    - الکتروموتور تک فاز تک سرعته با توان بیش از 120 وات
-    - الکتروموتور تک فاز چند سرعته با توان بیش از 120 وات
-    - الکتروموتور سه فاز تک سرعته با توان بیش از 120 وات و کمتر از 1000 کیلووات به غیر از 75 تا 200 کیلووات
-    - الکتروموتور سه فاز تک سرعته با توان بین 75 تا 200 کیلووات
+    - الکتروموتور تکفاز تکسرعته با توان بیش از 120 وات
+    - الکتروموتور تکفاز چندسرعته با توان بیش از 120 وات
+    - الکتروموتور سه فاز تکسرعته با توان بیش از 120 وات و کمتر از 1000 کیلووات به غیراز 75 تا 200 کیلووات
+    - الکتروموتور سه فاز تکسرعته با توان بین 75 تا 200 کیلووات
     - الکتروموتور سرعت متغیر
-    - الکتروموتور سرعت متغیر بدون جاروبک
+    - الکتروموتور سرعت متغیر بدونجاروبک
     - برج های خنک کن جریان متقابل و جریان متقاطع
     - هواساز
     - فن کویل
     rows_19-5-4:
     - ابگرمکن گازسوز مخزن دار
-    - ابگرمکن گازسوز بدون مخزن فوری
-    - پکیج گازی غیر چگالشی با توان ورودی نامی کمتر از 70 کیلووات
+    - ابگرمکن گازسوز بدونمخزن فوری
+    - پکیج گازی غیرچگالشی با توان ورودی نامی کمتر از 70 کیلووات
     - پکیج چگالشی توان ورودی نامی کمتر از 70 کیلووات
     - بخاری گازسوز دودکش دار
     - بخاری برقی خانگی
-    - بخاری گازسوز بدون دودکش
+    - بخاری گازسوز بدوندودکش
     - ابگرمکن برقی
     - فن دمنده و مکنده
     - کولر ابی خنک کنندگی بر مبنای ضریب بازدهی انرژی eei
@@ -1451,6 +1451,13 @@ external_domains:
   - فونداسیون
   - پی سازی
   - بارگذاری سازه
+  - ابعاد ستون
+  - ستون بتنی
+  - ستون فلزی
+  - اسکلت بتنی
+  - اسکلت فلزی
+  - بتن مسلح
+  - مقطع تیر
   handed_off_by: []
 - id: fire_life_safety
   label: fire protection and means of escape
@@ -1534,6 +1541,10 @@ external_domains:
   - صدابندی
   - نوفه
   - انتقال صدا
+  - صدا
+  - سر و صدا
+  - کاهش صدا
+  - عبور صدا
   handed_off_by: []
 - id: electrical_wiring
   label: electrical wiring and protection
@@ -1577,6 +1588,14 @@ external_domains:
   - جای پارک
   - تامین پارکینگ
   - حد نصاب پارکینگ
+  - تعداد طبقات مجاز
+  - اجازه ساخت
+  - مجوز ساخت
+  - عرض معبر
+  - عرض کوچه
+  - کوچه
+  - معبر
+  - متراژ زمین
   handed_off_by: []
 - id: utility_tariffs
   label: energy prices, tariffs and billing
@@ -1592,6 +1611,11 @@ external_domains:
   - قیمت گاز
   - نرخ برق
   - هزینه قبض
+  - تومان
+  - تومن
+  - پله مصرف
+  - مصرف پلکانی
+  - اعتراض به قبض
   handed_off_by: []
 - id: certification_schemes
   label: third-party building certification schemes
@@ -1625,6 +1649,149 @@ external_domains:
   - بورس
   - مالیات
   handed_off_by: []
+- id: home_lifestyle
+  label: home decoration, furnishing and housekeeping
+  covered_by: []
+  mabhas: []
+  terms:
+  - دکوراسیون
+  - چیدمان
+  - رنگ دیوار
+  - رنگ آمیزی
+  - کاغذ دیواری
+  - فرش
+  - نظافت
+  - تمیز کردن
+  - لکه گیری
+  - بوی رنگ
+  handed_off_by: []
+- id: cooking_food
+  label: cooking and food
+  covered_by: []
+  mabhas: []
+  terms:
+  - آشپزی
+  - طرز تهیه
+  - پخت و پز
+  - غذا
+  - خورش
+  - قورمه سبزی
+  - کباب
+  - برنج
+  - کیک
+  - شیرینی پزی
+  - رژیم غذایی
+  handed_off_by: []
+- id: health_medical
+  label: personal health and medicine
+  covered_by: []
+  mabhas: []
+  terms:
+  - پزشک
+  - دکتر
+  - بیماری
+  - دارو
+  - درمان
+  - آلرژی
+  - حساسیت
+  - شیرخوار
+  - نوزاد
+  - بارداری
+  - سرماخوردگی
+  - مسمومیت
+  handed_off_by: []
+- id: vehicles_transport
+  label: vehicles and transport
+  covered_by: []
+  mabhas: []
+  terms:
+  - بنزین
+  - گازوئیل
+  - مصرف سوخت خودرو
+  - کیلومتر
+  - تعویض روغن
+  - لاستیک
+  - پلاک
+  - تصادف
+  - تاکسی
+  - مترو
+  - اتوبوس
+  handed_off_by: []
+- id: gardening
+  label: gardening and plants
+  covered_by: []
+  mabhas: []
+  terms:
+  - باغبانی
+  - کاشت
+  - کاشتن
+  - نهال
+  - گلدان
+  - گیاه آپارتمانی
+  - چمن
+  - هرس
+  - کود
+  - بذر
+  - ریشه
+  - کاشت درخت
+  - درخت میوه
+  handed_off_by: []
+- id: insurance_legal
+  label: insurance, contracts and neighbour or legal disputes
+  covered_by: []
+  mabhas: []
+  terms:
+  - بیمه آتش سوزی
+  - حق بیمه
+  - بیمه ساختمان
+  - دریافت خسارت
+  - شکایت
+  - دادگاه
+  - وکیل
+  - دعوا
+  - قرارداد اجاره
+  - صاحبخانه
+  - صاحبخونه
+  - مستاجر
+  - شورای حل اختلاف
+  - سند ملک
+  - ارث
+  handed_off_by: []
+- id: consumer_tech
+  label: consumer electronics and home networking
+  covered_by: []
+  mabhas: []
+  terms:
+  - وای فای
+  - وایفای
+  - مودم
+  - روتر
+  - آنتن دهی
+  - آنتن
+  - گوشی
+  - موبایل
+  - لپ تاپ
+  - تلویزیون
+  - بلوتوث
+  - اینترنت خانگی
+  handed_off_by: []
+- id: pest_control
+  label: pest control
+  covered_by: []
+  mabhas: []
+  terms:
+  - سوسک
+  - موش
+  - حشره
+  - حشره کش
+  - سم پاشی
+  - سمپاشی
+  - مورچه
+  - ساس
+  - پشه
+  - موریانه
+  - جونده
+  handed_off_by: []
 external_taxonomy:
-  version: 1
+  version: 2
   reviewed_on: '2026-10-19'

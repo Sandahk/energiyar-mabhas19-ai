@@ -137,3 +137,5 @@ class RetrievalResult:
     no_match: list[StructuredNoMatch] = field(default_factory=list)
     tables: list[TableEvidence] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)  # e.g. "no 5C column (SI-0002)"
+    # one state per (queried table, extracted constraint); see retrieval.constraints
+    constraints: list[dict[str, Any]] = field(default_factory=list)

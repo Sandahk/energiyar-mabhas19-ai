@@ -32,7 +32,18 @@ from decimal import Decimal
 from mabhas19.retrieval.entities import ORDINALS
 
 GROUP_LETTERS = ("الف", "ب", "پ", "ج", "د")
-_RATING = re.compile(r"(?:رده|رتبه|کلاس)\s*(?:بازدهی\s*)?(?:انرژی\s*)?([a-z])(?![a-z0-9+])")
+# a rating as printed or asked: a letter with up to three «+» (A, A+, A++, A+++)
+_RATING = re.compile(r"(?:رده|رتبه|کلاس)\s*(?:بازدهی\s*)?(?:انرژی\s*)?([a-z]\+{0,3})(?![a-z0-9+])")
+# a decimal separator between digits: «٫» (Arabic) and «/» (Persian convention, as printed)
+_DECIMAL_SEPARATOR = re.compile(r"(?<=\d)[\u066b/](?=\d)")
+
+
+def decimal_text(norm: str) -> str:
+    """Numbers with any decimal separator rewritten to «.» («۴٫۵», «۴/۵» -> «4.5»), so a value
+    is never truncated to its integer part. Digits are already ASCII after normalization."""
+    return _DECIMAL_SEPARATOR.sub(".", norm)
+
+
 _GROUP = re.compile(
     r"گروه\s*(?:های\s*)?(?:ساختمانی\s*|ساختمان\s*(?:های\s*)?)?(الف|ب|پ|ج|د)(?![ؠ-ۿ])"
 )
@@ -148,6 +159,7 @@ def years_requested(norm: str) -> list[int]:
 def area_requested(norm: str) -> Interval | None:
     """The area condition stated in the query («بزرگ‌تر از ۲۰۰۰ متر مربع», «۳۰۰۰ متر مربع و
     بیشتر», «دقیقاً ۲۰۰۰ متر مربعی»)."""
+    norm = decimal_text(norm)
     for pattern, op in _AREA_PATTERNS:
         m = re.search(pattern, norm)
         if m:
@@ -166,7 +178,7 @@ def density_requested(norm: str) -> Interval | None:
     """The density stated in the query as an interval: a single value («چگالی ۴۰۰») is a point,
     a range («چگالی ۲۰۰۰ تا ۲۳۰۰», «۲۰۰۰-۲۳۰۰ کیلوگرم بر متر مکعب») is the closed interval
     between its printed ends; never a midpoint or one boundary."""
-    m = _DENSITY.search(norm)
+    m = _DENSITY.search(decimal_text(norm))
     if not m:
         return None
     a = Decimal(m[1])

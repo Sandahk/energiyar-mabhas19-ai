@@ -63,7 +63,10 @@ def test_reversible_morphology_keys() -> None:
     assert "سنگ" in keys("سنگها")
     assert "پرلیت" in keys("پرلیتی")  # adjectival
     assert "اقلیم" in keys("اقلیمش")  # possessive
-    assert "4" in keys("چهارم")  # ordinal
+    # an ordinal is not a cardinal: «سال چهارم» must never match «۴ لوله»; years are parsed
+    # by the year dimension only
+    assert "4" not in keys("چهارم")
+    assert "4" in keys("چهار")
     assert keys("روش") == {"روش"}  # stems shorter than 3 letters are never produced
 
 

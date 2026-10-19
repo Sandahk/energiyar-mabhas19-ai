@@ -128,13 +128,12 @@ def etokens(text: str) -> list[str]:
 
 
 def keys(token: str) -> frozenset[str]:
-    """Matching keys of one token: itself, digit form of number words/ordinals, and stems with a
-    reversible suffix removed (stem length >= 3)."""
+    """Matching keys of one token: itself, the digit form of a cardinal number word, and stems
+    with a reversible suffix removed (stem length >= 3). Ordinals («چهارم») are deliberately not
+    mapped to digits: they express a year/rank dimension, never a number inside a label."""
     out = {token}
     if token in NUMBER_WORDS:
         out.add(NUMBER_WORDS[token])
-    if token in ORDINALS:
-        out.add(ORDINALS[token])
     for suffix in _SUFFIXES:
         if token.endswith(suffix) and len(token) - len(suffix) >= 3:
             stem = token[: -len(suffix)]
@@ -142,6 +141,40 @@ def keys(token: str) -> frozenset[str]:
             if suffix == "ات":
                 out.add(stem + "ه")
     return frozenset(out)
+
+
+# meaning-bearing prefixes kept attached to the word they modify («غیر چگالشی», «بدون پوسته»,
+# «تک سرعته», «چند سرعته»): polarity and count are part of a label's identity
+NEGATORS = ("غیر", "بدون", "فاقد")
+COUNT_PREFIXES = ("تک", "چند")
+
+
+def merge_modifiers(tokens: Sequence[str], allowed: set[str] | None = None) -> list[str]:
+    """Join a negator or count prefix with the next word («غیر»+«چگالشی» -> «غیرچگالشی»).
+    Negators always join; count prefixes join only when the joined form is in ``allowed``
+    (the label vocabulary), so a question word «چند» never swallows the next word."""
+    out: list[str] = []
+    i = 0
+    while i < len(tokens):
+        t = tokens[i]
+        if i + 1 < len(tokens) and (
+            t in NEGATORS
+            or (t in COUNT_PREFIXES and (allowed is None or t + tokens[i + 1] in allowed))
+        ):
+            out.append(t + tokens[i + 1])
+            i += 2
+            continue
+        out.append(t)
+        i += 1
+    return out
+
+
+def negated_word(token: str) -> str | None:
+    """The word a merged negation token negates («بدونالیاف» -> «الیاف»)."""
+    for n in NEGATORS:
+        if token.startswith(n) and len(token) > len(n) + 1:
+            return token[len(n) :]
+    return None
 
 
 def split_number_prefix(token: str, vocabulary: set[str]) -> list[str]:
@@ -183,6 +216,20 @@ class Label:
     spans: list[_Span] = field(default_factory=list)
 
     def __post_init__(self) -> None:
+        merged: list[str] = []
+        levels: list[int] = []
+        i = 0
+        while i < len(self.tokens):
+            t = self.tokens[i]
+            if i + 1 < len(self.tokens) and t in (*NEGATORS, *COUNT_PREFIXES):
+                merged.append(t + self.tokens[i + 1])
+                levels.append(self.levels[i + 1])
+                i += 2
+                continue
+            merged.append(t)
+            levels.append(self.levels[i])
+            i += 1
+        self.tokens, self.levels = merged, levels
         self.spans = _spans(self.tokens)
 
 
@@ -218,12 +265,27 @@ class LabelIndex:
     def query_tokens(self, text: str) -> list[str]:
         out: list[str] = []
         for t in etokens(text):
-            out += split_number_prefix(t, self.vocabulary)
-        return out
+            for part in split_number_prefix(t, self.vocabulary):
+                out.append(self._label_stem(part))
+        return merge_modifiers(out, self.vocabulary)
+
+    def _label_stem(self, token: str) -> str:
+        """A query word reduced to a printed label word when only a suffix differs and the stem
+        is itself a label word («کفی» -> «کف»); otherwise unchanged."""
+        if token in self.vocabulary or token in self.ignore:
+            return token
+        for suffix in _SUFFIXES:
+            stem = token[: -len(suffix)]
+            if token.endswith(suffix) and len(stem) >= 2 and stem in self.vocabulary:
+                return stem
+        return token
 
     def match(self, q: Sequence[str]) -> list[Match]:  # noqa: PLR0912
         """Labels with at least one non-ignored word found in the query. Score: sum over the
         distinct matched label words of IDF, x0.85 when only a stem/variant matched."""
+        # «بدون X» in the query excludes labels that print X positively
+        negated = {w for t in q if (w := negated_word(t))}
+        negated_keys = {k for w in negated for k in keys(w)}
         qspans = _spans(q)
         by_key: dict[str, list[_Span]] = {}
         for s in qspans:
@@ -233,6 +295,8 @@ class LabelIndex:
                 by_key.setdefault(k, []).append(s)
         out = []
         for lab in self.labels:
+            if negated_keys and any(keys(t) & negated_keys for t in lab.tokens):
+                continue
             pairs = []
             for ls in lab.spans:
                 if all(t in self.ignore for t in lab.tokens[ls.start : ls.end]):
@@ -253,12 +317,12 @@ class LabelIndex:
                 for i in range(ls.start, ls.end):
                     weight[i] = max(weight.get(i, 0.0), 1.0 if exact else 0.85)
             per_word: dict[str, float] = {}
-            for i, w in weight.items():
+            for i, wt in weight.items():
                 t = lab.tokens[i]
                 if t not in self.ignore:
-                    per_word[t] = max(per_word.get(t, 0.0), w)
+                    per_word[t] = max(per_word.get(t, 0.0), wt)
             if per_word:
-                score = sum(self.idf[t] * w for t, w in per_word.items())
+                score = sum(self.idf[t] * wt for t, wt in per_word.items())
                 anchors = {i for i in weight if lab.tokens[i] not in self.ignore}
                 # specificity: share of each printed level's words that matched, deepest
                 # level first (a label with fewer unmatched words is more specific)
@@ -403,29 +467,65 @@ class EntityResolver:
         if not best:
             return Resolution("unknown", leftover=named, query_tokens=q)
         used = set().union(*(m.query_idx for m in best))
+        # words inside a negated phrase («بدون الیاف شیشه») qualify the material; they never
+        # name a second one
+        negated_pos = {i + 1 for i, t in enumerate(q) if negated_word(t)}
         leftover = [
             t
             for i, t in enumerate(q)
-            if i not in used and t not in idx.ignore and not _is_number(t)
+            if i not in used and i not in negated_pos and t not in idx.ignore and not _is_number(t)
         ]
         notes = []
+        # a word found nowhere in the sources right next to a material word that only partly
+        # names a printed material is a product or variant the regulation does not print (e.g. a
+        # brand): unresolved. A fully named material keeps descriptive or glossing words as notes.
+        vocab = self.vocabulary | idx.vocabulary
+        partial = max(m.coverage for m in best) < 1.0
+        unverified = [
+            q[i]
+            for i in range(len(q))
+            if partial
+            and i not in used
+            and self.vocabulary
+            and q[i] not in idx.ignore
+            and not _is_number(q[i])
+            and not keys(q[i]) & vocab
+            and ({i - 1, i + 1} & used)
+        ]
+        if unverified:
+            return Resolution(
+                "unknown",
+                leftover=leftover,
+                notes=[f"unverified name {unverified} next to the matched material word"],
+                query_tokens=q,
+            )
         # a leftover that is itself a curated material word of another category names a
         # conflicting identity
         cats = {self.material_category[m.label.id] for m in best}
-        distinctive = {
-            w
-            for m in idx.labels
-            if self.material_category[m.id] not in cats
-            for w in m.tokens
-            if w not in idx.ignore and w not in NUMBER_WORDS and idx.idf.get(w, 0) > _DISTINCTIVE
-        }
-        conflicting = [
-            t
+        # leftover words conflict only when together they fully name a printed category, subgroup
+        # or material of another category; a single shared descriptor («خیلی», «ساخته») or a
+        # condition qualifier («اسمی») is not a second identity
+        left_keys = {
+            k
             for t in leftover
-            if t not in NUMBER_WORDS
-            and not keys(t) & self.generic_keys
-            and any(keys(t) & keys(w) for w in distinctive)
-        ]
+            if t not in NUMBER_WORDS and not keys(t) & self.generic_keys
+            for k in keys(t)
+        }
+        conflicting: list[str] = []
+        for m in idx.labels:
+            if self.material_category[m.id] in cats:
+                continue
+            for lv in set(m.levels) - {3}:  # condition level: qualifiers, not identities
+                words = {
+                    w
+                    for w, x in zip(m.tokens, m.levels, strict=True)
+                    if x == lv and w not in idx.ignore and w not in NUMBER_WORDS
+                }
+                if words and all(keys(w) & left_keys for w in words):
+                    conflicting = sorted(words)
+                    break
+            if conflicting:
+                break
         if conflicting:
             return Resolution(
                 "ambiguous",

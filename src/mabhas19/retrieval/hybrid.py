@@ -20,6 +20,7 @@ from pathlib import Path
 
 from mabhas19.indexing.chunking import build_chunks
 from mabhas19.retrieval.answerability import has_words
+from mabhas19.retrieval.constraints import constraint_ledger
 from mabhas19.retrieval.lexical import LexicalRetriever
 from mabhas19.retrieval.models import (
     Chunk,
@@ -81,6 +82,25 @@ class Retriever:
     def from_curated(cls, curated: Path, blocks: list[dict[str, object]], doc_id: str) -> Retriever:
         return cls(build_chunks(blocks, doc_id), StructuredStore(curated))
 
+    def _appendix_issue_notes(self, decision: RouteDecision) -> list[str]:
+        """Registered source issues of an appendix the query names explicitly, when that
+        appendix has no curated dataset (curated appendices link issues per record): the issue's
+        locations name the appendix document itself (e.g. SI-0007, a title printed differently
+        on the cover)."""
+        out = []
+        for ref in decision.signals.get("references", []) or []:
+            if ref.get("kind") != "appendix" or ref.get("status") != "valid":
+                continue
+            n = int(str(ref["ref"]).split()[-1])
+            appendix = self.router.scope.appendices.get(n) or {}
+            if appendix.get("curated_dataset"):
+                continue
+            doc = f"{MAIN.split('-main')[0]}-app{n:02d}"
+            for issue in self.store.issues.values():
+                if any(loc.get("doc_id") == doc for loc in issue.get("locations") or []):
+                    out.append(f"{issue['id']} (appendix {n}): {issue.get('title', '')}")
+        return out
+
     def retrieve(self, query: str, k: int = 10) -> RetrievalResult:
         norm = normalize_query(query)
         decision = self.router.route(query)
@@ -92,13 +112,30 @@ class Retriever:
             sections = [str(r) for r in decision.signals.get("section_ref", []) or []]
             result.prose = self._prose(decision.prose_query or norm, sections, k)
             self._attach_block_issues(result.prose)
+            result.notes += self._appendix_issue_notes(decision)
         if decision.route in ("structured", "mixed"):
             self._structured(decision.structured_query or norm, decision, refs, result)
             if has_words(norm, DERIVATION_REQUEST):
+                # a computed value is not printed: no record may answer it
+                result.structured = []
+                for ds in decision.tables:
+                    result.no_match.append(
+                        StructuredNoMatch(
+                            ds,
+                            "unsupported_calculation",
+                            "the request asks for a value computed from printed values "
+                            "(interpolation, extrapolation, average); the source prints none",
+                            {"request": has_words(norm, DERIVATION_REQUEST)},
+                            self.store.table_evidence(ds, "not printed"),
+                        )
+                    )
                 result.notes.append(
-                    "interpolation/extrapolation is never performed: only printed values are "
-                    "returned"
+                    "interpolation, extrapolation and averaging are never performed: only printed "
+                    "values exist"
                 )
+            result.constraints = constraint_ledger(
+                decision.structured_query or norm, decision.tables, result, DERIVATION_REQUEST
+            )
         for u in decision.signals.get("unknown_entities", []) or []:
             result.no_match.append(
                 StructuredNoMatch(

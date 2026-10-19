@@ -35,6 +35,7 @@ from typing import Any
 from mabhas19.retrieval.answerability import gate, has_words
 from mabhas19.retrieval.dimensions import (
     area_requested,
+    density_requested,
     groups_requested,
     ratings_requested,
     years_requested,
@@ -61,6 +62,7 @@ from mabhas19.retrieval.structured import (
     StructuredStore,
     climate_codes,
     degree_days_in,
+    fully_named,
     r_value_in,
 )
 
@@ -112,7 +114,7 @@ TABLE_TOPICS: dict[str, tuple[str, ...]] = {
     MAIN + "19-5-5": ("دمای آبگرم", "دمای آب گرم", "دوش", "روشویی", "ظرفشویی"),
     MAIN + "19-5-6": ("نور روز", "dla", "مساحت مستقل نور طبیعی", "کفایت نور"),
     MAIN + "19-5-7": ("یکنواختی",),
-    APP03: ("شدت مصرف انرژی", "eui", "kwh"),
+    APP03: ("شدت مصرف انرژی", "شدت مصرف", "eui", "kwh"),
     APP07: ("ضریب هدایت", "هدایت حرارتی", "چگالی", "جرم مخصوص"),
 }
 CLIMATE_INTENT = ("اقلیم", "رده اقلیمی", "دسته بندی اقلیمی", "ایستگاه", "wmo", "منطقه اقلیمی")
@@ -121,6 +123,8 @@ EXPLANATORY = (
     "منظور",
     "چرا",
     "چگونه",
+    "چطور",
+    "چطوری",
     "توضیح",
     "هدف",
     "الزامات",
@@ -179,14 +183,42 @@ UNIT_WORDS = frozenset(
         "واحد",
     }
 )
-# requests to derive a value the table does not print: part of the lookup, always refused
+# requests to compute a value the source does not print (interpolation, extrapolation,
+# averages of printed values): part of the lookup, always answered «not printed»
 DERIVATION_REQUEST = (
     "درون یابی",
     "درونیابی",
     "برون یابی",
     "برونیابی",
+    "میانگین",
     "interpolate",
     "extrapolate",
+    "average",
+)
+# requests for an attribute printed only in table 19-3-2
+STATION_CODE_REQUEST = ("کد ایستگاه", "wmo", "شماره ایستگاه")
+# physical quantities a question may ask for; a table that prints none of the quantities named
+# in the query is not the table asked about (e.g. a temperature difference is not an
+# efficiency table's value)
+QUANTITY_WORDS = frozenset(
+    {
+        "دما",
+        "دمای",
+        "درجه",
+        "فشار",
+        "قطر",
+        "ضخامت",
+        "سرعت",
+        "دبی",
+        "ابعاد",
+        "طول",
+        "ارتفاع",
+        "ظرفیت",
+        "تعداد",
+        "وزن",
+        "قیمت",
+        "هزینه",
+    }
 )
 T_19_2_1 = MAIN + "19-2-1"
 T_19_5_6 = MAIN + "19-5-6"
@@ -331,10 +363,11 @@ class Router:
             return norm, ""
         explained = self._explained_keys(tables)
         table_words = self._explained_keys(tables, generic=False)
-        clauses = [c for c in _CLAUSE_SPLIT.split(norm) if c.strip()]
+        clauses = _coordinated(_CLAUSE_SPLIT.split(norm))
         kinds: list[str | None] = []
         for c in clauses:
             dims = self._clause_dims(c, tables, norm, label_only_ok=len(clauses) == 1)
+            strong = self._strong_clause_dims(c, tables)
             residual = [
                 t
                 for t in etokens(c)
@@ -350,6 +383,10 @@ class Router:
             asks_prose = bool(asks and len(etokens(c)) > 1)
             if has_words(c, DERIVATION_REQUEST):
                 kinds.append("structured")  # asks to derive a value: refused by the lookup
+            elif dims and not strong and len(clauses) > 1 and len(residual) >= 3:
+                # a clause tied to the table only by a topic word, label or entity, with its
+                # own substantial content, asks about something else: prose
+                kinds.append("prose")
             elif dims:
                 kinds.append("both" if asks_prose else "structured")
             else:
@@ -390,6 +427,22 @@ class Router:
                 words |= {w for p in self.store.places for w in p.split()}
         return frozenset(k for w in words for k in keys(w))
 
+    def _strong_clause_dims(self, clause: str, tables: list[str]) -> bool:
+        """A clause states a value-defining dimension (not just a topic word, label or entity):
+        a table reference, station code, climate class, rating, group/year, degree days, R,
+        area or density."""
+        if _TABLE_REF.search(clause) or re.search(r"(?<!\d)\d{6}(?!\d)", clause):
+            return True
+        if any(APPENDIX_TABLES.get(f"پ{n}") in tables for n in _APPENDIX_REF.findall(clause)):
+            return True
+        if climate_codes(clause) or ratings_requested(clause):
+            return True
+        if {APP02, MAIN_3_2} & set(tables) and self.store.find_places(clause):
+            return True
+        if any(self._special_dims(t, clause) for t in tables):
+            return True
+        return APP07 in tables and density_requested(clause) is not None
+
     def _clause_dims(  # noqa: PLR0911
         self, clause: str, tables: list[str], norm: str, *, label_only_ok: bool = True
     ) -> bool:
@@ -400,13 +453,17 @@ class Router:
         what it talks about, not a value it asks for."""
         if _TABLE_REF.search(clause) or re.search(r"(?<!\d)\d{6}(?!\d)", clause):
             return True
+        if any(APPENDIX_TABLES.get(f"پ{n}") in tables for n in _APPENDIX_REF.findall(clause)):
+            return True
         codes = climate_codes(clause)
         for t in tables:
             main = self.store.main.get(t)
             if t in (APP02, MAIN_3_2) and self.store.find_places(clause):
                 return True
             if t == APP03 and (
-                self.store.occupancies_in(clause) or codes or ratings_requested(clause)
+                codes
+                or ratings_requested(clause)
+                or (label_only_ok and self.store.occupancies_in(clause))
             ):
                 return True
             # a material named in a clause is a lookup dimension when the clause asks for an
@@ -448,6 +505,37 @@ class Router:
         return out
 
     @staticmethod
+    def _caption_quantity(table: MainTable) -> set[str]:
+        """Content words of a table's caption (its measured quantity, e.g. «مقاومت حرارتی»,
+        «r», «value»), without the request/generic words."""
+        return {
+            w
+            for w in table.caption_words
+            if w not in REQUEST_WORDS and w not in FUNCTION_WORDS and not w.isdigit() and len(w) > 0
+        } - {"جدول", "19", "value"}
+
+    @staticmethod
+    def _row_fully_named(table: MainTable, part: str) -> bool:
+        if table.labels is None:
+            return False
+        return any(fully_named(m) for m in table.labels.match(table.labels.query_tokens(part)))
+
+    def _other_quantity(self, table: MainTable, part: str) -> bool:
+        """True when the query names a physical quantity the table does not print for what is
+        asked: not in its caption or topic words, nor in a row label the query names (a word in
+        another row's condition, e.g. «دمای» of a CHP row, is not the asked row's quantity)."""
+        asked = {t for t in etokens(part) if t in QUANTITY_WORDS}
+        if not asked:
+            return False
+        printed = set(table.caption_words)
+        if table.labels:
+            best = best_matches(table.labels.match(table.labels.query_tokens(part)))
+            printed |= {w for m in best for w in m.label.tokens}
+        printed |= {w for phrase in TABLE_TOPICS.get(table.table_id, ()) for w in etokens(phrase)}
+        printed_keys = {k for w in printed for k in keys(w)}
+        return not any(keys(a) & printed_keys for a in asked)
+
+    @staticmethod
     def _label_signal(table: MainTable, text: str) -> tuple[bool, bool]:
         """(a printed row label is named, it is named strongly: >= 2 of its words with a fully
         matched printed level)."""
@@ -457,7 +545,11 @@ class Router:
         if not best:
             return False, False
         strong = any(
-            len({m.label.tokens[i] for i in m.label_idx}) >= 2 and max(m.specificity) >= 0.75
+            (
+                (n := len({m.label.tokens[i] for i in m.label_idx})) >= 2
+                and max(m.specificity) >= 0.75
+            )
+            or (n >= 4 and max(m.specificity) >= 0.5)
             for m in best
         )
         return True, strong
@@ -479,8 +571,14 @@ class Router:
             # only a value printed in one table alone nominates it (group/year, degree days,
             # R); area and rating are dimensions but other tables print them too
             nominating = [d for d in special if d not in ("area", "rating")]
-            if not (topic or strong_label or nominating):
+            # a weakly named row plus a climate class plus the table's own measured quantity
+            # (from its caption, e.g. «R-Value», «مقاومت حرارتی») names the table too
+            quantity = bool(set(etokens(part)) & self._caption_quantity(t))
+            weak_named = label and climate and quantity and self._row_fully_named(t, part)
+            if not (topic or strong_label or nominating or weak_named):
                 continue
+            if self._other_quantity(t, part):
+                continue  # asks for a quantity this table does not print
             if tid == T_19_2_1 and not special:
                 continue  # its values are per building group and year
             strong = climate or bool(special)
@@ -560,7 +658,11 @@ class Router:
         # climate intent may sit in another clause of the same query («… در قوچان؛ اقلیمش چیه»)
         intent = has_words(query if query is not None else part, CLIMATE_INTENT)
         places = self.store.find_places(part)
-        if places and intent:
+        if places and intent and has_words(part, STATION_CODE_REQUEST):
+            # the station (WMO) code is printed only in table 19-3-2, never in Appendix 2
+            tables.append(MAIN_3_2)
+            reasons.append(f"known place {places}; station code is printed in 19-3-2 only")
+        elif places and intent:
             tables += [APP02, MAIN_3_2]
             reasons.append(f"known place {places} with climate intent {intent}")
             ambiguous = self.store.ambiguous_places(places)
@@ -592,6 +694,12 @@ class Router:
                 if rows:
                     out.append(t)
                     continue
+                if rows == [] and "پ7" in self._appendix_refs(part):
+                    # explicitly asks Appendix 7 for a material it does not print: a lookup
+                    # that ends in a typed no-match, never a prose guess
+                    out.append(t)
+                    reasons.append("Appendix 7 named explicitly: unprinted material is a no-match")
+                    continue
                 if rows == []:
                     unknown.append(
                         {
@@ -604,6 +712,10 @@ class Router:
             else:
                 out.append(t)
         return out
+
+    @staticmethod
+    def _appendix_refs(part: str) -> set[str]:
+        return {f"پ{n}" for n in _APPENDIX_REF.findall(part)}
 
     def _clause_material(self, part: str) -> list[int] | None:
         """Material rows named in the clause that asks for an Appendix 7 property (the whole
@@ -645,6 +757,27 @@ def _prose_or_fallback(
     note = " (low corpus coverage, diagnostic only)" if coverage < MIN_COVERAGE else ""
     why = f"no structured signal; corpus vocabulary covered ({coverage:.2f}){note}"
     return RouteDecision("prose", [why], signals, prose_query=norm)
+
+
+_VALUE_TAIL = re.compile(r"(?:\d[a-z]?|[a-z]\+*|متر\s?مربع|مترمربع|متر)$")
+_VALUE_HEAD = re.compile(
+    r"^(?:\d|[a-z]\b|بیشتر|کمتر|بالاتر|پایین\s?تر|بزرگ\s?تر|کوچک\s?تر|به\s?بالا|به\s?پایین)"
+)
+
+
+def _coordinated(parts: list[str]) -> list[str]:
+    """Clauses after splitting at «و»/punctuation, re-joining coordinated values: a clause that
+    ends with a value (climate class, number, rating) and one that starts with a value were one
+    constraint («اقلیم‌های 2a و 2b»)."""
+    out: list[str] = []
+    for p in (x.strip() for x in parts):
+        if not p:
+            continue
+        if out and _VALUE_TAIL.search(out[-1]) and _VALUE_HEAD.search(p):
+            out[-1] = f"{out[-1]} و {p}"
+        else:
+            out.append(p)
+    return out
 
 
 def _fill(kinds: list[str | None]) -> list[str | None]:

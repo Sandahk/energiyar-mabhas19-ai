@@ -12,8 +12,15 @@
 # from evaluation wording, and a term is only added when the domain is described, not to fix a
 # single case. A match is evidence for `external_domain` only when it outweighs the Mabhas 19
 # concepts found in the same query (see mabhas19.retrieval.scope).
+#
+# Version 2 adds small generic everyday categories (home and lifestyle, cooking, health,
+# vehicles, gardening, insurance and legal disputes, consumer tech, pest control) and generic
+# sub-topics of existing domains, after the Final-2 failure study (Final-2 is development data).
+# They are category vocabularies, not query wording. Everyday words that Mabhas 19 itself uses in
+# a technical sense («خودرو» of EV charging, «سوخت», «نشت» of air leakage, «بیمه», «درخت» of
+# shading, «اینترنت») appear only inside multi-word phrases.
 schema_version: 1
-version: 1
+version: 2
 reviewed_on: '2026-10-19'
 domains:
   - id: structural_seismic
@@ -21,7 +28,8 @@ domains:
     covered_by: [مبحث ششم, مبحث هفتم, مبحث نهم, مبحث دهم, استاندارد ۲۸۰۰]
     mabhas: [6, 7, 9, 10]
     terms: [زلزله, لرزه, لرزه ای, طراحی لرزه ای, بار زلزله, قاب خمشی, ضریب رفتار, مهاربند, طراحی سازه,
-      محاسبات سازه, تحلیل سازه, آرماتور, میلگرد, تیرچه, فونداسیون, پی سازی, بارگذاری سازه]
+      محاسبات سازه, تحلیل سازه, آرماتور, میلگرد, تیرچه, فونداسیون, پی سازی, بارگذاری سازه,
+      ابعاد ستون, ستون بتنی, ستون فلزی, اسکلت بتنی, اسکلت فلزی, بتن مسلح, مقطع تیر]
   - id: fire_life_safety
     label: fire protection and means of escape
     covered_by: [مبحث سوم]
@@ -47,7 +55,8 @@ domains:
     label: sound insulation and acoustics
     covered_by: [مبحث هجدهم]
     mabhas: [18]
-    terms: [صوتی, آکوستیک, عایق صوتی, عایق بندی صوتی, تراز صدا, صدابندی, نوفه, انتقال صدا]
+    terms: [صوتی, آکوستیک, عایق صوتی, عایق بندی صوتی, تراز صدا, صدابندی, نوفه, انتقال صدا, صدا,
+      سر و صدا, کاهش صدا, عبور صدا]
   - id: electrical_wiring
     label: electrical wiring and protection
     covered_by: [مبحث سیزدهم]
@@ -58,12 +67,14 @@ domains:
     covered_by: [شهرداری, طرح تفصیلی, ضوابط شهرسازی]
     mabhas: []
     terms: [شهرداری, عوارض, عوارض ساختمانی, طرح تفصیلی, طرح جامع, تراکم ساختمانی, کاربری اراضی, سطح اشغال,
-      تعداد پارکینگ, واحد پارکینگ, جای پارک, تامین پارکینگ, حد نصاب پارکینگ]
+      تعداد پارکینگ, واحد پارکینگ, جای پارک, تامین پارکینگ, حد نصاب پارکینگ, تعداد طبقات مجاز,
+      اجازه ساخت, مجوز ساخت, عرض معبر, عرض کوچه, کوچه, معبر, متراژ زمین]
   - id: utility_tariffs
     label: energy prices, tariffs and billing
     covered_by: [وزارت نیرو, شرکت ملی گاز]
     mabhas: []
-    terms: [تعرفه, قبض برق, قبض گاز, قیمت برق, قیمت گاز, نرخ برق, هزینه قبض]
+    terms: [تعرفه, قبض برق, قبض گاز, قیمت برق, قیمت گاز, نرخ برق, هزینه قبض, تومان, تومن,
+      پله مصرف, مصرف پلکانی, اعتراض به قبض]
   - id: certification_schemes
     label: third-party building certification schemes
     covered_by: [صاحبان طرح های گواهی (LEED, BREEAM, WELL, DGNB)]
@@ -75,3 +86,49 @@ domains:
     mabhas: []
     terms: [راهنمایی و رانندگی, رانندگی, گواهینامه رانندگی, موتورسیکلت, تاریخچه, تاریخ معماری, دستور پخت,
       فوتبال, بورس, مالیات]
+  - id: home_lifestyle
+    label: home decoration, furnishing and housekeeping
+    covered_by: []
+    mabhas: []
+    terms: [دکوراسیون, چیدمان, رنگ دیوار, رنگ آمیزی, کاغذ دیواری, فرش, نظافت, تمیز کردن, لکه گیری,
+      بوی رنگ]
+  - id: cooking_food
+    label: cooking and food
+    covered_by: []
+    mabhas: []
+    terms: [آشپزی, طرز تهیه, پخت و پز, غذا, خورش, قورمه سبزی, کباب, برنج, کیک, شیرینی پزی, رژیم غذایی]
+  - id: health_medical
+    label: personal health and medicine
+    covered_by: []
+    mabhas: []
+    terms: [پزشک, دکتر, بیماری, دارو, درمان, آلرژی, حساسیت, شیرخوار, نوزاد, بارداری, سرماخوردگی,
+      مسمومیت]
+  - id: vehicles_transport
+    label: vehicles and transport
+    covered_by: []
+    mabhas: []
+    terms: [بنزین, گازوئیل, مصرف سوخت خودرو, کیلومتر, تعویض روغن, لاستیک, پلاک, تصادف, تاکسی, مترو,
+      اتوبوس]
+  - id: gardening
+    label: gardening and plants
+    covered_by: []
+    mabhas: []
+    terms: [باغبانی, کاشت, کاشتن, نهال, گلدان, گیاه آپارتمانی, چمن, هرس, کود, بذر, ریشه, کاشت درخت,
+      درخت میوه]
+  - id: insurance_legal
+    label: insurance, contracts and neighbour or legal disputes
+    covered_by: []
+    mabhas: []
+    terms: [بیمه آتش سوزی, حق بیمه, بیمه ساختمان, دریافت خسارت, شکایت, دادگاه, وکیل, دعوا,
+      قرارداد اجاره, صاحبخانه, صاحبخونه, مستاجر, شورای حل اختلاف, سند ملک, ارث]
+  - id: consumer_tech
+    label: consumer electronics and home networking
+    covered_by: []
+    mabhas: []
+    terms: [وای فای, وایفای, مودم, روتر, آنتن دهی, آنتن, گوشی, موبایل, لپ تاپ, تلویزیون, بلوتوث,
+      اینترنت خانگی]
+  - id: pest_control
+    label: pest control
+    covered_by: []
+    mabhas: []
+    terms: [سوسک, موش, حشره, حشره کش, سم پاشی, سمپاشی, مورچه, ساس, پشه, موریانه, جونده]

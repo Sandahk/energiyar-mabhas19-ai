@@ -16,7 +16,11 @@ Metrics:
 
 * unsupported precision/recall with raw confusion counts, honoring ``acceptable_routes`` (a
   route the case explicitly allows is neither a false positive nor a false negative);
-* source-issue exposure and conflict exposure.
+* source-issue exposure and conflict exposure;
+* **wrong regulatory values** (safety headline): every returned structured record that the case
+  does not allow - outside required + acceptable records, any record where no record exists
+  (``no_records``), a record from a table the case does not name, or any record at all for a
+  case that expects no structured answer (prose/unsupported). Target: 0.
 
 The original (v1/v2 and first final benchmark) scorer is kept as ``structured_exact_original``
 and ``unsupported_original`` so historical numbers stay reproducible: it scored any case with
@@ -69,6 +73,7 @@ class CaseResult:
     prose_query: str | None = None
     no_match: list[str] = field(default_factory=list)
     scope_class: str | None = None  # scope classification recorded by the router (v3.1)
+    wrong_values: list[str] = field(default_factory=list)  # records the case does not allow
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -132,6 +137,23 @@ def _structured(r: RetrievalResult, ev: dict[str, Any], res: CaseResult) -> None
         )
 
 
+def wrong_values(r: RetrievalResult, ev: dict[str, Any]) -> list[str]:
+    """Returned records the case does not allow (wrong or unrequested regulatory values)."""
+    if ev.get("records"):
+        ok = set(ev["records"]) | set(ev.get("acceptable_records", []))
+        return sorted(h.record_id for h in r.structured if h.record_id not in ok)
+    if ev.get("no_records"):
+        return sorted(h.record_id for h in r.structured)
+    if ev.get("tables"):
+        ok = set(ev.get("acceptable_records", []))
+        return sorted(
+            h.record_id
+            for h in r.structured
+            if h.dataset not in set(ev["tables"]) and h.record_id not in ok
+        )
+    return sorted(h.record_id for h in r.structured)
+
+
 def _original_structured_exact(r: RetrievalResult, ev: dict[str, Any]) -> bool:
     """Historical scorer: ``tables`` took precedence over ``records`` (kept for reproducibility
     of the immutable first final result; do not use for new decisions)."""
@@ -186,6 +208,7 @@ def evaluate(
             res.bm25_rank = _prose_rank(retriever.rank_prose(c["query"], k), ev, chunk_sections)
         if ev.get("records") or ev.get("tables") or ev.get("no_records"):
             _structured(r, ev, res)
+        res.wrong_values = wrong_values(r, ev)
         if ev.get("source_issues"):
             exposed = {i for h in r.structured for i in h.source_issues}
             exposed |= {x.issue_id for x in r.conflicts if x.issue_id}
@@ -230,6 +253,8 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         ),
         "route_matrix": route_matrix(results),
         "scope_classes": dict(Counter(str(r.scope_class) for r in results)),
+        "wrong_value_records": sum(len(r.wrong_values) for r in results),
+        "wrong_value_cases": sorted(r.id for r in results if r.wrong_values),
         "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),
         "unsupported_original": unsupported_scores_strict(results),

@@ -41,6 +41,7 @@ from mabhas19.retrieval.dimensions import (
     GROUP_LETTERS,
     Interval,
     area_requested,
+    decimal_text,
     density_requested,
     groups_requested,
     label_operator_interval,
@@ -284,6 +285,7 @@ def ratings(norm: str) -> list[str]:
 
 def density_in(norm: str) -> float | None:
     """The number stated as a density («چگالی ۴۰۰», «جرم مخصوص ۱۸۰۰ کیلوگرم»), if any."""
+    norm = decimal_text(norm)
     m = re.search(r"(?:چگالی|جرم مخصوص)\s*(?:[^\d\s]+\s*){0,2}?(\d+(?:\.\d+)?)", norm)
     return float(m[1]) if m else None
 
@@ -293,13 +295,15 @@ def numbers(norm: str) -> list[str]:
 
 
 def r_value_in(norm: str) -> Decimal | None:
-    """The R ratio stated in the query («نسبت R ۵», «R برابر ۲.۵»), if any."""
-    m = re.search(r"(?<![a-z])r(?![a-z\-])\s*(?:\S+\s*){0,3}?(\d+(?:\.\d+)?)(?![\d\-a-z])", norm)
+    """The R ratio stated in the query («نسبت R ۵», «R برابر ۲٫۵»), if any."""
+    norm = decimal_text(norm)
+    m = re.search(r"(?<![a-z])r(?![a-z\-\d])\s*(?:\S+\s*){0,3}?(\d+(?:\.\d+)?)(?![\d\-a-z])", norm)
     return _decimal(m[1]) if m else None
 
 
 def degree_days_in(norm: str) -> tuple[str, Decimal] | None:
     """(variable, value) for «روز درجه گرمایش ۵۰۰۰», «HDD 5000», «روز درجه سرمایش ...»."""
+    norm = decimal_text(norm)
     patterns = (("hdd", r"(?:hdd\w*|روز درجه گرمایش)"), ("cdd", r"(?:cdd\w*|روز درجه سرمایش)"))
     for var, pat in patterns:
         m = re.search(rf"{pat}\s*(?:\S+\s*){{0,3}}?(\d+(?:\.\d+)?)(?![\d\-a-z])", norm)
@@ -617,6 +621,17 @@ class StructuredStore:
                 )
             )
         good_rates = [r for r in rates if r in rating_domain]
+        if not rates and _RATING_MENTION.search(norm):
+            no_match.append(
+                self._no_match(
+                    APP03,
+                    "missing_dimension",
+                    "a rating is referred to but not stated; no rating is assumed",
+                    constraints,
+                    derived_issues,
+                )
+            )
+            return [], notes, no_match
         if not valid or (rates and not good_rates):
             return [], notes, no_match
         hits = [
@@ -756,6 +771,11 @@ class StructuredStore:
                         )
                     ],
                 )
+        elif len(rows) > 1:
+            notes.append(
+                "density not stated: several printed rows of the named material are returned, "
+                "each with its printed condition; none is chosen"
+            )
         return [self._hit(APP07, r, f"material «{r['display_name']}»") for r in rows], notes, []
 
     # ------------------------------------------------------------------ main tables
@@ -808,6 +828,10 @@ class StructuredStore:
         if label_problem:
             return [], [*no_match, fail("no_matching_row", label_problem)], notes
         if rows is None:
+            if t.labels is not None and not whole_table:
+                # the table's rows are labelled and none is named: never list a whole column
+                detail = "no printed row of the table is named; no column is listed"
+                return [], [*no_match, fail("no_matching_row", detail)], notes
             if whole_table or valid or filters:
                 rows = list(range(len(t.records)))
             else:
@@ -849,13 +873,13 @@ class StructuredStore:
                 filters.append(lambda r, y=set(years): r["year"]["index"] in y)
         rates = constraints["ratings"]
         if "energy_rating" in rec0 and rates:
-            domain_r = {r["energy_rating"]["code"] for r in t.records}
+            domain_r = {c for r in t.records if (c := rating_code(r)) is not None}
             bad = [x for x in rates if x not in domain_r]
             if bad:
                 problems.append(
                     ("rating_not_in_table", f"rating {bad} not printed ({sorted(domain_r)})")
                 )
-            filters.append(lambda r, x=set(rates): r["energy_rating"]["code"] in x)
+            filters.append(lambda r, x=set(rates): rating_code(r) in x)
         elif rates:
             notes.append(f"the table has no rating dimension; rating {rates} does not filter it")
         if "use" in rec0:
@@ -873,7 +897,10 @@ class StructuredStore:
             return None, None, None
         q = t.labels.query_tokens(norm)
         matches = t.labels.match(q)
-        best = best_matches(matches)
+        # a row whose own printed label (its most specific level) is entirely named in the query
+        # is the row asked about; other partial namings do not compete with it
+        named = [m for m in matches if fully_named(m)]
+        best = best_matches(named or matches)
         if not best:
             residual = [
                 w
@@ -1077,6 +1104,8 @@ def _index_labels(t: MainTable) -> None:
     t.label_rows = rows
 
 
+# a rating referred to («آن رده», «به چه رده») - not a climate class («رده اقلیمی»)
+_RATING_MENTION = re.compile(r"(?:رده|رتبه)(?!\s*(?:اقلیم|بازدهی انرژی\s*[a-z]))(?!\s*[a-z])")
 _PROVENANCE_KEYS = frozenset(
     {"verification", "source", "provenance", "source_cells", "anchor_cell", "mask_digest"}
 )
@@ -1096,6 +1125,29 @@ def _area_ok(r: dict[str, Any], stated: Interval) -> bool:
         return True  # the row prints no size condition
     printed = printed_interval(cond["comparison_printed"], cond["threshold"]["value"])
     return printed is not None and stated.within(printed)
+
+
+def fully_named(m: Any) -> bool:
+    """A row label whose most specific printed level is entirely named in the query and whose
+    every printed level is at least partly named (equipment and specification alike)."""
+    # specificity is the per-level share of named words (by word, so a word printed at two
+    # levels names both), deepest level first
+    return bool(m.specificity) and m.specificity[0] >= 1.0 and min(m.specificity) > 0
+
+
+def rating_code(record: dict[str, Any]) -> str | None:
+    """The printed energy rating of a record (``code`` in 19-3-3, ``printed`` category in the
+    equipment tables); None when the record prints no rating (dash)."""
+    rating = record.get("energy_rating")
+    if isinstance(rating, str):
+        return rating
+    if not isinstance(rating, dict):
+        return None
+    if rating.get("code"):
+        return str(rating["code"])
+    if rating.get("value_class") == "category" and rating.get("printed"):
+        return str(rating["printed"])
+    return None
 
 
 def _aliases(name: str) -> set[str]:

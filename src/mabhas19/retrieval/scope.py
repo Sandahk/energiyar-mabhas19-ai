@@ -26,6 +26,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -297,7 +298,7 @@ def write_scope_map(path: Path = SCOPE_MAP_PATH) -> dict[str, Any]:
 @dataclass
 class ReferenceCheck:
     ref: str
-    kind: str  # section | table | appendix
+    kind: str  # section | table | appendix | chapter
     status: str  # valid | nonexistent_child | nonexistent | malformed
     detail: str = ""
 
@@ -312,6 +313,32 @@ class ScopeDecision:
 _LOOSE_SECTION = re.compile(r"(?<![\d\-/])19(?:-\d*){1,7}(?![\d/])")
 _LOOSE_TABLE = re.compile(r"جدول\s*(?:شماره\s*)?(19(?:-\d*)*|پ\s?\d+(?:-\d*)*)")
 _APPENDIX = re.compile(r"پیوست\s*(?:شماره\s*)?[«\"(]?\s*(\d+)(?![\d-])")
+# «فصل نهم», «فصل ۹»: a chapter named by number or ordinal word («فصل سرد» is not matched)
+_CHAPTER_ORDINALS = {
+    w: i + 1
+    for i, w in enumerate(
+        (
+            "اول",
+            "دوم",
+            "سوم",
+            "چهارم",
+            "پنجم",
+            "ششم",
+            "هفتم",
+            "هشتم",
+            "نهم",
+            "دهم",
+            "یازدهم",
+            "دوازدهم",
+            "سیزدهم",
+            "چهاردهم",
+            "پانزدهم",
+        )
+    )
+} | {"یکم": 1}
+_CHAPTER = re.compile(r"فصل\s*(?:شماره\s*)?(\d+|[^\s\d]+)(?![\d-])")
+# tables whose row labels are regulated concepts (requirements, envelope parts, equipment)
+_CONCEPT_ROWS = ("rows_19-2-", "rows_19-5-1", "rows_19-5-2", "rows_19-5-3", "rows_19-5-4")
 _STRICT_SECTION = re.compile(r"19(?:-\d+){1,5}")
 _STRICT_TABLE = re.compile(r"19-\d+-\d+|پ\d+-\d+")
 
@@ -321,6 +348,7 @@ class ScopeMap:
         self.data = data
         ids = data["identifiers"]
         self.sections = set(ids["sections"]) | set(ids["clauses"]) | set(ids["chapters"])
+        self.chapters = set(ids["chapters"])
         self.tables = set(ids["tables"])
         self.appendices = {a["number"]: a for a in ids["appendices"]}
         sup = data["supported"]
@@ -344,6 +372,31 @@ class ScopeMap:
             for w in etokens(t)
             if len(w) > 2 and not w.isdigit()
             for k in keys(w)
+            if k not in generic
+        }
+        # strong in-scope evidence: a Mabhas 19 concept phrase (two consecutive content words of
+        # a title, caption or defined term) or a defined term that is a single word; a single
+        # shared word («مصرف», «شهر») is only weak overlap
+        self.supported_bigrams: set[tuple[str, str]] = set()
+        # row labels of the requirement, envelope and equipment tables name regulated concepts
+        # («شارژر خودرو برقی», «پمپ دورمتغیر»); climate classes and space types do not
+        entities = sup.get("structured_entities", {})
+        concept_rows = [
+            label
+            for key in sorted(entities)
+            if key.startswith(_CONCEPT_ROWS)
+            for label in entities[key]
+        ]
+        for t in [*texts, *concept_rows]:
+            words = [w for w in etokens(t) if w not in FUNCTION_WORDS and not w.isdigit()]
+            for a, b in pairwise(words):
+                self.supported_bigrams |= {(x, y) for x in keys(a) for y in keys(b)}
+        self.generic_keys = generic
+        self.single_terms = {
+            k
+            for d in sup["defined_terms"]
+            if len(etokens(d["term"])) == 1
+            for k in keys(etokens(d["term"])[0])
             if k not in generic
         }
         self.external = []
@@ -378,6 +431,15 @@ class ScopeMap:
                 else f"appendices are numbered {min(self.appendices)}-{max(self.appendices)}"
             )
             out.append(ReferenceCheck(f"پیوست {n}", "appendix", status, detail))
+        for m in _CHAPTER.finditer(norm):
+            word = m[1]
+            chapter = int(word) if word.isdigit() else _CHAPTER_ORDINALS.get(word)
+            if chapter is None:
+                continue
+            ok = f"19-{chapter}" in self.chapters
+            detail = f"chapter 19-{chapter}" if ok else f"chapters: {sorted(self.chapters)}"
+            status = "valid" if ok else "nonexistent"
+            out.append(ReferenceCheck(f"فصل {chapter}", "chapter", status, detail))
         return out
 
     def _check_table(self, ref: str) -> ReferenceCheck:
@@ -426,6 +488,12 @@ class ScopeMap:
                 if i not in ext_pos and ks & self.supported_keys and q[i] not in FUNCTION_WORDS
             }
         )
+        content = [i for i in range(len(q)) if q[i] not in FUNCTION_WORDS and i not in ext_pos]
+        strong_pos = {i for i in content if qkeys[i] & self.single_terms}
+        for a, b in pairwise(content):
+            if any((x, y) in self.supported_bigrams for x in qkeys[a] for y in qkeys[b]):
+                strong_pos |= {a, b}
+        strong = sorted({q[i] for i in strong_pos if not qkeys[i] & self.generic_keys})
         if not ext_pos:
             if anchors:
                 return ScopeDecision("supported", "Mabhas 19 concepts", {"anchors": anchors})
@@ -436,12 +504,14 @@ class ScopeMap:
         evidence: dict[str, Any] = {
             "external": {d: sorted(set(t)) for d, t in ext_terms.items()},
             "anchors": anchors,
+            "strong_anchors": strong,
             "absent_from_mabhas19": absent,
         }
         top = next(d for d, _ in self.external if d["id"] == domains[0])
         if top.get("handed_off_by"):
             evidence["handed_off_by"] = top["handed_off_by"][:5]
-        if absent or len(ext_words) > len(anchors):
+        # out-of-scope evidence wins unless strong in-scope evidence outweighs it
+        if len(ext_words) > len(strong):
             why = f"external domain {top['id']} ({top['label']})"
             if top.get("covered_by"):
                 why += f"; covered by {', '.join(top['covered_by'])}"

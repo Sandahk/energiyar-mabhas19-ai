@@ -97,10 +97,18 @@ def test_unknown_structured_entity_keeps_its_typed_outcome() -> None:
 
 
 def test_uncertain_question_falls_through_to_prose() -> None:
-    d = _route("تعرفه برق در ساعات اوج چگونه تعیین می‌شود")
+    # external and strong in-scope evidence both present: neither wins, so prose answers
+    d = _route("تعرفه برق خانگی در ساعات اوج چگونه تعیین می‌شود")
     assert d.signals["scope"]["class"] == "uncertain"
     assert d.route == "prose"
     assert d.prose_query
+
+
+def test_weak_overlap_does_not_outweigh_external_evidence() -> None:
+    # «برق» alone is a shared word, not a Mabhas 19 concept: the tariff domain wins
+    d = _route("تعرفه برق در ساعات اوج چگونه تعیین می‌شود")
+    assert d.signals["scope"]["class"] == "external_domain"
+    assert d.signals["scope"]["evidence"]["strong_anchors"] == []
 
 
 def test_external_hand_off_from_mabhas19_is_traceable() -> None:

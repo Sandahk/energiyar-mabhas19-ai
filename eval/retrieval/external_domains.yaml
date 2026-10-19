@@ -19,8 +19,16 @@
 # They are category vocabularies, not query wording. Everyday words that Mabhas 19 itself uses in
 # a technical sense («خودرو» of EV charging, «سوخت», «نشت» of air leakage, «بیمه», «درخت» of
 # shading, «اینترنت») appear only inside multi-word phrases.
+#
+# Version 3 (routing v4, after the Final-3 failure study; Final-3 is development data) adds
+# generic sub-topics of other regulations that Mabhas 19 does not treat: fire detection and alarm
+# devices, accessibility (ramps, wheelchair access), foundations and soil, railings and guards,
+# and lift capacity; and a few everyday health, home, consumer-tech and gardening words. Every
+# added term was checked to be absent from the curated Mabhas 19 corpus (text and tables), so it
+# can never name a Mabhas 19 concept; words the corpus prints («آسانسور», «شالوده», «دست انداز»,
+# «سیم کارت», «خسارت», «باتری» of storage) were deliberately left out.
 schema_version: 1
-version: 2
+version: 3
 reviewed_on: '2026-10-19'
 domains:
   - id: structural_seismic
@@ -29,17 +37,30 @@ domains:
     mabhas: [6, 7, 9, 10]
     terms: [زلزله, لرزه, لرزه ای, طراحی لرزه ای, بار زلزله, قاب خمشی, ضریب رفتار, مهاربند, طراحی سازه,
       محاسبات سازه, تحلیل سازه, آرماتور, میلگرد, تیرچه, فونداسیون, پی سازی, بارگذاری سازه,
-      ابعاد ستون, ستون بتنی, ستون فلزی, اسکلت بتنی, اسکلت فلزی, بتن مسلح, مقطع تیر]
+      ابعاد ستون, ستون بتنی, ستون فلزی, اسکلت بتنی, اسکلت فلزی, بتن مسلح, مقطع تیر, عمق پی,
+      پی ساختمان, خاک رسی, مقاومت خاک, مکانیک خاک, ژئوتکنیک, گودبرداری]
   - id: fire_life_safety
-    label: fire protection and means of escape
+    label: fire protection, detection and alarm, and means of escape
     covered_by: [مبحث سوم]
     mabhas: [3]
-    terms: [اطفای حریق, اسپرینکلر, راه فرار, پله فرار, خروج اضطراری, اعلام حریق, کپسول آتش نشانی]
+    terms: [اطفای حریق, اسپرینکلر, راه فرار, پله فرار, خروج اضطراری, اعلام حریق, کپسول آتش نشانی,
+      دتکتور, دتکتور دود, آشکارساز دود, آشکارساز حریق, حسگر دود]
   - id: lifts_sizing
     label: lift and escalator design and sizing
     covered_by: [مبحث پانزدهم]
     mabhas: [15]
-    terms: [تعداد آسانسور, ظرفیت آسانسور, سرعت آسانسور, ترافیک آسانسور, چاه آسانسور, پله برقی, ابعاد آسانسور]
+    terms: [تعداد آسانسور, ظرفیت آسانسور, سرعت آسانسور, ترافیک آسانسور, چاه آسانسور, پله برقی, ابعاد آسانسور,
+      نفره]
+  - id: accessibility
+    label: accessibility for people with disabilities (ramps, wheelchair access)
+    covered_by: [مبحث چهارم, ضوابط و مقررات شهرسازی و معماری برای افراد دارای معلولیت]
+    mabhas: [4]
+    terms: [رمپ, ویلچر, سطح شیبدار, معلولین, معلولیت, افراد دارای معلولیت, نابینایان]
+  - id: railings_guards
+    label: railings, guards and parapets
+    covered_by: [مبحث چهارم]
+    mabhas: [4]
+    terms: [نرده, نرده بالکن, ارتفاع نرده, نرده پله, جان پناه, حفاظ پنجره, حفاظ بالکن]
   - id: plumbing_sanitary
     label: water supply, drainage and sanitary installations
     covered_by: [مبحث شانزدهم]
@@ -91,7 +112,7 @@ domains:
     covered_by: []
     mabhas: []
     terms: [دکوراسیون, چیدمان, رنگ دیوار, رنگ آمیزی, کاغذ دیواری, فرش, نظافت, تمیز کردن, لکه گیری,
-      بوی رنگ]
+      بوی رنگ, پیک نیک, کپسول گاز]
   - id: cooking_food
     label: cooking and food
     covered_by: []
@@ -102,7 +123,7 @@ domains:
     covered_by: []
     mabhas: []
     terms: [پزشک, دکتر, بیماری, دارو, درمان, آلرژی, حساسیت, شیرخوار, نوزاد, بارداری, سرماخوردگی,
-      مسمومیت]
+      مسمومیت, درد, گلو درد, سرفه, گرمازدگی]
   - id: vehicles_transport
     label: vehicles and transport
     covered_by: []
@@ -113,7 +134,7 @@ domains:
     label: gardening and plants
     covered_by: []
     mabhas: []
-    terms: [باغبانی, کاشت, کاشتن, نهال, گلدان, گیاه آپارتمانی, چمن, هرس, کود, بذر, ریشه, کاشت درخت,
+    terms: [باغبانی, کاشت, کاشتن, نهال, گلدان, گلدون, گیاه آپارتمانی, چمن, هرس, کود, بذر, ریشه, کاشت درخت,
       درخت میوه]
   - id: insurance_legal
     label: insurance, contracts and neighbour or legal disputes
@@ -126,7 +147,7 @@ domains:
     covered_by: []
     mabhas: []
     terms: [وای فای, وایفای, مودم, روتر, آنتن دهی, آنتن, گوشی, موبایل, لپ تاپ, تلویزیون, بلوتوث,
-      اینترنت خانگی]
+      اینترنت خانگی, عکاسی, 5g]
   - id: pest_control
     label: pest control
     covered_by: []

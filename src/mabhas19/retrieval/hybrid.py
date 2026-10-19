@@ -80,7 +80,7 @@ class Retriever:
         self.store = store
         self.numbered = numbered_lines(chunks)
         self.router = Router(store, self.lexical.index.vocabulary())
-        self.planner = Planner(store, store.schemas)
+        self.planner: Planner = self.router.planner  # the planner the router dry-runs
         self.executor = Executor(store, store.schemas)
 
     @classmethod
@@ -128,6 +128,7 @@ class Retriever:
                     f"no curated {u['type']} matches {u['tokens']}",
                     {"tokens": u["tokens"]},
                     self.store.table_evidence(u["dataset"], f"unknown {u['type']}"),
+                    outcome="unknown_entity",  # the planner's dry-run outcome for this table
                 )
             )
         return result

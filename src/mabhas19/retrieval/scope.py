@@ -399,6 +399,11 @@ class ScopeMap:
             for k in keys(etokens(d["term"])[0])
             if k not in generic
         }
+        # words printed in curated table rows (occupancies, materials, equipment…): Mabhas 19
+        # vocabulary that an everyday-domain term may share («درمان» ~ «درمانی»)
+        self.curated_row_keys = {
+            k for vals in entities.values() for v in vals for w in etokens(v) for k in keys(w)
+        }
         self.external = []
         for d in data["external_domains"]:
             terms = [tuple(etokens(t)) for t in d["terms"]]
@@ -473,21 +478,33 @@ class ScopeMap:
         """supported / external_domain / uncertain for a query without structured lookup."""
         q = etokens(norm)
         qkeys = [keys(t) for t in q]
-        ext_pos: dict[int, str] = {}
-        ext_terms: dict[str, list[str]] = {}
+        found: list[tuple[str, tuple[str, ...], int, int]] = []
         for d, terms in self.external:
             for term in terms:
-                for i, n in _find_term(q, term):
-                    for j in range(i, i + n):
-                        ext_pos.setdefault(j, d["id"])
-                    ext_terms.setdefault(d["id"], []).append(" ".join(term))
-        anchors = sorted(
-            {
-                q[i]
-                for i, ks in enumerate(qkeys)
-                if i not in ext_pos and ks & self.supported_keys and q[i] not in FUNCTION_WORDS
-            }
-        )
+                found += [(d["id"], term, i, n) for i, n in _find_term(q, term)]
+
+        def _anchors(spans: list[tuple[str, tuple[str, ...], int, int]]) -> list[str]:
+            pos = {j for _, _, i, n in spans for j in range(i, i + n)}
+            return sorted(
+                {
+                    q[i]
+                    for i, ks in enumerate(qkeys)
+                    if i not in pos and ks & self.supported_keys and q[i] not in FUNCTION_WORDS
+                }
+            )
+
+        # a single-word external term that is printed curated table vocabulary is the technical
+        # word, not the everyday domain, when the question has Mabhas 19 concepts of its own
+        shared = [x for x in found if len(x[1]) == 1 and keys(x[1][0]) & self.curated_row_keys]
+        if shared and _anchors(found):
+            found = [x for x in found if x not in shared]
+        ext_pos: dict[int, str] = {}
+        ext_terms: dict[str, list[str]] = {}
+        for domain, term, i, n in found:
+            for j in range(i, i + n):
+                ext_pos.setdefault(j, domain)
+            ext_terms.setdefault(domain, []).append(" ".join(term))
+        anchors = _anchors(found)
         content = [i for i in range(len(q)) if q[i] not in FUNCTION_WORDS and i not in ext_pos]
         strong_pos = {i for i in content if qkeys[i] & self.single_terms}
         for a, b in pairwise(content):

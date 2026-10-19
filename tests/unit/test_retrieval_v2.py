@@ -67,7 +67,11 @@ def test_unknown_city_is_not_a_wildcard_lookup() -> None:
     r = _run("رده اقلیمی شهر لندن")
     assert r.route.route == "unsupported"
     assert r.structured == []
-    assert _reasons(r) == [("m19-ed5-1404-app02.city_climate_classes", "unknown_place")]
+    # the planner decides per candidate table: neither Appendix 2 nor 19-3-2 prints the city
+    assert _reasons(r) == [
+        ("m19-ed5-1404-app02.city_climate_classes", "unknown_place"),
+        ("m19-ed5-1404-main.t19-3-2", "unknown_place"),
+    ]
 
 
 def test_known_city_without_climate_intent_is_not_a_climate_lookup() -> None:

@@ -103,8 +103,7 @@ class StructuredNoMatch:
     constraints: dict[str, Any]
     table: TableEvidence | None
     source_issues: list[str] = field(default_factory=list)
-    # fail-closed outcome category of a structured query plan (retrieval.plan.OUTCOMES); None
-    # for no-matches produced outside the planner (router-detected unknown entities)
+    # fail-closed outcome category of a structured query plan (retrieval.plan.OUTCOMES)
     outcome: str | None = None
 
 

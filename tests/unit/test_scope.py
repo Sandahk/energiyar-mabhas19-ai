@@ -93,7 +93,7 @@ def test_unknown_structured_entity_keeps_its_typed_outcome() -> None:
     assert d.route == "unsupported"
     assert d.signals["scope"]["class"] == "unknown_entity"
     r = _retriever().retrieve("رده اقلیمی شهر لندن")
-    assert [n.reason for n in r.no_match] == ["unknown_place"]
+    assert {n.reason for n in r.no_match} == {"unknown_place"}  # one per candidate table
 
 
 def test_uncertain_question_falls_through_to_prose() -> None:

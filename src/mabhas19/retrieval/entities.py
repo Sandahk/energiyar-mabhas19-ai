@@ -142,6 +142,10 @@ def keys(token: str) -> frozenset[str]:
             out.add(stem)
             if suffix == "ات":
                 out.add(stem + "ه")
+    # adjectival «ـیی» after a vowel-final stem («ویلایی» <- «ویلا», «هوایی» <- «هوا»): the
+    # printed adjective and its noun share a key (reversible, source-independent morphology)
+    if token.endswith(("ایی", "ویی")) and len(token) - 2 >= 3:
+        out.add(token[:-2])
     return frozenset(out)
 
 
@@ -149,19 +153,29 @@ def keys(token: str) -> frozenset[str]:
 # «تک سرعته», «چند سرعته»): polarity and count are part of a label's identity
 NEGATORS = ("غیر", "بدون", "فاقد")
 COUNT_PREFIXES = ("تک", "چند")
+# degree prefixes change the meaning of the word they modify: «نیمه باز» (semi-open) is not
+# «باز» (open), so the printed compound is matched only as a whole
+DEGREE_PREFIXES = ("نیمه",)
+# every meaning-bearing modifier (polarity, count, degree) stays attached to its word in labels:
+# a bare positive term never names the qualified printed word, and a partial name fails closed
+MEANING_PREFIXES = (*NEGATORS, *COUNT_PREFIXES, *DEGREE_PREFIXES)
 
 
 def merge_modifiers(tokens: Sequence[str], allowed: set[str] | None = None) -> list[str]:
-    """Join a negator or count prefix with the next word («غیر»+«چگالشی» -> «غیرچگالشی»).
-    Negators always join; count prefixes join only when the joined form is in ``allowed``
-    (the label vocabulary), so a question word «چند» never swallows the next word."""
+    """Join a negator, count or degree prefix with the next word («غیر»+«چگالشی» ->
+    «غیرچگالشی», «نیمه»+«باز» -> «نیمهباز»). Negators always join; count and degree prefixes
+    join only when the joined form is in ``allowed`` (the label vocabulary), so a question word
+    «چند» never swallows the next word."""
     out: list[str] = []
     i = 0
     while i < len(tokens):
         t = tokens[i]
         if i + 1 < len(tokens) and (
             t in NEGATORS
-            or (t in COUNT_PREFIXES and (allowed is None or t + tokens[i + 1] in allowed))
+            or (
+                t in (*COUNT_PREFIXES, *DEGREE_PREFIXES)
+                and (allowed is None or t + tokens[i + 1] in allowed)
+            )
         ):
             out.append(t + tokens[i + 1])
             i += 2
@@ -223,7 +237,7 @@ class Label:
         i = 0
         while i < len(self.tokens):
             t = self.tokens[i]
-            if i + 1 < len(self.tokens) and t in (*NEGATORS, *COUNT_PREFIXES):
+            if i + 1 < len(self.tokens) and t in MEANING_PREFIXES:
                 merged.append(t + self.tokens[i + 1])
                 levels.append(self.levels[i + 1])
                 i += 2

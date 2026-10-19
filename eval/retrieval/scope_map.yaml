@@ -4,7 +4,7 @@ description: Mabhas 19 scope map (derived from curated/ plus the reviewed extern
 inputs_sha256:
   curated/structure/m19-ed5-1404-main/sections.jsonl: f8c5255c5ded3883d3d35ffd5a83a4e632bd70943f29fdb7e27b490dbe5b58ca
   curated/text/m19-ed5-1404-main/blocks.jsonl: 9aefc54390f7d23938ac5e59504753898a2b1c58ad485897022b8f6ac3766195
-  eval/retrieval/external_domains.yaml: dc1228f13766fec573d57030f168f362a2e7daed2abf92ab5f734f7baf703505
+  eval/retrieval/external_domains.yaml: 7b31acfb9319b217270037bb66c3761ae890584795fb0320d625ac89b2f39bec
   curated/tables/**: 11a03df12311feb70d7699c316780068728d1173408d599a9f0483665d3dc2c1
 identifiers:
   chapters:
@@ -1293,12 +1293,12 @@ supported:
     - یزد یزد
     rows_19-5-1:
     - دیوار خارجی مجاور فضای باز
-    - دیوار خارجی مجاور فضای نیمه باز کنترل نشده
+    - دیوار خارجی مجاور فضای نیمهباز کنترل نشده
     - دیوار خارجی مجاور خاک
     - سقف مجاور فضای ازاد
-    - سقف مجاور فضای نیمه باز کنترل نشده
+    - سقف مجاور فضای نیمهباز کنترل نشده
     - کف مجاور هوای ازاد
-    - کف مجاور نیمه باز کنترل نشده
+    - کف مجاور نیمهباز کنترل نشده
     - کف مجاور خاک
     - درهای غیرنورگذر لولادار
     - درهای غیرنورگذر بدونلولا
@@ -1458,9 +1458,16 @@ external_domains:
   - اسکلت فلزی
   - بتن مسلح
   - مقطع تیر
+  - عمق پی
+  - پی ساختمان
+  - خاک رسی
+  - مقاومت خاک
+  - مکانیک خاک
+  - ژئوتکنیک
+  - گودبرداری
   handed_off_by: []
 - id: fire_life_safety
-  label: fire protection and means of escape
+  label: fire protection, detection and alarm, and means of escape
   covered_by:
   - مبحث سوم
   mabhas:
@@ -1473,6 +1480,11 @@ external_domains:
   - خروج اضطراری
   - اعلام حریق
   - کپسول آتش نشانی
+  - دتکتور
+  - دتکتور دود
+  - آشکارساز دود
+  - آشکارساز حریق
+  - حسگر دود
   handed_off_by:
   - main-p026-b016
   - main-p058-b004
@@ -1491,6 +1503,38 @@ external_domains:
   - چاه آسانسور
   - پله برقی
   - ابعاد آسانسور
+  - نفره
+  handed_off_by: []
+- id: accessibility
+  label: accessibility for people with disabilities (ramps, wheelchair access)
+  covered_by:
+  - مبحث چهارم
+  - ضوابط و مقررات شهرسازی و معماری برای افراد دارای معلولیت
+  mabhas:
+  - 4
+  terms:
+  - رمپ
+  - ویلچر
+  - سطح شیبدار
+  - معلولین
+  - معلولیت
+  - افراد دارای معلولیت
+  - نابینایان
+  handed_off_by: []
+- id: railings_guards
+  label: railings, guards and parapets
+  covered_by:
+  - مبحث چهارم
+  mabhas:
+  - 4
+  terms:
+  - نرده
+  - نرده بالکن
+  - ارتفاع نرده
+  - نرده پله
+  - جان پناه
+  - حفاظ پنجره
+  - حفاظ بالکن
   handed_off_by: []
 - id: plumbing_sanitary
   label: water supply, drainage and sanitary installations
@@ -1664,6 +1708,8 @@ external_domains:
   - تمیز کردن
   - لکه گیری
   - بوی رنگ
+  - پیک نیک
+  - کپسول گاز
   handed_off_by: []
 - id: cooking_food
   label: cooking and food
@@ -1699,6 +1745,10 @@ external_domains:
   - بارداری
   - سرماخوردگی
   - مسمومیت
+  - درد
+  - گلو درد
+  - سرفه
+  - گرمازدگی
   handed_off_by: []
 - id: vehicles_transport
   label: vehicles and transport
@@ -1727,6 +1777,7 @@ external_domains:
   - کاشتن
   - نهال
   - گلدان
+  - گلدون
   - گیاه آپارتمانی
   - چمن
   - هرس
@@ -1774,6 +1825,8 @@ external_domains:
   - تلویزیون
   - بلوتوث
   - اینترنت خانگی
+  - عکاسی
+  - 5g
   handed_off_by: []
 - id: pest_control
   label: pest control
@@ -1793,5 +1846,5 @@ external_domains:
   - جونده
   handed_off_by: []
 external_taxonomy:
-  version: 2
+  version: 3
   reviewed_on: '2026-10-19'

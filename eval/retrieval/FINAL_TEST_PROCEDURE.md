@@ -64,3 +64,21 @@ following ambiguities explicitly with `acceptable_routes` instead of forcing one
   satisfied (table evidence and the relevant source issue).
 - **Record evidence is scored at record level.** List `tables` only when no concrete record is
   expected; a typed no-match never satisfies expected records.
+
+## 7. Final-2 (after routing v3 / answerability v3.1)
+The original final set is development data from now on, like dev and diagnostic.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --write` writes
+   `final2_candidate.yaml` (code tree, curated tree, scope map, taxonomy, chunks, BM25, E5 pins,
+   RRF, structured schemas, evaluator). Commit it. The Final-2 run refuses on any difference.
+2. Anchors: a new seed; exclude every evidence ID of dev, diagnostic and final, plus records and
+   sections directly adjacent to them where the pool allows; report every category whose unused
+   pool is too small instead of reusing development evidence.
+3. Authoring by a fresh agent with access only to the anchors, the curated sources and the
+   authoring brief (no code, router rules, scope taxonomy, earlier queries, failures or runs);
+   review by a separate fresh agent (routes, records, no-match, issues, prose evidence,
+   acceptable routes under the §6 policy). Unsupported questions are written from the
+   underlying domains, not from any taxonomy.
+4. Validate every evidence ID, `--freeze` (SHA-256), commit `final2.yaml` + `final2.sha256`.
+5. Run once: `python -m mabhas19.cli.embedding_experiment --set final2` (corrected evaluator,
+   scope-class confusion recorded). Report everything; change nothing afterwards.

@@ -1,4 +1,4 @@
-# Final retrieval test set: authoring and execution procedure (not yet executed)
+# Final retrieval test sets: authoring and execution procedure
 
 The development set (`dev.yaml`, 76 cases) was used to fix v1, and the diagnostic set
 (`heldout.yaml`, 117 cases) was used to diagnose v2. Neither is an unbiased measure any more.
@@ -82,3 +82,24 @@ The original final set is development data from now on, like dev and diagnostic.
 4. Validate every evidence ID, `--freeze` (SHA-256), commit `final2.yaml` + `final2.sha256`.
 5. Run once: `python -m mabhas19.cli.embedding_experiment --set final2` (corrected evaluator,
    scope-class confusion recorded). Report everything; change nothing afterwards.
+
+## 8. Final-3 (after the structured safety cycle)
+Dev, diagnostic, the original final set and Final-2 are all development data from now on.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final3 --write` writes
+   `final3_candidate.yaml` (§7 pins plus the constraint-parser, entity-resolver and evaluator
+   versions and the safety invariant `wrong_regulatory_values_expected: 0`). Commit it. The
+   Final-3 run (`embedding_experiment --set final3`) refuses on any difference;
+   `final2_candidate.yaml` stays as the historical record of the Final-2 candidate.
+2. Anchors: a new seed; exclude every evidence ID of all four earlier sets, plus adjacent
+   sections, blocks and records where the pool allows; report each shortfall explicitly.
+3. Authoring by a fresh agent that sees only the anchors, the curated sources and a
+   self-contained authoring brief (no code, router or scope rules, external-domain taxonomy,
+   earlier queries, failures or metrics); review by a separate fresh agent. Stress coverage is
+   written from independent source/domain anchors, never as variants of earlier failures.
+4. Validate every evidence ID, record expectation, no-match expectation, acceptable route and
+   issue/conflict ID; `--freeze` (SHA-256); commit `final3.yaml` + `final3.sha256`; verify the
+   candidate manifest. Only then run once.
+5. Safety is reported first: wrong regulatory values (hard requirement 0 — any nonzero value
+   blocks generation), wrong extra rows, silently dropped constraints. Failures are reviewed by
+   severity; nothing is fixed after the run.

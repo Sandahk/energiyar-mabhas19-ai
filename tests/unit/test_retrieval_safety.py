@@ -18,7 +18,14 @@ from mabhas19.indexing.chunking import build_chunks
 from mabhas19.retrieval.constraints import STATES, violates
 from mabhas19.retrieval.dimensions import decimal_text, ratings_requested, years_requested
 from mabhas19.retrieval.entities import merge_modifiers, negated_word
-from mabhas19.retrieval.eval import evaluate, load_cases, metrics, wrong_values
+from mabhas19.retrieval.eval import (
+    dropped_constraints,
+    evaluate,
+    load_cases,
+    metrics,
+    wrong_extra,
+    wrong_values,
+)
 from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.models import RetrievalResult, StructuredHit
 from mabhas19.retrieval.structured import StructuredStore, r_value_in
@@ -279,6 +286,22 @@ def test_wrong_values_counts_every_unrequested_record() -> None:
     assert wrong_values(r, {"tables": ["t1"]}) == ["b"]
 
 
+def test_wrong_extra_rows_are_only_those_beside_a_complete_answer() -> None:
+    r = RetrievalResult(query="q", normalized_query="q", route=None)  # type: ignore[arg-type]
+    r.structured = [_hit("a"), _hit("c")]
+    ev = {"records": ["a"]}
+    assert wrong_extra(r, ev, wrong_values(r, ev)) == ["c"]  # beside the answer: extra row
+    ev = {"records": ["b"]}
+    assert wrong_extra(r, ev, wrong_values(r, ev)) == []  # stands in for it: wrong value
+
+
+def test_constraint_lost_in_decomposition_is_a_dropped_constraint() -> None:
+    r = _run("حداقل مقاومت حرارتی سقف مجاور فضای نیمه باز کنترل نشده در اقلیم 4A چقدر است؟")
+    assert dropped_constraints(r) == []
+    r.constraints = []  # as if the climate class never reached the lookup
+    assert dropped_constraints(r) == ["climate_class: not in the lookup"]
+
+
 @cache
 def _set_results(name: str) -> tuple[list[Any], dict[str, Any]]:
     return evaluate(_retriever(), load_cases(EVAL_DIR / "retrieval" / f"{name}.yaml"))
@@ -289,6 +312,7 @@ def test_no_wrong_regulatory_value_on_any_development_set(name: str) -> None:
     results, _ = _set_results(name)
     m = metrics(results)
     assert m["wrong_value_records"] == 0, m["wrong_value_cases"]
+    assert m["dropped_constraints"] == 0, m["dropped_constraint_cases"]
 
 
 @pytest.mark.parametrize("name", SETS)

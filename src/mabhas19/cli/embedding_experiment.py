@@ -46,6 +46,7 @@ from mabhas19.retrieval.vector import (
 
 MODES: tuple[Mode, ...] = ("lexical", "vector", "hybrid")
 SET_NAMES = ("dev", "heldout")
+FINAL_SETS = ("final", "final2", "final3")
 CANDIDATE = SETS / "hybrid_candidate.yaml"
 PROBES = ("H022", "H073", "H079", "H112", "R015", "R052", "R053", "H070")
 GROUPS = {
@@ -208,6 +209,19 @@ def compare(
             "unsupported_original": m["unsupported_original"],
             "source_issue_exposure": m["source_issue_exposure"],
             "conflict_exposure": m["conflict_exposure"],
+            "safety": {
+                k: m[k]
+                for k in (
+                    "wrong_value_records",
+                    "wrong_value_cases",
+                    "wrong_regulatory_values",
+                    "wrong_regulatory_value_cases",
+                    "wrong_extra_records",
+                    "wrong_extra_cases",
+                    "dropped_constraints",
+                    "dropped_constraint_cases",
+                )
+            },
             "by_group": {
                 g: {
                     "intrinsic": _recall_of([r.bm25_rank for r in rs]),
@@ -314,9 +328,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     from mabhas19.providers.local_embeddings import SentenceTransformerEmbedder  # noqa: PLC0415
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument(
-        "--set", dest="sets", action="append", choices=[*SET_NAMES, "final", "final2"]
-    )
+    parser.add_argument("--set", dest="sets", action="append", choices=[*SET_NAMES, *FINAL_SETS])
     parser.add_argument("--threads", type=int, default=8)
     args = parser.parse_args(argv)
     set_names: list[str] = args.sets or list(SET_NAMES)
@@ -326,12 +338,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     chunks = build_chunks(blocks, DOC_ID)
     store = StructuredStore(CURATED_DIR)
     sets: dict[str, list[dict[str, Any]]] = {}
-    if "final2" in set_names:
-        from mabhas19.retrieval.candidate import check_manifest  # noqa: PLC0415
+    for guarded in ("final2", "final3"):
+        if guarded not in set_names:
+            continue
+        from mabhas19.retrieval.candidate import MANIFESTS, check_manifest  # noqa: PLC0415
 
-        manifest_drift = check_manifest()
+        manifest_drift = check_manifest(MANIFESTS[guarded])
         if manifest_drift:
-            print("candidate differs from final2_candidate.yaml:\n  " + "\n  ".join(manifest_drift))
+            name = MANIFESTS[guarded].name
+            print(f"candidate differs from {name}:\n  " + "\n  ".join(manifest_drift))
             return 2
     problems = check_candidate(candidate, None, chunks)
     if problems:
@@ -339,7 +354,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
         return 2
     for s in set_names:
         path, fp = SETS / f"{s}.yaml", SETS / f"{s}.sha256"
-        if s in ("final", "final2") and not fp.is_file():
+        if s in FINAL_SETS and not fp.is_file():
             print("the final set must be frozen (--freeze) before it is run", file=sys.stderr)
             return 2
         if fp.is_file() and fp.read_text(encoding="utf-8").split()[0] != sha256_file(path):

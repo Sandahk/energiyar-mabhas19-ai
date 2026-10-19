@@ -20,7 +20,12 @@ Metrics:
 * **wrong regulatory values** (safety headline): every returned structured record that the case
   does not allow - outside required + acceptable records, any record where no record exists
   (``no_records``), a record from a table the case does not name, or any record at all for a
-  case that expects no structured answer (prose/unsupported). Target: 0.
+  case that expects no structured answer (prose/unsupported). Target: 0. It is split by
+  severity into *wrong regulatory values* (no allowed answer is returned, so the record stands
+  in for one) and *wrong extra rows* (every required record is returned as well);
+* **silently dropped constraints**: when records are returned, a constraint stated in the
+  query that never reached the lookup's constraint ledger, or an applied constraint that a
+  returned record contradicts.
 
 The original (v1/v2 and first final benchmark) scorer is kept as ``structured_exact_original``
 and ``unsupported_original`` so historical numbers stay reproducible: it scored any case with
@@ -37,6 +42,7 @@ from typing import Any
 
 import yaml
 
+from mabhas19.retrieval.constraints import extract_constraints, violates
 from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.models import ProseHit, RetrievalResult
 
@@ -74,6 +80,8 @@ class CaseResult:
     no_match: list[str] = field(default_factory=list)
     scope_class: str | None = None  # scope classification recorded by the router (v3.1)
     wrong_values: list[str] = field(default_factory=list)  # records the case does not allow
+    wrong_extra: list[str] = field(default_factory=list)  # ...returned beside the right answer
+    dropped_constraints: list[str] = field(default_factory=list)
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -154,6 +162,37 @@ def wrong_values(r: RetrievalResult, ev: dict[str, Any]) -> list[str]:
     return sorted(h.record_id for h in r.structured)
 
 
+def wrong_extra(r: RetrievalResult, ev: dict[str, Any], wrong: list[str]) -> list[str]:
+    """The wrong records returned *beside* a complete allowed answer (less severe than a wrong
+    value standing in for the answer)."""
+    got = {h.record_id for h in r.structured}
+    if ev.get("records"):
+        complete = set(ev["records"]) <= got
+    elif ev.get("tables") and not ev.get("no_records"):
+        complete = any(h.dataset in set(ev["tables"]) for h in r.structured)
+    else:
+        complete = False
+    return wrong if complete else []
+
+
+def dropped_constraints(r: RetrievalResult) -> list[str]:
+    """Constraints silently lost while records are returned: stated in the query but absent
+    from the ledger of every queried table, or applied but contradicted by a returned record."""
+    if not r.structured:
+        return []
+    out = []
+    stated = extract_constraints(r.normalized_query)
+    ledgered = {c["constraint"] for c in r.constraints}
+    out += [f"{name}: not in the lookup" for name in stated if name not in ledgered]
+    for c in r.constraints:
+        if c["state"] != "applied":
+            continue
+        for h in r.structured:
+            if h.dataset == c["table"] and violates(h.values, c["constraint"], c["value"]):
+                out.append(f"{c['constraint']}: {h.record_id} contradicts {c['value']}")
+    return out
+
+
 def _original_structured_exact(r: RetrievalResult, ev: dict[str, Any]) -> bool:
     """Historical scorer: ``tables`` took precedence over ``records`` (kept for reproducibility
     of the immutable first final result; do not use for new decisions)."""
@@ -209,6 +248,8 @@ def evaluate(
         if ev.get("records") or ev.get("tables") or ev.get("no_records"):
             _structured(r, ev, res)
         res.wrong_values = wrong_values(r, ev)
+        res.wrong_extra = wrong_extra(r, ev, res.wrong_values)
+        res.dropped_constraints = dropped_constraints(r)
         if ev.get("source_issues"):
             exposed = {i for h in r.structured for i in h.source_issues}
             exposed |= {x.issue_id for x in r.conflicts if x.issue_id}
@@ -255,6 +296,14 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         "scope_classes": dict(Counter(str(r.scope_class) for r in results)),
         "wrong_value_records": sum(len(r.wrong_values) for r in results),
         "wrong_value_cases": sorted(r.id for r in results if r.wrong_values),
+        "wrong_regulatory_values": sum(len(r.wrong_values) - len(r.wrong_extra) for r in results),
+        "wrong_regulatory_value_cases": sorted(
+            r.id for r in results if len(r.wrong_values) > len(r.wrong_extra)
+        ),
+        "wrong_extra_records": sum(len(r.wrong_extra) for r in results),
+        "wrong_extra_cases": sorted(r.id for r in results if r.wrong_extra),
+        "dropped_constraints": sum(len(r.dropped_constraints) for r in results),
+        "dropped_constraint_cases": sorted(r.id for r in results if r.dropped_constraints),
         "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),
         "unsupported_original": unsupported_scores_strict(results),

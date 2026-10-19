@@ -19,8 +19,12 @@ Order of rules (first match wins):
 4. an unresolved entity with no other structured signal -> unsupported (unknown entity);
 5. structured + prose parts -> mixed; structured only -> structured;
 6. section/clause reference -> prose;
-7. fallback: little of the query in the corpus vocabulary and no domain signal ->
-   unsupported; otherwise prose.
+7. otherwise the scope map decides (:mod:`mabhas19.retrieval.scope`): an external domain ->
+   unsupported; supported or uncertain -> prose.
+
+Explicit section/table/appendix references are validated against the scope map first; a query
+whose only references do not exist is ``unsupported`` (``invalid_reference``). Every decision
+records its scope class and reason in ``signals["scope"]``.
 """
 
 from __future__ import annotations
@@ -43,6 +47,7 @@ from mabhas19.retrieval.normalization import (
     index_terms,
     normalize_query,
 )
+from mabhas19.retrieval.scope import ScopeMap
 from mabhas19.retrieval.structured import (
     APP02,
     APP03,
@@ -196,11 +201,11 @@ class Router:
     """Deterministic router; see the module docstring for the rules."""
 
     def __init__(
-        self, store: StructuredStore, vocabulary: set[str], sections: set[str] | None = None
+        self, store: StructuredStore, vocabulary: set[str], scope: ScopeMap | None = None
     ) -> None:
         self.store = store
         self.vocabulary = vocabulary
-        self.sections = sections or set()  # curated section/clause numbers (reference check)
+        self.scope = scope or ScopeMap.load()  # identifiers, concepts, external domains
         store.resolver.vocabulary = vocabulary  # lets the resolver tell unknown words apart
         labels = [*store.places, *(o["label"] for o in store.occupancy_index)]
         self.structured_vocabulary = (
@@ -210,27 +215,36 @@ class Router:
         )
 
     # ------------------------------------------------------------------ public
-    def route(self, query: str) -> RouteDecision:
+    def route(self, query: str) -> RouteDecision:  # noqa: PLR0911
         norm = normalize_query(query)
         refs = _TABLE_REF.findall(norm)
         section_refs = [s for s in _SECTION_REF.findall(norm) if s not in set(refs)]
         # «پیوست ۳» names the appendix table itself when it is a curated dataset
         refs += [f"پ{n}" for n in _APPENDIX_REF.findall(norm) if f"پ{n}" in APPENDIX_TABLES]
-        signals: dict[str, Any] = {"table_ref": refs, "section_ref": section_refs}
-        unknown_refs = self._unknown_references(refs, section_refs)
-        if unknown_refs:
-            signals["unknown_references"] = unknown_refs
-            known_tables = [r for r in refs if r not in unknown_refs]
-            known_sections = [r for r in section_refs if r not in unknown_refs]
-            if not known_tables and not known_sections:
-                return RouteDecision(
-                    "unsupported",
-                    [f"reference {unknown_refs} is not in the curated section/table index"],
-                    signals,
-                )
+        checks = self.scope.check_references(norm)
+        invalid = [c for c in checks if c.status != "valid"]
+        bad = {c.ref.replace(" ", "") for c in invalid}
+        refs = [r for r in refs if r.replace(" ", "") not in bad]
+        section_refs = [r for r in section_refs if r not in bad]
+        signals: dict[str, Any] = {
+            "table_ref": refs,
+            "section_ref": section_refs,
+            "references": [
+                {"ref": c.ref, "kind": c.kind, "status": c.status, "detail": c.detail}
+                for c in checks
+            ],
+        }
+        if invalid and not any(c.status == "valid" for c in checks):
+            why = "; ".join(f"{c.kind} {c.ref}: {c.status}" for c in invalid)
+            signals["scope"] = {"class": "invalid_reference", "reason": why}
+            return RouteDecision("unsupported", [f"invalid reference: {why}"], signals)
         blocked = gate(norm)
         if blocked and not refs and not section_refs:
             signals["gate"] = {"category": blocked.category, "matched": blocked.matched}
+            signals["scope"] = {
+                "class": "external_domain",
+                "reason": f"answerability gate: {blocked.category}",
+            }
             return RouteDecision(
                 "unsupported",
                 [f"answerability gate: {blocked.reason} ({blocked.matched})"],
@@ -269,8 +283,10 @@ class Router:
         # explanation still goes to prose retrieval
         if unknown and not tables and not refs and not section_refs and not prose_part:
             why = "; ".join(f"unknown {u['type']} {u['tokens']}" for u in unknown)
+            signals["scope"] = {"class": "unknown_entity", "reason": why}
             return RouteDecision("unsupported", [f"unresolved entity: {why}"], signals)
         if tables and prose_part:
+            signals["scope"] = {"class": "supported_mixed", "reason": "lookup and prose parts"}
             return RouteDecision(
                 "mixed",
                 [*reasons, f"prose part «{prose_part}»"],
@@ -280,7 +296,15 @@ class Router:
                 prose_part,
             )
         if tables:
+            signals["scope"] = {"class": "supported_structured", "reason": "; ".join(reasons)}
             return RouteDecision("structured", reasons, signals, tables, structured_part, None)
+        if section_refs:
+            signals["scope"] = {"class": "supported", "reason": f"section reference {section_refs}"}
+        else:
+            d = self.scope.classify_text(norm, self.vocabulary)
+            signals["scope"] = {"class": d.scope, "reason": d.reason, "evidence": d.evidence}
+            if d.scope == "external_domain":
+                return RouteDecision("unsupported", [f"scope: {d.reason}"], signals)
         return _prose_or_fallback(norm, section_refs, coverage, signals)
 
     def _referenced_datasets(self, refs: list[str]) -> list[str]:
@@ -292,22 +316,6 @@ class Router:
             if ds and (ds in self.store.main or ds in self.store.metas):
                 out.append(ds)
         return list(dict.fromkeys(out))
-
-    def _unknown_references(self, refs: list[str], section_refs: list[str]) -> list[str]:
-        """Explicit section/table numbers that the curated corpus does not contain."""
-        out = []
-        for ref in refs:
-            r = ref.replace(" ", "")
-            known = (
-                APPENDIX_TABLES.get(r.split("-")[0]) is not None
-                if r.startswith("پ")
-                else MAIN + r in self.store.main
-            )
-            if not known:
-                out.append(ref)
-        if self.sections:
-            out += [s for s in section_refs if s not in self.sections]
-        return out
 
     def decompose(self, norm: str, tables: list[str] | None = None) -> tuple[str, str]:
         """(structured part, prose part) of a normalized query.

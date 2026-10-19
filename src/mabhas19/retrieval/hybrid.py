@@ -75,10 +75,7 @@ class Retriever:
         self.lexical = LexicalRetriever(chunks)
         self.store = store
         self.numbered = numbered_lines(chunks)
-        sections = {p.number for c in chunks for p in c.section_path if p.number}
-        self.router = Router(
-            store, self.lexical.index.vocabulary(), {str(x) for x in sections} | set(self.numbered)
-        )
+        self.router = Router(store, self.lexical.index.vocabulary())
 
     @classmethod
     def from_curated(cls, curated: Path, blocks: list[dict[str, object]], doc_id: str) -> Retriever:

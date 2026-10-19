@@ -279,7 +279,8 @@ def test_references_are_validated_against_the_curated_index() -> None:
     router = _retriever().router
     missing = router.route("بند ۱۹-۹-۳ مبحث نوزدهم چه الزامی دارد")
     assert missing.route == "unsupported"
-    assert missing.signals["unknown_references"] == ["19-9-3"]
+    assert missing.signals["scope"]["class"] == "invalid_reference"
+    assert [r["ref"] for r in missing.signals["references"]] == ["19-9-3"]
     assert router.route("بند ۱۹-۲-۱-۹ درباره پیوست‌ها").route == "prose"
     assert router.route("محتوای جدول ۱۹-۵-۹").route == "unsupported"
 

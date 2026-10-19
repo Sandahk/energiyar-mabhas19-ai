@@ -1,0 +1,77 @@
+# Reviewed taxonomy of domains NEIGHBOURING Mabhas 19 that it does not cover (scope map v1).
+#
+# Basis: the Iranian National Building Regulations are split into 22 topics (مباحث ۱-۲۲);
+# Mabhas 19 covers energy saving. Building questions on other topics are answered by the Mabhas
+# (or standard / authority) named in `covered_by`; some domains are outside building regulation
+# altogether. Each domain lists only the sub-topics Mabhas 19 does NOT treat: overlapping topics
+# (HVAC efficiency, lighting power, lift-cabin lighting, EV chargers in parking, fire resistance
+# of insulation, passive defence, maintenance-stage monitoring) are deliberately absent, because
+# Mabhas 19 itself regulates their energy aspects.
+#
+# Terms are generic domain vocabulary (normalised on load), reviewed by hand. They are not taken
+# from evaluation wording, and a term is only added when the domain is described, not to fix a
+# single case. A match is evidence for `external_domain` only when it outweighs the Mabhas 19
+# concepts found in the same query (see mabhas19.retrieval.scope).
+schema_version: 1
+version: 1
+reviewed_on: '2026-10-19'
+domains:
+  - id: structural_seismic
+    label: structural and seismic design
+    covered_by: [مبحث ششم, مبحث هفتم, مبحث نهم, مبحث دهم, استاندارد ۲۸۰۰]
+    mabhas: [6, 7, 9, 10]
+    terms: [زلزله, لرزه, لرزه ای, طراحی لرزه ای, بار زلزله, قاب خمشی, ضریب رفتار, مهاربند, طراحی سازه,
+      محاسبات سازه, تحلیل سازه, آرماتور, میلگرد, تیرچه, فونداسیون, پی سازی, بارگذاری سازه]
+  - id: fire_life_safety
+    label: fire protection and means of escape
+    covered_by: [مبحث سوم]
+    mabhas: [3]
+    terms: [اطفای حریق, اسپرینکلر, راه فرار, پله فرار, خروج اضطراری, اعلام حریق, کپسول آتش نشانی]
+  - id: lifts_sizing
+    label: lift and escalator design and sizing
+    covered_by: [مبحث پانزدهم]
+    mabhas: [15]
+    terms: [تعداد آسانسور, ظرفیت آسانسور, سرعت آسانسور, ترافیک آسانسور, چاه آسانسور, پله برقی, ابعاد آسانسور]
+  - id: plumbing_sanitary
+    label: water supply, drainage and sanitary installations
+    covered_by: [مبحث شانزدهم]
+    mabhas: [16]
+    terms: [آب رسانی, آبرسانی, لوله کشی آب, قطر لوله, فاضلاب, دفع فاضلاب, آب باران, سیفون, کفشور,
+      شیرآلات بهداشتی, مخزن ذخیره آب]
+  - id: gas_piping
+    label: natural-gas piping
+    covered_by: [مبحث هفدهم]
+    mabhas: [17]
+    terms: [لوله کشی گاز, کنتور گاز, فشار گاز, نشت گاز, رگلاتور گاز]
+  - id: acoustics
+    label: sound insulation and acoustics
+    covered_by: [مبحث هجدهم]
+    mabhas: [18]
+    terms: [صوتی, آکوستیک, عایق صوتی, عایق بندی صوتی, تراز صدا, صدابندی, نوفه, انتقال صدا]
+  - id: electrical_wiring
+    label: electrical wiring and protection
+    covered_by: [مبحث سیزدهم]
+    mabhas: [13]
+    terms: [سیم کشی, کابل کشی, سطح مقطع سیم, اتصال زمین, ارتینگ, برق گرفتگی, فیوز]
+  - id: urban_planning_municipal
+    label: urban planning, municipal permits, fees and parking provision
+    covered_by: [شهرداری, طرح تفصیلی, ضوابط شهرسازی]
+    mabhas: []
+    terms: [شهرداری, عوارض, عوارض ساختمانی, طرح تفصیلی, طرح جامع, تراکم ساختمانی, کاربری اراضی, سطح اشغال,
+      تعداد پارکینگ, واحد پارکینگ, جای پارک, تامین پارکینگ, حد نصاب پارکینگ]
+  - id: utility_tariffs
+    label: energy prices, tariffs and billing
+    covered_by: [وزارت نیرو, شرکت ملی گاز]
+    mabhas: []
+    terms: [تعرفه, قبض برق, قبض گاز, قیمت برق, قیمت گاز, نرخ برق, هزینه قبض]
+  - id: certification_schemes
+    label: third-party building certification schemes
+    covered_by: [صاحبان طرح های گواهی (LEED, BREEAM, WELL, DGNB)]
+    mabhas: []
+    terms: [leed, breeam, dgnb, well building, passivhaus, پسیوهاوس]
+  - id: non_building
+    label: domains outside building regulation
+    covered_by: []
+    mabhas: []
+    terms: [راهنمایی و رانندگی, رانندگی, گواهینامه رانندگی, موتورسیکلت, تاریخچه, تاریخ معماری, دستور پخت,
+      فوتبال, بورس, مالیات]

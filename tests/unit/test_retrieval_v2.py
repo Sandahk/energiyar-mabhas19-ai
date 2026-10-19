@@ -79,9 +79,11 @@ def test_known_city_without_climate_intent_is_not_a_climate_lookup() -> None:
 def test_unknown_material_or_brand_returns_no_rows() -> None:
     store = _retriever().store
     assert store.resolve_material(norm("ضریب هدایت حرارتی نانوتک")) == []
-    hits, _, no_match = store.materials(norm("ضریب هدایت حرارتی نانوتک"))
+    hits, no_match, _, _ = _retriever().lookup(
+        "m19-ed5-1404-app07.material_thermal_properties", "ضریب هدایت حرارتی نانوتک"
+    )
     assert hits == []
-    assert [n.reason for n in no_match] == ["unknown_material"]
+    assert [(n.reason, n.outcome) for n in no_match] == [("unknown_material", "unknown_entity")]
     assert _run("ضریب هدایت حرارتی عایق برند نانوتک").route.route == "unsupported"
 
 

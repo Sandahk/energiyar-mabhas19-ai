@@ -24,8 +24,7 @@ from mabhas19.retrieval.models import (
 )
 from mabhas19.retrieval.normalization import index_terms, tokens
 from mabhas19.retrieval.router import Router
-from mabhas19.retrieval.structured import NO_5C_NOTE, StructuredStore, density_in
-from mabhas19.text.normalize import normalize_for_search as norm
+from mabhas19.retrieval.structured import NO_5C_NOTE, StructuredStore
 
 
 @cache
@@ -99,22 +98,30 @@ def test_bm25_and_rrf() -> None:
 # ---------------------------------------------------------------- structured safety
 
 
+@cache
+def _curated_retriever() -> Retriever:
+    path = CURATED_DIR / "text" / "m19-ed5-1404-main" / "blocks.jsonl"
+    blocks = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
+    return Retriever(build_chunks(blocks, "m19"), _store())
+
+
 def test_isfahan_returns_both_sources_with_the_conflict() -> None:
-    hits, conflicts = _store().climate(norm("رده اقلیمی اصفهان"))
-    codes = {h.record_id: h.values["climate_class"]["code"] for h in hits}
+    r = _curated_retriever().retrieve("رده اقلیمی اصفهان")
+    codes = {h.record_id: h.values["climate_class"]["code"] for h in r.structured}
     assert codes == {"app02-p002-r07": "4B", "main-t19-3-2-r04": "3B"}
-    assert [(c.issue_id, c.values) for c in conflicts] == [("SI-0009", ["3B", "4B"])]
+    assert [(c.issue_id, c.values) for c in r.conflicts] == [("SI-0009", ["3B", "4B"])]
 
 
 def test_kerman_station_code_stays_as_printed() -> None:
-    (hit,) = _store().wmo(norm("ایستگاه ۴۸۸۴۱۰"))
+    (hit,), _, _, _ = _curated_retriever().lookup("m19-ed5-1404-main.t19-3-2", "ایستگاه ۴۸۸۴۱۰")
     assert hit.values["wmo_code"]["printed"] == "۴۸۸۴۱۰"
     assert hit.source_issues == ["SI-0010"]
 
 
 def test_no_eui_is_derived_for_5c() -> None:
-    hits, notes, no_match = _store().eui(
-        norm("شدت مصرف انرژی مسکونی ≥ ۳۰۰۰ مترمربع اقلیم 5C رده C")
+    hits, no_match, notes, _ = _curated_retriever().lookup(
+        "m19-ed5-1404-app03.max_energy_use_intensity",
+        "شدت مصرف انرژی مسکونی ≥ ۳۰۰۰ مترمربع اقلیم 5C رده C",
     )
     assert hits == []
     assert notes == [NO_5C_NOTE]
@@ -126,17 +133,18 @@ def test_no_eui_is_derived_for_5c() -> None:
 
 
 def test_density_on_a_printed_bound_returns_both_rows() -> None:
-    hits, notes, _ = _store().materials(
-        norm("ضریب هدایت حرارتی اندود و ملات آهکی یا سیمانی چگالی ۱۸۰۰")
+    # «۱۶۰۰ تا ۱۸۰۰» and «۱۸۰۰ تا ۲۰۰۰»: the source does not state whether 1800 is included
+    hits, _, notes, _ = _curated_retriever().lookup(
+        "m19-ed5-1404-app07.material_thermal_properties",
+        "ضریب هدایت حرارتی اندود و ملات آهکی یا سیمانی چگالی ۱۸۰۰",
     )
     assert {h.record_id for h in hits} == {"app07-p003-r02", "app07-p003-r03"}
     assert notes
-    assert density_in(norm("پشم سنگ با چگالی ۳۰")) == 30.0
 
 
 def test_p64_symbols_stay_uninterpreted() -> None:
-    hits, no_match, _ = _store().main_table(
-        "m19-ed5-1404-main.t19-2-1", norm("گروه الف سال اول عایق‌کاری پوسته خارجی")
+    hits, no_match, _, _ = _curated_retriever().lookup(
+        "m19-ed5-1404-main.t19-2-1", "گروه الف سال اول عایق‌کاری پوسته خارجی"
     )
     assert no_match == []
     assert [h.record_id for h in hits] == ["main-t19-2-1-r02c05"]

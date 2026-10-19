@@ -26,7 +26,9 @@ from mabhas19.retrieval.dimensions import (
 from mabhas19.retrieval.entities import etokens, keys, split_number_prefix
 from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.models import ProseHit, RetrievalResult
-from mabhas19.retrieval.structured import StructuredStore, _density_match
+from mabhas19.retrieval.numeric import NumInterval
+from mabhas19.retrieval.numeric import printed_interval as printed_text
+from mabhas19.retrieval.structured import StructuredStore
 from mabhas19.text.normalize import normalize_for_search as norm
 
 
@@ -160,8 +162,8 @@ def test_wrong_row_regressions_return_exactly_the_printed_row(case_id: str) -> N
     [
         ("F116", "rating_not_in_table"),
         ("F118", "no_matching_row"),
-        ("F119", "no_matching_row"),
-        ("F122", "no_matching_row"),
+        ("F119", "unknown_label"),  # «استخر» is not a printed place of use
+        ("F122", "ambiguous_label"),  # «دیوار بین دو واحد…» is not a printed row
         ("F125", "climate_class_not_in_table"),
     ],
 )
@@ -324,24 +326,21 @@ def test_density_ranges_parse_as_intervals() -> None:
     assert point == Interval(Decimal(500), False, Decimal(500), False)
 
 
-def _rows(*ranges: tuple[str, str]) -> list[dict[str, object]]:
-    return [{"id": f"r{i}", "density": {"min": lo, "max": hi}} for i, (lo, hi) in enumerate(ranges)]
-
-
 def test_density_range_matching_never_collapses_to_a_bound_or_midpoint() -> None:
-    rows = _rows(("1800", "2000"), ("2000", "2300"), ("2300", "2600"))
+    printed = [printed_text(norm(t)) for t in ("۱۸۰۰ تا ۲۰۰۰", "۲۰۰۰ تا ۲۳۰۰", "۲۳۰۰ تا ۲۶۰۰")]
 
-    def ids(lo: int, hi: int) -> list[str]:
-        got, _ = _density_match(rows, Interval(Decimal(lo), False, Decimal(hi), False))
-        return [str(r["id"]) for r in got]
+    def relations(lo: int, hi: int) -> list[str]:
+        q = NumInterval.from_op("≥", Decimal(lo))
+        q = NumInterval(q.lo, NumInterval.from_op("≤", Decimal(hi)).hi)
+        return [p.relation(q) for p in printed if p is not None]
 
-    assert ids(2000, 2300) == ["r1"]  # the printed range itself
-    assert ids(2100, 2200) == ["r1"]  # inside one printed range
-    assert ids(1900, 2100) == ["r0", "r1"]  # spans two: both returned, with a note
-    assert ids(100, 200) == []  # outside every printed range: no-match, nothing inferred
-    got, notes = _density_match(rows, Interval(Decimal(2000), False, Decimal(2000), False))
-    assert [r["id"] for r in got] == ["r0", "r1"]  # a point on a shared bound
-    assert notes
+    assert relations(2000, 2300)[1] == "within"  # the printed range itself
+    assert relations(2100, 2200) == ["disjoint", "within", "disjoint"]  # inside one range
+    assert relations(1900, 2100)[:2] == ["overlap", "overlap"]  # spans two: never collapsed
+    assert relations(100, 200) == ["disjoint"] * 3  # outside every printed range
+    point = NumInterval.point(Decimal(2000))
+    # a point on a shared bound whose inclusivity the source does not state: both rows
+    assert [p.relation(point) for p in printed if p is not None][:2] == ["boundary", "boundary"]
 
 
 def test_material_lookup_uses_the_stated_density_range() -> None:

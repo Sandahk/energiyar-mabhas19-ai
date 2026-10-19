@@ -29,6 +29,7 @@ import re
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
+from functools import cache
 from typing import Any
 
 from mabhas19.text.normalize import normalize_for_search
@@ -127,6 +128,7 @@ def etokens(text: str) -> list[str]:
     return _ETOKEN.findall(normalize_for_search(text))
 
 
+@cache
 def keys(token: str) -> frozenset[str]:
     """Matching keys of one token: itself, the digit form of a cardinal number word, and stems
     with a reversible suffix removed (stem length >= 3). Ordinals («چهارم») are deliberately not
@@ -261,6 +263,7 @@ class LabelIndex:
         self.idf = {t: math.log(1 + n / f) for t, f in df.items()}
         self.vocabulary = set(df)
         self.key_vocabulary = {k for lab in labels for t in lab.tokens for k in keys(t)}
+        self._match_cache: dict[tuple[str, ...], list[Match]] = {}
 
     def query_tokens(self, text: str) -> list[str]:
         out: list[str] = []
@@ -280,9 +283,20 @@ class LabelIndex:
                 return stem
         return token
 
-    def match(self, q: Sequence[str]) -> list[Match]:  # noqa: PLR0912
+    def match(self, q: Sequence[str]) -> list[Match]:
         """Labels with at least one non-ignored word found in the query. Score: sum over the
-        distinct matched label words of IDF, x0.85 when only a stem/variant matched."""
+        distinct matched label words of IDF, x0.85 when only a stem/variant matched. Pure for
+        a given index and token sequence, so results are memoised (bounded)."""
+        key = tuple(q)
+        hit = self._match_cache.get(key)
+        if hit is None:
+            if len(self._match_cache) > 20000:
+                self._match_cache.clear()
+            hit = self._match(q)
+            self._match_cache[key] = hit
+        return list(hit)
+
+    def _match(self, q: Sequence[str]) -> list[Match]:  # noqa: PLR0912
         # «بدون X» in the query excludes labels that print X positively
         negated = {w for t in q if (w := negated_word(t))}
         negated_keys = {k for w in negated for k in keys(w)}

@@ -25,6 +25,7 @@ from mabhas19.retrieval.dimensions import (
     years_requested,
 )
 from mabhas19.retrieval.models import RetrievalResult
+from mabhas19.retrieval.plan import LEDGER_STATES
 from mabhas19.retrieval.structured import (
     APP02,
     APP03,
@@ -36,9 +37,7 @@ from mabhas19.retrieval.structured import (
     rating_code,
 )
 
-STATES = frozenset(
-    {"applied", "invalid", "ambiguous", "unsupported_by_table", "unsupported_calculation"}
-)
+STATES = LEDGER_STATES  # the plan ledger's states (retrieval.plan)
 # printed dimensions per dataset
 CAPABILITIES: dict[str, frozenset[str]] = {
     APP02: frozenset(),
@@ -136,7 +135,7 @@ def violates(record: dict[str, Any], name: str, value: Any) -> bool:
         code = rating_code(record)
         return code is not None and code not in value
     if name == "group" and "building_group" in record:
-        return record["building_group"]["text"] not in value
+        return str(record["building_group"]["text"]) not in {str(v) for v in value}
     if name == "year" and "year" in record:
-        return record["year"]["index"] not in value
+        return str(record["year"]["index"]) not in {str(v) for v in value}
     return False

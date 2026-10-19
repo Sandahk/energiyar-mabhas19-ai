@@ -1,0 +1,54 @@
+# Adjudicated expectation changes for FUTURE evaluation sets (approved 2026-10-19).
+#
+# The historical sets (dev, heldout, final, final2, final3) and their recorded results stay
+# unchanged and immutable. Each entry below records a case whose historical expectation encodes
+# behaviour the structured-retrieval policy no longer allows; new sets must be written to the
+# policy, and these historical cases are reported as expected differences, never "fixed".
+schema_version: 1
+approved_on: '2026-10-19'
+policies:
+  - id: P-PROVINCE-NOT-CITY
+    rule: >-
+      A question about a province («استان X») is answered from table 19-3-2's printed province
+      dimension. It is never taken to mean the city or station X of Appendix 2; a source issue of
+      the Appendix 2 city record (e.g. SI-0009) is required only when that record actually
+      participates in the evidence.
+  - id: P-NO-INTERPOLATION
+    rule: >-
+      Interpolation, extrapolation, averages, totals, ratios and area products are
+      unsupported_calculation. The operands are never returned as though they answered the
+      request.
+  - id: P-EXPLICIT-ENUMERATION
+    rule: >-
+      Several structured rows are returned only as an explicit, typed enumeration of printed
+      alternatives: the schema marks the dimension enumerable, the question explicitly asks for
+      the alternatives («همه اقلیم‌ها», «به تفکیک کاربری», «PF های مختلف»…), no stated constraint
+      selects one member, every row lies in the resolved scope and carries its own value, and the
+      result metadata names the enumeration. A value-determining dimension that is merely absent
+      fails closed (missing_required_dimension); undistinguished variants of an entity are
+      ambiguous_entity.
+cases:
+  - id: H093
+    set: heldout
+    query: استان اصفهان در کدام دسته اقلیمی قرار می‌گیرد
+    historical_expectation: app02-p002-r07 + main-t19-3-2-r04, conflict SI-0009
+    policy: P-PROVINCE-NOT-CITY
+    future_expectation: main-t19-3-2-r04 (province column); no Appendix 2 record; SI-0009 only if the city record is evidence
+  - id: H115
+    set: heldout
+    query: شدت مصرف انرژی مجاز مسکونی را برای اقلیمی بین 2B و 3A میانیابی کن
+    historical_expectation: 16 Appendix 3 operand records
+    policy: P-NO-INTERPOLATION
+    future_expectation: no records; typed unsupported_calculation for Appendix 3
+  - id: R027
+    set: dev
+    query: حداکثر شدت مصرف انرژی مجاز ساختمان اداری در اقلیم 3B برای رده C
+    historical_expectation: app03-C-r04-3B + app03-C-r05-3B (اداری عمومی and اداری خصوصی)
+    policy: P-EXPLICIT-ENUMERATION
+    future_expectation: no records; ambiguous_entity (the printed variants are not distinguished); with «به تفکیک کاربری» both rows as a typed enumeration
+  - id: R032
+    set: dev
+    query: شدت مصرف انرژی مجاز ساختمان مسکونی در اقلیم 1B رده A
+    historical_expectation: app03-A-r01-1B + app03-A-r02-1B (both size classes)
+    policy: P-EXPLICIT-ENUMERATION
+    future_expectation: no records; missing_required_dimension (size); with an explicit size or «به تفکیک مساحت» the printed rows

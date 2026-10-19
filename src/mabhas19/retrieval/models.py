@@ -103,6 +103,9 @@ class StructuredNoMatch:
     constraints: dict[str, Any]
     table: TableEvidence | None
     source_issues: list[str] = field(default_factory=list)
+    # fail-closed outcome category of a structured query plan (retrieval.plan.OUTCOMES); None
+    # for no-matches produced outside the planner (router-detected unknown entities)
+    outcome: str | None = None
 
 
 @dataclass
@@ -137,5 +140,8 @@ class RetrievalResult:
     no_match: list[StructuredNoMatch] = field(default_factory=list)
     tables: list[TableEvidence] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)  # e.g. "no 5C column (SI-0002)"
-    # one state per (queried table, extracted constraint); see retrieval.constraints
+    # one state per (queried table, extracted constraint); see retrieval.plan
     constraints: list[dict[str, Any]] = field(default_factory=list)
+    plans: list[dict[str, Any]] = field(default_factory=list)  # structured query plans, as run
+    # explicitly requested enumerations of printed alternatives behind the returned records
+    enumerations: list[dict[str, Any]] = field(default_factory=list)

@@ -16,14 +16,15 @@ from __future__ import annotations
 
 import re
 from collections.abc import Sequence
+from dataclasses import asdict
 from pathlib import Path
 
 from mabhas19.indexing.chunking import build_chunks
-from mabhas19.retrieval.answerability import has_words
-from mabhas19.retrieval.constraints import constraint_ledger
+from mabhas19.retrieval.executor import Executor
 from mabhas19.retrieval.lexical import LexicalRetriever
 from mabhas19.retrieval.models import (
     Chunk,
+    Conflict,
     ProseHit,
     RetrievalResult,
     RouteDecision,
@@ -31,8 +32,10 @@ from mabhas19.retrieval.models import (
     StructuredNoMatch,
 )
 from mabhas19.retrieval.normalization import normalize_query
-from mabhas19.retrieval.router import APPENDIX_TABLES, DERIVATION_REQUEST, Router
-from mabhas19.retrieval.structured import APP02, APP03, APP07, MAIN, MAIN_3_2, StructuredStore
+from mabhas19.retrieval.plan import StructuredQueryPlan
+from mabhas19.retrieval.planner import Planner
+from mabhas19.retrieval.router import APPENDIX_TABLES, Router
+from mabhas19.retrieval.structured import MAIN, StructuredStore
 from mabhas19.text.normalize import normalize_for_search
 
 RRF_K = 60
@@ -77,6 +80,8 @@ class Retriever:
         self.store = store
         self.numbered = numbered_lines(chunks)
         self.router = Router(store, self.lexical.index.vocabulary())
+        self.planner = Planner(store, store.schemas)
+        self.executor = Executor(store, store.schemas)
 
     @classmethod
     def from_curated(cls, curated: Path, blocks: list[dict[str, object]], doc_id: str) -> Retriever:
@@ -115,27 +120,6 @@ class Retriever:
             result.notes += self._appendix_issue_notes(decision)
         if decision.route in ("structured", "mixed"):
             self._structured(decision.structured_query or norm, decision, refs, result)
-            if has_words(norm, DERIVATION_REQUEST):
-                # a computed value is not printed: no record may answer it
-                result.structured = []
-                for ds in decision.tables:
-                    result.no_match.append(
-                        StructuredNoMatch(
-                            ds,
-                            "unsupported_calculation",
-                            "the request asks for a value computed from printed values "
-                            "(interpolation, extrapolation, average); the source prints none",
-                            {"request": has_words(norm, DERIVATION_REQUEST)},
-                            self.store.table_evidence(ds, "not printed"),
-                        )
-                    )
-                result.notes.append(
-                    "interpolation, extrapolation and averaging are never performed: only printed "
-                    "values exist"
-                )
-            result.constraints = constraint_ledger(
-                decision.structured_query or norm, decision.tables, result, DERIVATION_REQUEST
-            )
         for u in decision.signals.get("unknown_entities", []) or []:
             result.no_match.append(
                 StructuredNoMatch(
@@ -147,6 +131,16 @@ class Retriever:
                 )
             )
         return result
+
+    def lookup(
+        self, dataset: str, query: str, *, explicit_reference: bool = False
+    ) -> tuple[list[StructuredHit], list[StructuredNoMatch], list[str], StructuredQueryPlan]:
+        """One dataset, bypassing routing: plan -> validation gate -> execution."""
+        plan = self.planner.plan(
+            dataset, normalize_query(query), explicit_reference=explicit_reference
+        )
+        hits, no_match, notes = self.executor.run(plan)
+        return hits, no_match, notes, plan
 
     def rank_prose(self, query: str, k: int) -> list[ProseHit]:
         """The prose ranking used for a query (BM25 in the baseline)."""
@@ -197,39 +191,57 @@ class Retriever:
     def _structured(
         self, norm: str, decision: RouteDecision, refs: list[str], result: RetrievalResult
     ) -> None:
-        tables = decision.tables
+        """Every candidate dataset: plan -> validation gate -> execution (fail closed). The
+        computation check reads the whole query, so a calculation asked in another clause is
+        never answered with its operands."""
         whole = {r.replace(" ", "") for r in refs}
-        hits: list[StructuredHit] = []
-        if APP02 in tables:
-            climate, conflicts = self.store.climate(norm)
-            hits += climate
-            result.conflicts += conflicts
-            ambiguous = self.store.ambiguous_places(self.store.find_places(norm))
-            result.notes += [
-                f"«{p}» resolves to several stations: {s}" for p, s in ambiguous.items()
-            ]
-        if MAIN_3_2 in tables and re.search(r"(?<!\d)\d{6}(?!\d)", norm):
-            hits += self.store.wmo(norm)
-        if APP03 in tables:
-            eui, notes, no_match = self.store.eui(norm)
-            hits += eui
-            result.notes += notes
-            result.no_match += no_match
-        if APP07 in tables:
-            mats, notes, no_match = self.store.materials(norm)
-            hits += mats
-            result.notes += notes
-            result.no_match += no_match
-        for t in tables:
-            if t.startswith(MAIN) and not (t == MAIN_3_2 and APP02 in tables):
-                found, no_match, notes = self.store.main_table(
-                    t, norm, whole_table=t.removeprefix(MAIN) in whole
-                )
-                hits += found
-                result.no_match += no_match
-                result.notes += notes
+        full = result.normalized_query
         seen: set[str] = set()
-        for h in hits:
-            if h.record_id not in seen:
+        by_place: dict[str, list[StructuredHit]] = {}
+        for ds in decision.tables:
+            explicit = ds.removeprefix(MAIN) in whole or any(
+                APPENDIX_TABLES.get(r.split("-")[0]) == ds for r in whole if r.startswith("پ")
+            )
+            plan = self.planner.plan(ds, norm, explicit_reference=explicit, full_norm=full)
+            hits, no_match, notes = self.executor.run(plan)
+            result.plans.append(plan.to_dict())
+            if hits:
+                result.enumerations += [{"table": ds, **asdict(e)} for e in plan.enumerations]
+            result.constraints += plan.ledger()
+            result.no_match += no_match
+            result.notes += [n for n in notes if n not in result.notes]
+            if plan.computation:
+                note = (
+                    "interpolation, extrapolation, averages, totals and ratios are never "
+                    "performed: only printed values exist"
+                )
+                if note not in result.notes:
+                    result.notes.append(note)
+            for h in hits:
+                if h.record_id in seen:
+                    continue
                 seen.add(h.record_id)
                 result.structured.append(h)
+                entity = next(
+                    (e for e in plan.entities if e.kind == "place" and e.status == "resolved"), None
+                )
+                if entity is not None:
+                    by_place.setdefault(entity.text, []).append(h)
+        for place, group in by_place.items():
+            codes = {str(h.values["climate_class"]["code"]) for h in group}
+            if len(codes) > 1:
+                issues = sorted({i for h in group for i in h.source_issues})
+                result.conflicts.append(
+                    Conflict(
+                        issue_id=issues[0] if issues else None,
+                        field="climate_class",
+                        hits=[h.record_id for h in group],
+                        values=sorted(codes),
+                        note=f"curated sources disagree for «{place}»; both are returned, "
+                        "neither is preferred",
+                    )
+                )
+            for p, stations in self.store.ambiguous_places(place.split(", ")).items():
+                note = f"«{p}» resolves to several stations: {stations}"
+                if note not in result.notes:
+                    result.notes.append(note)

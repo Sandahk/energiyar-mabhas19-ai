@@ -1,4 +1,4 @@
-"""Structured safety after Final-2: no wrong regulatory value, every constraint accounted for.
+"""Structured safety: no wrong regulatory value, every constraint accounted for.
 
 Tests state generic properties against curated labels with their own wording; they do not
 encode benchmark questions. The last tests run every development set (dev, heldout, final,
@@ -31,7 +31,7 @@ from mabhas19.retrieval.models import RetrievalResult, StructuredHit
 from mabhas19.retrieval.structured import StructuredStore, r_value_in
 from mabhas19.text.normalize import normalize_for_search as norm
 
-SETS = ("dev", "heldout", "final", "final2")
+SETS = ("dev", "heldout", "final", "final2", "final3")
 
 
 @cache
@@ -128,8 +128,10 @@ def test_decimals_are_never_truncated(value: str) -> None:
     assert "4.5" in decimal_text(norm(f"نسبت {value}"))
     r = _run(f"اگر نسبت R برابر {value} باشد طبق جدول ۱۹-۳-۳ چه رده ای دارد؟")
     assert r.structured == []
-    assert [n.reason for n in r.no_match] == ["no_applicable_category"]
-    assert _states(r)["r_value"] == "invalid"
+    assert [(n.reason, n.outcome) for n in r.no_match] == [
+        ("no_applicable_category", "no_printed_category")
+    ]
+    assert _states(r)["r_value"] == "applied"  # interpreted exactly; no printed range holds it
 
 
 def test_product_marking_is_not_an_r_value() -> None:
@@ -140,16 +142,16 @@ def test_product_marking_is_not_an_r_value() -> None:
 @pytest.mark.parametrize("rating", ["A+", "A++", "A+++"])
 def test_unprinted_rating_is_a_typed_no_match(rating: str) -> None:
     assert ratings_requested(norm(f"رده {rating}")) == [rating]
-    r = _run(f"سقف شدت مصرف انرژی رده {rating} برای ساختمان اداری در اقلیم 2B چقدر است؟")
+    r = _run(f"سقف شدت مصرف انرژی رده {rating} برای ساختمان اداری عمومی در اقلیم 2B چقدر است؟")
     assert r.structured == []  # never dropped and broadened to every rating
     assert [n.reason for n in r.no_match] == ["rating_not_in_table"]
     assert _states(r)["rating"] == "invalid"
 
 
 def test_rating_referred_to_but_not_stated_returns_no_rows() -> None:
-    r = _run("سقف شدت مصرف انرژی آن رده برای ساختمان اداری در اقلیم 2B چقدر است؟")
+    r = _run("سقف شدت مصرف انرژی آن رده برای ساختمان اداری عمومی در اقلیم 2B چقدر است؟")
     assert r.structured == []
-    assert "missing_dimension" in [n.reason for n in r.no_match]
+    assert "unresolved_constraint" in [n.outcome for n in r.no_match]
 
 
 # ------------------------------------------------- stage 1: computed values and row naming
@@ -166,13 +168,14 @@ def test_computed_value_is_unsupported_calculation(word: str) -> None:
 def test_unnamed_row_never_lists_a_column() -> None:
     r = _run("حداقل مقاومت حرارتی در اقلیم 3A چقدر است؟")
     assert r.structured == []
-    assert "no_matching_row" in [n.reason for n in r.no_match]
+    assert "missing_required_dimension" in [n.outcome for n in r.no_match]
 
 
-def test_material_rows_without_stated_density_are_flagged() -> None:
+def test_material_rows_without_stated_density_fail_closed() -> None:
+    # oak is printed for two densities with different λ: one answer is implied, none is assumed
     r = _run("ضریب هدایت حرارتی چوب بلوط در پیوست ۷ چقدر است؟")
-    assert len(r.structured) > 1
-    assert any(n.startswith("density not stated") for n in r.notes)
+    assert r.structured == []
+    assert "missing_required_dimension" in [n.outcome for n in r.no_match]
 
 
 # ------------------------------------------------- stage 2: unverified entities
@@ -335,3 +338,24 @@ def test_every_constraint_ends_in_exactly_one_state(name: str) -> None:
                         h.record_id,
                         entry,
                     )
+
+
+def test_structured_schemas_file_is_a_fresh_build() -> None:
+    import yaml  # noqa: PLC0415
+
+    from mabhas19.retrieval.schema import SCHEMA_PATH, schemas_document  # noqa: PLC0415
+
+    on_disk = yaml.safe_load(SCHEMA_PATH.read_text(encoding="utf-8"))
+    fresh = yaml.safe_load(yaml.safe_dump(schemas_document(_store().schemas), allow_unicode=True))
+    assert on_disk == fresh
+
+
+def test_every_dataset_declares_its_lookup_directions() -> None:
+    for ds, schema in _store().schemas.items():
+        ops = {d.operation for d in schema.directions}
+        assert {"direct", "reverse", "whole_table"} <= ops, ds
+        assert schema.computations == [], ds  # no calculation is permitted anywhere
+        assert all(
+            d.kind in ("category", "interval", "label", "entity", "identity")
+            for d in schema.dimensions
+        )

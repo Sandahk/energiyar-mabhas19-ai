@@ -68,6 +68,7 @@ class CaseResult:
     structured_query: str | None = None
     prose_query: str | None = None
     no_match: list[str] = field(default_factory=list)
+    scope_class: str | None = None  # scope classification recorded by the router (v3.1)
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -178,6 +179,7 @@ def evaluate(
         res.structured_query = r.route.structured_query
         res.prose_query = r.route.prose_query
         res.no_match = [f"{n.dataset}: {n.reason}" for n in r.no_match]
+        res.scope_class = (r.route.signals.get("scope") or {}).get("class")
         if ev.get("blocks") or ev.get("sections"):
             res.has_prose_evidence = True
             res.prose_rank = _prose_rank(r.prose, ev, chunk_sections)
@@ -227,6 +229,8 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
             Counter(f"{r.expected_route}->{r.route}" for r in results if not r.route_ok)
         ),
         "route_matrix": route_matrix(results),
+        "scope_classes": dict(Counter(str(r.scope_class) for r in results)),
+        "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),
         "unsupported_original": unsupported_scores_strict(results),
         "record_exact": _rate([r.record_exact for r in results]),
@@ -261,6 +265,15 @@ def route_matrix(results: list[CaseResult]) -> dict[str, dict[str, int]]:
         e: {a: sum(1 for r in results if r.expected_route == e and r.route == a) for a in ROUTES}
         for e in ROUTES
     }
+
+
+def scope_confusion(results: list[CaseResult]) -> dict[str, dict[str, int]]:
+    """Expected route (rows) x recorded scope class (columns)."""
+    out: dict[str, dict[str, int]] = {}
+    for r in results:
+        row = out.setdefault(r.expected_route, {})
+        row[str(r.scope_class)] = row.get(str(r.scope_class), 0) + 1
+    return out
 
 
 def unsupported_scores(results: list[CaseResult]) -> dict[str, Any]:

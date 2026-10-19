@@ -30,7 +30,12 @@ def _jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
 
 
-def sample_anchors(curated: Path, seed: int, exclude: set[str] | None = None) -> dict[str, Any]:
+def sample_anchors(
+    curated: Path,
+    seed: int,
+    exclude: set[str] | None = None,
+    quotas: dict[str, int] | None = None,
+) -> dict[str, Any]:
     """Random anchors per category; ``exclude`` holds evidence IDs already used by earlier sets
     (sections, records), so the final set does not reuse them."""
     rng = random.Random(seed)
@@ -77,5 +82,13 @@ def sample_anchors(curated: Path, seed: int, exclude: set[str] | None = None) ->
             for d in sorted((t / "m19-ed5-1404-main").glob("table-*"))
         ],
     }
-    anchors = {k: rng.sample(pool, min(QUOTAS[k], len(pool))) for k, pool in pools.items()}
-    return {"seed": seed, "quotas": QUOTAS, "excluded": len(exclude), "anchors": anchors}
+    quotas = quotas or QUOTAS
+    anchors = {k: rng.sample(pool, min(quotas[k], len(pool))) for k, pool in pools.items()}
+    pool_sizes = {k: len(pool) for k, pool in pools.items()}
+    return {
+        "seed": seed,
+        "quotas": quotas,
+        "pool_sizes": pool_sizes,
+        "excluded": len(exclude),
+        "anchors": anchors,
+    }

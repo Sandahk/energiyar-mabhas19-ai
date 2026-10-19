@@ -53,6 +53,7 @@ GROUPS = {
     "section_lookup": "section_clause",
     "mixed": "mixed_prose",
     "spelling_variant": "spelling",
+    "conceptual_colloquial": "conceptual",
 }
 # fields that must not depend on the prose ranking
 INVARIANT = (
@@ -197,6 +198,8 @@ def compare(
             "end_to_end": m["prose_end_to_end"],
             "route_accuracy": m["route_accuracy"],
             "structured_exact_original": m["structured_exact_original"],
+            "scope_classes": m["scope_classes"],
+            "scope_confusion": m["scope_confusion"],
             "structured_no_match_original": _no_match_rate(results, by_id),
             "record_exact": m["record_exact"],
             "typed_no_match": m["typed_no_match"],
@@ -307,11 +310,13 @@ def _latency(fn: Any, inputs: list[str]) -> dict[str, float]:
     }
 
 
-def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
+def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR0915
     from mabhas19.providers.local_embeddings import SentenceTransformerEmbedder  # noqa: PLC0415
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--set", dest="sets", action="append", choices=[*SET_NAMES, "final"])
+    parser.add_argument(
+        "--set", dest="sets", action="append", choices=[*SET_NAMES, "final", "final2"]
+    )
     parser.add_argument("--threads", type=int, default=8)
     args = parser.parse_args(argv)
     set_names: list[str] = args.sets or list(SET_NAMES)
@@ -321,13 +326,20 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
     chunks = build_chunks(blocks, DOC_ID)
     store = StructuredStore(CURATED_DIR)
     sets: dict[str, list[dict[str, Any]]] = {}
+    if "final2" in set_names:
+        from mabhas19.retrieval.candidate import check_manifest  # noqa: PLC0415
+
+        manifest_drift = check_manifest()
+        if manifest_drift:
+            print("candidate differs from final2_candidate.yaml:\n  " + "\n  ".join(manifest_drift))
+            return 2
     problems = check_candidate(candidate, None, chunks)
     if problems:
         print("configuration differs from the frozen candidate:\n  " + "\n  ".join(problems))
         return 2
     for s in set_names:
         path, fp = SETS / f"{s}.yaml", SETS / f"{s}.sha256"
-        if s == "final" and not fp.is_file():
+        if s in ("final", "final2") and not fp.is_file():
             print("the final set must be frozen (--freeze) before it is run", file=sys.stderr)
             return 2
         if fp.is_file() and fp.read_text(encoding="utf-8").split()[0] != sha256_file(path):

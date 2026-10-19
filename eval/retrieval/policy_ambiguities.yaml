@@ -1,0 +1,114 @@
+# Retrieval policy ambiguities (recorded 2026-10-19, after routing v4, commit 4d822b0).
+#
+# These are policy ambiguities, not retrieval defects. They must not be changed merely to
+# improve evaluation metrics. Any behaviour change requires an explicit policy decision and an
+# update to future evaluation specifications. Historical benchmark expectations (dev, heldout,
+# final, final2, final3) remain unchanged.
+#
+# This document is read by people writing evaluation specifications. No runtime code reads it;
+# it does not change retrieval behaviour.
+schema_version: 1
+recorded_on: '2026-10-19'
+recorded_at_commit: 4d822b0
+status_values:
+  open: the policy is undecided; future sets should accept every listed reasonable route
+  accepted_current_behavior: current behaviour is the adopted policy; future sets follow it
+  needs_product_decision: a product owner must choose before future sets fix one expectation
+items:
+  - id: PA-001
+    topic: Unknown entity without any other stated constraint
+    current_behavior: >-
+      A request for a named table output about an entity no curated record prints, with no other
+      stated constraint («رده اقلیمی شهر لندن», «دزفول در کدام رده اقلیمی …»), routes
+      unsupported (scope class unknown_entity) when the unresolved word is not Mabhas 19
+      vocabulary; a typed unknown_entity no-match is attached per candidate table. With a stated
+      constraint (climate class, rating, number) it routes structured with the same typed
+      no-match.
+    alternative_behavior: >-
+      Route every such request structured and answer it with the typed unknown_entity no-match
+      («the table does not print X»).
+    affected_cases: [F115, K082, H100, H101, H107, G146, G147, G151]
+    source_basis: >-
+      Mabhas 19 lists the places, occupancies and materials it covers but says nothing about
+      questions on unlisted ones; «not covered» and «the table has no row for it» are both
+      faithful descriptions. Historical labels disagree (H100/H101/H107 unsupported; F115
+      structured; G146/G147/G151 accept both).
+    status: needs_product_decision
+    future_evaluation_guidance: >-
+      Accept both routes; score the typed unknown_entity outcome and zero returned records, not
+      the route label. K082 additionally depends on an abbreviation (HDPE ~ «(HD)») that is
+      deliberately not inferred; do not expect it to resolve.
+    acceptable_routes: [unsupported, structured]
+  - id: PA-002
+    topic: Unprinted row named with a word Mabhas 19 uses elsewhere
+    current_behavior: >-
+      When the planner's unresolved row word is Mabhas 19 vocabulary («آشپزخانه» in «آشپزخانه
+      صنعتی رستوران» for table 19-5-7) and no other constraint is stated, the question is treated
+      as conceptual and routed to prose.
+    alternative_behavior: >-
+      Treat a named table output plus an unprinted (but familiar) row as a structured typed
+      unknown_entity no-match.
+    affected_cases: [F124]
+    source_basis: >-
+      The word is printed in Mabhas 19 in another context, so the question may concern prose
+      guidance as much as an unprinted table row; the source does not say which.
+    status: open
+    future_evaluation_guidance: >-
+      Accept prose or structured; when structured, require a typed no-match and no records.
+    acceptable_routes: [prose, structured]
+  - id: PA-003
+    topic: Explanation form or value claim inside a question that names a table explicitly
+    current_behavior: >-
+      An explanation form («منظور از ردیف …») keeps a prose half even when the sentence names a
+      table (mixed); a value claim checked against an explicitly named table («طبق جدول ۱۹-۵-۳ …
+      ۰٫۷ ـه دیگه؟») routes structured.
+    alternative_behavior: >-
+      Treat the explicit table reference as decisive (structured only), or treat a claim
+      («… دیگه؟») as a request for confirmation from prose (prose).
+    affected_cases: [F130, K274]
+    source_basis: >-
+      The meaning of a printed row label is partly in the table (the printed operator) and partly
+      in the text; a claimed value can be confirmed from the table or explained from the text.
+      Both answers are grounded in the source.
+    status: open
+    future_evaluation_guidance: >-
+      Write such questions with acceptable routes covering the table and the explanation;
+      score the structured evidence and the prose evidence separately.
+    acceptable_routes: [structured, mixed, prose]
+  - id: PA-004
+    topic: External-domain intent mixed with Mabhas 19 vocabulary
+    current_behavior: >-
+      When an external-domain term and Mabhas 19 concept words co-occur, in-scope evidence
+      outranks a weaker external match (tariff + «برق خانگی», cleaning + «شیشه پنجره»,
+      damages + «نشت»): the question routes prose. A single-word external term matched by an
+      everyday idiom («صداش می‌کنن» ~ «صدا») can still make a conceptual question unsupported.
+    alternative_behavior: >-
+      Weigh the request intent (price, cleaning, legal claim) over shared vocabulary and route
+      unsupported; or ignore single-word external matches inside idioms.
+    affected_cases: [F136, K254, G185, K053]
+    source_basis: >-
+      Mabhas 19 regulates electricity use, glazing and air leakage but not tariffs, cleaning or
+      damages; the source cannot tell whether a mixed question wants the regulated aspect.
+    status: open
+    future_evaluation_guidance: >-
+      Accept prose and unsupported for mixed-intent questions; never build unsupported cases by
+      copying taxonomy vocabulary.
+    acceptable_routes: [prose, unsupported]
+  - id: PA-005
+    topic: Out-of-scope questions phrased with words Mabhas 19 prints
+    current_behavior: >-
+      Taxonomy terms printed anywhere in the curated corpus («آسانسور», «باتری», «خسارت») are not
+      added to the external taxonomy, and no clitic morphology is applied to external terms
+      («گوشیم»); such questions route prose.
+    alternative_behavior: >-
+      Allow printed words as external terms when combined with an intent qualifier (lift
+      necessity, phone charging), or add first-person possessive morphology to external matching.
+    affected_cases: [G176, K256]
+    source_basis: >-
+      The words are Mabhas 19 vocabulary in an energy context (lift lighting, battery storage);
+      the source gives no rule for when the same word signals another regulation.
+    status: accepted_current_behavior
+    future_evaluation_guidance: >-
+      Accept prose and unsupported; do not expect out-of-scope detection from words the
+      regulation itself prints.
+    acceptable_routes: [prose, unsupported]

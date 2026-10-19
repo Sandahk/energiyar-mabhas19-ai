@@ -46,7 +46,7 @@ from mabhas19.retrieval.vector import (
 
 MODES: tuple[Mode, ...] = ("lexical", "vector", "hybrid")
 SET_NAMES = ("dev", "heldout")
-FINAL_SETS = ("final", "final2", "final3")
+FINAL_SETS = ("final", "final2", "final3", "final4")
 CANDIDATE = SETS / "hybrid_candidate.yaml"
 PROBES = ("H022", "H073", "H079", "H112", "R015", "R052", "R053", "H070")
 GROUPS = {
@@ -338,7 +338,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
     chunks = build_chunks(blocks, DOC_ID)
     store = StructuredStore(CURATED_DIR)
     sets: dict[str, list[dict[str, Any]]] = {}
-    for guarded in ("final2", "final3"):
+    for guarded in ("final2", "final3", "final4"):
         if guarded not in set_names:
             continue
         from mabhas19.retrieval.candidate import MANIFESTS, check_manifest  # noqa: PLC0415

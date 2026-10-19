@@ -25,7 +25,14 @@ Metrics:
   in for one) and *wrong extra rows* (every required record is returned as well);
 * **silently dropped constraints**: when records are returned, a constraint stated in the
   query that never reached the lookup's constraint ledger, or an applied constraint that a
-  returned record contradicts.
+  returned record contradicts;
+* optional, only where a case states them (corrected-3, Final-4 onward):
+
+  - **typed outcome** (``no_match_outcomes``: acceptable plan outcome codes): no record and a
+    no-match of an allowed code for an expected table; **calculation refusal** is the subset
+    whose allowed codes include ``unsupported_calculation``;
+  - **enumeration** (``enumeration: {dimension}``): records exact and the result names an
+    explicit-request enumeration of that dimension.
 
 The original (v1/v2 and first final benchmark) scorer is kept as ``structured_exact_original``
 and ``unsupported_original`` so historical numbers stay reproducible: it scored any case with
@@ -36,6 +43,7 @@ unsupported scoring.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -82,6 +90,10 @@ class CaseResult:
     wrong_values: list[str] = field(default_factory=list)  # records the case does not allow
     wrong_extra: list[str] = field(default_factory=list)  # ...returned beside the right answer
     dropped_constraints: list[str] = field(default_factory=list)
+    no_match_outcomes: list[str] = field(default_factory=list)  # plan outcome per no-match
+    outcome_ok: bool | None = None  # typed outcome code allowed (cases with no_match_outcomes)
+    calculation_refusal: bool | None = None  # ...for cases expecting unsupported_calculation
+    enumeration_ok: bool | None = None  # explicit enumeration (cases with ``enumeration``)
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -110,6 +122,55 @@ def check_evidence_ids(
             if unknown:
                 problems.append(f"{c['id']}: unknown {key} {unknown}")
     return problems
+
+
+def check_expectations(
+    cases: list[dict[str, Any]],
+    issues: set[str],
+    enumerable: dict[str, set[str]],
+    outcomes: Sequence[str],
+) -> list[str]:
+    """Consistency of route, no-match, enumeration, calculation and issue expectations:
+    routes are known, ``no_records`` excludes records, outcome codes are plan outcomes, an
+    enumeration names an enumerable dimension of an expected table, issue/conflict IDs exist."""
+    problems = []
+    for c in cases:
+        ev = c.get("evidence") or {}
+        routes = [c.get("expected_route"), *c.get("acceptable_routes", [])]
+        if any(r not in ROUTES for r in routes):
+            problems.append(f"{c['id']}: unknown route in {routes}")
+        if ev.get("no_records") and ev.get("records"):
+            problems.append(f"{c['id']}: no_records together with records")
+        bad = [o for o in ev.get("no_match_outcomes", []) if o not in outcomes]
+        if bad:
+            problems.append(f"{c['id']}: unknown no-match outcome {bad}")
+        if ev.get("no_match_outcomes") and not ev.get("no_records"):
+            problems.append(f"{c['id']}: no_match_outcomes without no_records")
+        enum = ev.get("enumeration")
+        if enum:
+            dims = set().union(*(enumerable.get(t, set()) for t in _record_tables(ev)))
+            if enum.get("dimension") not in dims:
+                problems.append(f"{c['id']}: enumeration {enum} is not enumerable for {dims}")
+        unknown = [i for i in [*ev.get("source_issues", []), ev.get("conflict")] if i]
+        unknown = [i for i in unknown if i not in issues]
+        if unknown:
+            problems.append(f"{c['id']}: unknown source issues {unknown}")
+    return problems
+
+
+def _record_tables(ev: dict[str, Any]) -> set[str]:
+    """Datasets of a case's expected records (and named tables)."""
+    out = set(ev.get("tables", []))
+    for rid in ev.get("records", []):
+        if rid.startswith("app02-"):
+            out.add("m19-ed5-1404-app02.city_climate_classes")
+        elif rid.startswith("app03-"):
+            out.add("m19-ed5-1404-app03.max_energy_use_intensity")
+        elif rid.startswith("app07-"):
+            out.add("m19-ed5-1404-app07.material_thermal_properties")
+        elif rid.startswith("main-t"):
+            out.add("m19-ed5-1404-main.t" + rid.removeprefix("main-t").rsplit("-", 1)[0])
+    return out
 
 
 def _prose_rank(
@@ -142,6 +203,24 @@ def _structured(r: RetrievalResult, ev: dict[str, Any], res: CaseResult) -> None
         table_level = {n.dataset for n in r.no_match} | {t.dataset for t in r.tables}
         res.table_match = hit_tables <= expected_tables and bool(
             (hit_tables | table_level) & expected_tables
+        )
+
+
+def _typed_outcomes(r: RetrievalResult, ev: dict[str, Any], res: CaseResult) -> None:
+    """Optional typed-outcome and enumeration expectations (scored only where stated)."""
+    allowed = set(ev.get("no_match_outcomes") or [])
+    if allowed:
+        tables = set(ev.get("tables", []))
+        res.outcome_ok = not r.structured and any(
+            n.outcome in allowed and (not tables or n.dataset in tables) for n in r.no_match
+        )
+        if "unsupported_calculation" in allowed:
+            res.calculation_refusal = res.outcome_ok
+    enum = ev.get("enumeration")
+    if enum:
+        res.enumeration_ok = bool(res.record_exact) and any(
+            e.get("dimension") == enum["dimension"] and e.get("basis") == "explicit_request"
+            for e in r.enumerations
         )
 
 
@@ -240,6 +319,7 @@ def evaluate(
         res.structured_query = r.route.structured_query
         res.prose_query = r.route.prose_query
         res.no_match = [f"{n.dataset}: {n.reason}" for n in r.no_match]
+        res.no_match_outcomes = [f"{n.dataset}: {n.outcome}" for n in r.no_match]
         res.scope_class = (r.route.signals.get("scope") or {}).get("class")
         if ev.get("blocks") or ev.get("sections"):
             res.has_prose_evidence = True
@@ -259,6 +339,7 @@ def evaluate(
             res.issues_ok = set(ev["source_issues"]) <= exposed
         if ev.get("conflict"):
             res.conflict_ok = any(x.issue_id == ev["conflict"] for x in r.conflicts)
+        _typed_outcomes(r, ev, res)
         results.append(res)
     return results, metrics(results)
 
@@ -313,6 +394,9 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         "structured_exact_original": _rate([r.structured_exact_original for r in results]),
         "source_issue_exposure": _rate([r.issues_ok for r in results]),
         "conflict_exposure": _rate([r.conflict_ok for r in results]),
+        "typed_outcome": _rate([r.outcome_ok for r in results]),
+        "calculation_refusal": _rate([r.calculation_refusal for r in results]),
+        "enumeration": _rate([r.enumeration_ok for r in results]),
         "by_category": {
             cat: {
                 "n": len(rs),

@@ -103,3 +103,29 @@ Dev, diagnostic, the original final set and Final-2 are all development data fro
 5. Safety is reported first: wrong regulatory values (hard requirement 0 — any nonzero value
    blocks generation), wrong extra rows, silently dropped constraints. Failures are reviewed by
    severity; nothing is fixed after the run.
+
+## 9. Final-4 (after routing v4)
+Dev, diagnostic, the original final set, Final-2 and Final-3 are all development data from now on.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final4 --write` writes
+   `final4_candidate.yaml`: the candidate commit (an ancestor of every later run; after it only
+   `final4.yaml` and `final4.sha256` may change), the §8 pins plus the query-plan (with its outcome
+   codes), numeric-parser and router versions, the structured-schema, scope-map, taxonomy and
+   policy-ambiguity fingerprints, evaluator `corrected-3`, and the safety invariants
+   (wrong regulatory values, wrong extra rows and silently dropped constraints all 0). Commit it.
+   `final2_candidate.yaml` and `final3_candidate.yaml` stay historical.
+2. Anchors: a new seed; exclude every evidence ID of all five earlier sets, plus adjacent
+   sections, blocks and records where the pool allows; report each shortfall explicitly.
+3. Authoring by a fresh agent that sees only the anchors, the curated sources (PDFs where needed)
+   and a self-contained brief (no code, router or planner logic, taxonomy, policy-ambiguity
+   record, earlier queries, failures or metrics); review by a separate fresh agent that never
+   tunes a case toward current behaviour. Cases may state, besides the §4 evidence keys,
+   `no_match_outcomes` (acceptable plan outcome codes for a `no_records` case) and
+   `enumeration: {dimension}` (an explicitly requested enumeration of printed alternatives).
+4. `--freeze` validates every evidence ID, record, typed no-match outcome, enumeration
+   dimension, calculation refusal, issue/conflict ID and acceptable route, then writes the
+   SHA-256; commit `final4.yaml` + `final4.sha256`; check the candidate manifest. Only then run
+   once: `python -m mabhas19.cli.embedding_experiment --set final4`.
+5. Report safety first (hard requirement 0 / 0 / 0; a nonzero wrong regulatory value blocks
+   generation), then structured, routing/scope and prose (BM25, vector, hybrid; intrinsic and
+   end-to-end). Failures are classified by severity; nothing is changed after the run.

@@ -24,10 +24,17 @@ from typing import Any
 from mabhas19.core.manifest import sha256_file
 from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
 from mabhas19.indexing.chunking import MAX_WORDS, build_chunks, chunk_stats
-from mabhas19.retrieval.eval import as_rows, check_evidence_ids, evaluate, load_cases
+from mabhas19.retrieval.eval import (
+    as_rows,
+    check_evidence_ids,
+    check_expectations,
+    evaluate,
+    load_cases,
+)
 from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.lexical import K1, B, save_chunks
 from mabhas19.retrieval.models import Chunk
+from mabhas19.retrieval.plan import OUTCOMES
 from mabhas19.retrieval.structured import StructuredStore
 
 DOC_ID = "m19-ed5-1404-main"
@@ -54,6 +61,11 @@ def _validate(
         records,
         set(store.main) | set(store.metas),
     )
+    enumerable = {
+        ds: {d.name for d in schema.dimensions if d.enumerable}
+        for ds, schema in store.schemas.items()
+    }
+    problems += check_expectations(cases, set(store.issues), enumerable, OUTCOMES)
     ids = [c["id"] for c in cases]
     if len(ids) != len(set(ids)):
         problems.append("duplicate case IDs")

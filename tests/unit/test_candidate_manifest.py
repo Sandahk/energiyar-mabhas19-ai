@@ -16,11 +16,26 @@ def test_live_candidate_pins_the_architecture() -> None:
     assert live["chunks"]["count"] == 420
     assert live["embedding"]["model_id"] == "intfloat/multilingual-e5-small"
     assert live["embedding"]["dimensions"] == 384
-    assert live["code"]["router_version"] == "v3.2"
+    assert live["code"]["router_version"] == "v4"
+    assert live["code"]["query_plan_version"] == "plan-1"
+    assert live["code"]["numeric_parser_version"] == "numeric-1"
+    assert live["code"]["entity_resolver_version"] == "modifiers-2"
     assert live["code"]["constraint_parser_version"] == "ledger-1"
-    assert live["evaluator"]["version"] == "corrected-2"
-    assert live["safety"] == {"wrong_regulatory_values_expected": 0}
-    assert "src/mabhas19/retrieval/constraints.py" in live["code"]["modules_sha256"]
+    assert live["evaluator"]["version"] == "corrected-3"
+    assert live["safety"] == {
+        "wrong_regulatory_values_expected": 0,
+        "wrong_extra_rows_expected": 0,
+        "dropped_constraints_expected": 0,
+    }
+    modules = live["code"]["modules_sha256"]
+    for m in ("constraints", "plan", "planner", "executor", "numeric", "schema"):
+        assert f"src/mabhas19/retrieval/{m}.py" in modules
+    assert set(live["scope"]) == {
+        "scope_map_sha256",
+        "external_domains_sha256",
+        "policy_ambiguities_sha256",
+    }
+    assert len(live["curated"]["structured_schemas_sha256"]) == 64
 
 
 def test_any_pinned_difference_is_reported(tmp_path: Path) -> None:
@@ -38,3 +53,12 @@ def test_any_pinned_difference_is_reported(tmp_path: Path) -> None:
 
 def test_missing_manifest_refuses(tmp_path: Path) -> None:
     assert check_manifest(tmp_path / "absent.yaml") == ["absent.yaml is missing"]
+
+
+def test_only_the_frozen_set_may_change_after_the_candidate_commit(tmp_path: Path) -> None:
+    live = live_candidate()
+    path = tmp_path / "final4_candidate.yaml"
+    root = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"  # git's empty tree is never an ancestor
+    doc = {"candidate_commit": root, "allowed_changes_after": [], "candidate": live}
+    path.write_text(yaml.safe_dump(doc), encoding="utf-8")
+    assert any("not an ancestor" in p for p in check_manifest(path))

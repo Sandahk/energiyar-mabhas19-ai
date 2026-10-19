@@ -1,0 +1,2467 @@
+# Final-3 retrieval test set (evidence only; no expected answers). Frozen before any run.
+schema_version: 1
+seed: 202610193
+anchors: data/retrieval/final3_anchors_202610193.yaml
+candidate_manifest: eval/retrieval/final3_candidate.yaml
+authoring: fresh isolated agent (anchors + curated/ + authoring brief only); independent fresh reviewer
+  (19 findings applied)
+cases:
+- id: K001
+  category: section_lookup
+  expected_route: prose
+  query: بند ۱۹-۷-۱-۳ (پردازش داده‌های گردآوری‌شده) چه قابلیت‌هایی رو از سامانه پایش انتظار داره؟
+  evidence:
+    blocks:
+    - main-p134-b008
+    - main-p134-b009
+    - main-p134-b010
+    - main-p134-b011
+    - main-p134-b012
+  anchor: section:19-7-1-3
+- id: K002
+  category: section_lookup
+  expected_route: prose
+  query: زیربخش «ارزیابی چرخه عمر ساختمان» در فصل کلیات (۱۹-۲-۳) جزئیاتش رو به کدوم پیوست ارجاع داده و
+    کی لازم‌الاجرا میشه؟
+  evidence:
+    blocks:
+    - main-p061-b008
+  anchor: section:19-2-3
+  notes: main-p061-b007 is excluded and the heading main-p061-b006 is adjacent; the only answering clause
+    main-p061-b008 is in adjacent_ids_avoid (no alternative).
+- id: K003
+  category: conceptual
+  expected_route: prose
+  query: حسگر حرارتی‌ای که به اینترنت یا شبکه داخلی ساختمان وصله و اطلاعاتش رو برای بقیه سیستم‌ها می‌فرسته،
+    از نظر مبحث ۱۹ چی حساب میشه و کجاها به کار میره؟
+  evidence:
+    blocks:
+    - main-p040-b003
+    - main-p040-b004
+    - main-p040-b005
+  anchor: section:19-1-91
+- id: K004
+  category: conceptual_colloquial
+  expected_route: prose
+  query: این دستگاه کوچیکا که باهاش میزان نور اتاق رو می‌سنجن چیه و عددی که نشون میده به چه واحدیه؟
+  evidence:
+    blocks:
+    - main-p039-b007
+    - main-p039-b008
+  anchor: section:19-1-89
+- id: K005
+  category: conceptual_colloquial
+  expected_route: prose
+  query: شیشه دودی که برای پنجره می‌ذارن، اون درصدی که میگن چقدر از نور رو رد میکنه اسمش چیه؟
+  evidence:
+    blocks:
+    - main-p042-b011
+    - main-p042-b012
+  anchor: section:19-1-102
+- id: K006
+  category: section_lookup
+  expected_route: prose
+  query: فصل «دسته‌بندی‌ها و الگوی مصرف انرژی در ساختمان‌ها» (۱۹-۳) به چه موضوعاتی می‌پردازه؟
+  evidence:
+    blocks:
+    - main-p065-b002
+    - main-p065-b003
+  anchor: section:19-3
+- id: K007
+  category: conceptual
+  expected_route: prose
+  query: اینکه برق و گرما رو با هم از یک سوخت تو ساختمون تولید کنیم چه فایده‌ای داره؟ مبحث چطور توصیفش
+    کرده؟
+  evidence:
+    blocks:
+    - main-p036-b009
+  anchor: section:19-1-78
+- id: K008
+  category: conceptual
+  expected_route: prose
+  query: منظور مبحث ۱۹ از مدل‌های محاسباتی شبیه مغز انسان که از داده یاد می‌گیرن و پیش‌بینی می‌کنن چیه؟
+  evidence:
+    blocks:
+    - main-p040-b009
+  anchor: section:19-1-93
+- id: K009
+  category: conceptual_colloquial
+  expected_route: prose
+  query: یه ویلا دارم که اصلاً به برق شهر وصل نیست و با پنل خورشیدی و باتری می‌چرخه، به این تو مبحث چی
+    میگن؟ میتونم برق اضافه‌ام رو بدم به شبکه؟
+  evidence:
+    blocks:
+    - main-p050-b010
+  anchor: section:19-1-140
+- id: K010
+  category: conceptual
+  expected_route: prose
+  query: سیستم‌هایی که دما، رطوبت و کیفیت هوای داخل ساختمون رو کنترل می‌کنن طبق تعریف مبحث شامل چه بخش‌هایی
+    میشن؟
+  evidence:
+    blocks:
+    - main-p027-b006
+    - main-p027-b007
+  anchor: section:19-1-39
+- id: K011
+  category: conceptual_colloquial
+  expected_route: prose
+  query: اوستا میگه این شیر فقط یه ورودی و یه خروجی داره و آب رو یا باز می‌کنه یا می‌بنده، تو مبحث به
+    این شیر چی میگن؟
+  evidence:
+    blocks:
+    - main-p041-b010
+    - main-p041-b011
+  anchor: section:19-1-97
+- id: K012
+  category: conceptual
+  expected_route: prose
+  query: سیستم هوشمندی که چراغ‌های کل ساختمون رو خودکار و منطقه‌ای کنترل می‌کنه تا برق کمتری بره، دقیقاً
+    چه کارهایی انجام میده؟
+  evidence:
+    blocks:
+    - main-p038-b007
+  anchor: section:19-1-85
+- id: K013
+  category: section_lookup
+  expected_route: prose
+  query: تعریف «نسبت فرونشستگی پنجره» (Window Projection Factor) در فصل تعاریف مبحث ۱۹ چیه؟
+  evidence:
+    blocks:
+    - main-p052-b003
+    - main-p052-b004
+  anchor: section:19-1-147
+- id: K014
+  category: conceptual
+  expected_route: prose
+  query: اون سامانه کشوری که قراره مصرف انرژی همه ساختمون‌های مسکونی و غیرمسکونی رو جمع کنه و تحلیل کنه
+    چیه و به چه دردی می‌خوره؟
+  evidence:
+    blocks:
+    - main-p039-b004
+    - main-p039-b005
+  anchor: section:19-1-88
+- id: K015
+  category: conceptual_colloquial
+  expected_route: prose
+  query: وقتی میگن پوسته ساختمون، یعنی فقط نمای بیرونی؟ یا کف و سقف و پنجره‌ها هم جزوشه؟
+  evidence:
+    blocks:
+    - main-p025-b012
+  anchor: section:19-1-31
+- id: K016
+  category: conceptual_colloquial
+  expected_route: prose
+  query: تو اداره وقتی همه رفتن خونه، کولر رو تا چند درجه میشه گذاشت که بیخودی برق نخوره؟
+  evidence:
+    blocks:
+    - main-p029-b010
+    - main-p103-b006
+  anchor: section:19-1-50
+  notes: main-p103-b006 (chapter-5 clause, 29 °C) is in adjacent_ids_avoid but equally direct; included
+    for completeness.
+- id: K017
+  category: conceptual
+  expected_route: prose
+  query: روشی که اثرات زیست‌محیطی یه ساختمون رو از تولید مصالح تا تخریب و بازیافتش بررسی می‌کنه چیه و
+    دنبال چیه؟
+  evidence:
+    blocks:
+    - main-p019-b004
+  anchor: section:19-1-1
+- id: K018
+  category: conceptual_colloquial
+  expected_route: prose
+  query: از لای درز پنجره‌ها و دیوار باد میاد تو خونه، جلوگیری از این تو مبحث ۱۹ اسمش چیه؟
+  evidence:
+    blocks:
+    - main-p052-b010
+  anchor: section:19-1-150
+- id: K019
+  category: section_lookup
+  expected_route: prose
+  query: طبق ۱۹-۶-۵ (تأسیسات مکانیکی در روش شبیه‌سازی)، میشه تأسیسات رو ساده مدل کرد؟ اگه تجهیزات نصب‌شده
+    با شبیه‌سازی فرق کنه چی میشه؟
+  evidence:
+    blocks:
+    - main-p125-b008
+    - main-p125-b009
+    - main-p126-b003
+  anchor: section:19-6-5
+- id: K020
+  category: conceptual
+  expected_route: prose
+  query: شاخصی که نیاز سالانه یه منطقه به خنک‌کردن ساختمون رو نشون میده با چه دمای مبنایی حساب میشه و
+    چطوری جمع زده میشه؟
+  evidence:
+    blocks:
+    - main-p033-b006
+    - main-p033-b007
+  anchor: section:19-1-65
+- id: K021
+  category: conceptual
+  expected_route: prose
+  query: وقتی از نوع استفاده یه ساختمون صحبت میشه، مثلاً سکونت یا آموزش یا درمان، مبحث دقیقاً چه چیزی
+    رو مد نظر داره؟
+  evidence:
+    blocks:
+    - main-p046-b006
+  anchor: section:19-1-119
+- id: K022
+  category: conceptual
+  expected_route: prose
+  query: دستگاه برق بی‌وقفه‌ای که به‌جای UPS استاتیک مرکزی برای تغذیه مرکزی استفاده میشه چه نوعیه؟
+  evidence:
+    blocks:
+    - main-p031-b009
+  anchor: section:19-1-58
+- id: K023
+  category: conceptual
+  expected_route: prose
+  query: سقف مجاز شدت مصرف انرژی برای کاربری‌ها و اقلیم‌های مختلف با چه واحدی بیان شده و عددهای رده‌ها
+    کجا اومده؟
+  evidence:
+    blocks:
+    - main-p020-b004
+    - main-p020-b005
+  anchor: section:19-1-4
+- id: K024
+  category: section_lookup
+  expected_route: prose
+  query: طبق بند ۱۹-۸-۳-۳، بعد از اجرای راهکارهای بهینه‌سازی تو ساختمون موجود چه کاری الزامیه؟
+  evidence:
+    blocks:
+    - main-p144-b008
+    - main-p144-b009
+    - main-p144-b010
+  anchor: section:19-8-3-3
+- id: K025
+  category: section_lookup
+  expected_route: prose
+  query: زیربخش «گزارش شبیه‌سازی و پروفیل مصرف حامل‌های انرژی» چه مواردی رو در گزارش شبیه‌سازی الزامی
+    کرده؟
+  evidence:
+    blocks:
+    - main-p127-b004
+    - main-p127-b005
+    - main-p127-b006
+    - main-p127-b007
+    - main-p127-b008
+    - main-p127-b009
+    - main-p127-b010
+    - main-p127-b011
+    - main-p127-b012
+    - main-p128-b003
+    - main-p128-b004
+    - main-p128-b005
+  anchor: section:19-6-9
+- id: K026
+  category: conceptual
+  expected_route: prose
+  query: تبدیل اطلاعات به شکلی که بدون کلید نشه خوندش، تو مبحث ۱۹ چطور توضیح داده شده؟
+  evidence:
+    blocks:
+    - main-p033-b004
+  anchor: section:19-1-64
+- id: K027
+  category: conceptual_colloquial
+  expected_route: prose
+  query: کنتور آب سردی که قراره تو ساختمون نصب کنیم باید خودش بفهمه لوله ترکیده یا نشتی داره؟
+  evidence:
+    blocks:
+    - main-p048-b004
+  anchor: section:19-1-128
+- id: K028
+  category: conceptual
+  expected_route: prose
+  query: به کل انرژی‌ای که صرف استخراج، تولید، حمل و نصب یک مصالح ساختمانی میشه چی میگن؟
+  evidence:
+    blocks:
+    - main-p020-b012
+    - main-p020-b013
+  anchor: section:19-1-8
+- id: K029
+  category: conceptual
+  expected_route: prose
+  query: وقتی چند تا هدف رو هم‌زمان بهینه می‌کنیم و هیچ جوابی همه رو با هم به بهترین حالت نمی‌رسونه، اسم
+    این فرایند چیه؟
+  evidence:
+    blocks:
+    - main-p024-b009
+    - main-p024-b010
+  anchor: section:19-1-25
+- id: K030
+  category: section_lookup
+  expected_route: prose
+  query: دامنه مطالب مبحث نوزدهم (بند ۱۹-۲-۱) شامل چه موضوعاتی میشه؟
+  evidence:
+    blocks:
+    - main-p055-b003
+    - main-p055-b004
+    - main-p055-b005
+    - main-p055-b006
+    - main-p055-b007
+    - main-p055-b008
+    - main-p055-b009
+    - main-p055-b010
+    - main-p055-b011
+    - main-p055-b012
+    - main-p055-b013
+  anchor: section:19-2-1
+- id: K031
+  category: conceptual
+  expected_route: prose
+  query: مقاومت حرارتی یک دیوار یا مصالح دقیقاً چه چیزی رو نشون میده و با چه واحدی اندازه‌گیری میشه؟
+  evidence:
+    blocks:
+    - main-p051-b004
+  anchor: block:main-p051-b004
+- id: K032
+  category: conceptual
+  expected_route: prose
+  query: اگه یه ساختمون هم خط تولید کارخونه داشته باشه هم بخش اداری، برای تعیین رده انرژی بخش اداری چه
+    کاری لازمه؟
+  evidence:
+    blocks:
+    - main-p034-b009
+  anchor: block:main-p034-b009
+- id: K033
+  category: uncertain_conceptual
+  expected_route: prose
+  query: دستگاهی که گرمای هوای در حال خروج از دودکش و هواکش رو می‌گیره و دوباره به ساختمون برمی‌گردونه
+    چی حساب میشه؟
+  evidence:
+    blocks:
+    - main-p035-b008
+  anchor: block:main-p035-b008
+- id: K034
+  category: conceptual
+  expected_route: prose
+  query: سیستمی که مصرف برق و گاز و گرمایش و سرمایش ساختمون رو اندازه می‌گیره و تحلیل می‌کنه از چه ابزارهایی
+    استفاده می‌کنه؟
+  evidence:
+    blocks:
+    - main-p036-b005
+  anchor: block:main-p036-b005
+- id: K035
+  category: uncertain_conceptual
+  expected_route: prose
+  query: اون جعبه‌هایی که تو کانال کولر مرکزی هست و مقدار باد هر اتاق رو کم و زیاد می‌کنه چیه؟
+  evidence:
+    blocks:
+    - main-p028-b008
+  anchor: block:main-p028-b008
+- id: K036
+  category: uncertain_conceptual
+  expected_route: prose
+  query: یه سیستمی هست که وقتی آفتاب میاد تو اتاق خودش چراغ‌ها رو کم‌نور می‌کنه، این چطوری کار می‌کنه؟
+  evidence:
+    blocks:
+    - main-p035-b010
+  anchor: block:main-p035-b010
+- id: K037
+  category: conceptual
+  expected_route: prose
+  query: کربنی که در مرحله ساختِ ساختمون، از استخراج مواد اولیه تا نصب اجزا، منتشر میشه شامل چه فرایندهاییه؟
+  evidence:
+    blocks:
+    - main-p046-b012
+  anchor: block:main-p046-b012
+- id: K038
+  category: conceptual
+  expected_route: prose
+  query: فن‌های EC/DC چه برتری‌ای نسبت به فن‌های AC قدیمی دارن؟
+  evidence:
+    blocks:
+    - main-p045-b010
+  anchor: block:main-p045-b010
+- id: K039
+  category: conceptual
+  expected_route: prose
+  query: سامانه‌های پایش و زیرپایش ساختمون باید به کجا متصل بشن و کی بتونه آنلاین ببینه‌شون؟
+  evidence:
+    blocks:
+    - main-p120-b004
+  anchor: block:main-p120-b004
+- id: K040
+  category: conceptual
+  expected_route: prose
+  query: وقتی یه سیستم بر اساس مقادیری که اندازه گرفته خودش رو تنظیم و مدیریت می‌کنه، مبحث به این فرایند
+    چی میگه؟
+  evidence:
+    blocks:
+    - main-p052-b013
+    - main-p052-b014
+  anchor: block:main-p052-b014
+- id: K041
+  category: uncertain_conceptual
+  expected_route: prose
+  query: کنتوری که گرمای مصرفی هر واحد رو می‌شمره، برای اختلاف دما چه نوع سنسوری باید داشته باشه؟
+  evidence:
+    blocks:
+    - main-p048-b008
+    - main-p048-b009
+  anchor: block:main-p048-b009
+- id: K042
+  category: conceptual
+  expected_route: prose
+  query: تو روش شبیه‌سازی اگه تو نما از یه مصالح جدید بدون گواهی رسمی استفاده کنم چی میشه؟
+  evidence:
+    blocks:
+    - main-p124-b006
+  anchor: block:main-p124-b006
+- id: K043
+  category: uncertain_conceptual
+  expected_route: prose
+  query: وقتی موتورخونه فقط با بخشی از توانش کار می‌کنه چون هوا خیلی سرد نیست، به این حالت چی میگن؟
+  evidence:
+    blocks:
+    - main-p022-b012
+    - main-p022-b013
+  anchor: block:main-p022-b013
+- id: K044
+  category: conceptual
+  expected_route: prose
+  query: کنترل‌گری که دما، نور و پرده‌های یه اتاق رو بر اساس حضور آدم‌ها و دی‌اکسیدکربن تنظیم می‌کنه چه
+    کارهایی می‌تونه بکنه؟
+  evidence:
+    blocks:
+    - main-p047-b008
+  anchor: block:main-p047-b008
+- id: K045
+  category: conceptual
+  expected_route: prose
+  query: چگالی توان روشنایی کل ساختمون چطوری به دست میاد؟
+  evidence:
+    blocks:
+    - main-p028-b010
+  anchor: block:main-p028-b010
+- id: K046
+  category: conceptual
+  expected_route: prose
+  query: سامانه مدیریت ساختمان (BMS) کدوم سیستم‌های ساختمون رو پایش و کنترل می‌کنه؟
+  evidence:
+    blocks:
+    - main-p038-b009
+  anchor: block:main-p038-b009
+- id: K047
+  category: uncertain_conceptual
+  expected_route: prose
+  query: گواهی‌ای که سازمان استاندارد برای مشخصات یه محصول صادر می‌کنه، همه‌اش ملاک عمل مبحثه یا فقط بعضی
+    قسمت‌هاش؟
+  evidence:
+    blocks:
+    - main-p026-b014
+  anchor: block:main-p026-b014
+- id: K048
+  category: conceptual
+  expected_route: prose
+  query: سیستمی که از یک منبع سوخت هم برق، هم گرما و هم سرما می‌سازه، سرمایش رو معمولاً با چی تأمین می‌کنه؟
+  evidence:
+    blocks:
+    - main-p036-b011
+  anchor: block:main-p036-b011
+- id: K049
+  category: uncertain_conceptual
+  expected_route: prose
+  query: اون دستگاهی که تو موتورخونه با سنسور دمای بیرون، مشعل و پمپ‌ها رو خودکار روشن و خاموش می‌کنه
+    چیه؟
+  evidence:
+    blocks:
+    - main-p037-b010
+  anchor: block:main-p037-b010
+- id: K050
+  category: conceptual
+  expected_route: prose
+  query: چرا تو شبیه‌سازی انرژی نباید ورودی‌های غیرواقعی یا غیرقابل اجرا به نرم‌افزار داد؟
+  evidence:
+    blocks:
+    - main-p123-b011
+  anchor: block:main-p123-b011
+- id: K051
+  category: uncertain_conceptual
+  expected_route: prose
+  query: اگه با نرم‌افزار طراحی کنیم، میشه تو نما از مصالح جدید مثل موادی که با گرما حالتشون عوض میشه
+    استفاده کرد؟
+  evidence:
+    blocks:
+    - main-p124-b005
+  anchor: block:main-p124-b005
+- id: K052
+  category: conceptual
+  expected_route: prose
+  query: کدوم فصل مبحث ۱۹ برای اولین بار تو مقررات ملی، دوقلوی دیجیتال رو معرفی کرده؟
+  evidence:
+    blocks:
+    - main-p057-b004
+  anchor: block:main-p057-b004
+- id: K053
+  category: uncertain_conceptual
+  expected_route: prose
+  query: سیستمی که بدون اینکه کسی بهش دستور بده از تجربه‌های قبلیش یاد می‌گیره و تنظیمات دما و نور رو
+    بهتر می‌کنه، چی صداش می‌کنن؟
+  evidence:
+    blocks:
+    - main-p053-b006
+  anchor: block:main-p053-b006
+- id: K054
+  category: conceptual
+  expected_route: prose
+  query: فصل اول مبحث نوزدهم به چه موضوعی اختصاص داده شده؟
+  evidence:
+    blocks:
+    - main-p056-b003
+  anchor: block:main-p056-b003
+- id: K055
+  category: uncertain_conceptual
+  expected_route: prose
+  query: وقتی طراح با نرم‌افزار انرژی ساختمون رو طراحی می‌کنه، باید مدارک فنی مصالح دیوار و پنجره رو هم
+    ضمیمه کنه؟
+  evidence:
+    blocks:
+    - main-p124-b004
+  anchor: block:main-p124-b004
+- id: K056
+  category: city_climate
+  expected_route: structured
+  query: رده اقلیمی ایلام طبق پیوست ۲ چیه؟
+  evidence:
+    records:
+    - app02-p002-r14
+    acceptable_records:
+    - main-t19-3-2-r06
+  anchor: record:app02-p002-r14
+  notes: Ilam is also a province capital in table 19-3-2 (same class 3A); main-t19-3-2-r06 (adjacent_ids_avoid)
+    is acceptable because it legitimately answers.
+- id: K057
+  category: city_climate
+  expected_route: structured
+  query: پارس‌آباد مغان جزو کدوم اقلیم حساب میشه؟
+  evidence:
+    records:
+    - app02-p002-r25
+  anchor: record:app02-p002-r25
+- id: K058
+  category: city_climate
+  expected_route: structured
+  query: کاشمر اقلیمش چیه؟ برای انتخاب عایق می‌خوام بدونم
+  evidence:
+    records:
+    - app02-p004-r04
+  anchor: record:app02-p004-r04
+- id: K059
+  category: city_climate
+  expected_route: structured
+  query: قزوين در دسته‌بندي اقليمي مبحث ۱۹ چه كدي داره؟
+  evidence:
+    records:
+    - app02-p003-r28
+    acceptable_records:
+    - main-t19-3-2-r18
+  anchor: record:app02-p003-r28
+  notes: Qazvin is also in table 19-3-2 (4B); main-t19-3-2-r18 (adjacent) acceptable.
+- id: K060
+  category: city_climate
+  expected_route: structured
+  query: سبزوار از نظر مبحث ۱۹ گرم و کم‌بارونه یا سرد؟ رده اقلیمیش رو بگو
+  evidence:
+    records:
+    - app02-p003-r15
+  anchor: record:app02-p003-r15
+- id: K061
+  category: city_climate
+  expected_route: structured
+  query: climate class بیرجند تو مبحث نوزده؟
+  evidence:
+    records:
+    - app02-p002-r24
+    acceptable_records:
+    - main-t19-3-2-r10
+  anchor: record:app02-p002-r24
+  notes: Birjand is also in table 19-3-2 (3B); main-t19-3-2-r10 (adjacent) acceptable.
+- id: K062
+  category: city_climate
+  expected_route: structured
+  query: ارومیه چه رده اقلیمی‌ای داره؟
+  evidence:
+    records:
+    - app02-p002-r06
+    acceptable_records:
+    - main-t19-3-2-r02
+  anchor: record:app02-p002-r06
+  notes: Urmia is also in table 19-3-2 (4B); main-t19-3-2-r02 (adjacent) acceptable.
+- id: K063
+  category: city_climate
+  expected_route: structured
+  query: شهر بافت تو استان کرمان تو کدوم رده اقلیمی قرار گرفته؟
+  evidence:
+    records:
+    - app02-p002-r17
+  anchor: record:app02-p002-r17
+- id: K064
+  category: city_climate
+  expected_route: structured
+  query: مهاباد اقلیمش پربارونه؟ کدش تو پیوست ۲ چیه
+  evidence:
+    records:
+    - app02-p004-r14
+  anchor: record:app02-p004-r14
+- id: K065
+  category: city_climate
+  expected_route: structured
+  query: رده‌ی اقلیمی گچساران
+  evidence:
+    records:
+    - app02-p004-r09
+  anchor: record:app02-p004-r09
+- id: K066
+  category: eui
+  expected_route: structured
+  query: حداکثر شدت مصرف انرژی ساختمان فرهنگی/سرگرمی در اقلیم 4B برای رده C چقدره؟
+  evidence:
+    records:
+    - app03-C-r19-4B
+  anchor: record:app03-C-r19-4B
+- id: K067
+  category: eui
+  expected_route: structured
+  query: نمایشگاه ماشین تو اقلیم ۰B، برای اینکه رده C بگیره سقف مصرفش چند کیلووات‌ساعت بر مترمربع در ساله؟
+  evidence:
+    records:
+    - app03-C-r30-0B
+  anchor: record:app03-C-r30-0B
+- id: K068
+  category: eui
+  expected_route: structured
+  query: مرکز نگهداری و پرستاری سالمندان در اقلیم ۳B، حداکثر EUI مجاز برای رده B؟
+  evidence:
+    records:
+    - app03-B-r12-3B
+  anchor: record:app03-B-r12-3B
+- id: K069
+  category: eui
+  expected_route: structured
+  query: آزمایشگاه تشخیص پزشکی در اقلیم ٣B برای کسب رده B حداکثر چند kWh/m2.yr می‌تونه مصرف کنه؟
+  evidence:
+    records:
+    - app03-B-r08-3B
+  anchor: record:app03-B-r08-3B
+- id: K070
+  category: eui
+  expected_route: structured
+  query: مدرسه ابتدایی و پیش‌دبستانی تو اقلیم 3B برای رده B چه سقف مصرفی داره؟
+  evidence:
+    records:
+    - app03-B-r15-3B
+  anchor: record:app03-B-r15-3B
+- id: K071
+  category: eui
+  expected_route: structured
+  query: خوابگاه در اقلیم 2A اگه بخواد رده A بگیره حداکثر شدت مصرف انرژیش چند باید باشه؟
+  evidence:
+    records:
+    - app03-A-r22-2A
+  anchor: record:app03-A-r22-2A
+- id: K072
+  category: eui
+  expected_route: structured
+  query: حداکثر شدت مصرف انرژی رستوران/کافه در اقلیم 3B برای رده B چند کیلووات ساعت بر متر مربع در سال
+    است؟
+  evidence:
+    records:
+    - app03-B-r25-3B
+  anchor: record:app03-B-r25-3B
+- id: K073
+  category: eui
+  expected_route: structured
+  query: بیمارستان تو اقلیم ۴B برای رده C حداکثر چقدر مصرف انرژی مجازه؟
+  evidence:
+    records:
+    - app03-C-r07-4B
+  anchor: record:app03-C-r07-4B
+- id: K074
+  category: eui
+  expected_route: structured
+  query: کلینیک بدون بستری بیمار، اقلیم 3B، رده B — سقف شدت مصرف؟
+  evidence:
+    records:
+    - app03-B-r10-3B
+  anchor: record:app03-B-r10-3B
+- id: K075
+  category: eui
+  expected_route: structured
+  query: ساختمون فرهنگی و تفریحی تو اقلیم بسیار سرد 5B برای رده C چه حداکثر مصرفی داره؟
+  evidence:
+    records:
+    - app03-C-r19-5B
+  anchor: record:app03-C-r19-5B
+- id: K076
+  category: eui
+  expected_route: structured
+  query: خونه ویلایی تو اقلیم 3B برای رده B حداکثر چند kWh بر متر مربع در سال باید مصرف کنه؟
+  evidence:
+    records:
+    - app03-B-r03-3B
+  anchor: record:app03-B-r03-3B
+- id: K077
+  category: eui
+  expected_route: structured
+  query: رستوران یا کافه در اقلیم 4B، حداکثر شدت مصرف انرژی برای رده B
+  evidence:
+    records:
+    - app03-B-r25-4B
+  anchor: record:app03-B-r25-4B
+- id: K078
+  category: eui
+  expected_route: structured
+  query: کتابخانه عمومی در اقلیم ۴A برای رسیدن به رده B چه حداکثر شدت مصرفی داره؟
+  evidence:
+    records:
+    - app03-B-r17-4A
+  anchor: record:app03-B-r17-4A
+- id: K079
+  category: eui
+  expected_route: structured
+  query: شعبه بانک (بانک و موسسه مالی) در اقلیم 4B برای رده C حداکثر EUI چنده؟
+  evidence:
+    records:
+    - app03-C-r06-4B
+  anchor: record:app03-C-r06-4B
+- id: K080
+  category: material
+  expected_route: structured
+  query: آسفالت (قیر ماسه‌دار) به‌عنوان عایق رطوبتی چه ضریب هدایت حرارتی‌ای داره؟
+  evidence:
+    records:
+    - app07-p013-r02
+  anchor: record:app07-p013-r02
+- id: K081
+  category: material
+  expected_route: structured
+  query: تفلون یا همون PTFE تو پیوست ۷ چه چگالی و λ ای داره؟
+  evidence:
+    records:
+    - app07-p007-r21
+  anchor: record:app07-p007-r21
+- id: K082
+  category: material
+  expected_route: structured
+  query: ضریب هدایت حرارتی پلی‌اتیلن چگالی زیاد (HDPE)؟
+  evidence:
+    records:
+    - app07-p007-r11
+  anchor: record:app07-p007-r11
+- id: K083
+  category: material
+  expected_route: structured
+  query: نئوپان (صفحه با ذرات چوب) با چگالی ۲۷۰ تا ۴۵۰ kg/m³ چه ضریب هدایتی داره؟
+  evidence:
+    records:
+    - app07-p009-r01
+    acceptable_records:
+    - app07-p009-r02
+  anchor: record:app07-p009-r01
+  notes: Query gives the exact printed range 270-450 (r01); r02 (180-450, same material) also covers that
+    span and is acceptable.
+- id: K084
+  category: material
+  expected_route: structured
+  query: ورق پیش‌ساخته قیری اصلاح‌شده مسلح (مثل ایزوگام) چگالی و ضریب هدایت حرارتیش چنده؟
+  evidence:
+    records:
+    - app07-p013-r03
+  anchor: record:app07-p013-r03
+- id: K085
+  category: material
+  expected_route: structured
+  query: سفال و کاشی با چگالی اسمی ۱۱۰۰ چه ضریب هدایت حرارتی‌ای داره؟
+  evidence:
+    records:
+    - app07-p009-r26
+  anchor: record:app07-p009-r26
+- id: K086
+  category: material
+  expected_route: structured
+  query: موزاییک با چگالی ۱۸۰۰ تا ۲۰۰۰ کیلوگرم بر متر مکعب، λ چقدره؟
+  evidence:
+    records:
+    - app07-p006-r14
+  anchor: record:app07-p006-r14
+- id: K087
+  category: material
+  expected_route: structured
+  query: لاستیک EPDM (اتیلن پروپیلن دین منومر) ضریب هدایت حرارتی و چگالیش؟
+  evidence:
+    records:
+    - app07-p007-r20
+  anchor: record:app07-p007-r20
+- id: K088
+  category: material
+  expected_route: structured
+  query: پشم‌شیشه با چگالی 40 تا 80 kg/m3 ضریب هدایت حرارتیش چنده؟
+  evidence:
+    records:
+    - app07-p012-r20
+  anchor: record:app07-p012-r20
+- id: K089
+  category: material
+  expected_route: structured
+  query: سیلیکون اسفنجی که برای درزگیری و گرماشکنی استفاده میشه چه چگالی و λ ای داره؟
+  evidence:
+    records:
+    - app07-p006-r17
+  anchor: record:app07-p006-r17
+- id: K090
+  category: material
+  expected_route: structured
+  query: پلی‌یورتان به‌عنوان بتونه درز و ماده آب‌بندی (نه پلیمر متراکم) چه ضریب هدایتی داره؟
+  evidence:
+    records:
+    - app07-p006-r18
+  anchor: record:app07-p006-r18
+- id: K091
+  category: material
+  expected_route: structured
+  query: بتن پرلیتی یا ورمیکولیتی درجا با نسبت ۱ به ۶، چگالی و ضریب هدایتش؟
+  evidence:
+    records:
+    - app07-p006-r01
+  anchor: record:app07-p006-r01
+- id: K092
+  category: material
+  expected_route: structured
+  query: یونولیت برش‌خورده از بلوک (پلی‌استایرن منبسط) با چگالی ۲۴ تا ۲۹ چه λ ای داره؟
+  evidence:
+    records:
+    - app07-p011-r14
+  anchor: record:app07-p011-r14
+- id: K093
+  category: material
+  expected_route: structured
+  query: کاشی با چگالی اسمی ١٩٠٠ ضریب هدایت حرارتیش چقدره؟
+  evidence:
+    records:
+    - app07-p009-r18
+  anchor: record:app07-p009-r18
+- id: K094
+  category: main_table
+  expected_route: structured
+  query: تو جدول ۱۹-۲-۱ برای ساختمان‌های گروه الف در سال پنجم، جلوی «عایق‌کاری پوسته خارجی» چه علامتی
+    خورده؟
+  evidence:
+    records:
+    - main-t19-2-1-r06c05
+  anchor: record:main-t19-2-1-r06c05
+- id: K095
+  category: main_table
+  expected_route: structured
+  query: 'گروه ج، سال دوم، بازرسی مرحله طراحی: تو جدول زمان‌بندی تیک خورده یا ضربدر؟'
+  evidence:
+    records:
+    - main-t19-2-1-r13c02
+  anchor: record:main-t19-2-1-r13c02
+- id: K096
+  category: main_table
+  expected_route: structured
+  query: تست نشت حجمی هوا برای گروه ساختمانی ج در سال سوم، تو جدول زمان‌بندی اجرای مبحث چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r14c12
+  anchor: record:main-t19-2-1-r14c12
+- id: K097
+  category: main_table
+  expected_route: structured
+  query: سامانه مدیریت یکپارچه (IBMS) برای گروه ج در سال ۴ جدول زمان‌بندی چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c24
+  anchor: record:main-t19-2-1-r15c24
+- id: K098
+  category: main_table
+  expected_route: structured
+  query: زیرپایش تو جدول زمان‌بندی برای گروه ب در سال سوم چی زده؟
+  evidence:
+    records:
+    - main-t19-2-1-r09c23
+  anchor: record:main-t19-2-1-r09c23
+- id: K099
+  category: main_table
+  expected_route: structured
+  query: بازرسی طراحی برای ساختمان‌های گروه «ب» در سال پنجم ابلاغ چه علامتی تو جدول ۱۹-۲-۱ داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r11c02
+  anchor: record:main-t19-2-1-r11c02
+- id: K100
+  category: main_table
+  expected_route: structured
+  query: پمپ دورمتغیر برای گروه د در سال سوم تو جدول زمان‌بندی؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c19
+  anchor: record:main-t19-2-1-r19c19
+- id: K101
+  category: main_table
+  expected_route: structured
+  query: حداقل R سقفی که اون طرفش (بالای سقف) یه فضای نیمه‌باز کنترل‌نشده‌ست تو اقلیم 2A چقدره؟
+  evidence:
+    records:
+    - main-t19-5-1-r10c02
+  anchor: record:main-t19-5-1-r10c02
+- id: K102
+  category: main_table
+  expected_route: structured
+  query: سرمایش و گرمایش چهارلوله برای گروه ج سال چهارم تو جدول ۱۹-۲-۱ چه علامتی خورده؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c17
+  anchor: record:main-t19-2-1-r15c17
+- id: K103
+  category: main_table
+  expected_route: structured
+  query: سامانه هوشمند روشنایی برای ساختمون‌های گروه د از سال دوم چه وضعیتی تو جدول زمان‌بندی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r18c20
+  anchor: record:main-t19-2-1-r18c20
+- id: K104
+  category: main_table
+  expected_route: structured
+  query: شارژر خودرو برقی در سال پنجم برای گروه د — جدول زمان‌بندی چی نشون میده؟
+  evidence:
+    records:
+    - main-t19-2-1-r21c21
+  anchor: record:main-t19-2-1-r21c21
+- id: K105
+  category: main_table
+  expected_route: structured
+  query: برای گروه الف تو سال دوم، ستون «پایش» (نه زیرپایش) جدول زمان‌بندی چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r03c22
+  anchor: record:main-t19-2-1-r03c22
+- id: K106
+  category: main_table
+  expected_route: structured
+  query: SHGC جداره نورگذر برای گروه ج در سال چهارم تو جدول ۱۹-۲-۱؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c10
+  anchor: record:main-t19-2-1-r15c10
+- id: K107
+  category: main_table
+  expected_route: structured
+  query: 'نشت حجمی تو سال چهارم برای ساختمان‌های گروه الف: تیک یا ضربدر؟'
+  evidence:
+    records:
+    - main-t19-2-1-r05c12
+  anchor: record:main-t19-2-1-r05c12
+- id: K108
+  category: main_table
+  expected_route: structured
+  query: تو جدول زمان‌بندی، آزمون نشت حجمی برای گروه ب در سال اول چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r07c12
+  anchor: record:main-t19-2-1-r07c12
+- id: K109
+  category: main_table
+  expected_route: structured
+  query: سیستم کنترل موتورخانه برای گروه د، سال سوم ابلاغ، تو جدول ۱۹-۲-۱ چی زده؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c15
+  anchor: record:main-t19-2-1-r19c15
+- id: K110
+  category: main_table
+  expected_route: structured
+  query: مدار اولیه و ثانویه تأسیسات مکانیکی برای گروه الف در سال پنجم چه علامتی تو جدول زمان‌بندی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r06c18
+  anchor: record:main-t19-2-1-r06c18
+- id: K111
+  category: main_table
+  expected_route: structured
+  query: بازرسی حین ساخت برای گروه ج سال سوم تو جدول زمان‌بندی تیک خورده؟
+  evidence:
+    records:
+    - main-t19-2-1-r14c03
+  anchor: record:main-t19-2-1-r14c03
+- id: K112
+  category: main_table
+  expected_route: structured
+  query: شارژر ماشین برقی برای ساختمونای گروه د تو سال سوم تو جدول ۱۹-۲-۱ چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c21
+  anchor: record:main-t19-2-1-r19c21
+- id: K113
+  category: main_table
+  expected_route: structured
+  query: سقف مجاور فضای نیمه باز کنترل نشده در اقلیم 3B، حداقل مقاومت حرارتی چقدر است؟
+  evidence:
+    records:
+    - main-t19-5-1-r10c03
+  anchor: record:main-t19-5-1-r10c03
+- id: K114
+  category: main_table
+  expected_route: structured
+  query: ستون SHGC جدول زمان‌بندی برای گروه د در سال سوم چه علامتی داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c10
+  anchor: record:main-t19-2-1-r19c10
+- id: K115
+  category: main_table
+  expected_route: structured
+  query: زیرپایش برای گروه الف در سال اول ابلاغ، تو جدول زمان‌بندی چه علامتی خورده؟
+  evidence:
+    records:
+    - main-t19-2-1-r02c23
+  anchor: record:main-t19-2-1-r02c23
+- id: K116
+  category: main_table
+  expected_route: structured
+  query: الزامات بازتاب بام برای ساختمان‌های گروه الف در سال چهارم تو جدول ۱۹-۲-۱ چه علامتی دارن؟
+  evidence:
+    records:
+    - main-t19-2-1-r05c07
+  anchor: record:main-t19-2-1-r05c07
+- id: K117
+  category: main_table
+  expected_route: structured
+  query: 'گروه الف، سال دوم، زیرپایش: جدول زمان‌بندی چی زده؟'
+  evidence:
+    records:
+    - main-t19-2-1-r03c23
+  anchor: record:main-t19-2-1-r03c23
+- id: K118
+  category: table_reference
+  expected_route: structured
+  query: جدول ۱۹-۵-۱ برای چه اجزایی از پوسته غیرنورگذر حداقل مقاومت حرارتی تعیین کرده و واحدش چیه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-1
+  anchor: table:m19-ed5-1404-main.t19-5-1
+- id: K119
+  category: table_reference
+  expected_route: structured
+  query: جدول رده‌بندی بازدهی انرژی بر اساس نسبت R (جدول ۱۹-۳-۳) کلاً چند تا رده و چه بازه‌هایی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-3
+  anchor: table:m19-ed5-1404-main.t19-3-3
+- id: K120
+  category: table_reference
+  expected_route: structured
+  query: جدول کفایت نور روز (۱۹-۵-۶) برای کدوم کاربری‌ها عدد داده و برای کدوم‌ها خط تیره گذاشته؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-6
+  anchor: table:m19-ed5-1404-main.t19-5-6
+- id: K121
+  category: table_reference
+  expected_route: structured
+  query: جدول حداقل بازدهی تجهیزات سرمایش و گرمایش غیرمرکزی چه دستگاه‌هایی رو پوشش میده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-4
+  anchor: table:m19-ed5-1404-main.t19-5-4
+- id: K122
+  category: table_reference
+  expected_route: structured
+  query: تو جدول ۱۹-۵-۳ (تجهیزات مرکزی) بازدهی‌ها با چه معیارهایی مثل درصد، COP یا کلاس IE بیان شدن؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-3
+  anchor: table:m19-ed5-1404-main.t19-5-3
+- id: K123
+  category: numeric_format
+  expected_route: structured
+  query: حداقل R دیوار خارجی کنار فضای نیمه‌باز کنترل‌نشده تو اقلیم 0B، ۰٫۹۱ متر مربع کلوین بر وات ـه؟
+  evidence:
+    records:
+    - main-t19-5-1-r04c00
+  anchor: extra
+- id: K124
+  category: numeric_format
+  expected_route: structured
+  query: R = 3.13 m2.K/W برای سقف مجاور فضای نیمه‌باز کنترل‌نشده مربوط به کدوم اقلیم‌هاست؟
+  evidence:
+    records:
+    - main-t19-5-1-r10c00
+    - main-t19-5-1-r10c01
+  anchor: extra
+  notes: 'Reverse lookup restricted to ceilings: 3.13 is printed for 0B and 1B; floor-adjacent-to-air
+    4A,4B (r12c04) also prints 3.13 but is not a ceiling.'
+- id: K125
+  category: numeric_format
+  expected_route: structured
+  query: یونولیت (پلی‌استایرن منبسط برش‌خورده) با λ = ٠٫٠٥٠ چه بازه چگالی‌ای داره؟
+  evidence:
+    records:
+    - app07-p011-r10
+  anchor: extra
+- id: K126
+  category: numeric_format
+  expected_route: structured
+  query: ماده درزگیری که چگالیش ۱۲۰۰ و ضریب هدایتش ۰/۳۵ نوشته شده کدومه؟
+  evidence:
+    records:
+    - app07-p006-r15
+  anchor: extra
+- id: K127
+  category: numeric_format
+  expected_route: structured
+  query: کدوم جزء پوسته غیرنورگذر حداقل مقاومت حرارتی ۲٫۵ m2.k/W لازم داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-1
+    no_records: true
+  anchor: extra
+  notes: 2.5 is not printed anywhere in table 19-5-1; no rounding to 2.38/2.63.
+- id: K128
+  category: numeric_format
+  expected_route: structured
+  query: تو پیوست ۷ مصالحی با ضریب هدایت حرارتی 0.037 W/m.K هست؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  notes: 0.037 is not printed (neighbouring printed values 0.035 and 0.038); never round.
+- id: K129
+  category: numeric_format
+  expected_route: structured
+  query: سیلیکون خمیری با چگالی 1,450 kg/m3 ضریب هدایتش چقدره؟
+  evidence:
+    records:
+    - app07-p006-r16
+  anchor: extra
+- id: K130
+  category: numeric_format
+  expected_route: structured
+  query: حداقل R درهای غیرنورگذر بدون لولا تو همه اقلیم‌ها ۰.۵۷ ـه؟
+  evidence:
+    records:
+    - main-t19-5-1-r20c00
+    - main-t19-5-1-r20c01
+    - main-t19-5-1-r20c02
+    - main-t19-5-1-r20c03
+    - main-t19-5-1-r20c04
+    - main-t19-5-1-r20c05
+  anchor: extra
+- id: K131
+  category: polarity_qualifier
+  expected_route: structured
+  query: حداقل مقاومت حرارتیِ درِ غیرنورگذر لولادار تو اقلیم 5B چقدره؟
+  evidence:
+    records:
+    - main-t19-5-1-r18c05
+  anchor: extra
+- id: K132
+  category: polarity_qualifier
+  expected_route: structured
+  query: حداقل مقاومت حرارتیِ درِ غیرنورگذر بدون لولا تو اقلیم 5B چقدره؟
+  evidence:
+    records:
+    - main-t19-5-1-r20c05
+  anchor: extra
+- id: K133
+  category: polarity_qualifier
+  expected_route: structured
+  query: سوله صنعتی با تهویه تو اقلیم 3B برای رده B حداکثر شدت مصرفش چنده؟
+  evidence:
+    records:
+    - app03-B-r33-3B
+  anchor: extra
+- id: K134
+  category: polarity_qualifier
+  expected_route: structured
+  query: سوله صنعتی بدون تهویه تو اقلیم 3B برای رده B حداکثر شدت مصرفش چنده؟
+  evidence:
+    records:
+    - app03-B-r34-3B
+  anchor: extra
+- id: K135
+  category: polarity_qualifier
+  expected_route: structured
+  query: بتن مسلح با سنگدانه معمولی که درصد میلگردش بین ۱ تا ۲ درصده، ضریب هدایت حرارتیش؟
+  evidence:
+    records:
+    - app07-p003-r13
+  anchor: extra
+- id: K136
+  category: polarity_qualifier
+  expected_route: structured
+  query: بتن مسلح با سنگدانه معمولی که بیش از ۲ درصد میلگرد داره، ضریب هدایت حرارتیش؟
+  evidence:
+    records:
+    - app07-p003-r14
+  anchor: extra
+- id: K137
+  category: polarity_qualifier
+  expected_route: structured
+  query: بتن سبک‌دانه با پوکه طبیعی، بدون ذرات ریز و بدون ماسه، چه چگالی و λ ای داره؟
+  evidence:
+    records:
+    - app07-p004-r06
+  anchor: extra
+  notes: Negative counterpart «با ذرات ریز یا با ماسه» is printed as app07-p004-r04/r05.
+- id: K138
+  category: polarity_qualifier
+  expected_route: structured
+  query: کلینیک بدون بستری بیمار در اقلیم 4B، حداکثر شدت مصرف انرژی برای رده B؟
+  evidence:
+    records:
+    - app03-B-r10-4B
+  anchor: extra
+- id: K139
+  category: polarity_qualifier
+  expected_route: structured
+  query: کلینیک تشخیصی (نه کلینیک بدون بستری) در اقلیم 4B، حداکثر شدت مصرف انرژی برای رده B؟
+  evidence:
+    records:
+    - app03-B-r09-4B
+  anchor: extra
+- id: K140
+  category: polarity_qualifier
+  expected_route: structured
+  query: کف (نه دیوار) مجاور فضای نیمه‌باز کنترل‌نشده تو اقلیم 1B حداقل چه R ای لازم داره؟
+  evidence:
+    records:
+    - main-t19-5-1-r14c01
+  anchor: extra
+- id: K141
+  category: polarity_qualifier
+  expected_route: structured
+  query: دیوار خارجی (نه کف) مجاور فضای نیمه‌باز کنترل‌نشده تو اقلیم 1B حداقل چه R ای لازم داره؟
+  evidence:
+    records:
+    - main-t19-5-1-r04c01
+  anchor: extra
+- id: K142
+  category: polarity_qualifier
+  expected_route: structured
+  query: سقفی که مجاور فضای نیمه‌باز کنترل‌نشده‌ست (نه سقف رو به فضای آزاد) در اقلیم 4A حداقل R؟
+  evidence:
+    records:
+    - main-t19-5-1-r10c04
+  anchor: extra
+- id: K143
+  category: ordinal_cardinal
+  expected_route: structured
+  query: تو جدول زمان‌بندی، برای ساختمان‌های گروه د در سال دوم، ستون سرمایش و گرمایش ۴ لوله چه علامتی
+    داره؟
+  evidence:
+    records:
+    - main-t19-2-1-r18c17
+  anchor: extra
+  notes: «سال دوم» is the year (ordinal); «۴ لوله» is part of the requirement name (cardinal).
+- id: K144
+  category: ordinal_cardinal
+  expected_route: structured
+  query: گروه الف سال چهارم، سیستم ۴ لوله‌ای سرمایش و گرمایش تو جدول ۱۹-۲-۱ تیک داره یا نه؟
+  evidence:
+    records:
+    - main-t19-2-1-r05c17
+  anchor: extra
+- id: K145
+  category: ordinal_cardinal
+  expected_route: prose
+  query: از ۳ بازرسی دوره‌ای حین ساخت، بازرسی سوم کی باید انجام بشه و چی توش چک میشه؟
+  evidence:
+    blocks:
+    - main-p079-b004
+    - main-p078-b011
+  anchor: extra
+- id: K146
+  category: ordinal_cardinal
+  expected_route: prose
+  query: یه برج ۱۲ طبقه دارم که ۷۵ درصد نماش شیشه‌ست؛ برای طبقه دهم به بالا نشت هوا تو چه فشاری و تا چه
+    حدی مجازه؟
+  evidence:
+    blocks:
+    - main-p092-b009
+    - main-p093-b003
+  anchor: extra
+- id: K147
+  category: ordinal_cardinal
+  expected_route: prose
+  query: تو ساختمون ۲۰ طبقه با نمای بیش از ۷۰ درصد شیشه، از طبقه شانزدهم به بالا حد نشت هوا چقدره؟
+  evidence:
+    blocks:
+    - main-p093-b004
+  anchor: extra
+- id: K148
+  category: ordinal_cardinal
+  expected_route: prose
+  query: دومین بازرسی از سه بازرسی دوره‌ای کی انجام میشه؟
+  evidence:
+    blocks:
+    - main-p078-b013
+    - main-p079-b003
+  anchor: extra
+- id: K149
+  category: rating
+  expected_route: structured
+  query: کلینیک تشخیصی در اقلیم 3B برای رده B حداکثر شدت مصرفش چقدره؟
+  evidence:
+    records:
+    - app03-B-r09-3B
+  anchor: extra
+- id: K150
+  category: rating
+  expected_route: structured
+  query: ویلا در اقلیم 2A برای رده A سقف مصرف انرژی چنده؟
+  evidence:
+    records:
+    - app03-A-r03-2A
+  anchor: extra
+- id: K151
+  category: rating
+  expected_route: structured
+  query: ویلا در اقلیم 2A برای رده +A چه حداکثر شدت مصرفی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+  notes: Appendix 3 prints only D, C, B, A; A+ is not printed.
+- id: K152
+  category: rating
+  expected_route: structured
+  query: خوابگاه تو اقلیم 0B برای گرفتن رده C حداکثر چند کیلووات‌ساعت بر متر مربع؟
+  evidence:
+    records:
+    - app03-C-r22-0B
+  anchor: extra
+- id: K153
+  category: rating
+  expected_route: structured
+  query: طبق جدول ۱۹-۳-۳، رده A+ با چه بازه‌ای از نسبت R تعریف شده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-3
+    no_records: true
+  anchor: extra
+  notes: Table 19-3-3 prints A, B, C, D only.
+- id: K154
+  category: rating
+  expected_route: structured
+  query: دفتر پست در اقلیم 0B برای رده C سقف EUI چنده؟
+  evidence:
+    records:
+    - app03-C-r29-0B
+  anchor: extra
+- id: K155
+  category: rating
+  expected_route: structured
+  query: مسجد در اقلیم 2B برای رده A++ حداکثر شدت مصرف انرژیش چقدر تعیین شده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+- id: K156
+  category: range_boundary
+  expected_route: structured
+  query: اندود سیمانی با چگالی دقیقاً ۱۲۵۰ کیلوگرم بر متر مکعب ضریب هدایت حرارتیش چقدره؟
+  evidence:
+    records:
+    - app07-p003-r05
+    - app07-p003-r06
+  anchor: extra
+  notes: 1250 is the printed end of both «۱۰۰۰ تا ۱۲۵۰» (r06) and «۱۲۵۰ تا ۱۴۵۰» (r05); «تا» does not
+    state inclusivity, so both rows are required.
+- id: K157
+  category: range_boundary
+  expected_route: structured
+  query: پشم شیشه با چگالی ۱۰۰ کیلوگرم بر مترمکعب چه λ ای داره؟
+  evidence:
+    records:
+    - app07-p012-r21
+  anchor: extra
+  notes: 100 is strictly inside the printed range 80-120.
+- id: K158
+  category: range_boundary
+  expected_route: structured
+  query: پشم شیشه با چگالی ۱۶۰ کیلوگرم بر مترمکعب ضریب هدایتش طبق پیوست ۷ چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  notes: Highest printed glass-wool range is 120-150; 160 is just outside.
+- id: K159
+  category: range_boundary
+  expected_route: structured
+  query: یونولیت برش‌خورده با چگالی دقیقاً ۴۰ کیلوگرم بر متر مکعب کدوم ردیف پیوست ۷ میشه و λ اش چنده؟
+  evidence:
+    records:
+    - app07-p011-r15
+  anchor: extra
+  notes: «۲۹ تا ۴۰» contains 40; the next row is «بیش از ۴۰» (strict), so app07-p011-r16 does not apply.
+- id: K160
+  category: range_boundary
+  expected_route: structured
+  query: اگه نسبت R ساختمونم (مصرف واقعی به ایده‌آل) ۴٫۲ بشه، طبق جدول ۱۹-۳-۳ چه رده‌ای می‌گیره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-3
+    no_records: true
+  anchor: extra
+  notes: Table prints ratings only up to 3 < R ≤ 4; R = 4.2 is just outside and no rating is printed.
+- id: K161
+  category: range_boundary
+  expected_route: structured
+  query: یه فروشگاه تجاری دقیقاً ۲۰۰۰ متر مربع، حداقل نسبت مساحت کفایت نور روزش طبق جدول ۱۹-۵-۶ چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-6
+    no_records: true
+  anchor: extra
+  notes: Labels are «کوچک‌تر از ۲۰۰۰» and «بزرگ‌تر از ۲۰۰۰»; exactly 2000 m2 is covered by neither (curated
+    table note).
+- id: K162
+  category: range_boundary
+  expected_route: structured
+  query: پنجره‌ای که PF ش دقیقاً ۲۰ درصده تو اقلیم 5B، حداکثر SHGC مجازش چیه؟
+  evidence:
+    records:
+    - main-t19-5-2-r07c05
+  anchor: extra
+  notes: «کمتر از %۲۰» (r06c05) strictly excludes 20; «بین %۲۰ تا %۵۰» is the only band that can contain
+    it (inclusivity of «بین» not stated).
+- id: K163
+  category: range_boundary
+  expected_route: structured
+  query: اگه روز درجه گرمایش (HDD18) یه شهر ۴۱۰۰ باشه، طبق جدول ۱۹-۳-۱ تو کدوم دسته اقلیمی میفته؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-1
+    no_records: true
+  anchor: extra
+  notes: Highest printed band is 3000 < HDD18 ≤ 4000; 4100 is just outside and no class is printed.
+- id: K164
+  category: computed_refusal
+  expected_route: structured
+  query: میانگین حداکثر شدت مصرف دبستان برای رده B در همه اقلیم‌ها چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+- id: K165
+  category: computed_refusal
+  expected_route: structured
+  query: برای دیوار خارجی رو به فضای باز، یه عدد R وسط اقلیم 3B و 4A درون‌یابی کن
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-1
+    no_records: true
+  anchor: extra
+- id: K166
+  category: computed_refusal
+  expected_route: structured
+  query: میانگین ضریب هدایت حرارتی پشم سنگ در همه چگالی‌ها چقدر میشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+- id: K167
+  category: computed_refusal
+  expected_route: structured
+  query: مجموع حداقل R دیوار رو به فضای باز و سقف رو به فضای آزاد تو اقلیم 0B چند میشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-1
+    no_records: true
+  anchor: extra
+- id: K168
+  category: computed_refusal
+  expected_route: structured
+  query: یه دفتر اداری خصوصی ۵۰۰ متری تو اقلیم 3B با رده A در سال حداکثر چند کیلووات‌ساعت می‌تونه مصرف
+    کنه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+  notes: Requires multiplying the printed EUI by an area; the source prints no such total.
+- id: K169
+  category: computed_refusal
+  expected_route: structured
+  query: نسبت سقف مصرف رده D به رده A برای بیمارستان در اقلیم 4B چند برابره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+- id: K170
+  category: unknown_entity
+  expected_route: unsupported
+  query: رده اقلیمی شهر بافق (یزد) چیه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    no_records: true
+  anchor: extra
+  acceptable_routes: &id001
+  - structured
+  notes: Not printed; looks similar to «بافت» (app02-p002-r17).
+- id: K171
+  category: unknown_entity
+  expected_route: unsupported
+  query: نیشابور طبق پیوست ۲ چه اقلیمی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K172
+  category: unknown_entity
+  expected_route: unsupported
+  query: اقلیم شهر اهرم بوشهر رو می‌خوام
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+  notes: Not printed; looks similar to «اهر».
+- id: K173
+  category: unknown_entity
+  expected_route: unsupported
+  query: استخر سرپوشیده تو اقلیم 3B برای رده C حداکثر شدت مصرف انرژیش چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K174
+  category: unknown_entity
+  expected_route: unsupported
+  query: زندان یا بازداشتگاه در اقلیم 4B برای رده B چه سقف EUI داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K175
+  category: unknown_entity
+  expected_route: unsupported
+  query: ضریب هدایت حرارتی ایروژل تو پیوست ۷؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K176
+  category: unknown_entity
+  expected_route: unsupported
+  query: عایق پشم گوسفند چه λ ای داره طبق مبحث ۱۹؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K177
+  category: unknown_entity
+  expected_route: unsupported
+  query: ضریب هدایت حرارتی ورق تیتانیوم در گروه فلزات پیوست ۷ چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K178
+  category: unknown_entity
+  expected_route: unsupported
+  query: حداقل بازدهی پمپ حرارتی زمین‌گرمایی تو جدول تجهیزات مرکزی ۱۹-۵-۳ چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-3
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+- id: K179
+  category: unknown_entity
+  expected_route: unsupported
+  query: حداکثر دمای آب‌گرم برای وان جکوزی طبق جدول ۱۹-۵-۵ چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-5
+    no_records: true
+  anchor: extra
+  acceptable_routes: *id001
+  notes: 'Table rows: shower and bath, public/private washbasin, kitchen sink; jacuzzi not printed.'
+- id: K180
+  category: no_match
+  expected_route: structured
+  query: کدوم شهرها تو پیوست ۲ رده اقلیمی 1A دارن؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    no_records: true
+  anchor: extra
+- id: K181
+  category: no_match
+  expected_route: structured
+  query: تو جدول زمان‌بندی ۱۹-۲-۱ برای ساختمان‌های گروه «ه» بازرسی طراحی چه علامتی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+  anchor: extra
+  notes: 'Groups printed: الف، ب، ج، د.'
+- id: K182
+  category: no_match
+  expected_route: structured
+  query: شارژر خودرو برقی برای گروه ب در سال ششم جدول زمان‌بندی چه علامتی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+  anchor: extra
+  notes: 'Years printed: first to fifth.'
+- id: K183
+  category: no_match
+  expected_route: structured
+  query: حداکثر شدت مصرف انرژی اداری عمومی در اقلیم 6B برای رده D؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+- id: K184
+  category: no_match
+  expected_route: structured
+  query: عایقی تو پیوست ۷ هست که ضریب هدایت حرارتیش کمتر از ۰٫۰۲۵ باشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+  anchor: extra
+  notes: Lowest printed conductivity is 0.030.
+- id: K185
+  category: no_match
+  expected_route: structured
+  query: ضریب یکنواختی نور مصنوعی ۰/۹ تو جدول ۱۹-۵-۷ برای کدوم فضا تعیین شده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-7
+    no_records: true
+  anchor: extra
+  notes: Printed values 0.4-0.8; 0.9 not printed.
+- id: K186
+  category: mixed
+  expected_route: mixed
+  query: تو اقلیم 5B حداقل مقاومت حرارتی دیوار خارجی رو به فضای باز چنده؟ پل حرارتی هم تا چند درصد سطح
+    مجازه؟
+  evidence:
+    records:
+    - main-t19-5-1-r02c05
+    blocks:
+    - main-p087-b003
+  anchor: extra
+- id: K187
+  category: mixed
+  expected_route: mixed
+  query: R کف مجاور هوای آزاد تو اقلیم 0B چقدر باید باشه و بازرس کِی می‌تونه ازش نمونه برداره؟
+  evidence:
+    records:
+    - main-t19-5-1-r12c00
+    blocks:
+    - main-p078-b012
+  anchor: extra
+- id: K188
+  category: mixed
+  expected_route: mixed
+  query: در فلزی بدون لولا هم جزو پوسته غیرنورگذر حساب میشه؟ حداقل R اش تو اقلیم 3A چنده؟
+  evidence:
+    records:
+    - main-t19-5-1-r20c03
+    blocks:
+    - main-p083-b006
+  anchor: extra
+- id: K189
+  category: mixed
+  expected_route: mixed
+  query: تو اقلیم 4B برای پنجره‌ای که PF ش زیر ۲۰ درصده حداکثر SHGC چقدره؟ اصلاً این PF چطوری حساب میشه؟
+  evidence:
+    records:
+    - main-t19-5-2-r06c04
+    blocks:
+    - main-p052-b004
+  anchor: extra
+- id: K190
+  category: mixed
+  expected_route: mixed
+  query: حداکثر SHGC نورگیر سقفی تو اقلیم 4A چقدره و اگه رعایت نشه چه اتفاقی برای رده انرژی میفته؟
+  evidence:
+    records:
+    - main-t19-5-2-r12c04
+    blocks:
+    - main-p091-b004
+  anchor: extra
+- id: K191
+  category: mixed
+  expected_route: mixed
+  query: سقف مصرف انرژی یه ویلا تو اقلیم 4A برای رده B چنده؟ رده B اصلاً یعنی چه جور ساختمونی؟
+  evidence:
+    records:
+    - app03-B-r03-4A
+    blocks:
+    - main-p062-b009
+  anchor: extra
+- id: K192
+  category: mixed
+  expected_route: mixed
+  query: بیمارستان تو اقلیم 5B برای رسیدن به رده A حداکثر چقدر می‌تونه مصرف کنه؟ رده A تو مبحث چه عنوانی
+    داره؟
+  evidence:
+    records:
+    - app03-A-r07-5B
+    blocks:
+    - main-p062-b010
+  anchor: extra
+- id: K193
+  category: mixed
+  expected_route: mixed
+  query: آبگرمکن برقی حداقل چه راندمانی باید داشته باشه و این الزام جزو تجهیزات مرکزیه یا غیرمرکزی؟
+  evidence:
+    records:
+    - main-t19-5-4-item08
+    blocks:
+    - main-p100-b003
+    - main-p100-b004
+  anchor: extra
+- id: K194
+  category: mixed
+  expected_route: mixed
+  query: فن دمنده و مکنده چه رده انرژی‌ای لازم داره؟ تو هواساز میشه از فن تسمه‌ای استفاده کرد؟
+  evidence:
+    records:
+    - main-t19-5-4-item09
+    blocks:
+    - main-p105-b009
+    - main-p106-b003
+  anchor: extra
+- id: K195
+  category: mixed
+  expected_route: mixed
+  query: برای گروه ب تو سال سوم، ستون شارژر خودرو برقی جدول زمان‌بندی چه علامتی داره؟ حداقل ظرفیت مدار
+    هر ایستگاه شارژ چقدره؟
+  evidence:
+    records:
+    - main-t19-2-1-r09c21
+    blocks:
+    - main-p114-b005
+  anchor: extra
+- id: K196
+  category: mixed
+  expected_route: mixed
+  query: تست نشت سطح نما برای گروه ج سال سوم تو جدول ۱۹-۲-۱ چه علامتی داره؟ تو هر نما چند تا آزمایش باید
+    انجام بشه؟
+  evidence:
+    records:
+    - main-t19-2-1-r14c11
+    blocks:
+    - main-p093-b005
+  anchor: extra
+- id: K197
+  category: mixed
+  expected_route: mixed
+  query: پشم شیشه با چگالی حدود ۱۰۰ چه ضریب هدایتی داره؟ می‌شه تو بخش‌هایی از تأسیسات که لرزش دارن ازش
+    استفاده کرد؟
+  evidence:
+    records:
+    - app07-p012-r21
+    blocks:
+    - main-p101-b006
+  anchor: extra
+- id: K198
+  category: mixed
+  expected_route: mixed
+  query: بام تو اقلیم 0B حداقل چه مقاومت حرارتی‌ای لازم داره و از نظر سایه یا بازتاب سطح بام چه شرطی هست؟
+  evidence:
+    records:
+    - main-t19-5-1-r08c00
+    blocks:
+    - main-p087-b008
+  anchor: extra
+- id: K199
+  category: mixed
+  expected_route: mixed
+  query: خب حالا برای در لولادار تو اقلیم 5C حداقل R چنده؟ اصلاً اقلیم 5C تو ایران داریم؟
+  evidence:
+    records:
+    - main-t19-5-1-r18c05
+    blocks:
+    - main-p067-b005
+  anchor: extra
+  notes: Follow-up in spoken style; the 5B,5C column applies to 5C as printed in table 19-5-1.
+- id: K200
+  category: mixed
+  expected_route: mixed
+  query: حداکثر شدت مصرف دبستان تو اقلیم 0B برای رده C چنده؟ و ساختمونا طبق چه زمان‌بندی‌ای باید از D
+    به رده‌های بالاتر برسن؟
+  evidence:
+    records:
+    - app03-C-r15-0B
+    blocks:
+    - main-p063-b003
+  anchor: extra
+- id: K201
+  category: mixed
+  expected_route: mixed
+  query: تو جدول زمان‌بندی، «شیر کنترلی و جریان‌سنج» برای گروه د در سال اول تیک داره؟ این شیرهای کنترلی
+    کجاها باید نصب بشن؟
+  evidence:
+    records:
+    - main-t19-2-1-r17c16
+    blocks:
+    - main-p104-b005
+  anchor: extra
+- id: K202
+  category: spelling_variant
+  expected_route: prose
+  query: پل حرارتي در ديوار خارجي حداكثر چند درصد مساحت هر سطح مي‌تونه باشه؟
+  evidence:
+    blocks:
+    - main-p087-b003
+  anchor: extra
+  notes: Arabic ي/ك.
+- id: K203
+  category: spelling_variant
+  expected_route: prose
+  query: سامانهپایش وزیرپایش برای کدوم ساختمونا الزامیه؟
+  evidence:
+    blocks:
+    - main-p119-b011
+    - main-p120-b003
+  anchor: extra
+  notes: Missing spaces/ZWNJ.
+- id: K204
+  category: spelling_variant
+  expected_route: prose
+  query: شـــیر ترموستاتیک برای تک تک رادیـــاتورها اجبـــاریه؟
+  evidence:
+    blocks:
+    - main-p105-b008
+  anchor: extra
+  notes: Kashida.
+- id: K205
+  category: spelling_variant
+  expected_route: prose
+  query: عایق کاری لوله های آب گرم و بخار حداکثر چه ضریب انتقال حرارتی میتونه داشته باشه؟
+  evidence:
+    blocks:
+    - main-p100-b009
+  anchor: extra
+  notes: Spaces instead of ZWNJ.
+- id: K206
+  category: spelling_variant
+  expected_route: prose
+  query: چراغ و هواكش كابين آسانسور بعد از چند دقيقه بيكاري بايد خاموش بشه؟
+  evidence:
+    blocks:
+    - main-p112-b012
+  anchor: extra
+  notes: Arabic ي/ك.
+- id: K207
+  category: spelling_variant
+  expected_route: prose
+  query: پلهبرقی ها باید درایوولتاژمتغیر داشته باشن؟
+  evidence:
+    blocks:
+    - main-p113-b003
+  anchor: extra
+  notes: Joined words.
+- id: K208
+  category: spelling_variant
+  expected_route: structured
+  query: ضريب هدايت حرارتي پلي‌استايرن متراكم (گروه پليمرها) چنده؟
+  evidence:
+    records:
+    - app07-p007-r15
+  anchor: extra
+  notes: Arabic ي/ك.
+- id: K209
+  category: spelling_variant
+  expected_route: structured
+  query: حداكثر شدت مصرف مسافرخانه/مهمانسرا براي رده A در اقليم 2A
+  evidence:
+    records:
+    - app03-A-r21-2A
+  anchor: extra
+  notes: Arabic ي/ك.
+- id: K210
+  category: spelling_variant
+  expected_route: prose
+  query: دمای تنظیمی گرمایش بعدازحضورکاربر تو فضاهای منقطع حداکثرچنده؟
+  evidence:
+    blocks:
+    - main-p103-b007
+    - main-p030-b006
+  anchor: extra
+  notes: Joined words. main-p030-b006 (definition 19-1-52, 13 °C) is in adjacent_ids_avoid but equally
+    direct.
+- id: K211
+  category: explicit_reference
+  expected_route: prose
+  query: بند ۱۹-۵-۲-۲-۳ درباره هوای تازه چه محدودیتی برای ورود هوای بیرون گذاشته؟
+  evidence:
+    blocks:
+    - main-p107-b008
+    - main-p107-b009
+  anchor: extra
+  notes: Heading main-p107-b007 is adjacent and not used.
+- id: K212
+  category: explicit_reference
+  expected_route: structured
+  query: تو جدول ۱۹-۵-۴ ردیف ۸ (آبگرمکن برقی) حداقل بازدهی چند درصده؟
+  evidence:
+    records:
+    - main-t19-5-4-item08
+  anchor: extra
+- id: K213
+  category: explicit_reference
+  expected_route: prose
+  query: طبق بند ۱۹-۵-۱-۳، حداکثر نرخ تعویض هوای کل ساختمان تحت فشار ۵۰ پاسکال برای ساختمان با تهویه طبیعی
+    چند بار در ساعته؟
+  evidence:
+    blocks:
+    - main-p093-b006
+  anchor: extra
+- id: K214
+  category: explicit_reference
+  expected_route: prose
+  query: فصل هشتم مبحث ۱۹ درباره چیه؟
+  evidence:
+    blocks:
+    - main-p141-b001
+    - main-p141-b002
+  anchor: extra
+- id: K215
+  category: explicit_reference
+  expected_route: structured
+  query: پیوست ۷ برای کاه فشرده چه چگالی و ضریب هدایتی داده؟
+  evidence:
+    records:
+    - app07-p009-r09
+  anchor: extra
+- id: K216
+  category: explicit_reference
+  expected_route: prose
+  query: بند ۱۹-۷-۲-۲ (مدیریت یکپارچه بر بستر اینترنت اشیاء) چه الزاماتی داره؟
+  evidence:
+    blocks:
+    - main-p136-b009
+    - main-p136-b010
+    - main-p137-b003
+    - main-p137-b004
+    - main-p137-b005
+    - main-p137-b006
+    - main-p137-b007
+  anchor: extra
+- id: K217
+  category: explicit_reference
+  expected_route: structured
+  query: 'جدول ۱۹-۵-۲: حداکثر SHGC برای اقلیم 5B وقتی PF بین ۲۰ تا ۵۰ درصده چنده؟'
+  evidence:
+    records:
+    - main-t19-5-2-r07c05
+  anchor: extra
+- id: K218
+  category: explicit_reference
+  expected_route: prose
+  query: شکل ۱۹-۳-۱ نحوه نمایش اقلیم‌ها رو چطور توضیح میده؟ عدد و حرف هر کد یعنی چی؟
+  evidence:
+    blocks:
+    - main-p066-b003
+    - main-p066-b006
+    - main-p066-b007
+    - main-p066-b008
+  anchor: extra
+- id: K219
+  category: explicit_reference
+  expected_route: unsupported
+  query: فصل نهم مبحث نوزدهم درباره چه موضوعیه؟
+  evidence: {}
+  anchor: extra
+  notes: Mabhas 19 has chapters 19-1 to 19-8 only.
+- id: K220
+  category: explicit_reference
+  expected_route: unsupported
+  query: بند ۱۹-۵-۱-۴ درباره پنجره‌ها چی میگه؟
+  evidence: {}
+  anchor: extra
+  notes: 19-5-1 has sub-sections 1 to 3 only.
+- id: K221
+  category: explicit_reference
+  expected_route: unsupported
+  query: جدول ۱۹-۵-۸ حداکثر توان پمپ‌ها رو چقدر تعیین کرده؟
+  evidence: {}
+  anchor: extra
+  notes: Chapter 5 tables end at 19-5-7.
+- id: K222
+  category: explicit_reference
+  expected_route: unsupported
+  query: پیوست ۱۲ مبحث ۱۹ در مورد چیه؟
+  evidence: {}
+  anchor: extra
+  notes: Appendix list in the main document ends at appendix 9.
+- id: K223
+  category: explicit_reference
+  expected_route: unsupported
+  query: فصل دوازدهم مبحث ۱۹ برای آسانسورها چه الزاماتی داره؟
+  evidence: {}
+  anchor: extra
+  notes: No chapter 12.
+- id: K224
+  category: explicit_reference
+  expected_route: unsupported
+  query: تعریف شماره ۱۹-۱-۱۷۰ چیه؟
+  evidence: {}
+  anchor: extra
+  notes: Definitions run 19-1-1 to 19-1-156.
+- id: K225
+  category: explicit_reference
+  expected_route: unsupported
+  query: جدول ۱۹-۴-۲ امتیازهای بازرسی رو چطور نشون داده؟
+  evidence: {}
+  anchor: extra
+  notes: Chapter 4 has no tables.
+- id: K226
+  category: explicit_reference
+  expected_route: unsupported
+  query: بند ۱۹--۳-۱-۳ (دسته‌بندی بر اساس تعداد طبقات) چی میگه؟
+  evidence: {}
+  anchor: extra
+  notes: Malformed number; 19-3-1 has sub-sections 1 and 2 only.
+- id: K227
+  category: source_issue
+  expected_route: structured
+  query: برای ساختمان مسکونی کوچیک تو اقلیم 5C، حداکثر شدت مصرف انرژی برای رده D طبق پیوست ۳ چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    source_issues:
+    - SI-0002
+    - SI-0001
+  anchor: extra
+  notes: Appendix 3 has no 5C column.
+- id: K228
+  category: source_issue
+  expected_route: structured
+  query: حداقل R دیوار خارجی رو به فضای باز برای اقلیم 5C چقدره؟
+  evidence:
+    records:
+    - main-t19-5-1-r02c05
+    source_issues:
+    - SI-0002
+  anchor: extra
+  notes: Table 19-5-1 prints a combined «5B,5C» column.
+- id: K229
+  category: source_issue
+  expected_route: structured
+  query: SHGC مجاز پنجره‌ای که PF ش کمتر از ۲۰ درصده تو اقلیم 5C چقدره؟
+  evidence:
+    records:
+    - main-t19-5-2-r06c05
+    source_issues:
+    - SI-0002
+  anchor: extra
+- id: K230
+  category: source_issue
+  expected_route: structured
+  query: مجتمع مسکونی دقیقاً ۳۰۰۰ متر مربعی تو اقلیم 4B برای رده B از کدوم ردیف پیوست ۳ حساب میشه و سقف
+    مصرفش چنده؟
+  evidence:
+    records:
+    - app03-B-r01-4B
+    source_issues:
+    - SI-0003
+  anchor: extra
+  notes: 'Uses adjacent_ids_avoid record app03-B-r01-4B: every row-1 cell is excluded or adjacent. Row
+    1 is «مسکونی ≥ ۳۰۰۰» per the resolved reading of SI-0003.'
+- id: K231
+  category: source_issue
+  expected_route: prose
+  query: حداکثر توان مجاز روشنایی برای دفتر اداری طبق پیوست ۸ مبحث ۱۹ چند وات بر متر مربعه؟
+  evidence:
+    blocks:
+    - main-p017-b027
+    source_issues:
+    - SI-0004
+  anchor: extra
+  acceptable_routes:
+  - unsupported
+  notes: Appendix 8 is a placeholder with no lighting-power table; the clause pointing to it (main-p118-b008)
+    is excluded.
+- id: K232
+  category: source_issue
+  expected_route: structured
+  query: تو پیوست ۷ گروه فلزات و آلیاژها، فولاد چه ضریب هدایت حرارتی‌ای داره؟
+  evidence:
+    records:
+    - app07-p013-r05
+    source_issues:
+    - SI-0006
+  anchor: extra
+- id: K233
+  category: source_issue
+  expected_route: prose
+  query: عنوان دقیق پیوست ۶ مبحث ۱۹ چیه؟ آیین‌نامه صلاحیت بازرسانه یا فرایند آموزش و سنجش؟
+  evidence:
+    blocks:
+    - main-p017-b025
+    - main-p082-b007
+    - main-p078-b014
+    source_issues:
+    - SI-0007
+  anchor: extra
+  notes: The main-document appendix list entry main-p146-b010 is excluded; the TOC entry main-p017-b025
+    shows the other title.
+- id: K234
+  category: source_issue
+  expected_route: prose
+  query: تو تعریف امنیت سایبری مبحث ۱۹ کلمه «حافظت» اومده، این غلط تایپیه یا اصطلاح خاصیه؟
+  evidence:
+    blocks:
+    - main-p020-b007
+    source_issues:
+    - SI-0008
+  anchor: extra
+- id: K235
+  category: source_issue
+  expected_route: structured
+  query: حداقل R کف مجاور هوای آزاد برای اقلیم 5C چنده؟ تو جدول ستون جدا برای 5C ندیدم
+  evidence:
+    records:
+    - main-t19-5-1-r12c05
+    source_issues:
+    - SI-0002
+  anchor: extra
+  notes: 'Replaces the Isfahan SI-0009 question: both conflicting records (main-t19-3-2-r04, app02-p002-r07)
+    are in excluded_ids, so no fair record-level evidence exists. Table 19-5-1 prints a combined «5B,5C»
+    column (3.45); the record carries SI-0002.'
+- id: K236
+  category: source_issue
+  expected_route: prose
+  query: پیوست ۹ مبحث ۱۹ درباره چیه؟ چرا شماره سرصفحه‌اش «پ ۱۳-۱» نوشته شده؟
+  evidence:
+    blocks:
+    - main-p017-b028
+    - main-p146-b013
+    source_issues:
+    - SI-0005
+  anchor: extra
+  notes: main-p146-b013 (appendix list entry) is in adjacent_ids_avoid but equally direct.
+- id: K237
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: عرض راه‌پله فرار برای یه ساختمون مسکونی ۸ طبقه حداقل چقدر باید باشه؟
+  evidence: {}
+  anchor: extra
+  notes: fire safety (Mabhas 3)
+- id: K238
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: فاصله دتکتورهای دود تو راهروی ساختمون اداری از هم چقدر باشه؟
+  evidence: {}
+  anchor: extra
+  notes: fire detection (Mabhas 3)
+- id: K239
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: ستون بتنی یه ساختمون چهار طبقه حداقل چند تا میلگرد و با چه قطری لازم داره؟
+  evidence: {}
+  anchor: extra
+  notes: concrete design (Mabhas 9)
+- id: K240
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: دیوار آجری بدون کلاف تو منطقه زلزله‌خیز تا چه ارتفاعی مجازه؟
+  evidence: {}
+  anchor: extra
+  notes: seismic design (Standard 2800 / Mabhas 8)
+- id: K241
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: لوله‌کشی گاز رو میشه زیر کاشی آشپزخونه توکار اجرا کرد؟
+  evidence: {}
+  anchor: extra
+  notes: gas piping (Mabhas 17)
+- id: K242
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: ارتفاع پریز برق از کف حمام چقدر باید باشه که خطر برق‌گرفتگی نداشته باشه؟
+  evidence: {}
+  anchor: extra
+  notes: electrical safety (Mabhas 13)
+- id: K243
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: بین دو واحد آپارتمان چند دسی‌بل عایق صوتی لازمه که صدای همسایه نیاد؟
+  evidence: {}
+  anchor: extra
+  notes: acoustics (Mabhas 18)
+- id: K244
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: برای یه ساختمون ۶ طبقه آسانسور چند نفره و با چه سرعتی باید گذاشت؟
+  evidence: {}
+  anchor: extra
+  notes: lifts (Mabhas 15)
+- id: K245
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: شیب لوله فاضلاب افقی تو آشپزخونه چند درصد باشه؟
+  evidence: {}
+  anchor: extra
+  notes: plumbing (Mabhas 16)
+- id: K246
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: حداقل ابعاد هر جای پارک تو پارکینگ مجتمع مسکونی چقدره؟
+  evidence: {}
+  anchor: extra
+  notes: parking / architecture (Mabhas 4, municipal rules)
+- id: K247
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: شیب رمپ ویلچر ورودی ساختمون عمومی حداکثر چند درصد مجازه؟
+  evidence: {}
+  anchor: extra
+  notes: accessibility
+- id: K248
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: عمق پی برای ساختمون دو طبقه روی خاک رسی چقدر باید باشه؟
+  evidence: {}
+  anchor: extra
+  notes: foundations (Mabhas 7)
+- id: K249
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: سطح اشغال و تراکم مجاز ساخت تو یه زمین ۲۰۰ متری چطوری تعیین میشه؟
+  evidence: {}
+  anchor: extra
+  notes: urban planning / municipality
+- id: K250
+  category: neighbouring_domain
+  expected_route: unsupported
+  query: ارتفاع نرده بالکن طبقه پنجم حداقل چند سانتی‌متر باید باشه؟
+  evidence: {}
+  anchor: extra
+  notes: architecture safety (Mabhas 4)
+- id: K251
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: قبض برق این ماه خیلی زیاد اومده، تعرفه پلکانی برق خونگی چطوری حساب میشه؟
+  evidence: {}
+  anchor: extra
+  notes: utility billing
+- id: K252
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: سرما خوردم و گلوم درد می‌کنه، چی بخورم زود خوب شم؟
+  evidence: {}
+  anchor: extra
+  notes: health
+- id: K253
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: گرمازدگی تو تابستون چه علائمی داره و چیکار باید کرد؟
+  evidence: {}
+  anchor: extra
+  notes: health
+- id: K254
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: چطوری شیشه پنجره رو بدون لک تمیز کنم؟
+  evidence: {}
+  anchor: extra
+  notes: housekeeping
+- id: K255
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: دستور پخت قورمه‌سبزی با زودپز روی گاز
+  evidence: {}
+  anchor: extra
+  notes: cooking
+- id: K256
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: گوشیم موقع شارژ خیلی داغ میشه، باتریش خراب شده؟
+  evidence: {}
+  anchor: extra
+  notes: phones
+- id: K257
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: بهترین لامپ برای عکاسی محصول تو خونه کدومه؟
+  evidence: {}
+  anchor: extra
+  notes: photography
+- id: K258
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: کپسول گاز پیک‌نیک رو کجا میشه شارژ کرد؟
+  evidence: {}
+  anchor: extra
+  notes: camping
+- id: K259
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: سیم‌کارت 4G بخرم یا صبر کنم 5G بیاد؟
+  evidence: {}
+  anchor: extra
+  notes: telecom
+- id: K260
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: پرده بلک‌اوت برای اتاق نوزاد خوبه یا نه؟
+  evidence: {}
+  anchor: extra
+  notes: parenting / decor
+- id: K261
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: گلدون‌های آپارتمانی رو تو زمستون چطوری از سرما حفظ کنم؟
+  evidence: {}
+  anchor: extra
+  notes: gardening
+- id: K262
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: قیمت دلار امروز چنده؟
+  evidence: {}
+  anchor: extra
+  notes: finance
+- id: K263
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: اجاره‌نامه خونه‌ام تموم شده، تمدیدش چطوریه؟
+  evidence: {}
+  anchor: extra
+  notes: tenancy law
+- id: K264
+  category: everyday_offtopic
+  expected_route: unsupported
+  query: بازی فوتبال امشب ساعت چند از تلویزیون پخش میشه؟
+  evidence: {}
+  anchor: extra
+  notes: sport
+- id: K265
+  category: uncertain_conceptual
+  expected_route: prose
+  query: ورودی پاساژ دو تا در پشت سر هم داره که با هم باز نمیشن، این کار برای چیه و اجباریه؟
+  evidence:
+    blocks:
+    - main-p092-b005
+  anchor: extra
+- id: K266
+  category: uncertain_conceptual
+  expected_route: prose
+  query: راهرو و دستشویی ساختمون که پنجره نداره، چراغاش وقتی کسی نیست باید نصفه خاموش بشه؟
+  evidence:
+    blocks:
+    - main-p118-b004
+  anchor: extra
+- id: K267
+  category: uncertain_conceptual
+  expected_route: prose
+  query: واسه شارژ ماشین برقی تو پارکینگ خونه باید از اول چیزی پیش‌بینی بشه؟
+  evidence:
+    blocks:
+    - main-p114-b006
+  anchor: extra
+- id: K268
+  category: uncertain_conceptual
+  expected_route: prose
+  query: فن‌کویل رو که خاموش می‌کنیم هنوز آب گرم از توش رد میشه؛ مبحث در این مورد چی گفته؟
+  evidence:
+    blocks:
+    - main-p105-b006
+  anchor: extra
+- id: K269
+  category: adversarial
+  expected_route: prose
+  query: طبق مبحث ۱۹ وقتی کسی تو اداره نیست شوفاژ رو باید روی ۱۸ درجه گذاشت دیگه، نه؟
+  evidence:
+    blocks:
+    - main-p103-b007
+    - main-p030-b006
+  anchor: extra
+  notes: 'False premise: the source says at most 13 °C after occupancy (chapter-5 clause main-p103-b007
+    and definition main-p030-b006; the latter is in adjacent_ids_avoid but equally direct).'
+- id: K270
+  category: adversarial
+  expected_route: structured
+  query: مبحث ۱۹ پنج تا رده داره از A تا E؛ رده E برای اداری خصوصی تو اقلیم 3B چند kWh/m2 تعیین شده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+  anchor: extra
+  notes: 'False premise: only D, C, B, A are printed.'
+- id: K271
+  category: adversarial
+  expected_route: structured
+  query: آهن خالص چون ضریب هدایتش حدود ۰٫۰۷ ـه عایق خوبی حساب میشه، درسته؟
+  evidence:
+    records:
+    - app07-p013-r04
+  anchor: extra
+  notes: 'False premise: the printed conductivity is 72 W/m.K.'
+- id: K272
+  category: adversarial
+  expected_route: prose
+  query: روش شبیه‌سازی انرژی فقط برای ساختمون‌های بلندتر از ۱۰ طبقه مجازه، درسته؟
+  evidence:
+    blocks:
+    - main-p078-b004
+    - main-p121-b003
+  anchor: extra
+  notes: 'False premise: the simulation method has no restriction.'
+- id: K273
+  category: adversarial
+  expected_route: prose
+  query: مبحث ۱۹ گفته خطای تجهیزات اندازه‌گیری سامانه پایش تا ۱۰ درصد قابل قبوله؟
+  evidence:
+    blocks:
+    - main-p131-b010
+  anchor: extra
+  notes: 'False premise: error must be below 2%.'
+- id: K274
+  category: adversarial
+  expected_route: prose
+  query: طبق جدول ۱۹-۵-۳ حداقل COP چیلر جذبی تک‌اثره که با گاز شهری کار می‌کنه ۰٫۷ ـه دیگه؟
+  evidence:
+    blocks:
+    - main-p097-b009
+  anchor: extra
+  notes: 'Invented value: the table lists no single-effect absorption chiller; the text allows single-effect
+    units only with heat from sources other than the gas/electric grid.'
+- id: K275
+  category: adversarial
+  expected_route: prose
+  query: مبحث گفته شوفاژ مرکزی با ظرفیت کامل وقتی دمای بیرون زیر ۲۵ درجه‌ست روشن بشه، درسته؟
+  evidence:
+    blocks:
+    - main-p102-b005
+  anchor: extra
+  notes: 'False premise: full-load central heating only when outdoor temperature is below 16 °C.'

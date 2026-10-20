@@ -149,12 +149,21 @@ def _evidence(case_id: str) -> tuple[str, dict[str, list[str]]]:
     return str(case["query"]), case["evidence"]  # type: ignore[return-value]
 
 
-@pytest.mark.parametrize("case_id", ["F043", "F061", "F065", "F078", "F093", "F113"])
+@pytest.mark.parametrize("case_id", ["F043", "F061", "F065", "F078", "F113"])
 def test_wrong_row_regressions_return_exactly_the_printed_row(case_id: str) -> None:
     query, ev = _evidence(case_id)
     got = {h.record_id for h in _run(query).structured}
     assert set(ev["records"]) <= got
     assert got <= set(ev["records"]) | set(ev.get("acceptable_records", []))
+
+
+def test_row_named_without_its_printed_head_fails_closed() -> None:
+    # F093: «سیستم چهارلوله» states «4 لوله» of «سرمایش و گرمایش 4 لوله» but never its head;
+    # source-exact identity allows no substring match, so no row is returned
+    query, _ = _evidence("F093")
+    r = _run(query)
+    assert r.structured == []
+    assert "ambiguous_label" in {n.reason for n in r.no_match}
 
 
 @pytest.mark.parametrize(
@@ -216,7 +225,8 @@ def test_appendix7_hit_inherits_the_group_issue_and_others_do_not() -> None:
     alu = _run("ضریب هدایت حرارتی آلومینیوم")
     assert alu.structured
     assert all("SI-0006" in h.source_issues for h in alu.structured)
-    gypsum = _run("ضریب هدایت حرارتی گچ اندود با پرلیت")
+    # the plaster is printed for two volume ratios: the ratio is stated
+    gypsum = _run("ضریب هدایت حرارتی گچ اندود با دو حجم پرلیت یا ورمیکولیت برای یک حجم گچ")
     assert gypsum.structured
     assert all("SI-0006" not in h.source_issues for h in gypsum.structured)
 

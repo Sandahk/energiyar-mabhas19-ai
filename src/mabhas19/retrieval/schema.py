@@ -54,6 +54,13 @@ class Dimension:
     domain: list[str] = field(default_factory=list)  # printed values (category/identity)
     nouns: tuple[str, ...] = ()  # words naming the dimension in an enumeration request
     interval_semantics: str | None = None  # how printed bounds are read
+    # how a stated value is compared with the printed one: ``exact`` (Decimal equality),
+    # ``interval`` (containment in printed bounds) or ``categorical`` (equality of labels)
+    value_semantics: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.value_semantics:
+            self.value_semantics = "interval" if self.kind == "interval" else "categorical"
 
 
 @dataclass
@@ -66,6 +73,16 @@ class Output:
     cues: tuple[str, ...] = ()  # words that attach a stated number to this output (reverse)
     units: tuple[str, ...] = ()
     weak_cues: tuple[str, ...] = ()
+    # ``exact`` printed scalars (λ, EUI, R, U…) are matched by Decimal equality only - a reverse
+    # lookup never returns a nearby value; ``interval`` outputs (printed ranges) by containment;
+    # ``categorical`` (classes, ratings, symbols) by equality
+    value_semantics: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.value_semantics:
+            self.value_semantics = {"number": "exact", "interval": "interval"}.get(
+                self.kind, "categorical"
+            )
 
 
 @dataclass

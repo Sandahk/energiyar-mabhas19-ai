@@ -18,8 +18,11 @@ import re
 from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
+from typing import Any
 
 from mabhas19.indexing.chunking import build_chunks
+from mabhas19.retrieval.admission import PlanAdmission, admit
+from mabhas19.retrieval.certification import certify
 from mabhas19.retrieval.executor import Executor
 from mabhas19.retrieval.lexical import LexicalRetriever
 from mabhas19.retrieval.models import (
@@ -32,7 +35,7 @@ from mabhas19.retrieval.models import (
     StructuredNoMatch,
 )
 from mabhas19.retrieval.normalization import normalize_query
-from mabhas19.retrieval.plan import StructuredQueryPlan
+from mabhas19.retrieval.plan import PlanOutcome, StructuredQueryPlan, validate
 from mabhas19.retrieval.planner import Planner
 from mabhas19.retrieval.router import APPENDIX_TABLES, Router
 from mabhas19.retrieval.structured import MAIN, StructuredStore
@@ -82,6 +85,7 @@ class Retriever:
         self.router = Router(store, self.lexical.index.vocabulary())
         self.planner: Planner = self.router.planner  # the planner the router dry-runs
         self.executor = Executor(store, store.schemas)
+        self._records: dict[str, dict[str, Any]] | None = None
 
     @classmethod
     def from_curated(cls, curated: Path, blocks: list[dict[str, object]], doc_id: str) -> Retriever:
@@ -136,12 +140,69 @@ class Retriever:
     def lookup(
         self, dataset: str, query: str, *, explicit_reference: bool = False
     ) -> tuple[list[StructuredHit], list[StructuredNoMatch], list[str], StructuredQueryPlan]:
-        """One dataset, bypassing routing: plan -> validation gate -> execution."""
-        plan = self.planner.plan(
-            dataset, normalize_query(query), explicit_reference=explicit_reference
+        """One dataset, bypassing routing: plan -> validation gate -> admission -> execution
+        -> result certification."""
+        norm = normalize_query(query)
+        plan = self.planner.plan(dataset, norm, explicit_reference=explicit_reference)
+        hits, no_match, notes, _admission, _failures = self.execute(
+            plan, norm, norm, [dataset] if explicit_reference else []
         )
-        hits, no_match, notes = self.executor.run(plan)
         return hits, no_match, notes, plan
+
+    def execute(
+        self, plan: StructuredQueryPlan, text: str, full: str, explicit_targets: list[str]
+    ) -> tuple[
+        list[StructuredHit], list[StructuredNoMatch], list[str], PlanAdmission, list[dict[str, str]]
+    ]:
+        """Admit, execute and certify one plan. A plan the gate rejects keeps its typed outcome;
+        a valid plan that admission refuses never executes; a row that fails certification
+        removes every row of the plan (fail closed) and is reported as a safety failure."""
+        schema = self.store.schemas[plan.target]
+        admission = admit(
+            self.planner,
+            plan,
+            schema,
+            text,
+            full,
+            explicit_targets=explicit_targets,
+            output_text=self.router._bilingual(full),
+        )
+        gate = validate(plan, schema)
+        if gate is not None and admission.admitted:
+            # the validation gate already refuses the plan: never admitted
+            admission.admitted, admission.outcome = False, gate
+        if gate is None and not admission.admitted:
+            assert admission.outcome is not None
+            return (
+                [],
+                [self.executor._no_match(plan, admission.outcome)],
+                list(plan.notes),
+                admission,
+                [],
+            )
+        hits, no_match, notes = self.executor.run(plan)
+        failures = [
+            f.to_dict()
+            for h in hits
+            for f in certify(self.store, self.store.schemas, admission, h.dataset, self._record(h))
+        ]
+        if failures:
+            outcome = PlanOutcome(
+                "certification_failed",
+                f"returned rows failed independent certification: {failures[:3]}; nothing is "
+                "returned",
+                "certification_failed",
+            )
+            return [], [self.executor._no_match(plan, outcome)], notes, admission, failures
+        return hits, no_match, notes, admission, []
+
+    def _record(self, hit: StructuredHit) -> dict[str, Any]:
+        """The printed record behind a hit (certification reads the row itself)."""
+        if self._records is None:
+            s = self.store
+            rows = [*s.app02, *s.app03, *s.app07, *(r for t in s.main.values() for r in t.records)]
+            self._records = {str(r.get("id") or r.get("record_id")): r for r in rows}
+        return self._records[hit.record_id]
 
     def rank_prose(self, query: str, k: int) -> list[ProseHit]:
         """The prose ranking used for a query (BM25 in the baseline)."""
@@ -197,6 +258,7 @@ class Retriever:
         never answered with its operands."""
         whole = {r.replace(" ", "") for r in refs}
         full = result.normalized_query
+        explicit_targets = _referenced_tables(refs, self.store)
         seen: set[str] = set()
         by_place: dict[str, list[StructuredHit]] = {}
         for ds in decision.tables:
@@ -204,8 +266,12 @@ class Retriever:
                 APPENDIX_TABLES.get(r.split("-")[0]) == ds for r in whole if r.startswith("پ")
             )
             plan = self.planner.plan(ds, norm, explicit_reference=explicit, full_norm=full)
-            hits, no_match, notes = self.executor.run(plan)
+            hits, no_match, notes, admission, failures = self.execute(
+                plan, norm, full, explicit_targets
+            )
             result.plans.append(plan.to_dict())
+            result.admissions.append(admission.to_dict())
+            result.certification_failures += failures
             if hits:
                 result.enumerations += [{"table": ds, **asdict(e)} for e in plan.enumerations]
             result.constraints += plan.ledger()

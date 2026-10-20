@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
+from mabhas19.retrieval import polarity
 from mabhas19.retrieval.answerability import has_words
 from mabhas19.retrieval.dimensions import groups_requested, ratings_requested, years_requested
 from mabhas19.retrieval.entities import (
@@ -40,7 +41,10 @@ from mabhas19.retrieval.entities import (
     etokens,
     keys,
 )
+from mabhas19.retrieval.identity import build_indexes
+from mabhas19.retrieval.identity import query_tokens as identity_tokens
 from mabhas19.retrieval.numeric import NumInterval, Quantity, find_quantities, printed_interval
+from mabhas19.retrieval.operations import requested as requested_operation
 from mabhas19.retrieval.plan import (
     Constraint,
     Derivation,
@@ -74,17 +78,6 @@ _REFERENCE = re.compile(
     r"|(?:سال|مصوب|ویرایش)\s*1[34]\d\d"
 )
 _EXISTENCE = ("وجود دارد", "وجود داره", "هست", "هستش", "داریم", "پیدا میشه", "پیدا می شود")
-# words that make a number a computation request (never executed)
-_COMPUTATIONS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("average", ("میانگین", "معدل", "به طور متوسط", "بطور متوسط", "average")),
-    ("interpolation", ("درون یابی", "درونیابی", "میان یابی", "بین یابی", "interpolate")),
-    ("extrapolation", ("برون یابی", "برونیابی", "extrapolate")),
-    ("sum", ("مجموع", "جمع کل", "روی هم رفته", "رویهم", "جمع")),
-    ("ratio", ("چند برابر", "چندبرابر", "تقسیم")),
-    ("difference", ("تفاضل", "چقدر بیشتر از", "چقدر کمتر از", "چه قدر بیشتر از")),
-    ("conversion", ("تبدیل کن", "تبدیل به", "به واحد")),
-)
-_RATIO_OF = re.compile(r"نسبت\s+(?!r\b|مصرف\s*واقعی)[^\d،؟?]{2,40}?\s+به\s+[^\d\s]")
 _TOTAL_ENERGY = re.compile(r"(?:کیلووات\s?ساعت|kwh)(?!\s*(?:بر|در|/)\s*(?:متر|m2))")
 # measured quantities a question may ask for (a table must print the one asked)
 QUANTITY_WORDS = frozenset(
@@ -196,12 +189,7 @@ def features(norm: str) -> Features:
         f.wmo.append(m[0])
         f.consumed.append(m.span())
     f.quantities = [q for q in find_quantities(norm) if f.free(q)]
-    for kind, words in _COMPUTATIONS:
-        if has_words(norm, words):
-            f.computation = kind
-            break
-    if f.computation is None and _RATIO_OF.search(norm):
-        f.computation = "ratio"
+    f.computation = requested_operation(norm)  # typed operation parser (never executed)
     f.existence = bool(has_words(norm, _EXISTENCE))
     return f
 
@@ -259,6 +247,8 @@ class Planner:
             for ds, s in schemas.items()
         }
         self._current = ""
+        # source-exact identity of printed rows (normalization, morphology, reviewed aliases)
+        self.identity = build_indexes(store)
         self._vocab_keys: set[str] | None = None
         self._vocab_size = -1
         # quantity vocabulary of every dataset (outputs, dimension cues), for foreign-output checks
@@ -287,6 +277,33 @@ class Planner:
             self._vocab_keys = _keyset(vocab)
             self._vocab_size = len(vocab)
         return self._vocab_keys
+
+    # ------------------------------------------------------------------ identity
+    def identify(
+        self, dataset: str, text: str, full: str | None = None
+    ) -> tuple[list[str], list[str], list[str]]:
+        """(exactly named rows, rows whose head only is named, excluded phrases) of a dataset
+        for the positive text of a query (exclusions removed and returned). A row named by a
+        strict subset of the words that name another exact row is not chosen («ماسه» beside
+        «ماسه سنگ آهکی»)."""
+        pol = polarity.parse(text)
+        idx = self.identity[dataset]
+        toks, negated = idx.negations(pol)
+        # an exclusion anywhere in the question applies («… (نه X)» cut by a clause break)
+        exclusions = polarity.parse(full).exclusions if full else pol.exclusions
+        excl = [identity_tokens(e.text) for e in exclusions] + negated
+        exact: dict[str, frozenset[str]] = {}
+        head: list[str] = []
+        for row in idx.by_row:
+            if idx.excluded(row, excl):
+                continue
+            nm = idx.named(row, toks)
+            if nm.status == "exact":
+                exact[row] = frozenset(k for w in idx.named_words(row, toks) for k in keys(w))
+            elif nm.status == "head_only":
+                head.append(row)
+        best = [r for r, ws in exact.items() if not any(ws < o for o in exact.values())]
+        return best, head, [e.text for e in exclusions] + [" ".join(x) for x in negated]
 
     # ------------------------------------------------------------------ entry
     def plan(
@@ -639,25 +656,49 @@ class Planner:
         return None
 
     # ------------------------------------------------------------------ appendix 3
-    def _plan_eui(self, p: StructuredQueryPlan, f: Features, schema: TableSchema) -> None:
+    def _plan_eui(  # noqa: PLR0912, PLR0915
+        self, p: StructuredQueryPlan, f: Features, schema: TableSchema
+    ) -> None:
         out = schema.outputs[0]
         # an EUI value with an identified occupancy is a claim to check; without one it is a
         # reverse lookup, which the gate refuses (no inversion defined)
         self._attach(p, f, "max_eui", out.cues, out.units, reverse=True)
         self._categories(p, f, schema)
         store = self.store
-        res = store.resolver.occupancies(f.entity_text)
-        if res.status != "resolved":
+        exact, head, excluded = self.identify(APP03, f.entity_text, f.norm)
+        for ph in excluded:
+            p.qualifiers.append(Qualifier(ph, "negative", "applied"))
+        enumerated = False
+        if exact:
+            ids = sorted(exact, key=lambda o: list(store.occupancies).index(o))
+        elif len(head) > 1 and self._enumerate(p, f, schema, "occupancy"):
+            ids, enumerated = sorted(head), True  # «به تفکیک کاربری»: every variant of the head
+        elif head:
             p.entities.append(
                 EntityRef(
-                    "occupancy", "", "unknown", detail="no curated occupancy type matches the query"
+                    "occupancy",
+                    ", ".join(sorted(store.occupancies[o]["label"] for o in head)),
+                    "ambiguous",
+                    sorted(head),
+                    detail="the named occupancy fits several printed variants the question "
+                    "does not distinguish",
                 )
             )
             return
-        ids = list(res.ids)
+        else:
+            p.entities.append(
+                EntityRef(
+                    "occupancy",
+                    "",
+                    "unknown",
+                    detail="no printed occupancy is named exactly (normalization, morphology or "
+                    "a reviewed alias)",
+                )
+            )
+            return
         # several different occupancies tied (not size variants of one label) -> ambiguous
         bases = {re.sub(r"[≥≤<>]?\s*\d.*$", "", store.occupancies[o]["label"]).strip() for o in ids}
-        if len(bases) > 1:
+        if len(bases) > 1 and not enumerated:
             # variants of one printed head word that the question does not tell apart
             # («اداری» -> عمومی/خصوصی) are enumerated, each record carrying its own label;
             # different occupancies are ambiguous
@@ -804,7 +845,7 @@ class Planner:
                 p.operation = "reverse" if narrowing else "existence"
 
     # ------------------------------------------------------------------ appendix 7
-    def _plan_material(  # noqa: PLR0912
+    def _plan_material(  # noqa: PLR0912, PLR0915
         self, p: StructuredQueryPlan, f: Features, schema: TableSchema
     ) -> None:
         store = self.store
@@ -813,11 +854,34 @@ class Planner:
         self._categories(p, f, schema)
         # colloquial function words («همون», «تو») never name or block a material
         text = " ".join(w for w in f.entity_text.split() if w not in _COLLOQUIAL)
-        res = store.resolver.materials(text)
-        if res.status == "resolved" and not self._material_identity_named(text, res.ids):
-            # only condition words («کمتر», «با ماسه») matched: no material is named
-            res = type(res)("none", query_tokens=res.query_tokens)
+        # identity reads the printed words as stated («یک حجم پرلیت … برای یک حجم گچ»)
+        exact, head, excluded = self.identify(APP07, f.entity_text, f.norm)
+        for ph in excluded:
+            p.qualifiers.append(Qualifier(ph, "negative", "applied"))
+        res = store.resolver.materials(polarity.parse(text).positive)
         rows = [r["id"] for r in store.app07]
+        if exact:
+            # a printed material named exactly (its density/condition variants stay candidates)
+            labels = [store.app07[store._app07_pos[i]]["display_name"] for i in exact]
+            res = type(res)("resolved", exact, labels, res.leftover, res.notes, res.query_tokens)
+        elif head and _LAMBDA.search(f.norm):
+            # only a category is named («کدام عایق‌ها …»): no material identity; a stated λ is
+            # looked up within that category
+            rows = sorted(head, key=lambda i: store._app07_pos[i])
+            res = type(res)("none", query_tokens=res.query_tokens)
+        elif head:
+            names = sorted({store.app07[store._app07_pos[i]]["display_name"] for i in head})
+            res = type(res)("ambiguous", leftover=names[:5], notes=[
+                "the named material fits several printed rows the question does not distinguish"
+            ], query_tokens=res.query_tokens)  # fmt: skip
+        elif res.status == "resolved":
+            # words of a label matched, but no printed material is named exactly
+            res = type(res)(
+                "unknown",
+                leftover=res.leftover or res.labels[:1],
+                notes=["no printed material is named exactly"],
+                query_tokens=res.query_tokens,
+            )
         # numeric conditions printed inside the candidate rows («چگالی اسمی: ۱۱۰۰», «نسبت: ۱ به ۶»)
         candidate = res.ids if res.status == "resolved" else rows
         self._conditions(p, f, candidate)
@@ -955,7 +1019,7 @@ class Planner:
             return
         p.row_ids = rows
 
-    def label_rows(  # noqa: PLR0912, PLR0915
+    def label_rows(  # noqa: PLR0911, PLR0912, PLR0915
         self, t: MainTable, f: Features, p: StructuredQueryPlan
     ) -> tuple[list[str] | None, EntityRef | None]:
         """Rows whose printed label is fully named, after qualifier, count and numeric-condition
@@ -1043,6 +1107,30 @@ class Planner:
                     + "; ".join(names)
                     + "); no row is chosen",
                 )
+        # source-exact identity: a kept row must be named exactly, never by a shared word
+        exact_rows, head_rows, _ = self.identify(t.table_id, positive, f.norm)
+        exact_set = set(exact_rows)
+        label_rows = t.label_rows
+
+        def named_exactly(m: Match) -> bool:
+            return any(t.records[i]["record_id"] in exact_set for i in label_rows[m.label.id])
+
+        named_kept = [m for m in kept if named_exactly(m)]
+        if not named_kept:
+            alt = [m for m in consistent if named_exactly(m)]
+            if len({m.label.id for m in alt}) == 1:
+                named_kept = alt
+            elif alt or head_rows:
+                names = sorted({" ".join(m.label.tokens) for m in (alt or kept)})
+                return [], EntityRef(
+                    "label",
+                    "; ".join(names),
+                    "ambiguous",
+                    detail="several printed rows fit the named words and none is named exactly",
+                )
+            else:
+                return None, None  # no printed row is named: shared words are not an identity
+        kept = named_kept
         # printed numeric conditions inside the kept labels («بیش از ۷۰ کیلووات», «کمتر از %۲۰»)
         positions = sorted({i for m in kept for i in t.label_rows[m.label.id]})
         rows = [t.records[i] for i in positions]
@@ -1494,6 +1582,7 @@ _OPERATOR_WORDS = frozenset({"بین", "بیش", "بیشتر", "کمتر", "حد
 
 
 _PRINTED_CACHE: dict[tuple[str, str], Any] = {}
+_LAMBDA = re.compile(r"λ|لاندا|لامبدا|ضریب\s?هدایت|هدایت\s?حرارتی")
 
 
 def condition_quantities(r: dict[str, Any]) -> list[tuple[str, Quantity]]:
@@ -1572,22 +1661,11 @@ def _label_texts(t: MainTable, r: dict[str, Any]) -> list[str]:
     return [x for path, _ in fields if (x := _field(r, path))]
 
 
-_NEGATED_PHRASE = re.compile(
-    r"(?<![ؠ-ۿ])(?:نه|بجز|به\s?جز|جز|منهای|به\s?غیر\s?از|بغیر\s?از)\s+([^()،,؛;؟?.!]{1,60})"
-)
-
-
 def negated_phrases(text: str) -> tuple[str, list[str]]:
-    """(text without negated phrases, the phrases). A phrase runs from «نه/به جز/منهای/به غیر
-    از» to the next parenthesis or clause break, at most six words."""
-    phrases: list[str] = []
-
-    def cut(m: re.Match[str]) -> str:
-        words = m[1].split()
-        phrases.append(" ".join(words[:6]))
-        return " " + " ".join(words[6:]) + " "
-
-    return _NEGATED_PHRASE.sub(cut, text), phrases
+    """(text without excluded phrases, the excluded phrases), from the typed contrast parser
+    (:mod:`mabhas19.retrieval.polarity`): «نه X», «به جز X», «(نه X)», «X، نه Y»…"""
+    pol = polarity.parse(text)
+    return pol.positive, [e.text for e in pol.exclusions]
 
 
 def _negate(tokens: list[str], vocabulary: set[str]) -> list[str]:

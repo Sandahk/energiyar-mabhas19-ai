@@ -122,6 +122,25 @@ class Executor:
         records = self._candidates(plan, schema)
         records, extra = self._filter(plan, schema, records)
         notes += extra
+        # a row printing no value (a dash or an empty cell) answers nothing: typed, never returned
+        printed = [r for r in records if _prints_a_value(schema, r)]
+        if records and not printed:
+            dashes = ", ".join(_rid(r) for r in records)
+            return (
+                [],
+                [
+                    self._no_match(
+                        plan,
+                        PlanOutcome(
+                            "no_printed_category",
+                            f"the source prints no value (a dash or empty cell) for {dashes}",
+                            "no_printed_value",
+                        ),
+                    )
+                ],
+                notes,
+            )
+        records = printed
         if not records:
             reason = _NO_PRINTED_REASON.get(schema.family, "no_matching_row")
             detail = "no printed row satisfies every interpreted constraint: " + "; ".join(
@@ -297,7 +316,9 @@ class Executor:
             return _point_in(_dec(_get(r, "max_eui.value")), c.interval)
         schema = self.schemas[ds]
         out = schema.output(dim)
-        if out is not None and out.kind == "number":
+        if out is not None and out.kind == "number" and out.value_semantics == "exact":
+            # an exact printed scalar: a stated point matches by Decimal equality only (a stated
+            # range by containment) - never the nearest printed value
             return _point_in(_dec(_get(r, out.path)), c.interval)
         return False
 
@@ -331,6 +352,17 @@ class Executor:
         )
         nm.outcome = outcome.code
         return nm
+
+
+def _prints_a_value(schema: TableSchema, r: dict[str, Any]) -> bool:
+    """The row prints at least one value output (not a dash or an empty cell)."""
+    for o in schema.outputs:
+        if o.kind == "text":
+            continue
+        v = _get(r, o.path)
+        if v is not None and str(v).strip() not in ("", "-", "–", "—"):
+            return True
+    return False
 
 
 def _rid(r: dict[str, Any]) -> str:

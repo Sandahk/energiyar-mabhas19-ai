@@ -144,3 +144,7 @@ class RetrievalResult:
     plans: list[dict[str, Any]] = field(default_factory=list)  # structured query plans, as run
     # explicitly requested enumerations of printed alternatives behind the returned records
     enumerations: list[dict[str, Any]] = field(default_factory=list)
+    # plan admission certificates (or refusals) and failed result certifications (typed safety
+    # failures: the rows of a plan with any failure are never returned)
+    admissions: list[dict[str, Any]] = field(default_factory=list)
+    certification_failures: list[dict[str, str]] = field(default_factory=list)

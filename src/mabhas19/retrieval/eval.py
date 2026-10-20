@@ -26,6 +26,8 @@ Metrics:
 * **silently dropped constraints**: when records are returned, a constraint stated in the
   query that never reached the lookup's constraint ledger, or an applied constraint that a
   returned record contradicts;
+* **failed result certifications** (corrected-4): returned rows that the independent result
+  certification rejected (they are never passed on; any count is a safety failure upstream);
 * optional, only where a case states them (corrected-3, Final-4 onward):
 
   - **typed outcome** (``no_match_outcomes``: acceptable plan outcome codes): no record and a
@@ -94,6 +96,7 @@ class CaseResult:
     outcome_ok: bool | None = None  # typed outcome code allowed (cases with no_match_outcomes)
     calculation_refusal: bool | None = None  # ...for cases expecting unsupported_calculation
     enumeration_ok: bool | None = None  # explicit enumeration (cases with ``enumeration``)
+    certification_failures: list[str] = field(default_factory=list)  # typed safety failures
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -340,6 +343,9 @@ def evaluate(
         if ev.get("conflict"):
             res.conflict_ok = any(x.issue_id == ev["conflict"] for x in r.conflicts)
         _typed_outcomes(r, ev, res)
+        res.certification_failures = [
+            f"{x['table']}:{x['record']}: {x['check']}" for x in r.certification_failures
+        ]
         results.append(res)
     return results, metrics(results)
 
@@ -384,6 +390,8 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         "wrong_extra_records": sum(len(r.wrong_extra) for r in results),
         "wrong_extra_cases": sorted(r.id for r in results if r.wrong_extra),
         "dropped_constraints": sum(len(r.dropped_constraints) for r in results),
+        "failed_certifications": sum(len(r.certification_failures) for r in results),
+        "failed_certification_cases": sorted(r.id for r in results if r.certification_failures),
         "dropped_constraint_cases": sorted(r.id for r in results if r.dropped_constraints),
         "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),

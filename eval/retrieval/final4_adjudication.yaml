@@ -1,0 +1,36 @@
+# Post-hoc adjudication of the Final-4 run (approved 2026-10-20).
+#
+# The Final-4 cases (final4.yaml), its candidate manifest and the immutable run
+# 20261019T161618Z-final4 stay unchanged; nothing is re-scored. This file records, for the two
+# cases the run scored as wrong regulatory values, why they are evaluation artifacts rather than
+# genuine runtime wrong values. Final-4 remains an accepted failed benchmark (development data).
+schema_version: 1
+run: 20261019T161618Z-final4
+approved_on: '2026-10-20'
+cases:
+  - id: L338
+    query: رده اقلیمی اصفهان در مبحث ۱۹ چیست؟ جدول مراکز استان و پیوست ۲ یک عدد را می‌گویند؟
+    scored_as: wrong_regulatory_value
+    returned: app02-p002-r07
+    finding: >-
+      The returned record is the true Appendix 2 Isfahan source record (climate class 4B,
+      tagged SI-0009). The frozen case lists no records because both SI-0009 records
+      (main-t19-3-2-r04, app02-p002-r07) were in the candidate's excluded_ids and could not be
+      named as evidence; any returned record therefore scored as wrong.
+    adjudication: evaluation_artifact
+    note: >-
+      Separately, the descriptive reference «جدول مراکز استان» did not resolve (broken plural
+      «مراکز» vs the caption's «مرکز»), so table 19-3-2 was not in scope and the SI-0009
+      conflict was not surfaced. That is a reference-resolution gap, not a wrong value.
+  - id: L342
+    query: کد ایستگاه هواشناسی کرمان در جدول ۱۹-۳-۲ چند است؟
+    scored_as: wrong_regulatory_value
+    returned: main-t19-3-2-r21
+    finding: >-
+      The returned record is the true Kerman row of table 19-3-2 (tagged SI-0010). The frozen
+      case lists no records because main-t19-3-2-r21 was in the candidate's excluded_ids; any
+      returned record therefore scored as wrong.
+    adjudication: evaluation_artifact
+# The run's other wrong-value cases (L036, L042, L182, L216, L218, L229, L237, L249, L255) stay
+# genuine failures of that run; they are addressed by the admission/certification redesign and
+# measured on Final-4 as development data, never by re-scoring the run.

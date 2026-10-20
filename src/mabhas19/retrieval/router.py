@@ -159,6 +159,7 @@ _PURPOSE = re.compile(r"(?:^|\s)برای\s.*(?:می\s?خوام|می\s?خواهم
 _WHICH_CLASS = re.compile(r"جزو\s*(?:کدام|کدوم|چه)")
 _TABLE_WORD = re.compile(r"(?<![ؠ-ۿ])(?:جدول|جداول)")
 _TABLE_ID = re.compile(r"(?<![\d-])(19\s?-\s?\d+\s?-\s?\d+|پ\s?\d+\s?-\s?\d+)(?![\d-])")
+_ID_FIRST = re.compile(r"\s*(?:شماره\s*)?(?:19\s?-\s?\d|پ\s?\d)")
 _TABLE_REF = re.compile(r"جدول\s*(?:شماره\s*)?(19-\d+-\d+|پ\s?\d+-\d+)")
 _SECTION_REF = re.compile(r"(?<![\d-])(19(?:-\d+){1,4})(?![\d-])")
 _APPENDIX_REF = re.compile(r"پیوست\s*(?:شماره\s*)?(\d+)(?![\d-])")
@@ -283,6 +284,22 @@ _FILLERS = frozenset(
         "مجاز",
     }
 )
+# words of a requested operation (never a table's vocabulary; the operation parser reads them)
+_OPERATION_WORDS = (
+    "درون",
+    "یابی",
+    "درونیابی",
+    "میانیابی",
+    "برون",
+    "برونیابی",
+    "میانگین",
+    "معدل",
+    "مجموع",
+    "تفاضل",
+    "اختلاف",
+    "کن",
+    "بکن",
+)
 # comparison words: never what a table lookup is about, but part of a question of its own
 _COMPARISON = ("کم", "زیاد", "بیشتر", "کمتر", "بیش", "بالا", "بالاتر", "پایین", "پایینتر")
 # words that never name what a table lookup is about
@@ -297,6 +314,7 @@ GENERIC_KEYS = frozenset(
         *INTERROGATIVES,
         *_FILLERS,
         *_COMPARISON,
+        *_OPERATION_WORDS,
     )
     for k in keys(w)
 )
@@ -587,6 +605,8 @@ class Router:
                     refs.append(ref)
             for m in _TABLE_WORD.finditer(sentence):
                 tail = sentence[m.end() :]
+                if _ID_FIRST.match(tail):
+                    continue  # «جدول ۱۹-۵-۴ رده انرژی …»: the printed ID names the table
                 tables, words = self._caption_match(tail)
                 if len(tables) == 1:
                     refs.append(_ref_of(tables[0]))

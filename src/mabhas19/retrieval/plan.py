@@ -19,7 +19,9 @@ Outcome codes (``StructuredNoMatch.outcome``):
 * ``unsupported_calculation`` - totals, averages, ratios, interpolation, area products…;
 * ``unknown_entity`` / ``ambiguous_entity`` - entity resolution failed or is not unique;
 * ``contradiction`` - an executed row contradicted an applied constraint (internal safety net;
-  zero rows are returned).
+  zero rows are returned);
+* ``certification_failed`` - a returned row failed independent result certification
+  (:mod:`mabhas19.retrieval.certification`; zero rows are returned).
 """
 
 from __future__ import annotations
@@ -55,6 +57,7 @@ OUTCOMES = (
     "unknown_entity",
     "ambiguous_entity",
     "contradiction",
+    "certification_failed",
 )
 
 

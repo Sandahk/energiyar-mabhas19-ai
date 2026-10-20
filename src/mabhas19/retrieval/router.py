@@ -284,6 +284,21 @@ _FILLERS = frozenset(
         "مجاز",
     }
 )
+
+
+def caption_keys(word: str) -> frozenset[str]:
+    """Matching keys of a caption/reference word: :func:`keys` plus the singular of a broken
+    plural of the pattern فعائل/مفاعل («مراکز» ~ «مرکز», «منابع» ~ «منبع», «جداول» ~ «جدول»):
+    the «ا» after the second letter of a five-letter word is removed, on both the caption and
+    the query side. The derived form only ever matches another printed caption word, so a word
+    that is no plural («حرارت» -> «حررت») matches nothing."""
+    out = set(keys(word))
+    for k in list(out):
+        if len(k) == 5 and k[2] == "ا" and "ا" not in (k[0], k[1], k[3], k[4]):
+            out.add(k[:2] + k[3:])
+    return frozenset(out)
+
+
 # words of a requested operation (never a table's vocabulary; the operation parser reads them)
 _OPERATION_WORDS = (
     "درون",
@@ -454,7 +469,7 @@ class Router:
                 k
                 for w in etokens(normalize_query(self._title(ds)))
                 if w not in FUNCTION_WORDS
-                for k in keys(w)
+                for k in caption_keys(w)
                 if not k.isdigit()
             )
         sup = self.scope.data.get("supported", {})
@@ -622,7 +637,7 @@ class Router:
         for t in etokens(tail)[:12]:
             if t in FUNCTION_WORDS or t in ("شماره", "های", "ها") or re.match(r"\d|پ\d", t):
                 continue
-            hits = [ds for ds, cap in self.captions.items() if keys(t) & cap]
+            hits = [ds for ds, cap in self.captions.items() if caption_keys(t) & cap]
             narrowed = [ds for ds in hits if not used or ds in best]
             if not narrowed:
                 break

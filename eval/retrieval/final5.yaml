@@ -1,0 +1,3482 @@
+# Final-5 retrieval test set (evidence only; no expected answers). Frozen before the single run.
+schema_version: 1
+seed: 202610215
+anchors: data/retrieval/final5_anchors_202610215.yaml
+candidate_manifest: eval/retrieval/final5_candidate.yaml
+authoring: fresh isolated agent (anchors + curated/ + authoring brief only; four personas); one revision round for
+  23 lexical-novelty rewrites (told only the case IDs, never the earlier queries) and flag/anchor fixes; independent
+  fresh reviewer (34 findings applied mechanically, excluded blocks flagged uses_excluded_evidence)
+novelty_check: 'word-trigram containment / longest common word run / character similarity against every query of
+  dev, diagnostic, final, Final-2, Final-3 and Final-4: 0 high-overlap cases after rewrite (40 medium-overlap frames
+  reported)'
+exclusions: all evidence IDs of dev, diagnostic, final, Final-2, Final-3 and Final-4 never seed a case; excluded
+  IDs appear only as independently reached true answers (uses_excluded_records for records, uses_excluded_evidence
+  for blocks/sections); adjacent IDs only where unavoidable, disclosed per case in notes
+shortfalls: 'climate_city: only 8 unused Appendix 2 cities exist (all adjacent); sections: 11 non-adjacent unused,
+  14 adjacent drawn; materials: 6 non-adjacent unused, 34 adjacent drawn'
+cases:
+- id: M001
+  category: abbreviation
+  persona: engineer
+  expected_route: structured
+  query: λ صفحات ممتد پلی‌یورتان یا پلی‌ایزوسیانورات که از بلوک‌های منبسط‌شده با HCFC یا پنتان برش خورده‌اند چقدر
+    است؟
+  evidence:
+    records:
+    - app07-p012-r05
+  anchor: record:app07-p012-r05
+- id: M002
+  category: polarity_qualifier
+  persona: contractor
+  expected_route: structured
+  query: بتونه درز پلی‌یورتان اسفنجی (نه پلی‌یورتان معمولی) چه ضریب هدایت حرارتی داره؟
+  evidence:
+    records:
+    - app07-p006-r20
+  anchor: record:app07-p006-r20
+  notes: «اسفنجی» selects this sealant row. record is in adjacent_ids_avoid (material/city pool is adjacent-only);
+    used as drawn.
+- id: M003
+  category: caption_reference
+  persona: engineer
+  expected_route: structured
+  query: جدول الزامات پوسته خارجی در اقلیم‌های مختلف (روش تجویزی)
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-1
+    - m19-ed5-1404-main.t19-5-2
+  anchor: extra
+  notes: fits 19-5-1 (non-transparent, R) and 19-5-2 (transparent, U/SHGC).
+- id: M004
+  category: main_table
+  persona: contractor
+  expected_route: structured
+  query: از همون سال اول ابلاغ، تو ساختمونای گروه ب نصب شیرهای کنترلی و جریان‌سنج‌ها رو هم ازمون می‌خوان؟
+  evidence:
+    records:
+    - main-t19-2-1-r07c16
+  anchor: record:main-t19-2-1-r07c16
+- id: M005
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: این «مصرف ویژه انرژی» که میگن همون شدت مصرفه؟ برای یه مطب پزشکی تو اقلیم 1B رده C حداکثرش چقدره؟
+  evidence:
+    blocks:
+    - main-p056-b011
+    records:
+    - app03-C-r11-1B
+  anchor: record:app03-C-r11-1B
+- id: M006
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: اگر ساختمان موجود پس از تکمیل چرخه اقدامات بهینه‌سازی به رده بازدهی هدف نرسد، چه باید کرد؟
+  evidence:
+    blocks:
+    - main-p145-b006
+  anchor: block:main-p145-b006
+- id: M007
+  category: colloquial_explanation
+  persona: contractor
+  expected_route: prose
+  query: کنترل هوشمند موتورخونه امکان کنترل از راه دور و اعلام خرابی هم داره یا فقط مشعل رو خاموش روشن می‌کنه؟
+  evidence:
+    blocks:
+    - main-p038-b003
+  anchor: block:main-p038-b003
+- id: M008
+  category: explicit_reference
+  persona: inspector
+  expected_route: structured
+  query: چه تجهیزات غیرمرکزی‌ای مثل آبگرمکن، بخاری و کولر حداقل بازدهی‌شان در جدول ۱۹-۵-۴ آمده است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-4
+  anchor: table:m19-ed5-1404-main.t19-5-4
+  notes: whole-table question; number at the end.
+- id: M009
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: برای تعیین مقاومت حرارتی دیوارهای یک ساختمان موجود، می‌توان مستقیم نمونه‌برداری مخرب کرد یا اولویت با روش‌های
+    غیرمخرب است؟
+  evidence:
+    blocks:
+    - main-p142-b008
+  anchor: block:main-p142-b008
+- id: M010
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: کنتورها و تجهیزات اندازه‌گیری رو دقیقاً کدوم نقاط ساختمون باید نصب کنیم و برای چه حامل‌هایی؟
+  evidence:
+    blocks:
+    - main-p131-b004
+  anchor: section:19-7-1-1
+  notes: clause الف of 19-7-1-1 (key points, all carriers incl. heating/cooling and DHW).
+- id: M011
+  category: polarity_qualifier
+  persona: contractor
+  expected_route: structured
+  query: سوله صنعتی که تهویه داره تو اقلیم 4B، رده C حداکثر چقدر مصرف مجازه؟
+  evidence:
+    records:
+    - app03-C-r33-4B
+  anchor: record:app03-C-r33-4B
+- id: M012
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: ساختمون ما گروه الف هست؛ سال دوم اجرای مبحث، عایق‌کاری پوسته خارجی لازمه؟
+  evidence:
+    records:
+    - main-t19-2-1-r03c05
+  anchor: record:main-t19-2-1-r03c05
+- id: M013
+  category: computed_refusal
+  persona: homeowner
+  expected_route: structured
+  query: میانگین حداکثر مصرف مجاز بیمارستان برای رده D تو همه اقلیم‌ها چقدر میشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unsupported_calculation
+  anchor: extra
+- id: M014
+  category: city_climate
+  persona: homeowner
+  expected_route: structured
+  query: شهر سمنان تو چه اقلیمیه؟
+  evidence:
+    records:
+    - app02-p003-r20
+    - main-t19-3-2-r15
+  anchor: record:app02-p003-r20
+  notes: Semnan is printed both in appendix 2 and in table 19-3-2 (provincial capital), both 2B. record is in adjacent_ids_avoid
+    (material/city pool is adjacent-only); used as drawn.
+- id: M015
+  category: table_reference
+  persona: homeowner
+  expected_route: structured
+  query: اون جدولی که اقلیم‌ها رو بر اساس روز-درجه سرمایش و گرمایش دسته‌بندی کرده چند تا ردیف داره و چه اقلیم‌هایی؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-1
+  anchor: table:m19-ed5-1404-main.t19-3-1
+- id: M016
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: در اقلیم‌های ۰ و ۱ دیوارهای خارجی چه ضریب بازتابی باید داشته باشند و الزامات بازتاب نما برای گروه الف در
+    سال سوم جدول زمان‌بندی چه وضعیتی دارد؟
+  evidence:
+    blocks:
+    - main-p087-b006
+    records:
+    - main-t19-2-1-r04c06
+  anchor: record:main-t19-2-1-r04c06
+- id: M017
+  category: city_climate
+  persona: engineer
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز ساختمان اداری خصوصی در شهر زابل برای رده D چقدر است؟
+  evidence:
+    records:
+    - app02-p003-r11
+    - app03-D-r05-1B
+  anchor: record:app02-p003-r11
+  notes: 'chained lookup: Zabol = 1B (appendix 2), then appendix 3. record is in adjacent_ids_avoid (material/city
+    pool is adjacent-only); used as drawn.'
+- id: M018
+  category: neighbouring_domain
+  persona: inspector
+  expected_route: unsupported
+  query: ظرفیت آسانسور یک ساختمان ۸ طبقه با ۱۶ واحد مسکونی حداقل چند نفر باید باشد؟
+  evidence: {}
+  anchor: extra
+  notes: 'lifts: mabhas 15.'
+- id: M019
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: در روش شبیه‌سازی، یک ساختمان دانشگاهی در اقلیم 4A با چه شرطی پروانه می‌گیرد و سقف شدت مصرف آن برای رده
+    D چقدر است؟
+  evidence:
+    blocks:
+    - main-p078-b007
+    records:
+    - app03-D-r13-4A
+  anchor: record:app03-D-r13-4A
+- id: M020
+  category: uncertain_conceptual
+  persona: engineer
+  expected_route: prose
+  query: یعنی چون روش تجویزی محدوده مشخصی برای متغیرها داره، طرح‌های نوآورانه معماری مثل سایه‌بان خاص یا تهویه طبیعی
+    ممنوع میشن؟
+  evidence:
+    blocks:
+    - main-p081-b007
+    - main-p076-b010
+    - main-p091-b005
+  anchor: block:main-p081-b007
+  notes: the same clarification appears three times (19-5 footnote, 19-4-1 footnote and 19-5-1-2 paragraph; the
+    latter two adjacent).
+- id: M021
+  category: spelling_variant
+  persona: contractor
+  expected_route: structured
+  query: بندرماهشهر چه رده اقلیمی داره؟
+  evidence:
+    records:
+    - app02-p002-r22
+  anchor: record:app02-p002-r22
+  notes: joined spelling of «بندر ماهشهر». record is in adjacent_ids_avoid (material/city pool is adjacent-only);
+    used as drawn.
+- id: M022
+  category: numeric_format
+  persona: contractor
+  expected_route: structured
+  query: اندود آهکی یا سیمانی با چگالی هشتصد کیلوگرم بر متر مکعب چه λ داره؟
+  evidence:
+    records:
+    - app07-p003-r07
+  anchor: record:app07-p003-r07
+  notes: number written in words; 800 lies in «۷۵۰ تا ۱۰۰۰». record is in adjacent_ids_avoid (material/city pool
+    is adjacent-only); used as drawn.
+- id: M023
+  category: conceptual
+  persona: contractor
+  expected_route: prose
+  query: برای اینکه نقشه‌های تأسیسات مکانیکی تأیید بشه، دیاگرام تک‌خطی جریان انرژی باید چه چیزهایی رو نشون بده؟
+  evidence:
+    blocks:
+    - main-p110-b008
+  anchor: block:main-p110-b008
+- id: M024
+  category: listed_name
+  persona: homeowner
+  expected_route: structured
+  query: ضریب هدایت حرارتی ورق پلکسی گلاس چنده؟
+  evidence:
+    records:
+    - app07-p007-r16
+  anchor: record:app07-p007-r16
+  notes: name printed in parentheses (PMMA row). record is in adjacent_ids_avoid (material/city pool is adjacent-only);
+    used as drawn.
+- id: M025
+  category: neighbouring_domain
+  persona: engineer
+  expected_route: unsupported
+  query: ضریب رفتار سازه برای قاب خمشی بتن مسلح ویژه در طراحی لرزه‌ای چقدر است؟
+  evidence: {}
+  anchor: extra
+  notes: 'seismic design: standard 2800 / structural mabhas.'
+- id: M026
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: حداقل بازدهی شارژ هر دستگاه شارژر خودرو برقی چقدر باید در نظر گرفته بشه و گروه الف تو سال سوم ملزم به شارژره؟
+  evidence:
+    blocks:
+    - main-p114-b004
+    records:
+    - main-t19-2-1-r04c21
+  anchor: record:main-t19-2-1-r04c21
+  notes: p114-b004 adjacent_ids_avoid.
+- id: M027
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: اندود ماسه سیمان با چگالی حدود ۱۵۰۰ چه λ داره و مقاومت حرارتی کل یه دیوار چندلایه چطوری حساب میشه؟
+  evidence:
+    blocks:
+    - main-p085-b004
+    - main-p084-b005
+    records:
+    - app07-p003-r04
+  anchor: record:app07-p003-r04
+  uses_excluded_evidence: true
+  notes: 1500 lies in «۱۴۵۰ تا ۱۶۰۰» (adjacent record). The sum rule is clause چ (p084-b005, excluded) with formula
+    p085-b004.
+- id: M028
+  category: enumeration
+  persona: engineer
+  expected_route: structured
+  query: 'نمایشگاه خودرو در اقلیم 3A: حداکثر شدت مصرف مجاز را به تفکیک رده‌های A، B، C و D بگویید.'
+  evidence:
+    records:
+    - app03-D-r30-3A
+    - app03-C-r30-3A
+    - app03-B-r30-3A
+    - app03-A-r30-3A
+    enumeration:
+      dimension: rating
+  anchor: record:app03-B-r30-3A
+- id: M029
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: بیمارستان ما تو اقلیم 1B هست؛ شدت مصرف سالانه رو چطوری حساب کنیم و سقف رده D چقدره؟
+  evidence:
+    blocks:
+    - main-p072-b004
+    - main-p062-b004
+    records:
+    - app03-D-r07-1B
+  anchor: record:app03-D-r07-1B
+  uses_excluded_evidence: true
+  notes: computation is printed in 19-3-2-2 ت (adjacent) and 19-2-4-1 (p062-b004, excluded).
+- id: M030
+  category: missing_dimension
+  persona: engineer
+  expected_route: structured
+  query: ضریب هدایت حرارتی «چوب‌های سنگین» از گروه چوب‌های طبیعی خاص چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - missing_required_dimension
+  anchor: table:m19-ed5-1404-app07.material_thermal_properties
+  notes: two printed density rows carry this name with different λ; density not stated. Seed row p008-r09.
+- id: M031
+  category: unfamiliar_terminology
+  persona: contractor
+  expected_route: prose
+  query: این «روم کنترلر» که تو نقشه‌های تأسیسات نوشتن چه چیزهایی رو کنترل می‌کنه؟
+  evidence:
+    blocks:
+    - main-p047-b008
+    sections:
+    - 19-1-125
+  anchor: section:19-1-125
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. transliterated English
+    name for كنترل‌گر اتاق; one-block definition. answering block(s) main-p047-b008 are in excluded_ids; listed
+    as the true answer.
+  uses_excluded_evidence: true
+- id: M032
+  category: mixed_entity_in_explanation
+  persona: homeowner
+  expected_route: mixed
+  query: پنجره‌های خونه‌مون تو کهنوج تقریباً هم‌سطح نما هستن و تقریباً هیچ تورفتگی‌ای ندارن؛ لایه ضد اشعه مادون
+    قرمز رو باید سمت داخل شیشه بزنیم یا نه، و SHGC شیشه حداکثر چقدر مجازه؟
+  evidence:
+    blocks:
+    - main-p089-b008
+    records:
+    - app02-p004-r07
+    - main-t19-5-2-r06c01
+  anchor: extra
+  notes: 'city only in the explanation: Kahnooj = 0B; no recess → PF band «کمتر از %۲۰», group 0B/1B. adjacent_ids_avoid
+    used (adjacent-only pool for this table/record family).'
+- id: M033
+  category: section_lookup
+  persona: engineer
+  expected_route: prose
+  query: تعریف شبکه عصبی مصنوعی در فصل تعاریف (بند ۱۹-۱-۹۳)
+  evidence:
+    blocks:
+    - main-p040-b009
+    sections:
+    - 19-1-93
+  anchor: section:19-1-93
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. clause number in
+    parentheses at the end. answering block(s) main-p040-b009 are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M034
+  category: numeric_format
+  persona: homeowner
+  expected_route: structured
+  query: آپارتمان ۱۲ واحدی با زیربنای ۲٬۴۰۰ متر مربع تو اقلیم 2A؛ حداکثر مصرف مجاز رده D چقدره؟
+  evidence:
+    records:
+    - app03-D-r02-2A
+  anchor: record:app03-D-r02-2A
+  notes: thousands separator «٬»; 2400 m2 falls in row «مسکونی < ۳۰۰۰ مترمربع».
+- id: M035
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: طراح ما با اینکه اجباری نبود موتورخانه مرکزی گذاشته؛ با این انتخاب فقط نصب چه چیزی واجب می‌شود؟ و در ستون
+    «سیستم کنترل موتورخانه» جدول زمان‌بندی، ردیف پنجمین سالِ گروه ج چه علامتی خورده؟
+  evidence:
+    blocks:
+    - main-p110-b010
+    records:
+    - main-t19-2-1-r16c15
+  anchor: record:main-t19-2-1-r16c15
+- id: M036
+  category: unfamiliar_terminology
+  persona: engineer
+  expected_route: prose
+  query: «مصرف ویژه انرژی ساختمان» همان شدت مصرف انرژی در ساختمان است؟ با شدت مصرف انرژی کشور چه فرقی دارد؟
+  evidence:
+    blocks:
+    - main-p056-b011
+  anchor: block:main-p056-b011
+- id: M037
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: ساختمونی که با شبیه‌سازی طراحی شده هم باید همه موارد فصل هفتم یعنی پایش و زیرپایش و مدیریت یکپارچه رو داشته
+    باشه؟
+  evidence:
+    blocks:
+    - main-p122-b008
+    - main-p110-b009
+    - main-p120-b005
+    - main-p120-b012
+  anchor: block:main-p122-b008
+  notes: the same obligation for both methods is repeated in 19-5-2-2-4, 19-5-5 (p120-b005 adjacent) and 19-5-6.
+- id: M038
+  category: unknown_entity
+  persona: contractor
+  expected_route: unsupported
+  query: ساندویچ پانل پلی‌یورتان چه ضریب هدایت حرارتی داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: everyday product name; resembles the printed «صفحات با عایق تزریق‌شده ... بین دو ورق فلزی» rows.
+- id: M039
+  category: listed_name
+  persona: homeowner
+  expected_route: structured
+  query: یه مهمانسرای کوچیک تو اقلیم 4B داریم؛ برای رده C سقف مصرفش چنده؟
+  evidence:
+    records:
+    - app03-C-r21-4B
+  anchor: record:app03-C-r21-4B
+  notes: «مهمانسرا» is an item of «مسافرخانه/ مهمانسرا»; «کوچیک» harmless (no size split for this use).
+- id: M040
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: تو نقشه‌های جریان انرژی، جزئیات نصب و نحوه اتصالات کنتورها رو هم باید بکشیم یا فقط جاشون کافیه؟
+  evidence:
+    blocks:
+    - main-p131-b006
+  anchor: block:main-p131-b006
+- id: M041
+  category: unknown_entity
+  persona: contractor
+  expected_route: unsupported
+  query: ضریب هدایت حرارتی ایزوگام چنده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: trade name; not printed in appendix 7.
+- id: M042
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: برچسب انرژی یک دستگاه چه چیزی را نشان می‌دهد و برای پمپ‌های گریز از مرکز با جریان مختلط و محوری چه رده‌ای
+    الزامی شده است؟
+  evidence:
+    blocks:
+    - main-p024-b006
+    records:
+    - main-t19-5-3-item09
+  anchor: block:main-p024-b006
+  notes: record adjacent_ids_avoid.
+- id: M043
+  category: invalid_dimension
+  persona: engineer
+  expected_route: structured
+  query: سقف شدت مصرف ساختمان اداری خصوصی در اقلیم 3A برای رده E چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+  anchor: extra
+  notes: appendix 3 prints ratings A–D only.
+- id: M044
+  category: prose_with_table_words
+  persona: engineer
+  expected_route: prose
+  query: هدف از اجرای الزامات روش تجویزی رسیدن به حداقل کدام رده بازدهی در هر کاربری-اقلیم است؟
+  evidence:
+    blocks:
+    - main-p081-b005
+  anchor: block:main-p081-b005
+- id: M045
+  category: mixed
+  persona: homeowner
+  expected_route: mixed
+  query: رده «نزدیک به مصرف صفر» یعنی چی و یه انبار یخچال‌دار تو اقلیم 4B برای گرفتنش حداکثر چقدر می‌تونه مصرف کنه؟
+  evidence:
+    blocks:
+    - main-p034-b004
+    - main-p062-b010
+    records:
+    - app03-A-r32-4B
+  anchor: record:app03-A-r32-4B
+  uses_excluded_evidence: true
+  notes: 'p062-b010 (excluded) prints «رده A : ساختمان نزدیک به مصرف صفر»; listed because it answers the explanation
+    part.'
+- id: M046
+  category: coordinated_values
+  persona: inspector
+  expected_route: structured
+  query: بازرسی پایان‌کار برای گروه ج در سال‌های چهارم و پنجم جدول زمان‌بندی چه وضعیتی دارد؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c04
+    - main-t19-2-1-r16c04
+  anchor: record:main-t19-2-1-r15c04
+  notes: two years listed explicitly; also covers anchor main-t19-2-1-r16c04.
+- id: M047
+  category: abbreviation
+  persona: engineer
+  expected_route: structured
+  query: EUI مجاز کاربری اداری عمومی در اقلیم 1B برای رده D چند است؟
+  evidence:
+    records:
+    - app03-D-r04-1B
+  anchor: record:app03-D-r04-1B
+- id: M048
+  category: conceptual
+  persona: engineer
+  expected_route: prose
+  query: هدف اصلی بخش شدت مصرف انرژی در فصل سوم چیست و این الگوی مصرف معادل حداکثر مجاز مصرف برای اخذ کدام رده است؟
+  evidence:
+    blocks:
+    - main-p069-b010
+    - main-p070-b003
+    - main-p020-b004
+  anchor: section:19-3
+  uses_excluded_evidence: true
+  notes: drawn section 19-3 has only an excluded intro paragraph; first answerable child text is 19-3-2 (p069-b010,
+    p070-b003 adjacent). The definition 19-1-4 (p020-b004, excluded) also states the pattern as the maximum allowed
+    EUI, so it is listed.
+- id: M049
+  category: conceptual
+  persona: engineer
+  expected_route: prose
+  query: چرا سامانه‌های کنترلی و مدارهای فرمان تأسیسات مکانیکی در بخش تأسیسات الکتریکی مبحث مطرح شده‌اند؟
+  evidence:
+    blocks:
+    - main-p111-b005
+  anchor: section:19-5-3
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. intro paragraph of
+    19-5-3 (adjacent block).
+- id: M050
+  category: source_issue
+  persona: homeowner
+  expected_route: structured
+  query: شهر اردبیل اقلیمش چیه؟
+  evidence:
+    records:
+    - app02-p002-r05
+    - main-t19-3-2-r03
+    source_issues:
+    - SI-0001
+  anchor: extra
+  uses_excluded_records: true
+  notes: Ardabil is the only 5C city (SI-0001); printed in appendix 2 and table 19-3-2. Both records are excluded
+    but are the true answer.
+- id: M051
+  category: city_climate
+  persona: homeowner
+  expected_route: structured
+  query: الیگودرز جزو کدوم اقلیمه؟
+  evidence:
+    records:
+    - app02-p002-r09
+  anchor: record:app02-p002-r09
+  notes: record is in adjacent_ids_avoid (material/city pool is adjacent-only); used as drawn.
+- id: M052
+  category: unknown_entity
+  persona: inspector
+  expected_route: unsupported
+  query: برای استخر سرپوشیده‌ای که در منطقه‌ای با کد اقلیمی 3A ساخته می‌شود، پیوست ۳ سقفی برای رده D تعیین کرده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+- id: M053
+  category: unfamiliar_terminology
+  persona: homeowner
+  expected_route: prose
+  query: این نماهای تمام‌شیشه‌ای که بهشون کرتین‌وال میگن و فقط به اسکلت آویزونن، تو مبحث چطوری تعریف شدن؟
+  evidence:
+    blocks:
+    - main-p025-b010
+  anchor: block:main-p025-b010
+- id: M054
+  category: descriptive_modifier
+  persona: contractor
+  expected_route: structured
+  query: یه واحد دانشگاه آزاد تو اقلیم 3A بخواد رده A بگیره سقف مصرف سالانه‌اش چقدره؟
+  evidence:
+    records:
+    - app03-A-r13-3A
+  anchor: record:app03-A-r13-3A
+  notes: 'unprinted word «آزاد» is harmless: appendix 3 prints a single «دانشگاه و آموزش عالی» row.'
+- id: M055
+  category: explicit_reference
+  persona: engineer
+  expected_route: structured
+  query: جدول ۱۹-۳-۳ رده بازدهی انرژی را بر اساس چه نسبتی و در چند رده دسته‌بندی کرده است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-3
+  anchor: table:m19-ed5-1404-main.t19-3-3
+  acceptable_routes:
+  - mixed
+  notes: whole-table question; number at the start.
+- id: M056
+  category: city_climate
+  persona: contractor
+  expected_route: structured
+  query: تو آباده یه طبقه داریم که کفش رو هوای آزاده؛ حداقل R این کف چقدر باید باشه؟
+  evidence:
+    records:
+    - app02-p002-r02
+    - main-t19-5-1-r12c04
+  anchor: record:app02-p002-r02
+  notes: 'chained: Abadeh = 4B, then table 19-5-1 «کف مجاور هوای آزاد», group 4A/4B. record is in adjacent_ids_avoid
+    (material/city pool is adjacent-only); used as drawn.'
+- id: M057
+  category: uncertain_conceptual
+  persona: homeowner
+  expected_route: prose
+  query: اینکه پیوست‌های مبحث رو چاپ نکردن، چند تا درخت رو نجات داده؟
+  evidence:
+    blocks:
+    - main-p057-b008
+  anchor: block:main-p057-b008
+- id: M058
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: در ساختمان‌های موجود دارای موتورخانه مرکزی اولین گام بهینه‌سازی چیست؟ سیستم کنترل موتورخانه برای گروه الف
+    در سال پنجم جدول ۱۹-۲-۱ چه وضعیتی دارد؟
+  evidence:
+    blocks:
+    - main-p143-b006
+    records:
+    - main-t19-2-1-r06c15
+  anchor: extra
+  notes: p143-b006 adjacent_ids_avoid.
+- id: M059
+  category: caption_reference
+  persona: homeowner
+  expected_route: structured
+  query: اون جدولی که حداقل نور رو برای کاربری‌ها و فضاهای مختلف گفته کدومه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-6
+    - m19-ed5-1404-main.t19-5-7
+  anchor: extra
+  notes: fits 19-5-6 (daylight autonomy area) and 19-5-7 (artificial-light uniformity).
+- id: M060
+  category: mixed_entity_in_explanation
+  persona: engineer
+  expected_route: mixed
+  query: ساختمانی با سرمایش و گرمایش مرکزی در کهنوج طراحی می‌کنیم که هر دو سامانه را لازم دارد؛ مدارهای آب گرم و
+    سرد باید جدا باشند یا شیر تغییر فصل مجاز است؟
+  evidence:
+    blocks:
+    - main-p102-b008
+    records:
+    - app02-p004-r07
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: Kahnooj = 0B (single-season climate 0); clause ج (p102-b008, excluded) requires separate circuits. app02-p004-r07
+    (Kahnooj) is adjacent_ids_avoid; used as the true answer (adjacent-only pool).
+- id: M061
+  category: mixed
+  persona: homeowner
+  expected_route: mixed
+  query: ساختمون گروه الف هستیم و سال چهارمه؛ تولید انرژی تجدیدپذیر برامون الزامیه؟ اگه تو محل نشه تأمینش کرد باید
+    چیکار کنیم؟
+  evidence:
+    blocks:
+    - main-p119-b007
+    records:
+    - main-t19-2-1-r05c25
+  anchor: record:main-t19-2-1-r05c25
+  notes: p119-b007 adjacent_ids_avoid.
+- id: M062
+  category: abbreviation
+  persona: contractor
+  expected_route: structured
+  query: λ تخته OSB تو پیوست ۷ چنده؟
+  evidence:
+    records:
+    - app07-p008-r17
+  anchor: record:app07-p008-r17
+  notes: record is in adjacent_ids_avoid (material/city pool is adjacent-only); used as drawn.
+- id: M063
+  category: table_reference
+  persona: engineer
+  expected_route: structured
+  query: جدول زمان‌بندی الزام اجرای بخش‌های مختلف ویرایش پنجم برای گروه‌های ساختمانی چه ستون‌ها و ردیف‌هایی دارد؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+  anchor: block:main-p064-b002
+  notes: whole-table question by its caption.
+- id: M064
+  category: neighbouring_domain
+  persona: homeowner
+  expected_route: unsupported
+  query: حداقل ابعاد هر جای پارک خودرو تو پارکینگ آپارتمان چنده؟
+  evidence: {}
+  anchor: extra
+  notes: 'parking dimensions: mabhas 4 / urban rules.'
+- id: M065
+  category: polarity_qualifier
+  persona: contractor
+  expected_route: structured
+  query: در ورودی غیرنورگذر لولادار تو اقلیم 4B حداقل چه مقاومت حرارتی باید داشته باشه؟
+  evidence:
+    records:
+    - main-t19-5-1-r18c04
+  anchor: extra
+  notes: «لولادار» vs «بدون لولا» select different rows. record is in adjacent_ids_avoid; no non-adjacent record
+    of this table answers this question form.
+- id: M066
+  category: polarity_qualifier
+  persona: inspector
+  expected_route: structured
+  query: کلینیک تشخیصی را با کلینیک بدون بستری یکی نگیرید؛ سقف مصرف سالانه اولی برای اخذ رده B، وقتی ساختمان در
+    3A است، چند kWh/m² است؟
+  evidence:
+    records:
+    - app03-B-r09-3A
+  anchor: record:app03-B-r09-3A
+- id: M067
+  category: range_boundary
+  persona: inspector
+  expected_route: structured
+  query: صفحات چوبی با تراشه‌های چسبیده با سیمان با چگالی دقیقاً ۱۲۰۰ kg/m3 چه λ دارند؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - no_printed_category
+  anchor: extra
+  notes: the only printed row for this board is «کمتر از ۱۲۰۰», which excludes 1200.
+- id: M068
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: کنترل هوشمند موتورخونه‌ای که برای یه ساختمون نوساز می‌ذاریم باید چه دماهایی رو اندازه بگیره و به چی فرمان
+    بده؟
+  evidence:
+    blocks:
+    - main-p110-b011
+    - main-p111-b003
+  anchor: block:main-p110-b011
+  notes: new building context (19-5-2-2-4); the identical clause for existing buildings (19-8-2) is not meant.
+- id: M069
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: ضریب هدایت حرارتی دقیقاً چه کمیتی است و برای بتن سبک‌دانه با رس منبسط با چگالی کمتر از ۶۰۰ چقدر است؟
+  evidence:
+    blocks:
+    - main-p043-b004
+    records:
+    - app07-p004-r15
+  anchor: record:app07-p004-r15
+- id: M070
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: تأییدیه رسمی مقاومت در برابر حریق برای مصالح عایق یعنی چه و پلی‌استایرن منبسط با چگالی ۱۹ تا ۲۴ چه λ دارد؟
+  evidence:
+    blocks:
+    - main-p026-b016
+    records:
+    - app07-p011-r13
+  anchor: extra
+  notes: record adjacent_ids_avoid.
+- id: M071
+  category: colloquial_explanation
+  persona: inspector
+  expected_route: prose
+  query: تو بهینه‌سازی انرژی یه ساختمون قدیمی، طراح مجبوره روش تجویزی رو بره یا میتونه شبیه‌سازی کنه؟
+  evidence:
+    blocks:
+    - main-p143-b011
+    - main-p144-b002
+  anchor: block:main-p143-b011
+- id: M072
+  category: source_issue
+  persona: engineer
+  expected_route: structured
+  query: پیوست ۳ اصلاً ستونی برای اقلیم 5C دارد؟ اگر دارد، سقف رده D ادارات عمومی را از آن بخوانید.
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+    source_issues:
+    - SI-0002
+  anchor: extra
+  notes: appendix 3 has no 5C column (SI-0002); no value may be produced.
+- id: M073
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: برای محاسبه شدت مصرف، مقدار مصرف هر حامل انرژی (برق، گاز، گازوئیل) از کجا خوانده می‌شود و چطور به کیلووات‌ساعت
+    تبدیل و بر مساحت تقسیم می‌شود؟
+  evidence:
+    sections:
+    - 19-3-2-2
+  anchor: section:19-3-2-2
+  notes: 'whole small section (8 blocks): meter readings, kWh, heating-value conversion, 365-day total over conditioned
+    area.'
+- id: M074
+  category: numeric_format
+  persona: contractor
+  expected_route: structured
+  query: سرمایش و گرمایش چهار لوله برای گروه د سال سوم تو جدول زمان‌بندی چی خورده؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c17
+  anchor: record:main-t19-2-1-r19c17
+  notes: column printed as «۴ لوله»; written here as a word.
+- id: M075
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: جدول‌های رده‌های C و B و A کجا اومده؟ برای یه خوابگاه تو اقلیم 5B، سقف رده C چنده؟
+  evidence:
+    blocks:
+    - main-p074-b006
+    records:
+    - app03-C-r22-5B
+  anchor: record:app03-C-r22-5B
+  notes: p074-b006 is adjacent_ids_avoid.
+- id: M076
+  category: source_issue
+  persona: inspector
+  expected_route: prose
+  query: حداکثر توان مجاز سامانه روشنایی مصنوعی (وات بر متر مربع) برای ساختمان اداری طبق پیوست ۸ چقدر است؟
+  evidence:
+    blocks:
+    - main-p118-b008
+    source_issues:
+    - SI-0004
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: the main text (p118-b008, excluded) says appendix 8 gives lighting power limits, but SI-0004 documents
+    appendix 8 as a placeholder without any table; no value may be produced.
+- id: M077
+  category: mixed_entity_in_explanation
+  persona: contractor
+  expected_route: mixed
+  query: ساختمون ما طبق آیین‌نامه نظام مهندسی گروه ب حساب میشه و تازه پروانه گرفتیم؛ شنیدم برای بعضی گروه‌ها مهلت‌دار
+    فقط توصیه‌ست، عایق‌کاری پوسته خارجی سال اول برای ما چی؟
+  evidence:
+    blocks:
+    - main-p063-b008
+    records:
+    - main-t19-2-1-r07c05
+  anchor: record:main-t19-2-1-r07c05
+  notes: group and year appear only inside the explanation; p063-b008 adjacent_ids_avoid.
+- id: M078
+  category: explicit_reference
+  persona: inspector
+  expected_route: prose
+  query: پیوست شماره سه را در فهرست پیوست‌ها با چه نام کاملی آورده‌اند؟
+  evidence:
+    blocks:
+    - main-p017-b021
+    - main-p017-b022
+    - main-p146-b005
+    - main-p146-b006
+  anchor: block:main-p017-b021
+  notes: title is split over two blocks both in the TOC and in the appendix list (p146).
+- id: M079
+  category: numeric_format
+  persona: contractor
+  expected_route: structured
+  query: تخته سیمانی با تراشه چوب که چگالیش کمتر از ۱٬۲۰۰ کیلوگرم بر متر مکعبه، ضریب هدایت حرارتیش چنده؟
+  evidence:
+    records:
+    - app07-p008-r18
+  anchor: record:app07-p008-r18
+  notes: printed row «صفحات با تراشه‌های چسبیده با سیمان — کمتر از ۱۲۰۰».
+- id: M080
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: ساختمون گروه ب، سال اول؛ زیرپایش مصرف لازمه یا نه؟
+  evidence:
+    records:
+    - main-t19-2-1-r07c23
+  anchor: record:main-t19-2-1-r07c23
+- id: M081
+  category: rating
+  persona: engineer
+  expected_route: structured
+  query: برای فروشگاه در اقلیم 4A، سقف شدت مصرف رده‌ای که در ویرایش چهارم ECnZ نامیده می‌شد چقدر است؟
+  evidence:
+    records:
+    - app03-A-r26-4A
+  anchor: record:app03-A-r26-4A
+  notes: the introduction maps ECnZ to rating A.
+- id: M082
+  category: coordinated_values
+  persona: inspector
+  expected_route: structured
+  query: رده اقلیمی کهنوج و آقاجاری در پیوست ۲ چیست؟
+  evidence:
+    records:
+    - app02-p004-r07
+    - app02-p002-r03
+  anchor: record:app02-p004-r07
+  notes: also covers anchor app02-p002-r03. record is in adjacent_ids_avoid (material/city pool is adjacent-only);
+    used as drawn.
+- id: M083
+  category: explicit_reference
+  persona: engineer
+  expected_route: unsupported
+  query: بخش ۱۹-۵-۷ (سامانه‌های ذخیره‌ساز انرژی) چه می‌گوید؟
+  evidence: {}
+  anchor: extra
+  notes: chapter 5 sections end at 19-5-6.
+- id: M084
+  category: polarity_qualifier
+  persona: contractor
+  expected_route: structured
+  query: سوله صنعتی بدون تهویه تو اقلیم 4B بخواد رده C بگیره سقف مصرفش چقدره؟
+  evidence:
+    records:
+    - app03-C-r34-4B
+  anchor: record:app03-C-r34-4B
+- id: M085
+  category: prose_with_table_words
+  persona: contractor
+  expected_route: prose
+  query: ساختمون ما حدود ۶۲۰۰ متر مربعه؛ باید مقایسه باس‌داکت با کابل رو تو دفترچه محاسبات برق بیاریم؟
+  evidence:
+    blocks:
+    - main-p112-b004
+  anchor: block:main-p112-b004
+  notes: threshold «بیش از ۵۰۰۰ متر مربع».
+- id: M086
+  category: enumeration
+  persona: engineer
+  expected_route: structured
+  query: ضریب هدایت حرارتی «گچ سخت با حداقل میزان آب لازم» را برای همه رده‌های چگالی چاپ‌شده بنویسید.
+  evidence:
+    records:
+    - app07-p013-r13
+    - app07-p013-r14
+    enumeration:
+      dimension: density
+  anchor: extra
+  notes: both rows are adjacent_ids_avoid; no alternative.
+- id: M087
+  category: main_table
+  persona: inspector
+  expected_route: structured
+  query: بازرسی حین ساخت برای گروه ج در سال چهارم جدول ۱۹-۲-۱ چه وضعیتی دارد؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c03
+  anchor: record:main-t19-2-1-r15c03
+- id: M088
+  category: rating
+  persona: inspector
+  expected_route: structured
+  query: دفتر اداری خصوصی در اقلیم 2B برای قرار گرفتن در رده «ساختمان کم‌مصرف» حداکثر چه شدت مصرفی می‌تواند داشته
+    باشد؟
+  evidence:
+    records:
+    - app03-C-r05-2B
+  anchor: record:app03-C-r05-2B
+  notes: «ساختمان کم‌مصرف» = rating C (19-2-4-3).
+- id: M089
+  category: everyday_offtopic
+  persona: homeowner
+  expected_route: unsupported
+  query: فردا تهران بارون میاد؟
+  evidence: {}
+  anchor: extra
+- id: M090
+  category: polarity_qualifier
+  persona: contractor
+  expected_route: structured
+  query: کلینیک تو اقلیم 4A برای رده C سقفش چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - ambiguous_entity
+  anchor: table:m19-ed5-1404-app03.max_energy_use_intensity
+  notes: «کلینیک» alone matches «کلینیک تشخیصی» and «کلینیک بدون بستری بیمار» equally; the question does not distinguish
+    them. Seed row C-r10-4A.
+- id: M091
+  category: colloquial_explanation
+  persona: homeowner
+  expected_route: prose
+  query: ارزیابی چرخه عمر ساختمون اولین باره که تو مبحث ۱۹ اومده؟ جزئیاتش کجاست؟
+  evidence:
+    blocks:
+    - main-p014-b003
+  anchor: block:main-p014-b003
+- id: M092
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: در پهنه 1B، دیواری که رو به فضای باز است کمینه چه مقاومت حرارتی‌ای لازم دارد؟ ضمناً کم آوردن پوسته غیرنورگذر
+    از این حد چه پیامدی برای گرفتن رده D دارد؟
+  evidence:
+    blocks:
+    - main-p088-b008
+    records:
+    - main-t19-5-1-r02c01
+  anchor: extra
+  notes: adjacent_ids_avoid used (adjacent-only pool for this table/record family).
+- id: M093
+  category: explicit_reference
+  persona: engineer
+  expected_route: unsupported
+  query: جدول ۱۹/۶/۱ نرم‌افزارهای شبیه‌سازی مورد تأیید را فهرست کن.
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: malformed number; there is a section 19-6-1 but no table 19-6-1 and no list of software names.
+- id: M094
+  category: unfamiliar_terminology
+  persona: contractor
+  expected_route: prose
+  query: تو لابی و راهروهای عمومی یه ساختمون عمومی، چراغ‌ها حتماً باید دیمری باشن؟
+  evidence:
+    blocks:
+    - main-p117-b009
+  anchor: block:main-p117-b009
+  notes: «دیمری» = منابع روشنایی با قابلیت تنظیم شدت روشنایی (Dimmable).
+- id: M095
+  category: mixed_entity_in_explanation
+  persona: engineer
+  expected_route: mixed
+  query: برای ساختمان‌های گروه ج که در سال دوم اجرای ویرایش پروانه می‌گیرند، رعایت موارد دارای مهلت چه حکمی دارد
+    و حداقل مقاومت حرارتی جداره نورگذر برایشان چه وضعیتی دارد؟
+  evidence:
+    blocks:
+    - main-p063-b008
+    records:
+    - main-t19-2-1-r13c09
+  anchor: record:main-t19-2-1-r13c09
+  notes: p063-b008 adjacent_ids_avoid.
+- id: M096
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: پایش مصرف انرژی در مرحله بهره‌برداری الزامی است؟ در جدول زمان‌بندی، ستون پایش برای گروه الف سال سوم چه
+    علامتی دارد؟
+  evidence:
+    blocks:
+    - main-p080-b006
+    records:
+    - main-t19-2-1-r04c22
+  anchor: record:main-t19-2-1-r04c22
+- id: M097
+  category: invalid_dimension
+  persona: contractor
+  expected_route: structured
+  query: زیرپایش برای گروه ب تو سال ششم جدول زمان‌بندی چی خورده؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+  anchor: extra
+  notes: table prints years 1–5 only.
+- id: M098
+  category: reverse_lookup
+  persona: engineer
+  expected_route: structured
+  query: ضریب هدایت حرارتی ٠٫٦٠ وات بر متر کلوین مربوط به کدام ردیف مصالح پیوست ۷ است؟
+  evidence:
+    records:
+    - app07-p009-r21
+  anchor: record:app07-p009-r21
+  notes: Arabic-Indic digits; one row prints 0.60. record is in adjacent_ids_avoid (material/city pool is adjacent-only);
+    used as drawn.
+- id: M099
+  category: mixed_entity_in_explanation
+  persona: homeowner
+  expected_route: mixed
+  query: یه شعبه بانک تو بندر ماهشهر داریم که با روش شبیه‌سازی طراحی میشه؛ تو این روش معیار کنترل طراحی چیه و سقف
+    شدت مصرف رده D برای ما چقدر میشه؟
+  evidence:
+    blocks:
+    - main-p078-b006
+    records:
+    - app02-p002-r22
+    - app03-D-r06-1B
+  anchor: extra
+  notes: 'city only in the explanation: Bandar Mahshahr = 1B (appendix 2; app02-p002-r22 is adjacent_ids_avoid,
+    adjacent-only pool) -> appendix 3 «بانک و موسسه مالی» 1B rating D; simulation design-control criterion is clause
+    ب of 19-4-1-2 (p078-b006).'
+- id: M100
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: هتلی با گرمایش مرکزی در اقلیم 3A داریم؛ نصب سامانه پایش و زیرپایش برایش الزامی است؟ سقف مصرف رده C چقدر
+    است؟
+  evidence:
+    blocks:
+    - main-p130-b005
+    records:
+    - app03-C-r20-3A
+  anchor: extra
+  notes: p130-b005 is adjacent_ids_avoid.
+- id: M101
+  category: polarity_qualifier
+  persona: inspector
+  expected_route: structured
+  query: ضریب هدایت حرارتی سنگ آهکی خیلی سخت در پیوست ۷ چند است؟
+  evidence:
+    records:
+    - app07-p010-r08
+  anchor: record:app07-p010-r08
+  notes: «خیلی سخت» selects a different row than «سخت» or «نیمه سخت». record is in adjacent_ids_avoid (material/city
+    pool is adjacent-only); used as drawn.
+- id: M102
+  category: material
+  persona: inspector
+  expected_route: structured
+  query: ظرفیت گرمایی ویژه بتن هوادار اتوکلاو شده با چگالی اسمی ۵۰۰ در پیوست ۷ چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unsupported_output
+  anchor: extra
+  notes: appendix 7 prints density and λ only.
+- id: M103
+  category: descriptive_modifier
+  persona: homeowner
+  expected_route: structured
+  query: ساختمون ما ۶ طبقه‌ست؛ سال دوم، تست نشت حجمی برامون الزامیه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+    no_match_outcomes:
+    - unresolved_constraint
+    - missing_required_dimension
+  anchor: extra
+  notes: the table is keyed by building group (defined by article 12 of the engineering bylaw, not printed); the
+    floor count cannot be mapped to a group from these sources.
+- id: M104
+  category: explicit_reference
+  persona: inspector
+  expected_route: prose
+  query: پیوست ۴ مبحث به چه موضوعی می‌پردازد؟
+  evidence:
+    blocks:
+    - main-p146-b007
+    - main-p146-b008
+    - main-p017-b023
+  anchor: block:main-p146-b007
+  notes: title in the appendix list (p146, second line adjacent) and in the TOC (p017-b023, also a block anchor).
+- id: M105
+  category: adversarial
+  persona: engineer
+  expected_route: prose
+  query: ضریب تبدیل ۳٫۲ برق به انرژی اولیه که مبحث ۱۹ برای محاسبه شدت مصرف ساختمان تعیین کرده از کجا آمده است؟
+  evidence:
+    blocks:
+    - main-p071-b009
+    - main-p062-b005
+  anchor: extra
+  acceptable_routes:
+  - unsupported
+  notes: 'false premise refuted by the text: electricity is taken from the meter without conversion to primary energy;
+    site energy is the basis (p062-b005 adjacent).'
+- id: M106
+  category: adversarial
+  persona: homeowner
+  expected_route: structured
+  query: مبحث ۱۹ گفته رده F هم برای ساختمون‌های مسکونی مجازه؛ سقف مصرف رده F یه آپارتمان ۲۰۰۰ متری تو اقلیم 3B چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+  anchor: extra
+  notes: 'false premise: appendix 3 prints ratings A–D only (the A–G scale belongs to the building energy label
+    definition).'
+- id: M107
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: داریم درز پنجره‌ها و دیوارها رو کامل هوابندی می‌کنیم؛ دریچه‌هایی که برای بخاری و آبگرمکن گازی گذاشتن رو
+    هم باید ببندیم؟
+  evidence:
+    blocks:
+    - main-p092-b003
+  anchor: section:19-5-1
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. 19-5-1 own paragraph
+    is excluded; answering child clause پ of 19-5-1-3 (vents of gas appliances follow mabhas 14/17).
+- id: M108
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: سیستم توزیع گرما و سرما و هوای تازه رو باید جوری طراحی کنیم که فقط به همون منطقه‌ای که لازمه برسه؟
+  evidence:
+    blocks:
+    - main-p106-b007
+  anchor: block:main-p106-b007
+- id: M109
+  category: numeric_format
+  persona: inspector
+  expected_route: structured
+  query: 'پشم‌شیشه با density برابر 17 kg/m3: thermal conductivity چند است؟'
+  evidence:
+    records:
+    - app07-p012-r17
+  anchor: record:app07-p012-r17
+  notes: Latin digits and English terms; 17 lies in «۱۵ تا ۲۰». record is in adjacent_ids_avoid (material/city pool
+    is adjacent-only); used as drawn.
+- id: M110
+  category: descriptive_modifier
+  persona: contractor
+  expected_route: structured
+  query: شیشه دوجداره برای ساختمون‌های گروه الف از سال اول تو جدول زمان‌بندی الزامیه؟
+  evidence:
+    records:
+    - main-t19-2-1-r02c08
+  anchor: record:main-t19-2-1-r02c08
+  notes: double glazing is a case of the printed column «شیشه چندجداره»; the word does not select another column.
+- id: M111
+  category: polarity_qualifier
+  persona: homeowner
+  expected_route: structured
+  query: یه کلینیک سرپایی داریم که بیمار بستری نمی‌کنه، تو اقلیم 3A؛ اگه رده A بخوایم، مصرف سالانه‌مون نباید از
+    چه عددی بالاتر بره؟
+  evidence:
+    records:
+    - app03-A-r10-3A
+  anchor: record:app03-A-r10-3A
+  notes: paraphrase of the printed qualifier «بدون بستری بیمار».
+- id: M112
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: مبحث ۱۹ ویرایش ۱۴۰۴ رو کدوم اداره تهیه کرده؟
+  evidence:
+    blocks:
+    - main-p002-b004
+    - main-p001-b006
+  anchor: block:main-p002-b004
+- id: M113
+  category: reverse_lookup
+  persona: inspector
+  expected_route: structured
+  query: مقدار U برابر ۳٫۳۳ در جدول الزامات پوسته نورگذر مربوط به کدام نوع جداره و کدام اقلیم است؟
+  evidence:
+    records:
+    - main-t19-5-2-r11c01
+  anchor: extra
+  notes: printed for one cell only (نورگیر سقفی، 0B/1B). record is in adjacent_ids_avoid; no non-adjacent record
+    of this table answers this question form.
+- id: M114
+  category: mixed
+  persona: homeowner
+  expected_route: mixed
+  query: مجتمع مسکونی ۴۰ واحدی با ۴۵۰۰ متر مربع فضای تهویه‌شونده تو اقلیم 5B داریم؛ موتورخونه مرکزی اجباریه؟ برای
+    رده C سقف مصرفش چقدره؟
+  evidence:
+    blocks:
+    - main-p095-b009
+    records:
+    - app03-C-r01-5B
+  anchor: extra
+  notes: both evidence IDs are adjacent_ids_avoid.
+- id: M115
+  category: source_issue
+  persona: contractor
+  expected_route: structured
+  query: مجتمع مسکونی ۵۰۰۰ متری تو اقلیم 2A؛ سقف مصرف رده C چقدره؟
+  evidence:
+    records:
+    - app03-C-r01-2A
+    source_issues:
+    - SI-0003
+  anchor: extra
+  notes: 'row-1/row-2 operator was ambiguous (SI-0003, resolved: row 1 = «≥ ۳۰۰۰»).'
+- id: M116
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: نصب سنسور تشخیص حضور تحت شبکه در سامانه مدیریت روشنایی الزامی است؟ سامانه هوشمند روشنایی برای گروه الف
+    در سال پنجم چه وضعیتی دارد؟
+  evidence:
+    blocks:
+    - main-p117-b007
+    records:
+    - main-t19-2-1-r06c20
+  anchor: record:main-t19-2-1-r06c20
+  notes: p117-b007 adjacent_ids_avoid.
+- id: M117
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: برای گروه د از سال اول تست نشت سطح نما در جدول زمان‌بندی آمده؟ اگر در یک نقطه نتیجه قابل قبول نباشد آزمون
+    چند بار باید تکرار شود؟
+  evidence:
+    blocks:
+    - main-p093-b008
+    records:
+    - main-t19-2-1-r17c11
+  anchor: record:main-t19-2-1-r17c11
+  notes: p093-b008 adjacent_ids_avoid.
+- id: M118
+  category: rating
+  persona: homeowner
+  expected_route: structured
+  query: خونه ویلایی تو اقلیم 5B بخوام «بسیار کم‌مصرف» باشه، سقف مصرفش چنده؟
+  evidence:
+    records:
+    - app03-B-r03-5B
+  anchor: record:app03-B-r03-5B
+  notes: «بسیار کم‌مصرف» = rating B (19-2-4-3).
+- id: M119
+  category: everyday_offtopic
+  persona: homeowner
+  expected_route: unsupported
+  query: بچه‌م سرما خورده، یه جوشونده خونگی سراغ دارین؟
+  evidence: {}
+  anchor: extra
+- id: M120
+  category: conceptual
+  persona: contractor
+  expected_route: prose
+  query: سامانه ذخیره انرژی حرارتی (TES) که مثلاً با آب سرد یا یخ کار می‌کنه، دقیقاً چیه؟
+  evidence:
+    blocks:
+    - main-p037-b006
+  anchor: block:main-p037-b006
+- id: M121
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: اگر طراح روش تجویزی را انتخاب کند، رعایت چه مواردی و انجام بازرسی‌های کدام مراحل الزامی می‌شود؟
+  evidence:
+    blocks:
+    - main-p081-b006
+  anchor: section:19-5
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. clause پ of 19-5.
+- id: M122
+  category: neighbouring_domain
+  persona: contractor
+  expected_route: unsupported
+  query: عرض پله و ارتفاع هر کف‌پله توی ساختمون مسکونی حداقل چقدر باید باشه؟
+  evidence: {}
+  anchor: extra
+  notes: 'stair geometry: mabhas 4.'
+- id: M123
+  category: dual_use_vocabulary
+  persona: engineer
+  expected_route: unsupported
+  query: برای ساخت دوقلوی دیجیتال خط تولید یک کارخانه خودروسازی چه نرم‌افزاری مناسب است؟
+  evidence: {}
+  anchor: extra
+  notes: digital twin of a production line, not of a building.
+- id: M124
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: سامانه کنترل یکپارچه ساختمون باید بتونه با هوش مصنوعی عیب‌یابی کنه؟ چه نوع تحلیل‌هایی از رفتار تجهیزات
+    لازمه؟
+  evidence:
+    blocks:
+    - main-p137-b009
+    - main-p137-b010
+    sections:
+    - 19-7-2-3
+  anchor: section:19-7-2-3
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. small section; its
+    two paragraphs are excluded, so section-level evidence is used. answering block(s) main-p137-b009, main-p137-b010
+    are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M125
+  category: unknown_entity
+  persona: homeowner
+  expected_route: unsupported
+  query: یه باشگاه بدنسازی تو اقلیم 2B داریم؛ سقف مصرف رده C براش چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+- id: M126
+  category: colloquial_explanation
+  persona: engineer
+  expected_route: prose
+  query: آشپزخونه صنعتی یه ساختمون اداری یا خط تولید داخل ساختمون، تو محاسبه شدت مصرف انرژی حساب میشه؟ اگه کنتور
+    جدا نداشته باشه چی؟
+  evidence:
+    blocks:
+    - main-p073-b012
+  anchor: section:19-3-2
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. 19-3-2 direct paragraphs
+    are used by another case; answering footnote in its child 19-3-2-3 (adjacent block).
+- id: M127
+  category: uncertain_conceptual
+  persona: homeowner
+  expected_route: prose
+  query: اینکه ساکن یه خونه همه ساعت‌های سال راحت باشه و هزینه اشتباه طراح و سازنده گردن صاحبخونه نیفته، تو مبحث
+    جایی اومده؟
+  evidence:
+    blocks:
+    - main-p011-b002
+  anchor: block:main-p011-b002
+- id: M128
+  category: computed_refusal
+  persona: engineer
+  expected_route: structured
+  query: مقاومت حرارتی یک لایه پشم‌سنگ ۵ سانتی‌متری با چگالی ۱۰۰ تا ۱۲۵ چقدر می‌شود؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unsupported_calculation
+  anchor: extra
+  notes: R = thickness/λ is not printed.
+- id: M129
+  category: reverse_lookup
+  persona: engineer
+  expected_route: structured
+  query: SHGC حداکثر ۰٫۵۸ در جدول ۱۹-۵-۲ برای چه شرایطی از PF و اقلیم آمده است؟
+  evidence:
+    records:
+    - main-t19-5-2-r08c04
+    - main-t19-5-2-r09c03
+  anchor: extra
+  notes: two cells print 0.58. main-t19-5-2-r08c04 is adjacent_ids_avoid.
+- id: M130
+  category: range_boundary
+  persona: contractor
+  expected_route: structured
+  query: بتن سبک‌دانه با پوکه طبیعی (با ذرات ریز یا ماسه) با چگالی دقیقاً ۱۴۰۰ چه λ داره؟
+  evidence:
+    records:
+    - app07-p004-r05
+    acceptable_records:
+    - app07-p004-r04
+  anchor: extra
+  notes: 1400 ends «۱۲۰۰ تا ۱۴۰۰» and starts «۱۴۰۰ تا ۱۶۰۰»; no operator printed, so the other row is acceptable.
+    Both rows adjacent_ids_avoid.
+- id: M131
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: اگر وضعیت چون‌ساخت با نقشه‌های مصوب مغایرت داشته باشد یا امتیاز ارزیابی به کمتر از ۹۰۰ برسد، شهرداری و
+    مراجع صدور پروانه موظف به چه اقدامی هستند؟
+  evidence:
+    blocks:
+    - main-p075-b007
+    - main-p076-b003
+  anchor: block:main-p075-b007
+  notes: sentence continues in p076-b003 (adjacent_ids_avoid; needed for the obligation itself).
+- id: M132
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: نوع و ضخامت عایق‌کاری حرارتی بر چه اساسی انتخاب می‌شود و λ پشم‌سنگ با چگالی ۱۲۵ تا ۱۵۰ چقدر است؟
+  evidence:
+    blocks:
+    - main-p044-b004
+    - main-p044-b005
+    records:
+    - app07-p012-r12
+  anchor: extra
+  notes: record adjacent_ids_avoid.
+- id: M133
+  category: everyday_offtopic
+  persona: engineer
+  expected_route: unsupported
+  query: چطور در اکسل یک نمودار میله‌ای دوبعدی رسم کنم؟
+  evidence: {}
+  anchor: extra
+- id: M134
+  category: source_issue
+  persona: engineer
+  expected_route: prose
+  query: عنوان پیوست ۶ مبحث نوزدهم دقیقاً چیست؟ در فهرست مطالب و فهرست پیوست‌ها یکسان آمده؟
+  evidence:
+    blocks:
+    - main-p017-b025
+    - main-p146-b010
+    source_issues:
+    - SI-0007
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: TOC (p017-b025) and appendix list (p146-b010) print different titles; SI-0007 documents title differences.
+    Both blocks are excluded but are the true evidence.
+- id: M135
+  category: ordinal_cardinal
+  persona: engineer
+  expected_route: structured
+  query: کاربری ردیف بیست‌ونهم جدول پیوست ۳ در اقلیم 2A برای رده A چه سقف شدت مصرفی دارد؟
+  evidence:
+    records:
+    - app03-A-r29-2A
+  anchor: record:app03-A-r29-2A
+  notes: row 29 = «دفتر پست».
+- id: M136
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: محرومیت سه تا پنج ساله از پروانه اشتغال، چندمین درجه مجازات انتظامیه؟
+  evidence:
+    blocks:
+    - main-p060-b004
+  anchor: block:main-p060-b004
+- id: M137
+  category: listed_name
+  persona: contractor
+  expected_route: structured
+  query: چوب زبان گنجشک با چگالی نرمال متوسط ۵۰۰ تا ۶۵۰ و رطوبت ۱۵ درصد، λ چقدره؟
+  evidence:
+    records:
+    - app07-p008-r02
+  anchor: record:app07-p008-r02
+  notes: «زبان گنجشک» is one item of the printed list in this row.
+- id: M138
+  category: range_boundary
+  persona: inspector
+  expected_route: structured
+  query: اگر PF دقیقاً ۷۰ درصد باشد، حداکثر ضریب بهره خورشیدی جداره نورگذر در اقلیم 4A چقدر است؟
+  evidence:
+    records:
+    - main-t19-5-2-r08c04
+  anchor: extra
+  notes: «بیشتر از %۷۰» excludes 70, so the band «بین %۵۰ تا %۷۰» answers. record is in adjacent_ids_avoid; no non-adjacent
+    record of this table answers this question form.
+- id: M139
+  category: conceptual_colloquial
+  persona: inspector
+  expected_route: prose
+  query: میشه برای عایق‌کاری حرارتی از موادی استفاده کرد که مشخصات فنی و مقاومت حرارتیشون با گذشت زمان عوض میشه؟
+    مواد تغییر فاز دهنده چی؟
+  evidence:
+    blocks:
+    - main-p086-b004
+    - main-p086-b009
+  anchor: section:19-5-1-1
+  notes: clause ز of 19-5-1-1 and its footnote (PCM allowed when controlled and calculated). Both blocks are adjacent_ids_avoid;
+    most free blocks of this section are used elsewhere.
+- id: M140
+  category: descriptive_modifier
+  persona: contractor
+  expected_route: structured
+  query: پشم سنگ فشرده چه λ داره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unresolved_constraint
+    - missing_required_dimension
+  anchor: extra
+  notes: λ of rock wool depends on the density row; the unprinted word «فشرده» could point to several of them.
+- id: M141
+  category: adversarial
+  persona: contractor
+  expected_route: unsupported
+  query: شنیدم مبحث ۱۹ نصب کولر آبی رو کلاً ممنوع کرده و همه باید اسپلیت اینورتر بذارن؛ از کِی اجرا میشه؟
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: false premise; no such ban exists in the sources.
+- id: M142
+  category: prohibited_reverse_lookup
+  persona: inspector
+  expected_route: structured
+  query: کدام کاربری‌ها در پیوست ۳ سقف شدت مصرفشان ۱۰۶ کیلووات‌ساعت بر مترمربع در سال است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unsupported_reverse_lookup
+  anchor: extra
+  notes: an EUI value does not identify occupancy/class/rating.
+- id: M143
+  category: mixed_entity_in_explanation
+  persona: contractor
+  expected_route: mixed
+  query: داریم تو زابل یه ساختمون می‌سازیم؛ چند درصد دیوارهای خارجی که آفتاب می‌خورن باید سایه داشته باشن و این
+    الزام برای اقلیم ما هست؟
+  evidence:
+    blocks:
+    - main-p087-b007
+    records:
+    - app02-p003-r11
+  anchor: extra
+  notes: Zabol = 1B; clause غ (adjacent) covers climates 0 and 1. adjacent_ids_avoid used (adjacent-only pool for
+    this table/record family).
+- id: M144
+  category: enumeration
+  persona: inspector
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز مراکز نگهداری و پرستاری برای رده A را در همه اقلیم‌های پیوست ۳ فهرست کنید.
+  evidence:
+    records:
+    - app03-A-r12-0B
+    - app03-A-r12-1B
+    - app03-A-r12-2A
+    - app03-A-r12-2B
+    - app03-A-r12-3A
+    - app03-A-r12-3B
+    - app03-A-r12-4A
+    - app03-A-r12-4B
+    - app03-A-r12-5B
+    enumeration:
+      dimension: climate_class
+  anchor: record:app03-A-r12-5B
+  notes: app03-A-r12-3B is in adjacent_ids_avoid but belongs to the requested enumeration.
+- id: M145
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: در ارزیابی ساختمان موجود مقاومت حرارتی کدام اجزای پوسته باید تعیین شود و حداقل R سقف مجاور فضای آزاد در
+    اقلیم 1B چقدر است؟
+  evidence:
+    blocks:
+    - main-p142-b007
+    records:
+    - main-t19-5-1-r08c01
+  anchor: extra
+  notes: adjacent_ids_avoid used (adjacent-only pool for this table/record family).
+- id: M146
+  category: conceptual
+  persona: engineer
+  expected_route: prose
+  query: در فضاهای پیوسته اداری یا فضای عمومی مجتمع‌های تجاری، برای هر بخشی که رفتار حرارتی متفاوتی دارد چه کنترل‌گری
+    لازم است و آیا تنظیم موضعی دما و دور فن باید قابل غیرفعال‌شدن باشد؟
+  evidence:
+    blocks:
+    - main-p106-b006
+  anchor: section:19-5-2-2-2
+  notes: clause ل of 19-5-2-2-2.
+- id: M147
+  category: everyday_offtopic
+  persona: contractor
+  expected_route: unsupported
+  query: برای پراید چه روغن موتوری بهتره؟
+  evidence: {}
+  anchor: extra
+- id: M148
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: پروانه ساختمونمون رو بعد از ابلاغ ویرایش جدید گرفتیم؛ از همون روز همه الزامات مبحث ۱۹ شامل ما میشه یا برای
+    بعضی‌هاش مهلت هست؟
+  evidence:
+    blocks:
+    - main-p063-b006
+    - main-p063-b007
+    sections:
+    - 19-2-5
+  anchor: section:19-2-5
+  notes: 'small section (8 blocks) answers as a whole: obligations from notification, extra time only where the
+    text/table 19-2-1 gives it, recommendation for groups الف/ب/ج. answering block(s) main-p063-b006, main-p063-b007
+    are in excluded_ids; listed as the true answer.'
+  uses_excluded_evidence: true
+- id: M149
+  category: rating
+  persona: contractor
+  expected_route: structured
+  query: یه فروشگاه تو اقلیم 0B بسازیم، حداکثر مصرف مجازش برای رده دی چقدره؟
+  evidence:
+    records:
+    - app03-D-r26-0B
+  anchor: record:app03-D-r26-0B
+  notes: rating letter written out as «دی».
+- id: M150
+  category: neighbouring_domain
+  persona: contractor
+  expected_route: unsupported
+  query: حداکثر فاصله دسترسی از دورترین نقطه طبقه تا راه خروج اضطراری چند متره؟
+  evidence: {}
+  anchor: extra
+  notes: 'means of egress: mabhas 3.'
+- id: M151
+  category: conceptual
+  persona: homeowner
+  expected_route: prose
+  query: پدافند غیرعامل که تو مبحث ۱۹ اومده یعنی چی؟
+  evidence:
+    blocks:
+    - main-p024-b013
+  anchor: block:main-p024-b013
+- id: M152
+  category: section_lookup
+  persona: engineer
+  expected_route: prose
+  query: نقشه دسته‌بندی اقلیمی در پهنه جغرافیایی ایران در کدام شکل مبحث نوزدهم آمده است؟
+  evidence:
+    blocks:
+    - main-p067-b004
+    - main-p066-b009
+  anchor: section:19-3-1
+  uses_excluded_evidence: true
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. p067-b004 is the
+    figure caption 19-3-2 (adjacent); p066-b009 (excluded) states that other cities are given in figure 19-3-2 and
+    appendix 2, so it is listed.
+- id: M153
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: هواسازها و فن‌کویل‌ها کی باید چهار لوله (دو کویل جدا) باشن؟ این ستون برای گروه د سال چهارم تو جدول زمان‌بندی
+    چی خورده؟
+  evidence:
+    blocks:
+    - main-p103-b003
+    records:
+    - main-t19-2-1-r20c17
+  anchor: record:main-t19-2-1-r20c17
+  notes: p103-b003 adjacent_ids_avoid.
+- id: M154
+  category: numeric_format
+  persona: inspector
+  expected_route: structured
+  query: 'دبیرستان، اقلیم ٢A، رده C: حداکثر شدت مصرف مجاز؟'
+  evidence:
+    records:
+    - app03-C-r14-2A
+  anchor: record:app03-C-r14-2A
+  notes: Arabic-Indic digit in the climate code.
+- id: M155
+  category: table_reference
+  persona: contractor
+  expected_route: structured
+  query: جدول حداقل بازدهی تجهیزات سرمایش و گرمایش مرکزی شامل چه دستگاه‌هاییه؟ چیلر و بویلر هم توشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-3
+  anchor: table:m19-ed5-1404-main.t19-5-3
+- id: M156
+  category: invalid_dimension
+  persona: engineer
+  expected_route: structured
+  query: وضعیت پایش برای گروه ساختمانی «ه» در سال دوم جدول ۱۹-۲-۱ چیست؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+  anchor: extra
+  notes: table prints groups الف، ب، ج، د only.
+- id: M157
+  category: adversarial
+  persona: homeowner
+  expected_route: unsupported
+  query: طبق مبحث ۱۹ دولت برای نصب پنل خورشیدی روی هر خونه ویلایی ۵۰ میلیون تومن وام بلاعوض میده؛ از کجا ثبت‌نام
+    کنم؟
+  evidence: {}
+  anchor: extra
+  notes: invented benefit; mabhas 19 contains no loans or grants.
+- id: M158
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: بعد از اینکه مهد کودک تو اقلیم 2B افتتاح شد پایش مصرف لازمه؟ حداکثر مصرف مجاز رده D براش چقدره؟
+  evidence:
+    blocks:
+    - main-p080-b006
+    records:
+    - app03-D-r16-2B
+  anchor: extra
+- id: M159
+  category: coordinated_values
+  persona: engineer
+  expected_route: structured
+  query: برای گروه د در سال دوم، وضعیت «شیشه چندجداره» و «حداقل مقاومت حرارتی» جداره نورگذر را در جدول ۱۹-۲-۱ بگویید.
+  evidence:
+    records:
+    - main-t19-2-1-r18c08
+    - main-t19-2-1-r18c09
+  anchor: record:main-t19-2-1-r18c09
+  notes: also covers anchor main-t19-2-1-r18c08.
+- id: M160
+  category: mixed_entity_in_explanation
+  persona: contractor
+  expected_route: mixed
+  query: یه سوله صنعتی با تهویه تو اقلیم 4B داریم که خط تولید هم توشه؛ مصرف خط تولید جزو شدت مصرف حساب میشه؟ سقف
+    رده D برای این سوله چقدره؟
+  evidence:
+    blocks:
+    - main-p073-b012
+    - main-p069-b008
+    records:
+    - app03-D-r33-4B
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: p069-b008 (19-3-1-2 ت, excluded) requires separating process energy for industrial buildings; listed as
+    true evidence. main-p073-b012 is adjacent_ids_avoid; used as the true answer (adjacent-only pool).
+- id: M161
+  category: mixed_entity_in_explanation
+  persona: inspector
+  expected_route: mixed
+  query: رده انرژی یه دبستان که تو اقلیم 3A می‌سازیم کجاها درج میشه و سقف مصرف رده D اون چقدره؟
+  evidence:
+    blocks:
+    - main-p074-b005
+    records:
+    - app03-D-r15-3A
+  anchor: extra
+  notes: «دبستان» = row «دبستان و پیش دبستان»; p074-b005 is adjacent_ids_avoid.
+- id: M162
+  category: conceptual
+  persona: contractor
+  expected_route: prose
+  query: کنتورهای برق و گازی که برای سیستم پایش می‌خریم باید چه استاندارد ایمنی و گواهی دقتی داشته باشن؟
+  evidence:
+    blocks:
+    - main-p132-b003
+  anchor: block:main-p132-b003
+- id: M163
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: در بازرسی جداره‌های نورگذر یک ساختمان موجود چه کمیت‌هایی اندازه‌گیری می‌شود و حداکثر SHGC مجاز در اقلیم
+    3A برای PF بیشتر از ۷۰ درصد چقدر است؟
+  evidence:
+    blocks:
+    - main-p142-b009
+    records:
+    - main-t19-5-2-r09c03
+  anchor: extra
+- id: M164
+  category: prose_with_table_words
+  persona: engineer
+  expected_route: prose
+  query: اگر پل حرارتی بیش از ۵ درصد مساحت کل پوسته در یک جبهه باشد، حتی با رعایت همه الزامات دیگر، رده بازدهی D
+    قابل اخذ است؟
+  evidence:
+    blocks:
+    - main-p087-b005
+  anchor: block:main-p087-b005
+- id: M165
+  category: dual_use_vocabulary
+  persona: homeowner
+  expected_route: unsupported
+  query: هوای تازه کوهستان برای بیماری آسم مفیده؟
+  evidence: {}
+  anchor: extra
+- id: M166
+  category: main_table
+  persona: inspector
+  expected_route: structured
+  query: بازرسی پایان‌کار برای گروه ب از سال سوم الزامی است؟
+  evidence:
+    records:
+    - main-t19-2-1-r09c04
+  anchor: record:main-t19-2-1-r09c04
+- id: M167
+  category: dual_use_vocabulary
+  persona: inspector
+  expected_route: unsupported
+  query: برای ساخت پناهگاه خانگی در برابر حمله هوایی، پدافند غیرعامل چه ضوابط سازه‌ای دارد؟
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: mabhas 19 uses «پدافند غیرعامل» only for monitoring systems.
+- id: M168
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: مساحت نورگذر پنجره شامل پروفیل در و پنجره هم میشه؟ حداکثر U پنجره ثابت تو اقلیم 3B چقدره؟
+  evidence:
+    blocks:
+    - main-p089-b010
+    records:
+    - main-t19-5-2-r02c03
+  anchor: extra
+  notes: adjacent_ids_avoid used (adjacent-only pool for this table/record family).
+- id: M169
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: پشم‌سنگ با چگالی ۴۰ تا ۱۰۰ چه λ دارد و مبحث حداکثر ضریب هدایت حرارتی عایق حرارتی مطلوب را چقدر تعیین کرده
+    است؟
+  evidence:
+    blocks:
+    - main-p043-b009
+    - main-p043-b010
+    - main-p043-b011
+    records:
+    - app07-p012-r10
+  anchor: record:app07-p012-r10
+  notes: p043-b011 and the record are adjacent_ids_avoid; the record pool is adjacent-only.
+- id: M170
+  category: source_issue
+  persona: inspector
+  expected_route: structured
+  query: شهر اصفهان از نظر طبقه‌بندی دما-بارش مبحث، چه نشانه اقلیمی گرفته؟
+  evidence:
+    records:
+    - main-t19-3-2-r04
+    - app02-p002-r07
+    source_issues:
+    - SI-0009
+    conflict: SI-0009
+  anchor: extra
+  uses_excluded_records: true
+  notes: 'documented conflict: table 19-3-2 gives 3B, appendix 2 gives 4B; both records must be returned. Both are
+    excluded but are the only true evidence.'
+- id: M171
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: اگه مهندس ناظر مبحث ۱۹ رو رعایت نکنه، خفیف‌ترین مجازات انتظامیش چیه؟
+  evidence:
+    blocks:
+    - main-p059-b009
+  anchor: block:main-p059-b009
+  notes: degree 1 = written warning.
+- id: M172
+  category: verbal_inequality
+  persona: engineer
+  expected_route: structured
+  query: وقتی سایه‌گیری پنجره (PF) از هفتاد درصد فراتر برود، سقف ضریب بهره خورشیدی شیشه در گروه اقلیمی 3A/3B به
+    چه عددی می‌رسد؟
+  evidence:
+    records:
+    - main-t19-5-2-r09c03
+  anchor: extra
+  notes: printed band «بیشتر از %۷۰», climate group «3A, 3B».
+- id: M173
+  category: conceptual
+  persona: engineer
+  expected_route: prose
+  query: اگر بین الزامات مبحث نوزدهم و مبحث چهاردهم در تأسیسات مکانیکی تناقض باشد، کدام اولویت دارد؟
+  evidence:
+    blocks:
+    - main-p095-b004
+  anchor: section:19-5-2
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. clause الف of 19-5-2.
+- id: M174
+  category: mixed
+  persona: homeowner
+  expected_route: mixed
+  query: سامانه پایش مصرف دقیقاً چه چیزهایی رو اندازه می‌گیره و برای ساختمون گروه الف تو سال پنجم الزامی میشه؟
+  evidence:
+    blocks:
+    - main-p130-b003
+    records:
+    - main-t19-2-1-r06c22
+  anchor: record:main-t19-2-1-r06c22
+  notes: p130-b003 adjacent_ids_avoid.
+- id: M175
+  category: unlisted_place
+  persona: homeowner
+  expected_route: unsupported
+  query: روستای ما نزدیک یزده؛ اقلیمش همون یزد حساب میشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    - m19-ed5-1404-main.t19-3-2
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: an unlisted village; the printed Yazd record must not be inferred for it.
+- id: M176
+  category: explicit_reference
+  persona: inspector
+  expected_route: structured
+  query: طبق جدول ۱۹-۵-۲ برای پنجره‌ها، درهای ورودی و نورگیرهای سقفی چه کمیت‌هایی محدود شده است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-2
+  anchor: table:m19-ed5-1404-main.t19-5-2
+  notes: whole-table question; number in the middle.
+- id: M177
+  category: ordinal_cardinal
+  persona: engineer
+  expected_route: structured
+  query: وقتی وارد سال ۴ اجرای ویرایش پنجم می‌شویم، ساختمان‌های گروه د از نظر بازدهی تجهیزات انرژی‌بر مشمول الزام
+    می‌شوند؟
+  evidence:
+    records:
+    - main-t19-2-1-r20c14
+  anchor: record:main-t19-2-1-r20c14
+  notes: ordinal year written as a cardinal digit.
+- id: M178
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: پیوست‌های مبحث ۱۹ تو کتاب چاپی نیستن؛ از کجا باید پیداشون کنم؟
+  evidence:
+    blocks:
+    - main-p146-b002
+    - main-p057-b006
+  anchor: block:main-p146-b002
+  uses_excluded_evidence: true
+  notes: p057-b006 (clause 19-2-1-9, excluded) states the same publication rule and URL, so it is listed.
+- id: M179
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: برای پنجره‌های عمیقاً تورفته (PF بیشتر از ۷۰ درصد) در اقلیم 4A حداکثر SHGC چقدر است و لایه مانع فروسرخ
+    کجای شیشه نباید قرار بگیرد؟
+  evidence:
+    blocks:
+    - main-p089-b008
+    records:
+    - main-t19-5-2-r09c04
+  anchor: extra
+  notes: adjacent_ids_avoid used (adjacent-only pool for this table/record family).
+- id: M180
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: 'ساختمون گروه الف، سال سوم: الزامات بازتاب بام شامل ما میشه؟'
+  evidence:
+    records:
+    - main-t19-2-1-r04c07
+  anchor: record:main-t19-2-1-r04c07
+- id: M181
+  category: range_boundary
+  persona: engineer
+  expected_route: structured
+  query: ساختمان مسکونی با زیربنای دقیقاً ۳۰۰۰ متر مربع در اقلیم 2A؛ سقف شدت مصرف برای رده B؟
+  evidence:
+    records:
+    - app03-B-r01-2A
+  anchor: extra
+  notes: row 1 prints «≥ ۳۰۰۰» (SI-0003 resolved), so exactly 3000 belongs to row 1.
+- id: M182
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: دامنه الزام آزمون نشت هوا طبق مبحث چطور به مرور گسترش پیدا می‌کند و برای گروه د در سال دوم تست نشت سطح
+    نما چه وضعیتی دارد؟
+  evidence:
+    blocks:
+    - main-p094-b003
+    records:
+    - main-t19-2-1-r18c11
+  anchor: record:main-t19-2-1-r18c11
+- id: M183
+  category: conceptual
+  persona: engineer
+  expected_route: prose
+  query: سامانه پایش انرژی برای پردازش داده‌های جمع‌آوری‌شده چه قابلیت‌هایی باید داشته باشد؛ مثلاً یادگیری ماشین
+    یا پردازش داده‌های کلان بدون اشغال زیاد پردازنده؟
+  evidence:
+    blocks:
+    - main-p134-b009
+    - main-p134-b010
+    - main-p134-b011
+    - main-p134-b012
+    sections:
+    - 19-7-1-3
+  anchor: section:19-7-1-3
+  notes: small section (9 blocks) answers as a whole; section id itself is not excluded although its clause blocks
+    are, so section-level evidence is used. answering block(s) main-p134-b009, main-p134-b010, main-p134-b011, main-p134-b012
+    are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M184
+  category: spelling_variant
+  persona: engineer
+  expected_route: prose
+  query: تعريف سامانه حجم هواي متغير (VAV) در مبحث نوزدهم چيست؟
+  evidence:
+    blocks:
+    - main-p037-b004
+  anchor: block:main-p037-b004
+  notes: Arabic ي/ك.
+- id: M185
+  category: neighbouring_domain
+  persona: engineer
+  expected_route: unsupported
+  query: حداقل درجه مقاومت در برابر حریق دیوارهای جداکننده بین واحدهای مسکونی چند ساعت است؟
+  evidence: {}
+  anchor: extra
+  notes: 'fire resistance of separating walls: mabhas 3, not mabhas 19.'
+- id: M186
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: گروه ب هستیم و پنج سال از ابلاغ گذشته؛ شارژر خودرو برقی دیگه برامون الزامیه؟
+  evidence:
+    records:
+    - main-t19-2-1-r11c21
+  anchor: record:main-t19-2-1-r11c21
+- id: M187
+  category: colloquial_explanation
+  persona: contractor
+  expected_route: prose
+  query: سقف کاذب و جای چراغ‌های توکار و سنسور دود هم جزو جاهایی حساب میشه که باید هوابندی بشه؟
+  evidence:
+    blocks:
+    - main-p094-b005
+  anchor: block:main-p094-b005
+- id: M188
+  category: listed_name
+  persona: inspector
+  expected_route: structured
+  query: سقف مصرف یک مرکز فرهنگی در اقلیم 2B برای رده C چقدر است؟
+  evidence:
+    records:
+    - app03-C-r19-2B
+  anchor: record:app03-C-r19-2B
+  notes: «فرهنگی» is one item of «فرهنگی/ سرگرمی»; «مرکز» is harmless.
+- id: M189
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: نصب تجهیزات تأسیسات بدون اتصال به سامانه مدیریت یکپارچه مجاز است؟ IBMS برای گروه د در سال چهارم چه وضعیتی
+    دارد؟
+  evidence:
+    blocks:
+    - main-p120-b009
+    records:
+    - main-t19-2-1-r20c24
+  anchor: record:main-t19-2-1-r20c24
+  notes: p120-b009 adjacent_ids_avoid.
+- id: M190
+  category: abbreviation
+  persona: inspector
+  expected_route: structured
+  query: الزام IBMS برای ساختمان‌های گروه ب در سال اول جدول ۱۹-۲-۱ چه علامتی دارد؟
+  evidence:
+    records:
+    - main-t19-2-1-r07c24
+  anchor: record:main-t19-2-1-r07c24
+- id: M191
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: برچسب انرژی ساختمان بر چه مبنایی و با چه رده‌هایی رتبه‌بندی می‌کند؟ سقف شدت مصرف دانشگاه در اقلیم 5B برای
+    رده B چقدر است؟
+  evidence:
+    blocks:
+    - main-p024-b008
+    records:
+    - app03-B-r13-5B
+  anchor: record:app03-B-r13-5B
+  notes: p024-b008 is adjacent_ids_avoid.
+- id: M192
+  category: neighbouring_domain
+  persona: contractor
+  expected_route: unsupported
+  query: سطح مقطع کابل برق کولر گازی ۲۴ هزار رو چند میلی‌متر مربع بگیریم؟
+  evidence: {}
+  anchor: extra
+  notes: 'cable sizing: mabhas 13.'
+- id: M193
+  category: explicit_reference
+  persona: engineer
+  expected_route: unsupported
+  query: متن کامل جدول ۱۹-۵-۸ مبحث نوزدهم را بیاور.
+  evidence: {}
+  anchor: extra
+  notes: tables of chapter 5 end at 19-5-7.
+- id: M194
+  category: descriptive_modifier
+  persona: engineer
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز یک اداره دولتی در اقلیم 4B برای رده D چند است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unresolved_constraint
+    - ambiguous_entity
+  anchor: extra
+  notes: appendix 3 prints «اداری عمومی» and «اداری خصوصی»; the unprinted word «دولتی» is not defined against either
+    row and changes which row answers.
+- id: M195
+  category: computed_refusal
+  persona: engineer
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز کتابخانه در اقلیم 0B برای رده A را بر حسب kBtu/ft²·yr اعلام کنید.
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unsupported_calculation
+  anchor: extra
+  notes: unit conversion of a printed value; the source prints kWh/m2.yr only.
+- id: M196
+  category: unlisted_place
+  persona: contractor
+  expected_route: unsupported
+  query: شهر ملایر رده اقلیمیش چیه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    - m19-ed5-1404-main.t19-3-2
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+- id: M197
+  category: main_table
+  persona: inspector
+  expected_route: structured
+  query: طی سال سوم اجرای مبحث، بازرسی انرژی پایان‌کار برای ساختمان‌های گروه د اجباری شده یا هنوز نه؟
+  evidence:
+    records:
+    - main-t19-2-1-r19c04
+  anchor: record:main-t19-2-1-r19c04
+- id: M198
+  category: colloquial_explanation
+  persona: inspector
+  expected_route: prose
+  query: صدور پروانه ساخت بدون ارائه نقشه‌های سامانه پایش، زیرپایش و مدیریت یکپارچه مجازه؟
+  evidence:
+    blocks:
+    - main-p120-b011
+  anchor: block:main-p120-b011
+- id: M199
+  category: unknown_entity
+  persona: engineer
+  expected_route: unsupported
+  query: ضریب هدایت حرارتی هبلکس با چگالی ۵۰۰ چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: trade name; resembles the printed AAC rows.
+- id: M200
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: شدت مصرف انرژی (EUI) دقیقاً به ازای چه مساحتی و با چه واحدی سنجیده می‌شود و سقف آن برای دبیرستان در اقلیم
+    3B رده D چند است؟
+  evidence:
+    blocks:
+    - main-p041-b005
+    records:
+    - app03-D-r14-3B
+  anchor: record:app03-D-r14-3B
+- id: M201
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: سنسور اختلاف فشار برای تنظیم دور پمپ لازمه؟ پمپ دورمتغیر برای گروه د سال چهارم تو جدول زمان‌بندی؟
+  evidence:
+    blocks:
+    - main-p104-b006
+    records:
+    - main-t19-2-1-r20c19
+  anchor: extra
+  notes: p104-b006 adjacent_ids_avoid.
+- id: M202
+  category: prohibited_reverse_lookup
+  persona: homeowner
+  expected_route: structured
+  query: دمای ۴۹ درجه آب گرم تو جدول مبحث مال کدوم مصرفه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-5
+    no_records: true
+    no_match_outcomes:
+    - unsupported_reverse_lookup
+  anchor: extra
+  notes: a temperature does not identify a place of use.
+- id: M203
+  category: listed_name
+  persona: homeowner
+  expected_route: structured
+  query: سنگ لوح که برای نما استفاده میشه چه ضریب هدایت حرارتی داره؟
+  evidence:
+    records:
+    - app07-p010-r03
+  anchor: record:app07-p010-r03
+  notes: «سنگ لوح» printed in parentheses after «اسلیت». record is in adjacent_ids_avoid (material/city pool is
+    adjacent-only); used as drawn.
+- id: M204
+  category: uncertain_conceptual
+  persona: homeowner
+  expected_route: prose
+  query: اینکه بعضی دیوارهای سنگین گرما رو آروم آروم می‌گیرن و دیر پس میدن، تو مبحث اسمش چیه؟
+  evidence:
+    blocks:
+    - main-p022-b004
+  anchor: block:main-p022-b004
+  notes: thermal inertia definition.
+- id: M205
+  category: colloquial_explanation
+  persona: homeowner
+  expected_route: prose
+  query: این ۱۴ تا شاخص تأثیرات زیست‌محیطی چرخه عمر ساختمون که میگن، الان جزو الزامات مبحث حساب میشه؟
+  evidence:
+    blocks:
+    - main-p055-b014
+  anchor: section:19-2-1
+  notes: 'footnote 1 of 19-2-1: 14 indicators described in appendix 4, not part of this edition''s requirements.
+    p055-b014 is adjacent_ids_avoid; the drawn section 19-2-1 has its clause blocks excluded, so the answering footnote
+    was used.'
+- id: M206
+  category: caption_reference
+  persona: inspector
+  expected_route: structured
+  query: جدول دسته‌بندی اقلیمی مبحث نوزدهم را نشان بده.
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-3-1
+    - m19-ed5-1404-main.t19-3-2
+    - m19-ed5-1404-app02.city_climate_classes
+  anchor: block:main-p067-b003
+  notes: fits 19-3-1 (by degree days), 19-3-2 (provincial capitals) and appendix 2 (cities).
+- id: M207
+  category: caption_reference
+  persona: contractor
+  expected_route: structured
+  query: دنبال اون جدولی‌ام که کمترین راندمان مجاز دستگاه‌های گرمایشی و سرمایشی رو داده؛ کجاست؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-3
+    - m19-ed5-1404-main.t19-5-4
+  anchor: block:main-p099-b004
+  notes: caption phrase fits both 19-5-3 (مرکزی) and 19-5-4 (غیرمرکزی).
+- id: M208
+  category: spelling_variant
+  persona: homeowner
+  expected_route: prose
+  query: محدودهٔ آسايش‌حرارتي چه شرايطيه؟
+  evidence:
+    blocks:
+    - main-p049-b010
+  anchor: block:main-p049-b010
+  notes: Arabic ي, heh-hamza and ZWNJ in place of a space.
+- id: M209
+  category: everyday_offtopic
+  persona: homeowner
+  expected_route: unsupported
+  query: اجاره‌نامه رو چطوری تو سامانه املاک و اسکان ثبت کنم؟
+  evidence: {}
+  anchor: extra
+- id: M210
+  category: invalid_dimension
+  persona: inspector
+  expected_route: structured
+  query: برای هتل در اقلیم 6B، حداکثر شدت مصرف مجاز رده D چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - invalid_constraint
+  anchor: extra
+  notes: no 6B column (classes 6–8 not identified for Iranian cities).
+- id: M211
+  category: colloquial_explanation
+  persona: engineer
+  expected_route: prose
+  query: استفاده از الگوریتم ژنتیک و بهینه‌سازی چندمولفه‌ای برای طرح بهینه روشنایی مصنوعی الزامیه یا فقط توصیه شده؟
+  evidence:
+    blocks:
+    - main-p117-b003
+  anchor: block:main-p117-b003
+- id: M212
+  category: source_issue
+  persona: engineer
+  expected_route: structured
+  query: شماره WMO که برای ایستگاه شهر کرمان چاپ شده چیست و با بقیه کدها هم‌خوانی دارد؟
+  evidence:
+    records:
+    - main-t19-3-2-r21
+    source_issues:
+    - SI-0010
+  anchor: extra
+  uses_excluded_records: true
+  notes: the printed code is anomalous (SI-0010); record is excluded but is the only answer.
+- id: M213
+  category: mixed_entity_in_explanation
+  persona: engineer
+  expected_route: mixed
+  query: ساختمان ایده‌آل در مبحث به چه ساختمانی گفته می‌شود و حدودش در کدام جدول است؛ مثلاً برای کتابخانه‌ای در
+    اقلیم 0B این حد چقدر است؟
+  evidence:
+    blocks:
+    - main-p034-b004
+    records:
+    - app03-A-r17-0B
+  anchor: record:app03-A-r17-0B
+  notes: ideal building = rating A table of appendix 3; occupancy and climate appear only inside the explanation.
+- id: M214
+  category: section_lookup
+  persona: engineer
+  expected_route: prose
+  query: 'تحلیل اقلیمی، راهکارهای فعال و غیرفعال: پیش از استفاده از فایل اقلیمی در شبیه‌سازی چه کاری باید انجام
+    شود و در کدام بخش گزارش شبیه‌سازی می‌آید؟'
+  evidence:
+    sections:
+    - 19-6-2-2
+  anchor: section:19-6-2-2
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. asked by its exact
+    title; 2-block section.
+- id: M215
+  category: missing_dimension
+  persona: contractor
+  expected_route: structured
+  query: ضریب هدایت حرارتی کاشی و سفال چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - missing_required_dimension
+  anchor: extra
+  notes: 15 density rows; density not stated.
+- id: M216
+  category: unlisted_place
+  persona: inspector
+  expected_route: unsupported
+  query: دماوند در طراحی انرژی ساختمان در چه رده اقلیمی قرار می‌گیرد؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    - m19-ed5-1404-main.t19-3-2
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+- id: M217
+  category: colloquial_explanation
+  persona: homeowner
+  expected_route: prose
+  query: فرق «باید» با «می‌بایست» تو متن مبحث چیه؟ هر دوش اجباریه؟
+  evidence:
+    blocks:
+    - main-p088-b009
+  anchor: block:main-p088-b009
+- id: M218
+  category: prohibited_reverse_lookup
+  persona: engineer
+  expected_route: structured
+  query: در جدول ۱۹-۲-۱ کدام الزامات برای گروه د علامت تیک خورده‌اند؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+    no_match_outcomes:
+    - unsupported_reverse_lookup
+  anchor: extra
+  notes: from a printed symbol back to requirements is not a supported inversion; the symbols are not defined in
+    the source.
+- id: M219
+  category: missing_dimension
+  persona: inspector
+  expected_route: structured
+  query: از سال سوم به بعد، نصب سامانه هوشمند روشنایی برای ساختمان‌ها اجباری می‌شود؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-2-1
+    no_records: true
+    no_match_outcomes:
+    - missing_required_dimension
+  anchor: extra
+  notes: building group not stated; all groups not asked.
+- id: M220
+  category: dual_use_vocabulary
+  persona: homeowner
+  expected_route: unsupported
+  query: برچسب انرژی یخچال فریزر خونگی چی باشه بهتره بخرم؟
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: energy-label vocabulary; household fridges are not covered by mabhas 19.
+- id: M221
+  category: descriptive_modifier
+  persona: homeowner
+  expected_route: structured
+  query: خوابگاه دانشجویی تو اقلیم 2B برای رده C چه حداکثر مصرفی داره؟
+  evidence:
+    records:
+    - app03-C-r22-2B
+  anchor: record:app03-C-r22-2B
+  notes: '«دانشجویی» is harmless: only one «خوابگاه» row; it does not point to the university row.'
+- id: M222
+  category: spelling_variant
+  persona: engineer
+  expected_route: prose
+  query: کـربن نهفتـه ساختمـان یعنی چه؟
+  evidence:
+    blocks:
+    - main-p046-b010
+  anchor: block:main-p046-b010
+  notes: kashida inside words.
+- id: M223
+  category: verbal_inequality
+  persona: contractor
+  expected_route: structured
+  query: یونولیت سنگین‌تر از ۴۰ کیلو در متر مکعب می‌خوایم بزنیم؛ هدایت حرارتیش رو پیوست ۷ چند نوشته؟
+  evidence:
+    records:
+    - app07-p011-r16
+  anchor: record:app07-p011-r16
+  notes: «بالای ۴۰» = printed «بیش از ۴۰»; «یونولیت» is printed in the group name. record is in adjacent_ids_avoid
+    (material/city pool is adjacent-only); used as drawn.
+- id: M224
+  category: missing_dimension
+  persona: contractor
+  expected_route: structured
+  query: حداکثر شدت مصرف یه ساختمون مسکونی تو اقلیم 4B برای رده A چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - missing_required_dimension
+  anchor: extra
+  notes: residential rows depend on floor area (≥3000 / <3000 m2) which is not stated.
+- id: M225
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: پشم‌شیشه با چگالی ۱۲۰ تا ۱۵۰ رو میشه تو سقف کاذبی که هوا توش جریان داره گذاشت؟ λش چقدره؟
+  evidence:
+    blocks:
+    - main-p086-b006
+    records:
+    - app07-p012-r22
+  anchor: record:app07-p012-r22
+  uses_excluded_evidence: true
+  notes: prohibition is clause س of 19-5-1-1 (p086-b006, excluded); record adjacent.
+- id: M226
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: ساختمون گروه ب رو با روش شبیه‌سازی طراحی کردیم؛ الزامات نشت هوای فصل پنجم شامل ما هم میشه؟ تست نشت حجمی
+    تو سال سوم جدول زمان‌بندی برای گروه ب چی خورده؟
+  evidence:
+    blocks:
+    - main-p122-b009
+    records:
+    - main-t19-2-1-r09c12
+  anchor: record:main-t19-2-1-r09c12
+- id: M227
+  category: conceptual
+  persona: inspector
+  expected_route: prose
+  query: راهبری سامانه پایش و مدیریت یکپارچه ساختمان چه نسبتی با مبحث بیست‌ودوم مقررات ملی ساختمان دارد؟
+  evidence:
+    blocks:
+    - main-p130-b008
+  anchor: block:main-p130-b008
+- id: M228
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: این توان راکتیو که بعضی‌ها میگن تو قبض برق بابتش پول اضافه می‌گیرن، اصلاً چیه؟
+  evidence:
+    blocks:
+    - main-p027-b011
+    sections:
+    - 19-1-41
+  anchor: section:19-1-41
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. one-block definition
+    section. answering block(s) main-p027-b011 are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M229
+  category: neighbouring_domain
+  persona: engineer
+  expected_route: unsupported
+  query: قطر لوله گازکشی داخلی برای یک واحد ۱۲۰ متری با دو بخاری و یک پکیج چند اینچ باید باشد؟
+  evidence: {}
+  anchor: extra
+  notes: 'gas piping sizing: mabhas 17.'
+- id: M230
+  category: colloquial_explanation
+  persona: contractor
+  expected_route: prose
+  query: جاهایی که برای قوطی برق و تابلو آتش‌نشانی دیوار رو کندیم و سوراخ کردیم هم باید هوابندی بشه؟
+  evidence:
+    blocks:
+    - main-p094-b004
+  anchor: block:main-p094-b004
+- id: M231
+  category: prose_with_table_words
+  persona: homeowner
+  expected_route: prose
+  query: یه دستگاه که فقط چند روز در سال خیلی برق می‌کشه، از چه درصدی به بعد «مصرف‌کننده بارز» حساب میشه؟ ملاکش
+    مصرف سالانه است یا لحظه‌ای؟
+  evidence:
+    blocks:
+    - main-p050-b012
+    - main-p130-b011
+    - main-p070-b008
+    - main-p071-b003
+    - main-p110-b005
+  anchor: block:main-p050-b012
+  notes: same criterion (>10% of instantaneous total) is printed in the definition and repeated in 19-3-2-1 (p070-b008
+    adjacent), 19-5-2-2-4 and the chapter-7 footnote; all listed.
+- id: M232
+  category: reverse_lookup
+  persona: engineer
+  expected_route: structured
+  query: عدد λ برابر ۰٫۶۴ در جدول مصالح پیوست ۷ به کدام ردیف تعلق دارد؟
+  evidence:
+    records:
+    - app07-p009-r20
+  anchor: record:app07-p009-r20
+  notes: λ 0.64 is printed for one row only (سفال، کاشی — چگالی اسمی ۱۷۰۰).
+- id: M233
+  category: unknown_entity
+  persona: homeowner
+  expected_route: unsupported
+  query: یه مغازه ۶۰ متری تو اقلیم 0B دارم؛ حداکثر مصرف مجازش برای رده D چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: 'everyday word «مغازه» is not printed (printed: «تجاری/ فروشگاه»).'
+- id: M234
+  category: main_table
+  persona: contractor
+  expected_route: structured
+  query: پنجمین سال که برسه، ساختمونای گروه د باید زیرپایش مصرف داشته باشن؟
+  evidence:
+    records:
+    - main-t19-2-1-r21c23
+  anchor: record:main-t19-2-1-r21c23
+- id: M235
+  category: missing_dimension
+  persona: inspector
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز بیمارستان برای رده D چقدر است؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - missing_required_dimension
+  anchor: extra
+  notes: climate class not stated and all climates not asked.
+- id: M236
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: هواساز جزو تجهیزات بارز ساختمونه؟ تو جدول حداقل بازدهی تجهیزات مرکزی چه رده برچسب انرژی‌ای براش خواستن؟
+  evidence:
+    blocks:
+    - main-p110-b004
+    - main-p110-b005
+    records:
+    - main-t19-5-3-item17
+  anchor: block:main-p110-b004
+  notes: main-t19-5-3-item17 is adjacent_ids_avoid; almost all 19-5-3 records are excluded.
+- id: M237
+  category: verbal_inequality
+  persona: homeowner
+  expected_route: structured
+  query: سنگ پومیس سبک که چگالیش زیر ۴۰۰ کیلوگرم بر متر مکعبه چه ضریب هدایت حرارتی داره؟
+  evidence:
+    records:
+    - app07-p010-r19
+  anchor: record:app07-p010-r19
+  notes: stone row «پومیس» (group 8); the concrete row «بتن با سنگدانهٔ سبک پومیس» is a different material. record
+    is in adjacent_ids_avoid (material/city pool is adjacent-only); used as drawn.
+- id: M238
+  category: uncertain_conceptual
+  persona: homeowner
+  expected_route: prose
+  query: این سیستم‌هایی که با یه سنسور، چراغ‌های اتاق رو به اندازه نور بیرون کم و زیاد می‌کنن تو مبحث چی صداشون
+    می‌کنن؟
+  evidence:
+    blocks:
+    - main-p035-b010
+    sections:
+    - 19-1-74
+  anchor: section:19-1-74
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. one-block definition
+    section (daylight harvesting system). answering block(s) main-p035-b010 are in excluded_ids; listed as the true
+    answer.
+  uses_excluded_evidence: true
+- id: M239
+  category: unknown_entity
+  persona: contractor
+  expected_route: unsupported
+  query: λ کناف ضد آتش چقدره؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app07.material_thermal_properties
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: brand name; resembles printed gypsum-board rows.
+- id: M240
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: در ورودی پیاده‌روی ساختمون تو اقلیم 2A چه U حداکثری می‌تونه داشته باشه و حتماً باید دو در با فضای میانی
+    (قفل هوایی) داشته باشه؟
+  evidence:
+    blocks:
+    - main-p092-b005
+    records:
+    - main-t19-5-2-r04c02
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: air-lock clause ث of 19-5-1-3 (p092-b005) is excluded but is the only answer; record adjacent.
+- id: M241
+  category: ordinal_cardinal
+  persona: engineer
+  expected_route: structured
+  query: وضعیت بازیافت حرارت در پنجمین سال اجرای ویرایش پنجم برای گروه ساختمانی ج در جدول زمان‌بندی چیست؟
+  evidence:
+    records:
+    - main-t19-2-1-r16c13
+  anchor: record:main-t19-2-1-r16c13
+- id: M242
+  category: enumeration
+  persona: engineer
+  expected_route: structured
+  query: الزام SHGC جداره نورگذر برای گروه ب را به تفکیک سال‌های اول تا پنجم جدول ۱۹-۲-۱ می‌خواهم.
+  evidence:
+    records:
+    - main-t19-2-1-r07c10
+    - main-t19-2-1-r08c10
+    - main-t19-2-1-r09c10
+    - main-t19-2-1-r10c10
+    - main-t19-2-1-r11c10
+    enumeration:
+      dimension: year
+  anchor: record:main-t19-2-1-r10c10
+  notes: also covers anchor main-t19-2-1-r09c10.
+- id: M243
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: سامانه گرمایش و سرمایش باید بر اساس دمای هوای بیرون روشن و خاموش شود؟ ستون سیستم کنترل موتورخانه برای گروه
+    د در سال دوم چیست؟
+  evidence:
+    blocks:
+    - main-p102-b004
+    records:
+    - main-t19-2-1-r18c15
+  anchor: extra
+  notes: p102-b004 adjacent_ids_avoid.
+- id: M244
+  category: source_issue
+  persona: engineer
+  expected_route: structured
+  query: حداکثر SHGC نورگیر سقفی برای شهری با اقلیم 5C طبق جدول ۱۹-۵-۲ چقدر است؟
+  evidence:
+    records:
+    - main-t19-5-2-r12c05
+    source_issues:
+    - SI-0002
+  anchor: extra
+  notes: table 19-5-2 prints a combined «5B, 5C» column (SI-0002 note), so the cell applies as printed. record is
+    in adjacent_ids_avoid; no non-adjacent record of this table answers this question form.
+- id: M245
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: حداقل یکنواختی نور مصنوعی در فضاهای ورزشی چقدر است و طراحی روشنایی مصنوعی هر فضا باید ابتدا برای چه شرایطی
+    انجام شود؟
+  evidence:
+    blocks:
+    - main-p116-b005
+    records:
+    - main-t19-5-7-r07
+  anchor: extra
+  notes: both IDs adjacent_ids_avoid; all other 19-5-7 records are excluded.
+- id: M246
+  category: mixed_entity_in_explanation
+  persona: contractor
+  expected_route: mixed
+  query: تو سمنان می‌خوایم عایق پشم‌شیشه بزنیم؛ اون تمهیدات ضدرطوبت که برای عایق‌های معدنی تو بعضی اقلیم‌ها گفتن
+    شامل ما هم میشه؟
+  evidence:
+    blocks:
+    - main-p086-b007
+    records:
+    - app02-p003-r20
+    - main-t19-3-2-r15
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: 'Semnan = 2B (printed in appendix 2 and table 19-3-2): climate 2 is not among 0,1,4,5 nor an A climate;
+    clause ش (p086-b007) is excluded. app02-p003-r20 and main-t19-3-2-r15 (Semnan) are adjacent_ids_avoid; used
+    as the true answer (adjacent-only pool).'
+- id: M247
+  category: mixed_entity_in_explanation
+  persona: homeowner
+  expected_route: mixed
+  query: تو آباده می‌خوایم یه خوابگاه بسازیم که فقط حداقلی که مبحث برای روش تجویزی می‌خواد رو داشته باشه؛ اون حداقل
+    کدوم رده‌ست و سقف مصرفش چقدر میشه؟
+  evidence:
+    blocks:
+    - main-p081-b005
+    records:
+    - app02-p002-r02
+    - app03-D-r22-4B
+  anchor: record:app03-D-r22-4B
+  notes: 'city only in the explanatory part: Abadeh = 4B (appendix 2, adjacent) → appendix 3 dormitory 4B rating
+    D.'
+- id: M248
+  category: computed_refusal
+  persona: contractor
+  expected_route: structured
+  query: یه دفتر اداری خصوصی ۱۵۰۰ متری تو اقلیم 3A داریم؛ کل مصرف سالانه مجازش برای رده D چند کیلووات‌ساعت میشه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app03.max_energy_use_intensity
+    no_records: true
+    no_match_outcomes:
+    - unsupported_calculation
+  anchor: extra
+  notes: area × intensity is not printed.
+- id: M249
+  category: numeric_format
+  persona: contractor
+  expected_route: structured
+  query: نمایشگاه خودرو، اقلیم ۲B، رده B — سقف مصرف چنده؟
+  evidence:
+    records:
+    - app03-B-r30-2B
+  anchor: record:app03-B-r30-2B
+  notes: climate code written with a Persian digit.
+- id: M250
+  category: everyday_offtopic
+  persona: contractor
+  expected_route: unsupported
+  query: دلار تو صرافی‌ها الان چند معامله میشه؟
+  evidence: {}
+  anchor: extra
+- id: M251
+  category: mixed
+  persona: inspector
+  expected_route: mixed
+  query: مقادیر الزامات روش تجویزی بر چه مبنایی و برای رسیدن به کدام رده تعیین شده‌اند؟ برای ساختمان اداری عمومی
+    در اقلیم 4A سقف شدت مصرف همان رده چقدر است؟
+  evidence:
+    blocks:
+    - main-p077-b008
+    records:
+    - app03-D-r04-4A
+  anchor: record:app03-D-r04-4A
+- id: M252
+  category: mixed_entity_in_explanation
+  persona: contractor
+  expected_route: mixed
+  query: در ورودی خونه‌مون تو آقاجاری فلزی و بدون شیشه و لولاییه؛ اگه حداقل مقاومت حرارتی لازم رو نداشته باشه هنوز
+    میشه رده D گرفت؟ حداقلش چقدره؟
+  evidence:
+    blocks:
+    - main-p088-b008
+    records:
+    - app02-p002-r03
+    - main-t19-5-1-r18c00
+  anchor: extra
+  notes: 'city only in the explanation: Aghajari = 0B → «درهای غیرنورگذر لولادار», group 0B. adjacent_ids_avoid
+    used (adjacent-only pool for this table/record family).'
+- id: M253
+  category: colloquial_explanation
+  persona: inspector
+  expected_route: prose
+  query: تأیید نقشه‌های سامانه مدیریت ساختمان برای گرفتن پروانه لازمه؟ باید همراه نقشه‌های تأسیسات باشه؟
+  evidence:
+    blocks:
+    - main-p136-b004
+  anchor: block:main-p136-b004
+- id: M254
+  category: explicit_reference
+  persona: homeowner
+  expected_route: unsupported
+  query: پیوست دوازده مبحث ۱۹ درباره چیه؟
+  evidence: {}
+  anchor: extra
+  notes: appendices 1–9 only.
+- id: M255
+  category: explicit_reference
+  persona: inspector
+  expected_route: prose
+  query: طبق بند ۱۹-۵-۵ نصب سامانه پایش و زیرپایش برای کدام ساختمان‌ها اجباری است و این سامانه‌ها باید به کجا متصل
+    شوند؟
+  evidence:
+    blocks:
+    - main-p119-b011
+    - main-p120-b003
+    - main-p120-b004
+    sections:
+    - 19-5-5
+  anchor: section:19-5-5
+  notes: existing clause number in the middle of the query; section has 4 blocks and answers as a whole. answering
+    block(s) main-p119-b011, main-p120-b003, main-p120-b004 are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M256
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: ساختمون ما گروه ج حساب میشه؛ سال چهارم بعد از ابلاغ، شارژر ماشین برقی برامون الزامی میشه؟
+  evidence:
+    records:
+    - main-t19-2-1-r15c21
+  anchor: record:main-t19-2-1-r15c21
+- id: M257
+  category: city_climate
+  persona: inspector
+  expected_route: structured
+  query: رده اقلیمی مرکز استان سمنان در جدول شهرهای مرکز استان چیست؟
+  evidence:
+    records:
+    - main-t19-3-2-r15
+  anchor: extra
+  notes: province form is answered by table 19-3-2. record is in adjacent_ids_avoid; no non-adjacent record of this
+    table answers this question form.
+- id: M258
+  category: prose_with_table_words
+  persona: inspector
+  expected_route: prose
+  query: در روش شبیه‌سازی، شرط دریافت پروانه ساختمان نسبت به مقادیر جدول پ۱-۳ پیوست ۳ چیست؟
+  evidence:
+    blocks:
+    - main-p078-b007
+  anchor: block:main-p078-b007
+  notes: asks for the rule only (no use or climate given, so no table row is selected); prose only.
+- id: M259
+  category: explicit_reference
+  persona: contractor
+  expected_route: unsupported
+  query: شنیدم یه فصل نهم هم به مبحث ۱۹ اضافه شده؛ موضوعش چیه؟
+  evidence: {}
+  anchor: extra
+  notes: chapters 1–8 only.
+- id: M260
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: ساختمون‌ها چند درصد از کل انرژی سالانه کشور رو مصرف می‌کنن؟
+  evidence:
+    blocks:
+    - main-p009-b003
+  anchor: block:main-p009-b003
+- id: M261
+  category: spelling_variant
+  persona: homeowner
+  expected_route: prose
+  query: سامانهپایش مصرف انرژی با چه ابزارهایی و از کدوم سامانه‌های ساختمون داده جمع میکنه؟
+  evidence:
+    blocks:
+    - main-p036-b005
+    sections:
+    - 19-1-76
+  anchor: section:19-1-76
+  notes: 'anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. missing space /
+    joined words; one-block definition. p036-b005 (Energy Metering System definition: sensors, measuring tools,
+    analysis software; HVAC, DHW and other consumers) is in excluded_ids; listed as the true answer.'
+  uses_excluded_evidence: true
+- id: M262
+  category: dual_use_vocabulary
+  persona: engineer
+  expected_route: unsupported
+  query: مدل‌های یادگیری عمیق برای پیش‌بینی قیمت سهام در بورس چطور آموزش داده می‌شوند؟
+  evidence: {}
+  anchor: extra
+  notes: «یادگیری عمیق» is defined in mabhas 19 only for building systems.
+- id: M263
+  category: listed_name
+  persona: homeowner
+  expected_route: structured
+  query: پلاستوفوم ۸ کیلویی (چگالی ۸) چه λ داره؟
+  evidence:
+    records:
+    - app07-p011-r09
+  anchor: record:app07-p011-r09
+  notes: «پلاستوفوم» printed in the EPS group name; 8 lies in «۷ تا ۱۰». record is in adjacent_ids_avoid (material/city
+    pool is adjacent-only); used as drawn.
+- id: M264
+  category: main_table
+  persona: contractor
+  expected_route: structured
+  query: الزامات بازتاب بام برای گروه الف تو سال اول؟
+  evidence:
+    records:
+    - main-t19-2-1-r02c07
+  anchor: record:main-t19-2-1-r02c07
+- id: M265
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: رده ++EC ویرایش چهارم الان معادل کدوم رده‌ست و یه ساختمون اداری خصوصی تو اقلیم 0B برای اون رده حداکثر چقدر
+    می‌تونه مصرف کنه؟
+  evidence:
+    blocks:
+    - main-p012-b003
+    records:
+    - app03-B-r05-0B
+  anchor: record:app03-B-r05-0B
+- id: M266
+  category: main_table
+  persona: homeowner
+  expected_route: structured
+  query: برای ساختمون گروه الف، سال دوم، الزامات بازتاب نما شامل ما میشه؟
+  evidence:
+    records:
+    - main-t19-2-1-r03c06
+  anchor: record:main-t19-2-1-r03c06
+- id: M267
+  category: prose_with_table_words
+  persona: engineer
+  expected_route: prose
+  query: 'دسته‌بندی کاربری و مساحت: ساختمان مسکونی از چند واحد یا چند متر مربع به بالا «بزرگ» حساب می‌شود و صنعتی‌ها
+    در کدام گروه قرار می‌گیرند؟'
+  evidence:
+    blocks:
+    - main-p069-b006
+    - main-p069-b007
+    - main-p069-b008
+    sections:
+    - 19-3-1-2
+  anchor: section:19-3-1-2
+  notes: 'whole small section (5 blocks) answers: >30 units or >3000 m2 = large residential; industrial group separate.
+    Asked by its exact title. answering block(s) main-p069-b006, main-p069-b007, main-p069-b008 are in excluded_ids;
+    listed as the true answer.'
+  uses_excluded_evidence: true
+- id: M268
+  category: source_issue
+  persona: engineer
+  expected_route: prose
+  query: امنیت سایبری در حوزه مبحث نوزدهم شامل حافظت از کدام سامانه‌ها می‌شود؟
+  evidence:
+    blocks:
+    - main-p020-b007
+    source_issues:
+    - SI-0008
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: query reproduces the printed misspelling «حافظت» documented as SI-0008; the definition block is excluded
+    but is the only answer.
+- id: M269
+  category: coordinated_values
+  persona: engineer
+  expected_route: structured
+  query: حداکثر شدت مصرف مجاز مطب پزشکی در اقلیم 2B برای رده D و کتابخانه در اقلیم 1B برای رده C را جداگانه می‌خواهم.
+  evidence:
+    records:
+    - app03-D-r11-2B
+    - app03-C-r17-1B
+  anchor: record:app03-D-r11-2B
+  notes: two coordinated lookups; also covers anchor app03-C-r17-1B.
+- id: M270
+  category: dual_use_vocabulary
+  persona: contractor
+  expected_route: unsupported
+  query: اقلیم کدوم استان برای کاشت پسته بهتره؟
+  evidence: {}
+  anchor: extra
+  notes: agricultural climate, not building climate classes.
+- id: M271
+  category: spelling_variant
+  persona: contractor
+  expected_route: prose
+  query: جعبه جريان هواي متغير (VAV Box) چه كاري انجام ميده؟
+  evidence:
+    blocks:
+    - main-p028-b008
+    sections:
+    - 19-1-44
+  anchor: section:19-1-44
+  notes: anchor is in adjacent_ids_avoid (pool is adjacent-only for this draw); used as drawn. Arabic ي/ك throughout;
+    one-block definition section. answering block(s) main-p028-b008 are in excluded_ids; listed as the true answer.
+  uses_excluded_evidence: true
+- id: M272
+  category: reverse_lookup
+  persona: contractor
+  expected_route: structured
+  query: کدوم مصالح تو جدول پیوست ۷ ضریب هدایتشون ۰/۴۱ هست؟
+  evidence:
+    records:
+    - app07-p009-r25
+  anchor: record:app07-p009-r25
+  notes: slash decimal; λ 0.41 is printed for one row only. record is in adjacent_ids_avoid (material/city pool
+    is adjacent-only); used as drawn.
+- id: M273
+  category: listed_name
+  persona: inspector
+  expected_route: structured
+  query: سقف شدت مصرف انرژی یک ایستگاه آتش‌نشانی در اقلیم 0B برای گرفتن رده B چند کیلووات‌ساعت بر مترمربع در سال
+    است؟
+  evidence:
+    records:
+    - app03-B-r28-0B
+  anchor: record:app03-B-r28-0B
+  notes: «آتش نشانی» is one item of the printed row label «کلانتری/ آتش نشانی».
+- id: M274
+  category: mixed
+  persona: contractor
+  expected_route: mixed
+  query: قبلاً تو ویرایش چهارم به این رده می‌گفتن +EC؛ الان اسمش چیه و یه فروشگاه تو اقلیم 3A برای این رده چه سقفی
+    داره؟
+  evidence:
+    blocks:
+    - main-p012-b003
+    records:
+    - app03-C-r26-3A
+  anchor: record:app03-C-r26-3A
+- id: M275
+  category: rating
+  persona: homeowner
+  expected_route: structured
+  query: یه کافه تو اقلیم 2B داریم؛ اگه بخوایم «ساختمان نزدیک به مصرف صفر» حساب بشه حداکثر مصرفش چقدر باید باشه؟
+  evidence:
+    records:
+    - app03-A-r25-2B
+  anchor: record:app03-A-r25-2B
+  notes: «نزدیک به مصرف صفر» = rating A (19-2-4-3); «کافه» is an item of «رستوران/ کافه».
+- id: M276
+  category: main_table
+  persona: contractor
+  expected_route: structured
+  query: پمپ دور متغیر برای ساختمونای گروه د از همون سال اول تو جدول زمان‌بندی اومده؟
+  evidence:
+    records:
+    - main-t19-2-1-r17c19
+  anchor: record:main-t19-2-1-r17c19
+- id: M277
+  category: verbal_inequality
+  persona: homeowner
+  expected_route: structured
+  query: مجتمع مسکونی ما کمتر از سه هزار متره و تو اقلیم 5B هستیم؛ برای رده C حداکثر چقدر مجازه؟
+  evidence:
+    records:
+    - app03-C-r02-5B
+  anchor: extra
+- id: M278
+  category: explicit_reference
+  persona: inspector
+  expected_route: unsupported
+  query: طبق بند ۱۹-۲-۶ چه الزاماتی برای ساختمان‌های دولتی وجود دارد؟
+  evidence: {}
+  anchor: extra
+  notes: chapter 2 sections end at 19-2-5.
+- id: M279
+  category: source_issue
+  persona: inspector
+  expected_route: structured
+  query: رسانایی گرمایی چدن را در گروهی که در پیوست ۷ با عنوان «فلزت و آلیاژها» چاپ شده، چند ذکر کرده‌اند؟
+  evidence:
+    records:
+    - app07-p013-r06
+    source_issues:
+    - SI-0006
+  anchor: extra
+  notes: group 14 title is printed «فلزت و آلیاژها» (SI-0006). record is in adjacent_ids_avoid; no non-adjacent
+    record of this table answers this question form.
+- id: M280
+  category: range_boundary
+  persona: inspector
+  expected_route: structured
+  query: گچ سخت با حداقل میزان آب لازم، با چگالی دقیقاً ۱۲۰۰ kg/m3، چه ضریب هدایت حرارتی دارد؟
+  evidence:
+    records:
+    - app07-p013-r14
+    acceptable_records:
+    - app07-p013-r13
+  anchor: record:app07-p013-r13
+  notes: 1200 is the end of «۹۰۰ تا ۱۲۰۰» and the start of «۱۲۰۰ تا ۱۵۰۰»; the source prints no operator, so the
+    upper row is acceptable. record is in adjacent_ids_avoid (material/city pool is adjacent-only); used as drawn.
+- id: M281
+  category: mixed_entity_in_explanation
+  persona: inspector
+  expected_route: mixed
+  query: برای ساختمانی در الیگودرز که با عایق معدنی پشم‌سنگ عایق‌کاری می‌شود، آیا تمهیدات جلوگیری از جذب رطوبت الزامی
+    است؟
+  evidence:
+    blocks:
+    - main-p086-b007
+    records:
+    - app02-p002-r09
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: Aligoudarz = 4A; clause ش (p086-b007, excluded) covers climates 0,1,4,5 and all A climates. app02-p002-r09
+    (Aligoudarz) is adjacent_ids_avoid; used as the true answer (adjacent-only pool).
+- id: M282
+  category: main_table
+  persona: inspector
+  expected_route: structured
+  query: آیا ساختمان‌های گروه الف در سومین سال پس از ابلاغ ملزم به رعایت حداقل مقاومت حرارتی جداره‌های نورگذر هستند؟
+  evidence:
+    records:
+    - main-t19-2-1-r04c09
+  anchor: record:main-t19-2-1-r04c09
+- id: M283
+  category: spelling_variant
+  persona: inspector
+  expected_route: prose
+  query: كربن نهفته چيست و از چه منابعي توليد ميشود؟
+  evidence:
+    blocks:
+    - main-p046-b008
+  anchor: block:main-p046-b008
+  notes: Arabic ك/ي.
+- id: M284
+  category: uncertain_conceptual
+  persona: homeowner
+  expected_route: prose
+  query: برای نوشتن این مبحث از هوش مصنوعی هم کمک گرفتن؟
+  evidence:
+    blocks:
+    - main-p014-b004
+  anchor: block:main-p014-b004
+- id: M285
+  category: everyday_offtopic
+  persona: inspector
+  expected_route: unsupported
+  query: بازی دیشب استقلال و پرسپولیس چند چند شد؟
+  evidence: {}
+  anchor: extra
+- id: M286
+  category: adversarial
+  persona: inspector
+  expected_route: unsupported
+  query: مبحث ۱۹ جریمه نقدی نصب‌نکردن سامانه پایش رو ۲۰۰ میلیون ریال تعیین کرده؛ این جریمه به کدوم حساب واریز میشه؟
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: invented cash fine; the text only lists disciplinary degrees.
+- id: M287
+  category: mixed_entity_in_explanation
+  persona: engineer
+  expected_route: mixed
+  query: ساختمانی با موتورخانه مرکزی در آباده داریم؛ آیا مجازیم یک سامانه توزیع مشترک با شیر تغییر فصل برای سرمایش
+    و گرمایش طراحی کنیم؟
+  evidence:
+    blocks:
+    - main-p102-b007
+    records:
+    - app02-p002-r02
+  anchor: extra
+  uses_excluded_evidence: true
+  notes: Abadeh = 4B (climate 4 = non single-season); clause ث (p102-b007, excluded) forbids a shared circuit. app02-p002-r02
+    (Abadeh) is adjacent_ids_avoid; used as the true answer (adjacent-only pool).
+- id: M288
+  category: range_boundary
+  persona: engineer
+  expected_route: structured
+  query: بتن سبک‌دانه با رس منبسط (چگالی ظاهری سنگدانه کمتر از ۳۵۰، عیار سیمان کم، بدون ماسه) با چگالی دقیقاً ۶۰۰
+    kg/m3 چه λ دارد؟
+  evidence:
+    records:
+    - app07-p004-r14
+  anchor: record:app07-p004-r14
+  notes: the neighbouring row prints «کمتر از ۶۰۰» and excludes 600; only «۶۰۰ تا ۸۰۰» can contain 600. record is
+    in adjacent_ids_avoid (material/city pool is adjacent-only); used as drawn.
+- id: M289
+  category: mixed_entity_in_explanation
+  persona: homeowner
+  expected_route: mixed
+  query: خونه ما تو جاسکه؛ اینکه میگن دیوارهای جنوبی و شرقی و غربی باید پرتو مادون قرمز رو بازتاب بدن شامل ما هم
+    میشه؟ چند درصد دیوارها؟
+  evidence:
+    blocks:
+    - main-p087-b006
+    records:
+    - app02-p003-r03
+  anchor: record:app02-p003-r03
+  notes: Jask = 0B; clause ع applies to climates 0 and 1. adjacent_ids_avoid used (adjacent-only pool for this table/record
+    family).
+- id: M290
+  category: neighbouring_domain
+  persona: homeowner
+  expected_route: unsupported
+  query: سقف بین دو طبقه طبق مقررات چند دسی‌بل صدای قدم همسایه بالا رو باید کم کنه؟
+  evidence: {}
+  anchor: extra
+  notes: 'acoustic insulation: mabhas 18.'
+- id: M291
+  category: neighbouring_domain
+  persona: inspector
+  expected_route: unsupported
+  query: میزان هوای تازه لازم برای هر دانش‌آموز در کلاس درس چند لیتر بر ثانیه است؟
+  evidence: {}
+  anchor: extra
+  acceptable_routes:
+  - prose
+  notes: fresh-air rates are deferred to mabhas 14; mabhas 19 uses the vocabulary but prints no rate.
+- id: M292
+  category: conceptual_colloquial
+  persona: homeowner
+  expected_route: prose
+  query: هرجای مبحث که فقط نوشته «قانون»، منظور کدوم قانونه؟
+  evidence:
+    blocks:
+    - main-p045-b012
+  anchor: block:main-p045-b012
+- id: M293
+  category: explicit_reference
+  persona: engineer
+  expected_route: structured
+  query: حداقل یکنواختی نور مصنوعی (جدول ۱۹-۵-۷) برای چه نوع فضاهایی تعیین شده و نسبت به چه چیزی تعریف می‌شود؟
+  evidence:
+    tables:
+    - m19-ed5-1404-main.t19-5-7
+  anchor: table:m19-ed5-1404-main.t19-5-7
+  acceptable_routes:
+  - mixed
+  notes: whole-table question; number in parentheses.
+- id: M294
+  category: everyday_offtopic
+  persona: homeowner
+  expected_route: unsupported
+  query: دستور پخت قورمه‌سبزی با لوبیا قرمز رو بگو
+  evidence: {}
+  anchor: extra
+- id: M295
+  category: unlisted_place
+  persona: homeowner
+  expected_route: unsupported
+  query: نیشابور جزو کدوم اقلیمه؟
+  evidence:
+    tables:
+    - m19-ed5-1404-app02.city_climate_classes
+    - m19-ed5-1404-main.t19-3-2
+    no_records: true
+    no_match_outcomes:
+    - unknown_entity
+  anchor: extra
+  acceptable_routes:
+  - structured
+  notes: not printed in appendix 2; never infer from its province.
+- id: M296
+  category: conceptual_colloquial
+  persona: contractor
+  expected_route: prose
+  query: راهروهای بسته‌ای که هیچ پنجره‌ای به بیرون ندارن هم باید نور طبیعی بگیرن یا فقط با چراغ روشنشون کنیم؟
+  evidence:
+    blocks:
+    - main-p114-b010
+    - main-p115-b009
+    - main-p116-b003
+  anchor: section:19-5-3-2
+  notes: p114-b010 (adjacent_ids_avoid) exempts corridors without glazed envelope; p115-b009/p116-b003 say such
+    closed spaces must be lit artificially.
+- id: M297
+  category: mixed
+  persona: engineer
+  expected_route: mixed
+  query: با چه شرطی می‌توان نسبت جداره نورگذر را تا ۵۰ درصد دیوار خارجی بالا برد و همچنان از روش تجویزی استفاده
+    کرد؟ حداکثر U پنجره متحرک در اقلیم 2B چند است؟
+  evidence:
+    blocks:
+    - main-p089-b005
+    records:
+    - main-t19-5-2-r03c02
+  anchor: extra
+  notes: adjacent_ids_avoid used (adjacent-only pool for this table/record family).
+- id: M298
+  category: unfamiliar_terminology
+  persona: contractor
+  expected_route: prose
+  query: تو فضاهایی که نور طبیعی دارن، لوکس‌متر باید چه قابلیتی داشته باشه؟
+  evidence:
+    blocks:
+    - main-p117-b008
+    - main-p117-b017
+  anchor: block:main-p117-b008
+  notes: «لوکس‌متر» = سنسور اندازه‌گیری نور (footnote Lux Meter).
+- id: M299
+  category: mixed
+  persona: homeowner
+  expected_route: mixed
+  query: بیمارستان تو اقلیم 0B بخواد «ساختمان کم‌مصرف» حساب بشه سقف مصرفش چقدره؟ این عنوان اصلاً مال کدوم رده‌ست؟
+  evidence:
+    blocks:
+    - main-p062-b008
+    - main-p032-b008
+    records:
+    - app03-C-r07-0B
+  anchor: record:app03-C-r07-0B
+  uses_excluded_evidence: true
+  notes: p062-b008 is adjacent; definition 19-1-62 (p032-b008, excluded) also maps C to «کم مصرف», so it is listed.
+- id: M300
+  category: explicit_reference
+  persona: inspector
+  expected_route: unsupported
+  query: جدول نوزده-سه-چهار مبحث رو توضیح بده.
+  evidence: {}
+  anchor: extra
+  notes: number words; chapter 3 tables end at 19-3-3.
+- id: M301
+  category: verbal_inequality
+  persona: homeowner
+  expected_route: structured
+  query: اندود سیمانی خیلی سنگین، با چگالی بالای دو هزار کیلو بر متر مکعب، چه ضریب هدایتی داره؟
+  evidence:
+    records:
+    - app07-p003-r01
+  anchor: extra
+  notes: «بالای دو هزار» = printed «بیش از ۲۰۰۰»; «خیلی سنگین» is harmless (only one row above 2000). Record adjacent_ids_avoid.
+- id: M302
+  category: colloquial_explanation
+  persona: inspector
+  expected_route: prose
+  query: برق مصرفی رو باید با ضریب به انرژی پایه تبدیل کرد یا همون عددی که کنتور شرکت برق نشون میده ملاکه؟
+  evidence:
+    blocks:
+    - main-p071-b009
+  anchor: block:main-p071-b009

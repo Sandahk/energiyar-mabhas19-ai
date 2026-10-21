@@ -283,23 +283,23 @@ class Planner:
         self, dataset: str, text: str, full: str | None = None
     ) -> tuple[list[str], list[str], list[str]]:
         """(exactly named rows, rows whose head only is named, excluded phrases) of a dataset
-        for the positive text of a query (exclusions removed and returned). A row named by a
-        strict subset of the words that name another exact row is not chosen («ماسه» beside
-        «ماسه سنگ آهکی»)."""
+        for the positive text of a query (exclusions removed and returned). A row naming a
+        strict subset of the query words another exact row names is not chosen («ماسه» beside
+        «ماسه سنگ آهکی»; «الیافی» beside «… تقویت‌شده با الیاف معدنی»)."""
         pol = polarity.parse(text)
         idx = self.identity[dataset]
         toks, negated = idx.negations(pol)
         # an exclusion anywhere in the question applies («… (نه X)» cut by a clause break)
         exclusions = polarity.parse(full).exclusions if full else pol.exclusions
         excl = [identity_tokens(e.text) for e in exclusions] + negated
-        exact: dict[str, frozenset[str]] = {}
+        exact: dict[str, frozenset[int]] = {}
         head: list[str] = []
         for row in idx.by_row:
             if idx.excluded(row, excl):
                 continue
             nm = idx.named(row, toks)
             if nm.status == "exact":
-                exact[row] = frozenset(k for w in idx.named_words(row, toks) for k in keys(w))
+                exact[row] = idx.named_positions(row, toks)
             elif nm.status == "head_only":
                 head.append(row)
         best = [r for r, ws in exact.items() if not any(ws < o for o in exact.values())]
@@ -596,6 +596,8 @@ class Planner:
         starts = {a for a, _, _ in found}
         for i, t in enumerate(toks[:-1]):
             nxt = toks[i + 1]
+            if any(a <= i < b for a, b, _ in found):
+                continue  # the marker is part of a printed place name («بندر لنگه»)
             if (
                 t in marker
                 and i + 1 not in starts

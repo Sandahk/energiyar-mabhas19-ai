@@ -23,6 +23,28 @@ numbers, not by words. Appendix 7 condition texts are qualifiers, never identiti
 
 ``status`` per row: ``exact`` (named), ``head_only`` (a head is named but a distinguishing word
 is missing - several sibling rows fit, never a choice) or ``none``.
+
+Source structure (each derived alternative carries its ``rule``; the identity snapshot lists
+every one):
+
+* ``parenthetical`` - a parenthetical in a name field (never a specification or condition) is
+  another printed name of the phrase it follows when it is a Latin acronym of three or more
+  letters («(PTFE)»), a term introduced by «اصطلاحاً» («(اصطلاحاً یونولیت یا پلاستوفوم)»), or a
+  single non-adjectival noun with no digit or unit («(نئوپان)»). Descriptions («(برگ ریز)»),
+  classifiers («(صنعتی)»), ranges, units, numbers and lists are never names;
+* ``list`` - each item of a printed comma list on the row's most specific field names the row
+  («سفال، کاشی», «بلوط، الش، …»); a field whose items contain «و» is a coordinated phrase, not a
+  list, and a single-word item after a longer first item is elliptical («مدار اولیه، ثانویه» ->
+  «مدار ثانویه»);
+* ``container`` - leading words a level repeats from its parent level are the parent's container
+  noun, not the level's head («صفحات پایه چوبی | صفحات تخته چندلا»);
+* ``linking`` - a level opening with a linking construction («متشکل از», «ساخته شده از/با»,
+  «تشکیل شده از») takes its head from the words after it.
+
+Query-side morphology is narrow: a participle written solid («اتوکلاوشده» ~ «اتوکلاو شده»),
+a noun with the relative «ی» right before «که» («کفی که» ~ «کف»), and a short stem naming its
+printed plural («در» ~ «درهای») only when it is immediately followed by the label's other
+words including one that tells the label from its siblings (never the preposition «در»).
 """
 
 from __future__ import annotations
@@ -96,6 +118,8 @@ class Alternative:
     levels: list[list[str]]  # identity words per printed level (merged modifiers)
     words: list[str] = field(default_factory=list)  # all identity words, in order
     all_words: list[str] = field(default_factory=list)  # every printed word (for exclusions)
+    rule: str = "printed"  # how the alternative is derived from the printed label
+    transforms: list[str] = field(default_factory=list)  # container / linking head rules
 
     @property
     def heads(self) -> list[str]:
@@ -143,6 +167,126 @@ def _counts(lv: Sequence[str], i: int) -> bool:
     return bool(nxt) and not _numeral(nxt) and nxt not in _UNIT_WORDS and nxt not in _OPERATORS
 
 
+Row = tuple[str, list[list[str]], list[str]] | tuple[str, list[list[str]], list[str], str]
+
+# linking constructions that open a level without naming anything («متشکل از …»)
+_LINKING = (
+    ("متشکل", "از"),
+    ("ساخته", "شده", "از"),
+    ("ساخته", "شده", "با"),
+    ("تشکیل", "شده", "از"),
+)
+
+
+_CONJUNCTIONS = ("و", "یا")
+
+
+def head_structure(levels: list[list[str]]) -> tuple[list[list[str]], list[str]]:
+    """Printed levels with container and linking words removed from their head position, and
+    the rules applied. A level keeps its words when removing them would leave it empty, and a
+    repeated word that is a conjunct («گچ | گچ و خاک», «خاک و خشت | خاک تثبیت‌شده») is no
+    container."""
+    out = [list(lv) for lv in levels]
+    applied: list[str] = []
+    for i in range(1, len(levels)):
+        parent, lv = levels[i - 1], levels[i]
+        n = 0
+        while n < len(lv) and n < len(parent) and lv[n] == parent[n]:
+            n += 1
+        conjunct = (n < len(lv) and lv[n] in _CONJUNCTIONS) or (
+            n < len(parent) and parent[n] in _CONJUNCTIONS
+        )
+        if n and n < len(lv) and not conjunct:
+            out[i] = lv[n:]
+            applied.append("container")
+    for i, lv in enumerate(out):
+        for link in _LINKING:
+            if tuple(lv[: len(link)]) == link and len(lv) > len(link):
+                out[i] = lv[len(link) :]
+                applied.append("linking")
+                break
+    return out, applied
+
+
+def _short_plural(w: str) -> str | None:
+    """The stem of a plural whose stem is too short for :func:`keys` («درهای» -> «در»)."""
+    for suffix in ("های", "ها"):
+        if w.endswith(suffix) and 1 < len(w) - len(suffix) < 3:
+            return w[: -len(suffix)]
+    return None
+
+
+_PAREN = re.compile(r"\(([^()]*)\)")
+_TERM = ("اصطلاحا", "اصطلاحاً")
+
+
+def parenthetical_class(inner: str) -> str:  # noqa: PLR0911
+    """How a printed parenthetical is read: ``acronym``, ``term`` or ``noun`` (names), or
+    ``numeric``, ``unit``, ``short_latin``, ``adjective``, ``list`` or ``description``."""
+    text = normalize_for_search(inner).strip()
+    toks = etokens(text)
+    if not toks:
+        return "description"
+    if toks[0] in _TERM:
+        return "term"
+    if any(c.isdigit() for c in text):
+        return "numeric"
+    if any(t in _UNIT_WORDS for t in toks) or "/" in text:
+        return "unit"
+    if re.fullmatch(r"[a-z]+", text):
+        return "acronym" if len(text) >= 3 else "short_latin"
+    if "،" in inner or "," in inner or " یا " in f" {text} " or " و " in f" {text} ":
+        return "list"
+    if len(toks) == 1:
+        return "adjective" if toks[0].endswith("ی") else "noun"
+    return "description"
+
+
+def coordinated(text: str) -> bool:
+    """The printed field, outside its parentheses, coordinates several names («… و …»,
+    «… یا …», «…، …»): a parenthetical's antecedent is then not determined by the structure."""
+    outside = _PAREN.sub(" ", normalize_for_search(text))
+    return bool(re.search(r"[،,]|(?:^|\s)(?:و|یا)(?:\s|$)", outside))
+
+
+def parenthetical_names(text: str) -> list[tuple[str, str, str]]:
+    """(class, parenthetical, level text) for every printed parenthetical name of a field. The
+    name stands for the phrase it follows: the level is the name plus the words printed after
+    the parenthesis («پلی‌وینیل کلراید (PVC) منبسط‌شده» -> «PVC منبسط‌شده»). None in a
+    coordinated field."""
+    if coordinated(text):
+        return []
+    out = []
+    for m in _PAREN.finditer(text):
+        inner = m[1].strip()
+        cls = parenthetical_class(inner)
+        trailing = _PAREN.sub(" ", text[m.end() :]).strip()
+        names: list[str] = []
+        if cls in ("acronym", "noun"):
+            names = [inner]
+        elif cls == "term":
+            body = " ".join(etokens(normalize_for_search(inner))[1:])
+            names = [x.strip() for x in re.split(r"\s+یا\s+|،|,", body) if x.strip()]
+        out += [(cls, inner, f"{name} {trailing}".strip()) for name in names]
+    return out
+
+
+def list_names(text: str) -> list[str]:
+    """Names of a printed comma list (each item, ellipsis expanded), or [] when the field is
+    no list of names (a single item, or items with «و» - a coordinated phrase)."""
+    items = _list_items(_PAREN.sub(" ", text))
+    if len(items) < 2 or any(" و " in f" {normalize_for_search(x)} " for x in items):
+        return []
+    first = etokens(normalize_for_search(items[0]))
+    out = []
+    for k, x in enumerate(items):
+        words = etokens(normalize_for_search(x))
+        if k and len(words) == 1 and len(first) > 1:
+            words = [*first[:-1], *words]  # «مدار اولیه، ثانویه» -> «مدار ثانویه»
+        out.append(" ".join(words))
+    return out
+
+
 def _same_name(scope: Sequence[str], levels: Sequence[Sequence[str]]) -> bool:
     other = [w for lv in levels for w in lv]
     return bool(other) and all(_in(w, other) for w in scope) and all(_in(w, scope) for w in other)
@@ -154,7 +298,7 @@ class IdentityIndex:
     def __init__(
         self,
         dataset: str,
-        rows: list[tuple[str, list[list[str]], list[str]]],
+        rows: Sequence[Row],
         ignore: Iterable[str],
         *,
         coordinated_alternatives: bool = False,
@@ -179,7 +323,10 @@ class IdentityIndex:
         # every printed word of each row (rows printing one name share an alternative, never
         # their conditions)
         self.printed: dict[str, list[str]] = {}
-        for rid, levels, raw in rows:
+        for row in rows:
+            rid, levels, raw = row[0], row[1], row[2]
+            tag = row[3] if len(row) > 3 else "printed"
+            rule, *transforms = tag.split("|")
             self.printed.setdefault(rid, [])
             self.printed[rid] += [w for w in raw if w not in self.printed[rid]]
             heads = [levels[0]] if levels else [[]]
@@ -197,8 +344,11 @@ class IdentityIndex:
                 key = tuple(tuple(x) for x in lv)
                 alt = by_label.get(key)
                 if alt is None:
-                    alt = by_label[key] = Alternative(rid, lv, [w for x in lv for w in x], raw)
-                self.by_row.setdefault(rid, []).append(alt)
+                    alt = by_label[key] = Alternative(
+                        rid, lv, [w for x in lv for w in x], raw, rule, transforms
+                    )
+                if alt not in self.by_row.setdefault(rid, []):
+                    self.by_row[rid].append(alt)
         alts = list(by_label.values())
         # words every printed label carries have no identity («مجاور» of every 19-5-1 element)
         if len(alts) > 1:
@@ -229,7 +379,11 @@ class IdentityIndex:
         for a in self.by_row.get(row, []):
             if not a.words:
                 return Named("exact")  # identified by its printed numeric condition only
-            hit = [w for w in a.words if _named(w, a.words, forms)]
+            hit = [
+                w
+                for w in a.words
+                if _named(w, a.words, forms) or self._short_plural_named(w, a, query)
+            ]
             for li, level in enumerate(a.levels):
                 if not level or level[0] not in hit:
                     continue
@@ -272,6 +426,29 @@ class IdentityIndex:
                     best = cand
         return best
 
+    def _short_plural_named(self, w: str, a: Alternative, query: Sequence[str]) -> bool:
+        """A short stem («در») names its printed plural («درهای») only when the query follows
+        it at once with the label's other words, one of which tells this label from every
+        sibling printing the same plural - so the preposition «در» never names a door."""
+        stem = _short_plural(w)
+        if stem is None:
+            return False
+        level = next((lv for lv in a.levels if w in lv), [])
+        rest = [x for x in level if x != w]
+        siblings = [g for g in self.group(w) if g is not a and g.row != a.row]
+        telling = [x for x in rest if siblings and any(not _in(x, g.words) for g in siblings)]
+        for j, t in enumerate(query):
+            if t != stem:
+                continue
+            run = []
+            for q in query[j + 1 :]:
+                if not any(keys(q) & keys(x) for x in rest):
+                    break
+                run.append(q)
+            if any(any(keys(q) & keys(x) for q in run) for x in telling):
+                return True
+        return False
+
     def prints(self, token: str) -> bool:
         """Some printed label of this dataset carries the (merged) token."""
         return any(_same(token, w) for ws in self.printed.values() for w in ws)
@@ -294,6 +471,10 @@ class IdentityIndex:
                 if t in toks:
                     toks.remove(t)
         return toks, extra
+
+    def excludes_any(self, phrase: Sequence[str]) -> bool:
+        """Some printed row of this dataset prints every content word of the phrase."""
+        return any(self.excluded(row, [phrase]) for row in self.printed)
 
     def _condition_missing(self, row: str, a: Alternative, forms: set[str]) -> list[str]:
         """Condition words the query must name to tell the row from a twin that prints the same
@@ -327,6 +508,18 @@ class IdentityIndex:
             w for a in self.by_row.get(row, []) for w in a.words if _named(w, a.words, forms)
         } | {w for w in cond if _named(w, cond, forms)}
 
+    def named_positions(self, row: str, query: Sequence[str]) -> frozenset[int]:
+        """Positions of the query tokens that name a printed word of the row (any alternative,
+        its required condition included): what the row actually consumes of the question."""
+        forms = query_forms(query)
+        out: set[int] = set()
+        cond = self.conditions.get(row, [])
+        for words in [*(a.words for a in self.by_row.get(row, [])), cond]:
+            for w in words:
+                if _named(w, words, forms):
+                    out |= _positions(w, words, query)
+        return frozenset(out)
+
     def excluded(self, row: str, phrases: Sequence[Sequence[str]]) -> list[str]:
         """Excluded phrases (merged tokens) whose every content word the row's label prints."""
         printed = self.printed.get(row, [])
@@ -345,9 +538,38 @@ def query_forms(query: Sequence[str]) -> set[str]:
         out |= keys(ALIASES.get(t, t))
         for part in _split_number(t):  # «چهارلوله» also names «لوله» (never rewritten)
             out |= keys(part)
+        # a participle written solid («اتوکلاوشده» ~ «اتوکلاو شده»); a negated one never loses
+        # its «ن»
+        if t.endswith("شده") and not t.endswith("نشده") and len(t) - 3 >= 3:
+            out |= keys(t[:-3])
+        # the relative «ی» of a noun right before «که» («کفی که» ~ «کف»)
+        if t.endswith("ی") and len(t) >= 3 and i + 1 < len(query) and query[i + 1] == "که":
+            out |= keys(t[:-1])
         for n in (2, 3):
             if i + n <= len(query):
                 out |= keys("".join(query[i : i + n]))
+    return out
+
+
+def _positions(w: str, words: Sequence[str], query: Sequence[str]) -> set[int]:
+    """Query positions that name the printed word ``w`` (alone, joined, or as part of a printed
+    word written solid in the query)."""
+    out: set[int] = set()
+    i_w = words.index(w)
+    joins = [
+        keys("".join(words[lo:hi]))
+        for lo, hi in ((i_w - 1, i_w + 1), (i_w, i_w + 2), (i_w - 2, i_w + 1), (i_w, i_w + 3))
+        if lo >= 0 and hi <= len(words)
+    ]
+    for i, t in enumerate(query):
+        single = query_forms([t])
+        if t.endswith("ی") and i + 1 < len(query) and query[i + 1] == "که":
+            single |= keys(t[:-1])  # «کفی که»
+        if keys(w) & single or any(j & single for j in joins):
+            out.add(i)
+        for n in (2, 3):
+            if i + n <= len(query) and keys("".join(query[i : i + n])) & keys(w):
+                out.update(range(i, i + n))
     return out
 
 
@@ -379,27 +601,43 @@ def _split_number(token: str) -> list[str]:
 
 def build_indexes(store: StructuredStore) -> dict[str, IdentityIndex]:
     """Identity indexes of the label (main tables), occupancy and material datasets."""
+    from mabhas19.retrieval.structured import LABEL_FIELDS, _field  # noqa: PLC0415
+
     out: dict[str, IdentityIndex] = {}
     for tid, t in store.main.items():
         if t.labels is None or t.label_rows is None:
             continue
-        rows: list[tuple[str, list[list[str]], list[str]]] = []
+        rows: list[Row] = []
+        fields = LABEL_FIELDS.get(tid.removeprefix(MAIN), ())
         for lab in t.labels.labels:
             levels: dict[int, list[str]] = {}
             for w, lv in zip(lab.tokens, lab.levels, strict=True):
                 levels.setdefault(lv, []).append(w)
             lv_words = [levels[k] for k in sorted(levels)]
-            for pos in t.label_rows[lab.id]:
-                rows.append((t.records[pos]["record_id"], lv_words, list(lab.tokens)))
+            positions = t.label_rows[lab.id]
+            printed = {
+                lvl: text
+                for path, lvl in fields
+                if positions
+                and "specification" not in path  # a specification is never a name
+                and (text := _field(t.records[positions[0]], path))
+            }
+            derived = _derived_levels(lv_words, printed)
+            for pos in positions:
+                rid = t.records[pos]["record_id"]
+                rows += [(rid, lvs, list(lab.tokens), tag) for lvs, tag in derived]
         out[tid] = IdentityIndex(
             tid, rows, _table_ignore(store, tid, t.labels.ignore), coordinated_alternatives=True
         )
-    occ_rows = []
+    occ_rows: list[Row] = []
     for o in store.occupancy_index:
         label = normalize_for_search(str(o["label"]))
+        raw = _merge(etokens(label))
         for alt in label.split("/"):
             toks = _merge([w for w in etokens(alt) if w not in "≥≤<>"])
-            occ_rows.append((str(o["id"]), [toks], _merge(etokens(label))))
+            occ_rows += [
+                (str(o["id"]), lvs, raw, tag) for lvs, tag in _derived_levels([toks], {0: alt})
+            ]
     out[APP03] = IdentityIndex(
         APP03,
         occ_rows,
@@ -416,21 +654,55 @@ def build_indexes(store: StructuredStore) -> dict[str, IdentityIndex]:
     return out
 
 
+def _derived_levels(
+    levels: list[list[str]], printed: dict[int, str]
+) -> list[tuple[list[list[str]], str]]:
+    """The printed alternative and those derived from the printed structure, each with its
+    rule tag (``rule|transform…``): the printed levels with container/linking heads, each
+    printed parenthetical name standing for its antecedent, and each item of a printed list on
+    the most specific level (see the module docstring). A derived level is structured against
+    the printed level above it."""
+    base, applied = head_structure(levels)
+    out: list[tuple[list[list[str]], str]] = [(base, "|".join(["printed", *applied]))]
+
+    def level(lvl: int, toks: list[str], rule: str) -> None:
+        parent = [levels[lvl - 1]] if lvl else []
+        new, tf = head_structure([*parent, toks])
+        out.append(([*base[:lvl], new[-1], *base[lvl + 1 :]], "|".join([rule, *tf])))
+
+    for lvl, text in sorted(printed.items()):
+        if lvl >= len(levels):
+            continue
+        for cls, _inner, name in parenthetical_names(text):
+            toks = _merge(etokens(normalize_for_search(name)))
+            if toks:
+                level(lvl, toks, f"parenthetical:{cls}")
+    deepest = max((lvl for lvl in printed if lvl < len(levels)), default=None)
+    if deepest is not None and deepest == len(levels) - 1:
+        for name in list_names(_NUMBERING.sub("", normalize_for_search(printed[deepest]))):
+            toks = _merge(etokens(name))
+            if toks:
+                level(deepest, toks, "list")
+    return out
+
+
 def _material_rows(
     store: StructuredStore,
-) -> tuple[list[tuple[str, list[list[str]], list[str]]], dict[str, list[str]]]:
+) -> tuple[list[Row], dict[str, list[str]]]:
     """Appendix 7 names per row (category, subgroup, material; each listed name on its own)
     and the printed conditions without a number."""
     from mabhas19.retrieval.planner import condition_quantities  # noqa: PLC0415
 
-    mat_rows: list[tuple[str, list[list[str]], list[str]]] = []
+    mat_rows: list[Row] = []
     conditions: dict[str, list[str]] = {}
     for r in store.app07:
         names: list[list[str]] = []
+        printed: dict[int, str] = {}
         for key in ("category", "subgroup", "material"):
             v = r.get(key)
             text = v.get("text") if isinstance(v, dict) else None
             if text:
+                printed[len(names)] = str(text)
                 # a printed list number («۲. بتن و فرآورده‌های بتنی») is not a name
                 text = _NUMBERING.sub("", normalize_for_search(text))
                 names.append(_merge(etokens(text)))
@@ -440,13 +712,7 @@ def _material_rows(
             # a printed condition without a number («با ماسهٔ رودخانه‌ای», «CFC؛ با پوسته سطحی»,
             # «دو حجم پرلیت … برای یک حجم گچ») qualifies the row's name
             conditions[str(r["id"])] = _merge(etokens(normalize_for_search(cond)))
-        mat_rows.append((str(r["id"]), names, raw))
-        # a printed list of names («بلوط، الش، زبان گنجشک، …»): each name identifies the row
-        material = (r.get("material") or {}).get("text") or ""
-        pieces = _list_items(normalize_for_search(material))
-        if len(pieces) > 1 and names:
-            for piece in pieces:
-                mat_rows.append((str(r["id"]), [*names[:-1], _merge(etokens(piece))], raw))
+        mat_rows += [(str(r["id"]), lvs, raw, tag) for lvs, tag in _derived_levels(names, printed)]
     return mat_rows, conditions
 
 

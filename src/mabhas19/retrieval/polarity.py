@@ -21,9 +21,10 @@ from dataclasses import dataclass, field
 
 # exclusion markers (longest first); «غیر از» excludes, «غیر X» (no «از») is a qualifier form
 _EXCLUDE = r"(?:به\s?غیر\s?از|بغیر\s?از|غیر\s?از|به\s?جز|بجز|منهای|جز|نه)"
-# outside parentheses an exclusion runs to the next clause break, at most six words
+# outside parentheses an exclusion runs to the next clause break - a dash between spaces («—»,
+# normalized to « - ») included, never the hyphen of «19-5-1» or «1-2» - at most six words
 _BARE = re.compile(
-    rf"(?<![ؠ-ۿ]){_EXCLUDE}\s+((?:[^\s()،,؛;؟?.!]+\s*){{1,6}}?)(?=[()،,؛;؟?.!]|$|\s+و\s)"
+    rf"(?<![ؠ-ۿ]){_EXCLUDE}\s+((?:[^\s()،,؛;؟?.!—–]+\s*){{1,6}}?)(?=[()،,؛;؟?.!—–]|$|\s+و\s|\s*-\s)"
 )
 _STOP = re.compile(r"\s+(?:در|برای|تو|توی|با|به|که|از|چه|چند|چقدر|حداقل|حداکثر)\s.*$")
 # negative-form qualifiers that name printed rows
@@ -97,4 +98,4 @@ def parse(text: str) -> Polarity:
 
 _FORM = re.compile(r"(?<![ؠ-ۿ])(?:بدون|غیر|فاقد)\s?(?!از)([ؠ-ۿ]+)")
 # what a negative form negates runs to the next clause break or parenthesis, at most six words
-_SCOPE = re.compile(r"((?:[^\s()،,؛;؟?.!]+\s*){1,6}?)(?=[()،,؛;؟?.!]|$|\s+و\s)")
+_SCOPE = re.compile(r"((?:[^\s()،,؛;؟?.!—–]+\s*){1,6}?)(?=[()،,؛;؟?.!—–]|$|\s+و\s|\s*-\s)")

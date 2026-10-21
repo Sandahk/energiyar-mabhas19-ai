@@ -82,6 +82,7 @@ _TOKEN = re.compile(r"[a-z]*\d+(?:\.\d+)?[a-z]*|[a-z]+|[ؠ-يٮ-ۓە-ۿ]+|[≥�
 _REFERENCE = re.compile(
     r"(?:جدول|جداول|پیوست|فصل|بند|بخش|ماده|تبصره)\s*(?:شماره\s*)?(?:پ\s?)?\d+(?:\s?[-–]\s?\d+)*"
 )
+_QUOTED_CAPTION = re.compile(r"(?:جدول|جداول)\s*«[^»]*»")
 _CLIMATE = re.compile(r"(?<![a-z0-9])\d\s?[a-z](?![a-z0-9/])")
 _RATING = re.compile(r"(?:رده|رتبه|کلاس)\s*(?:بازدهی\s*)?(?:انرژی\s*)?[a-z]\+{0,3}(?![a-z0-9+])")
 _GROUP = re.compile(
@@ -208,10 +209,15 @@ def admit(  # noqa: PLR0911, PLR0912, PLR0913, PLR0915
         a.groundings.append(Grounding("exclusion", x.text, (x.start, x.end), "printed"))
     index = planner.identity.get(plan.target)
     for q, scope in zip(pol.negative_forms, pol.negated, strict=True):
+        phrase = query_tokens(scope.text)
         if index is None or index.prints(query_tokens(q.text)[0]):
             a.groundings.append(Grounding("qualifier", q.text, (q.start, q.end), "printed"))
-        else:  # a negative form no label prints negates its phrase (an exclusion)
-            a.exclusions.append(query_tokens(scope.text))
+        elif not index.excludes_any(phrase):
+            # «غیرشیشه‌ای» where no row prints «شیشه‌ای»: the qualifier cannot be checked
+            # against the source; it stays unresolved (and blocks next to the entity)
+            continue
+        else:  # a negative form no label prints negates its printed phrase (an exclusion)
+            a.exclusions.append(phrase)
             a.groundings.append(
                 Grounding(
                     "exclusion",
@@ -455,6 +461,8 @@ def _coverage(
         for k in keys(w)
     }
     ref_spans = [m.span() for m in _REFERENCE.finditer(text)]
+    # a quoted caption after «جدول» («در جدول «حداقل میزان مجاز …»») names the table
+    ref_spans += [m.span() for m in _QUOTED_CAPTION.finditer(text)]
     out: list[tuple[str, str]] = []
     tokens = list(_TOKEN.finditer(text))
     for i, m in enumerate(tokens):

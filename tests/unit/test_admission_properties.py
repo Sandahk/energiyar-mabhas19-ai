@@ -250,7 +250,9 @@ def test_missing_distinguishing_modifier_never_names_the_row(ds: str) -> None:
 @pytest.mark.parametrize("ds", LABELLED, ids=lambda d: d.split(".")[-1])
 def test_extra_unprinted_modifier_returns_no_row(ds: str) -> None:
     for r in _sample(ds):
-        words = norm(_label(ds, _row(ds, r))).split(" ")
+        # list commas are dropped: a modifier after «انبار،» would sit in the next clause, not
+        # on the name it should modify
+        words = norm(_label(ds, _row(ds, r))).replace("،", " ").replace(",", " ").split()
         # the modifier follows the first word (attributive position), not a printed numbering
         at = next(i for i, w in enumerate(words) if any(c.isalpha() for c in w)) + 1
         res = _retrieve(

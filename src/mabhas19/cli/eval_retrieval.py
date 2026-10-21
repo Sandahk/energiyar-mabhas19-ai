@@ -31,6 +31,12 @@ from mabhas19.retrieval.eval import (
     evaluate,
     load_cases,
 )
+from mabhas19.retrieval.final_validation import (
+    VALIDATED_SETS,
+    excluded_records_of,
+    issue_records,
+    validate_final_cases,
+)
 from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.lexical import K1, B, save_chunks
 from mabhas19.retrieval.models import Chunk
@@ -38,6 +44,8 @@ from mabhas19.retrieval.plan import OUTCOMES
 from mabhas19.retrieval.structured import StructuredStore
 
 DOC_ID = "m19-ed5-1404-main"
+# the evidence pool a validated final set may not seed from (authoring independence)
+EARLIER_SETS = {"final5": ("dev", "heldout", "final", "final2", "final3", "final4")}
 OUT = DATA_DIR / "retrieval"
 SETS = EVAL_DIR / "retrieval"
 
@@ -51,6 +59,7 @@ def _validate(
     blocks: list[dict[str, Any]],
     chunks: list[Chunk],
     store: StructuredStore,
+    set_name: str = "",
 ) -> list[str]:
     records = {r["id"] for r in store.app02 + store.app03 + store.app07}
     records |= {r["record_id"] for t in store.main.values() for r in t.records}
@@ -69,6 +78,12 @@ def _validate(
     ids = [c["id"] for c in cases]
     if len(ids) != len(set(ids)):
         problems.append("duplicate case IDs")
+    if set_name in VALIDATED_SETS:
+        # Final-5 onward: an excluded true record is never turned into a no-record case
+        earlier = [load_cases(SETS / f"{s}.yaml") for s in EARLIER_SETS[set_name]]
+        problems += validate_final_cases(
+            cases, records, issue_records(store.issues), excluded_records_of(earlier)
+        )
     return problems
 
 
@@ -85,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
     chunks = build_chunks(blocks, DOC_ID)
     store = StructuredStore(CURATED_DIR)
     cases = load_cases(cases_path)
-    problems = _validate(cases, blocks, chunks, store)
+    problems = _validate(cases, blocks, chunks, store, args.set)
     if problems:
         print("evaluation set has unknown evidence:\n  " + "\n  ".join(problems), file=sys.stderr)
         return 2

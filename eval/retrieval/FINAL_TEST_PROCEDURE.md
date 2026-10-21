@@ -129,3 +129,34 @@ Dev, diagnostic, the original final set, Final-2 and Final-3 are all development
 5. Report safety first (hard requirement 0 / 0 / 0; a nonzero wrong regulatory value blocks
    generation), then structured, routing/scope and prose (BM25, vector, hybrid; intrinsic and
    end-to-end). Failures are classified by severity; nothing is changed after the run.
+
+## 10. Final-5 (after M1 source-structure identity and M2 source-attested constraints)
+Dev, diagnostic, the original final set and Final-2 to Final-4 are all development data from now
+on; Final-4 and its run stay immutable (its L338/L342 adjudication is recorded in
+`final4_adjudication.yaml`).
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final5 --write` writes
+   `final5_candidate.yaml`: the §9 pins plus admission, certification, identity (with the
+   identity-snapshot fixture fingerprint), polarity, operations, rating vocabulary and
+   final-authoring validation modules; router `v4.1`, query plan `plan-2`, numeric parser
+   `numeric-2`, constraint parser `attested-1`, entity resolver `source-structure-1`, evaluator
+   `corrected-4` with `final-validation-1`; and the safety invariants (wrong regulatory values,
+   wrong extra rows, silently dropped constraints and failed certifications all 0). Commit it.
+2. Anchors: a new seed; exclude every evidence ID of all six earlier sets (and adjacent IDs
+   where the pool allows); report each shortfall.
+3. **Exclusions are for authoring independence, not for the expected answer.** An excluded ID
+   never seeds a case. When an independently written question's true answer is an excluded
+   record, the case lists that record and sets `uses_excluded_records: true`, or it is dropped
+   before freeze. It is never written as a structured case with no expected records.
+4. Authoring by a fresh agent and review by a separate fresh agent, as in §9 (no code, router,
+   planner or candidate output; the candidate is never run while authoring or reviewing).
+5. `--freeze` runs the §9 validation plus the Final-5 authoring validation
+   (`retrieval/final_validation.py`), which rejects a structured/mixed case with no expected
+   records that names a curated record, cites a source issue or conflict located on records,
+   or states neither a typed no-match (`no_records` + `no_match_outcomes`) nor a table-level
+   question; and an excluded record used without `uses_excluded_records`. The checks read only
+   the case and the curated source, never the candidate under test. Then commit `final5.yaml` +
+   `final5.sha256`, check the manifest, and run once:
+   `python -m mabhas19.cli.embedding_experiment --set final5`.
+6. Report safety first (hard requirement 0 / 0 / 0 / 0), then structured, routing/scope and
+   prose. Nothing is changed after the run.

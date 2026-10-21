@@ -1,13 +1,13 @@
 """Freeze or check the retrieval candidate manifest of a final benchmark.
 
 Usage:
-    uv run python -m mabhas19.cli.freeze_candidate --set final4          # check (exit 2 on drift)
-    uv run python -m mabhas19.cli.freeze_candidate --set final4 --write  # write the manifest
+    uv run python -m mabhas19.cli.freeze_candidate --set final5          # check (exit 2 on drift)
+    uv run python -m mabhas19.cli.freeze_candidate --set final5 --write  # write the manifest
 
 Writing requires clean src/, eval/ and curated/ trees. A final run (embedding_experiment --set
-final4) checks the manifest and refuses to start on any difference. final2_candidate.yaml and
-final3_candidate.yaml are historical: they record the candidates those sets were run against
-and are never rewritten.
+final5) checks the manifest and refuses to start on any difference. final2_candidate.yaml,
+final3_candidate.yaml and final4_candidate.yaml are historical: they record the candidates those
+sets were run against and are never rewritten.
 """
 
 from __future__ import annotations
@@ -15,7 +15,13 @@ from __future__ import annotations
 import argparse
 import sys
 
-from mabhas19.retrieval.candidate import CURRENT, MANIFESTS, check_manifest, write_manifest
+from mabhas19.retrieval.candidate import (
+    CURRENT,
+    LABELS,
+    MANIFESTS,
+    check_manifest,
+    write_manifest,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -28,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.set_name != CURRENT:
             print(f"{path.name} is historical and is never rewritten", file=sys.stderr)
             return 2
-        doc = write_manifest(path, "Final-4")
+        doc = write_manifest(path, LABELS[args.set_name])
         print(f"wrote {path} (base {doc['base_commit']})")
         return 0
     problems = check_manifest(path)

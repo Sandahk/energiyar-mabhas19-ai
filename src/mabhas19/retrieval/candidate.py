@@ -1,6 +1,7 @@
 """Frozen retrieval candidate manifests for the final benchmarks (reproducibility guard).
 
-``eval/retrieval/<set>_candidate.yaml`` (Final-2 and Final-3: historical, Final-4: current) pins
+``eval/retrieval/<set>_candidate.yaml`` (Final-2, Final-3, Final-4: historical; Final-5: current)
+pins
 everything the benchmark tests: the candidate commit and the code (git tree of ``src/``,
 per-module hashes), the curated corpus and tables, the structured schemas, the scope map, the
 external-domain taxonomy and the policy-ambiguity record, the chunk fingerprint, BM25/RRF
@@ -26,39 +27,47 @@ from mabhas19.retrieval.hybrid import RRF_K
 from mabhas19.retrieval.lexical import K1, B
 
 MANIFESTS = {
-    s: EVAL_DIR / "retrieval" / f"{s}_candidate.yaml" for s in ("final2", "final3", "final4")
+    s: EVAL_DIR / "retrieval" / f"{s}_candidate.yaml"
+    for s in ("final2", "final3", "final4", "final5")
 }
-CURRENT = "final4"  # the only manifest that may be (re)written; earlier ones are historical
+CURRENT = "final5"  # the only manifest that may be (re)written; earlier ones are historical
+LABELS = {"final2": "Final-2", "final3": "Final-3", "final4": "Final-4", "final5": "Final-5"}
 MANIFEST_PATH = MANIFESTS["final2"]  # historical: the candidate Final-2 was run against
 HYBRID_CANDIDATE = EVAL_DIR / "retrieval" / "hybrid_candidate.yaml"
 SCOPE_MAP = EVAL_DIR / "retrieval" / "scope_map.yaml"
 EXTERNAL = EVAL_DIR / "retrieval" / "external_domains.yaml"
 POLICY_AMBIGUITIES = EVAL_DIR / "retrieval" / "policy_ambiguities.yaml"
 STRUCTURED_SCHEMAS = EVAL_DIR / "retrieval" / "structured_schemas.yaml"
-# v4: plan-driven detection, decomposition by plan coverage with shared context, schema-based
-# table references, planner-owned unknown entities, in-scope evidence over external domains
-ROUTER_VERSION = "v4"
-# typed StructuredQueryPlan + fail-closed validation gate + independent executor re-check
-QUERY_PLAN_VERSION = "plan-1"
-NUMERIC_PARSER_VERSION = "numeric-1"  # Decimal intervals, closed/open/unspecified bounds, ratios
-# record-level, acceptable routes, typed no-match, scope classes, wrong-value / extra-row /
-# dropped-constraint safety counts + optional typed-outcome, calculation and enumeration scoring
-EVALUATOR_VERSION = "corrected-3"
-CONSTRAINT_PARSER_VERSION = "ledger-1"  # one state per extracted constraint (constraints.py)
-# meaning-bearing modifiers (negation, count, degree) kept on their word, fully named rows,
-# adjectival keys, no ordinals as numbers
-ENTITY_RESOLVER_VERSION = "modifiers-2"
+IDENTITY_SNAPSHOT = REPO_ROOT / "tests" / "fixtures" / "identity_snapshot.json"
+# v4.1: v4 + no caption match after a printed table ID, operation words generic, broken-plural
+# caption/reference keys
+ROUTER_VERSION = "v4.1"
+# typed StructuredQueryPlan + validation gate + plan admission (grounded spans, anchors,
+# coverage, unprinted modifiers block) + independent result certification
+QUERY_PLAN_VERSION = "plan-2"
+# Decimal intervals with typed bounds, ratios, coordinated complementary bounds, printed range
+# exceptions negated
+NUMERIC_PARSER_VERSION = "numeric-2"
+# corrected-3 + failed result certifications (corrected-4)
+EVALUATOR_VERSION = "corrected-4"
+# source-attested rating vocabulary, coordinated grades/groups/bounds, nearest-cue ownership,
+# checked claims, constraint provenance (M2)
+CONSTRAINT_PARSER_VERSION = "attested-1"
+# source-exact identity (M1): parenthetical/list/container/linking structure, guarded
+# morphology, required printed conditions, query-position pruning
+ENTITY_RESOLVER_VERSION = "source-structure-1"
 SAFETY = {
     "wrong_regulatory_values_expected": 0,
     "wrong_extra_rows_expected": 0,
     "dropped_constraints_expected": 0,
+    "failed_certifications_expected": 0,
 }
 # files that may change after the candidate commit: the manifest itself, the frozen test set and
 # its fingerprint
 SET_FILES = (
-    "eval/retrieval/final4_candidate.yaml",
-    "eval/retrieval/final4.yaml",
-    "eval/retrieval/final4.sha256",
+    "eval/retrieval/final5_candidate.yaml",
+    "eval/retrieval/final5.yaml",
+    "eval/retrieval/final5.sha256",
 )
 MODULES = (
     "src/mabhas19/indexing/chunking.py",
@@ -78,6 +87,14 @@ MODULES = (
     "src/mabhas19/retrieval/plan.py",
     "src/mabhas19/retrieval/planner.py",
     "src/mabhas19/retrieval/executor.py",
+    "src/mabhas19/retrieval/admission.py",
+    "src/mabhas19/retrieval/certification.py",
+    "src/mabhas19/retrieval/identity.py",
+    "src/mabhas19/retrieval/identity_snapshot.py",
+    "src/mabhas19/retrieval/polarity.py",
+    "src/mabhas19/retrieval/operations.py",
+    "src/mabhas19/retrieval/ratings.py",
+    "src/mabhas19/retrieval/final_validation.py",
     "src/mabhas19/retrieval/models.py",
     "src/mabhas19/providers/local_embeddings.py",
     "src/mabhas19/retrieval/eval.py",
@@ -119,6 +136,7 @@ def live_candidate() -> dict[str, Any]:
         ).get("schema_version")
         for p in sorted((CURATED_DIR / "tables").rglob("table.yaml"))
     }
+    from mabhas19.retrieval import final_validation  # noqa: PLC0415
     from mabhas19.retrieval.plan import OUTCOMES  # noqa: PLC0415
 
     return {
@@ -132,6 +150,7 @@ def live_candidate() -> dict[str, Any]:
             "numeric_parser_version": NUMERIC_PARSER_VERSION,
             "constraint_parser_version": CONSTRAINT_PARSER_VERSION,
             "entity_resolver_version": ENTITY_RESOLVER_VERSION,
+            "identity_snapshot_sha256": _sha(IDENTITY_SNAPSHOT),
         },
         "curated": {
             "last_commit": _git("log", "-1", "--format=%h", "--", "curated"),
@@ -161,12 +180,14 @@ def live_candidate() -> dict[str, Any]:
         "evaluator": {
             "version": EVALUATOR_VERSION,
             "eval_py_sha256": _sha(REPO_ROOT / "src/mabhas19/retrieval/eval.py"),
+            "final_validation_version": final_validation.VERSION,
+            "final_validated_sets": list(final_validation.VALIDATED_SETS),
         },
         "safety": dict(SAFETY),
     }
 
 
-def write_manifest(path: Path = MANIFESTS[CURRENT], label: str = "Final-4") -> dict[str, Any]:
+def write_manifest(path: Path = MANIFESTS[CURRENT], label: str = LABELS[CURRENT]) -> dict[str, Any]:
     live = live_candidate()
     if not live["code"]["src_clean"]:
         raise RuntimeError("src/ has uncommitted changes; commit before freezing the candidate")

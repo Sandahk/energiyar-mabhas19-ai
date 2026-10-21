@@ -272,10 +272,10 @@ def test_count_qualifiers_follow_the_same_rule() -> None:
     ("query", "records", "prose"),
     [
         (
-            "یه آپارتمان ۵۰۰ متری تو اقلیم 3B داریم؛ این جزو مسکونی کوچک حساب میشه؟ "
+            "یه آپارتمان ۵۰۰ متری تو اقلیم 3B داریم؛ این جزو مسکونی حساب میشه؟ "
             "سقف شدت مصرف رده B اش چنده؟",
             ["app03-B-r02-3B"],
-            "این جزو مسکونی کوچک حساب میشه",
+            "این جزو مسکونی حساب میشه",
         ),
         (
             "دیوار خارجی مجاور خاک جزو پوسته غیرنورگذر حساب میشه؟ حداقل R اش در اقلیم 3B چنده؟",
@@ -308,12 +308,24 @@ def test_context_is_not_shared_when_the_lookup_names_its_entity() -> None:
 def test_shared_context_adds_no_rows_beyond_the_identified_entity() -> None:
     # the shared clause names the size class, so exactly one Appendix 3 row is returned
     r = _run(
-        "آپارتمانی دقیقاً ۳۰۰۰ متر مربعی در اقلیم 4A دارم؛ در پیوست ۳ جزو ردیف مسکونی بزرگ "
+        "آپارتمانی دقیقاً ۳۰۰۰ متر مربعی در اقلیم 4A دارم؛ در پیوست ۳ جزو ردیف مسکونی "
         "حساب می‌شود؟ سقف شدت مصرف رده C آن چند است؟"
     )
     assert [h.record_id for h in r.structured] == ["app03-C-r01-4A"]
     assert r.structured[0].source_issues == ["SI-0003"]
     assert r.no_match == []
+
+
+@pytest.mark.parametrize("size", ["کوچک", "بزرگ"])
+def test_an_unprinted_size_word_on_the_occupancy_fails_closed(size: str) -> None:
+    # «مسکونی کوچک/بزرگ» is not printed (the rows print «< ۳۰۰۰» / «≥ ۳۰۰۰ مترمربع»): the
+    # attribute is unresolved, so nothing is returned even though the area selects a row
+    r = _run(
+        f"یه آپارتمان ۵۰۰ متری تو اقلیم 3B داریم؛ این جزو مسکونی {size} حساب میشه؟ "
+        "سقف شدت مصرف رده B اش چنده؟"
+    )
+    assert r.structured == []
+    assert "unresolved_modifier" in {n.reason for n in r.no_match}
 
 
 # ---------------------------------------------------------------- adjudicated policies

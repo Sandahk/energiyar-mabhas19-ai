@@ -34,9 +34,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from mabhas19.retrieval import polarity
+from mabhas19.retrieval import ratings as rating_parser
 from mabhas19.retrieval.answerability import has_words
+from mabhas19.retrieval.dimensions import GROUP_MORE
 from mabhas19.retrieval.entities import FUNCTION_WORDS, keys
-from mabhas19.retrieval.identity import query_tokens
+from mabhas19.retrieval.identity import query_forms, query_tokens
 from mabhas19.retrieval.normalization import QUESTION_WORDS
 from mabhas19.retrieval.numeric import UNITS
 from mabhas19.retrieval.operations import operations
@@ -312,10 +314,18 @@ def admit(  # noqa: PLR0911, PLR0912, PLR0913, PLR0915
     # a row named only by words that are also prepositions («روی»: zinc / on) is named only
     # together with its output: «… روی خاک رسی چقدر …» asks nothing of zinc
     homograph = bool(a.entity_words) and all(w in _PREPOSITIONS for w in a.entity_words)
-    lookup = bool(named_output) or (bool(has_words(full, LOOKUP_WORDS)) and not homograph)
+    # a bare «چند/چقدر» asks for this table's value only when no other table's output is the
+    # thing named («… کل مصرف سالانه … کیلووات ساعت» asks Appendix 3, not 19-5-6)
+    elsewhere = not named_output and _other_output_named(planner, plan.target, output_text or full)
+    lookup = bool(named_output) or (
+        bool(has_words(full, LOOKUP_WORDS)) and not homograph and not elsewhere
+    )
+    # a number printed in a row's own label («۵۰۰ متری» of «کوچک‌تر از ۲۰۰۰ متر مربع») selects
+    # the row; it anchors a lookup only together with this table's named output
+    stated = [c for c in a.constraints if c.rule != "label_condition" or named_output]
     anchored = (
         plan.explicit_reference
-        or bool(a.constraints)
+        or bool(stated)
         or bool(plan.enumerations)
         or (bool(a.entity_words) and lookup)
         or (bool(a.entity_words) and plan.operation == "existence")
@@ -342,6 +352,19 @@ def admit(  # noqa: PLR0911, PLR0912, PLR0913, PLR0915
     return a
 
 
+def _other_output_named(planner: Planner, target: str, text: str) -> bool:
+    """Another structured table's output (its names or cues) is named in the question."""
+    own = {k for o in planner.schemas[target].outputs for n in (*o.names, *o.cues) for k in keys(n)}
+    for ds, schema in planner.schemas.items():
+        if ds == target:
+            continue
+        for o in schema.outputs:
+            names = [n for n in (*o.names, *o.cues) if not keys(n) & own]
+            if names and has_words(text, names):
+                return True
+    return False
+
+
 def _derived(plan: StructuredQueryPlan, c: Constraint) -> bool:
     return any(d.kind == "climate_from_place" for d in plan.derivations) and (
         c.dimension == "climate_class"
@@ -357,6 +380,9 @@ def _constraint_span(full: str, c: Constraint) -> tuple[int, int] | None:  # noq
         m = _CLIMATE.search(full)
         return m.span() if m else None
     if dim == "rating":
+        for mention in rating_parser.parse(full):
+            if set(mention.letters) & {str(v).upper() for v in c.values} or c.state == "invalid":
+                return mention.start, mention.end
         m = _RATING.search(full)
         if m:
             return m.span()
@@ -367,7 +393,12 @@ def _constraint_span(full: str, c: Constraint) -> tuple[int, int] | None:  # noq
         return None
     if dim == "group":
         m = _GROUP.search(full)
-        return m.span() if m else None
+        if m is None:
+            return None
+        end = m.end()
+        while more := GROUP_MORE.match(full, end):  # «گروه‌های ج و د»
+            end = more.end()
+        return m.start(), end
     if dim == "year":
         m = _YEAR.search(full)
         return m.span() if m else None
@@ -406,6 +437,16 @@ _PREPOSITIONS = frozenset({"روی", "زیر", "کنار", "پشت", "بالای
 
 # verb participles of a relative clause («… که با ماسه رودخانه‌ای ساخته شده») never name a row
 _PARTICIPLES = frozenset({"ساخته", "شده", "گرفته", "داشته", "کرده", "قرار"})
+# harmless context: exclusion markers (the excluded phrase is grounded separately), copulas and
+# the predicate «مربوط به»
+_CONTEXT = frozenset(
+    {"نه", "جز", "بجز", "منهای", "است", "هست", "هستند", "هستن", "باشد", "باشه", "مربوط", "جزو"}
+)
+# spatial prepositions begin a prepositional phrase; they are never an attribute («کف روی …»)
+_SPATIAL = frozenset({"روی", "کنار", "زیر", "بالای", "پشت", "داخل", "درون", "بیرون", "میان"})
+# light verbs: the word before one is the nominal part of a verb («استفاده می‌شود»), never an
+# attribute of the entity
+_LIGHT_VERBS = frozenset({"می", "میشه", "میشود", "شود", "شده", "میکنه", "میکند", "کند", "کرد"})
 
 
 def _generic(planner: Planner) -> frozenset[str]:
@@ -425,6 +466,7 @@ def _generic(planner: Planner) -> frozenset[str]:
         | set(LOOKUP_WORDS)
         | _UNIT_WORDS
         | _PARTICIPLES
+        | _CONTEXT
     )
     return frozenset({k for w in words for k in keys(w)} | set(_STRUCTURAL_WORDS))
 
@@ -483,7 +525,7 @@ def _coverage(
             cls = "qualifier"
         elif inside(by_comp.get("constraint", [])) or _NUMBER.fullmatch(tok):
             cls = "constraint"
-        elif keys(tok) & entity_keys or any(keys(x) & entity_keys for x in joined):
+        elif query_forms([tok]) & entity_keys or any(keys(x) & entity_keys for x in joined):
             cls = "entity"
         elif keys(tok) & out_names:
             cls = "output"
@@ -502,8 +544,10 @@ def _blocking(
 
     * a word a printed sibling of the admitted row carries (a label sharing one of its named
       words): it may select that sibling instead;
-    * a word outside Mabhas 19 vocabulary in modifier position, right after the named entity
-      (Persian attributes follow their noun): an unprinted variant or product («… کوانتومی»).
+    * any word in modifier position, right after the named entity (Persian attributes follow
+      their noun), that the row does not print and that is not harmless context: an unprinted
+      variant («… کوانتومی», «سنگدانه معمولی»). A word being ordinary Mabhas 19 vocabulary, or
+      no sibling printing it, is no evidence that it does not change the meaning.
 
     A word before the entity («خونه ویلایی», «شعبه بانک») or after a clause word («برای …»)
     is context and never blocks."""
@@ -520,13 +564,45 @@ def _blocking(
         for x in g.words
         for k in keys(x)
     } - own
+    named = {k for w in a.entity_words for k in keys(w)}
     vocab = planner.vocab_keys()
+    # level heads of the admitted rows: a word right before one is that name's head noun
+    # («سامانه تولید همزمان …», «خونه ویلایی»), not an attribute of the previous name
+    alts = [alt for r in a.entity_rows for alt in idx.by_row.get(r, [])]
+
+    def between_levels(prev: str, nxt: str) -> bool:
+        """``nxt`` heads a printed level other than the one ``prev`` belongs to."""
+        pf, nf = query_forms([prev]), query_forms([nxt])
+        for alt in alts:
+            mine = {li for li, lv in enumerate(alt.levels) if any(keys(w) & pf for w in lv)}
+            head = {li for li, lv in enumerate(alt.levels) if lv and keys(lv[0]) & nf}
+            if head and mine - head:
+                return True
+        return False
+
     cov = a.coverage
     out = []
     for i, (tok, cls) in enumerate(cov):
         if cls != "unresolved":
             continue
-        modifier = i > 0 and cov[i - 1][1] == "entity"
-        if keys(tok) & siblings or (modifier and vocab and not keys(tok) & vocab):
+        # modifier position: right after one of the row's named identity words (not after an
+        # output, caption or function word the row also prints), and not a verb's nominal part
+        nxt = cov[i + 1][0] if i + 1 < len(cov) else ""
+        after_row = i > 0 and cov[i - 1][1] == "entity"
+        # not an attribute: the nominal part of a verb («حساب میشه», «استفاده می‌شود»), the head
+        # noun of the next printed name («سامانه تولید همزمان …»), or a spatial preposition
+        attribute = (
+            after_row
+            and nxt not in _LIGHT_VERBS
+            and not between_levels(cov[i - 1][0], nxt)
+            and tok not in _SPATIAL
+        )
+        # modifier position: right after one of the row's named identity words (not after an
+        # output, caption or function word the row also prints)
+        modifier = attribute and bool(query_forms([cov[i - 1][0]]) & named)
+        # a word outside Mabhas 19 vocabulary right after any printed word of the row is an
+        # unprinted variant as well («پلیمرهای کوانتومی متراکم …»)
+        foreign = attribute and bool(vocab) and not keys(tok) & vocab
+        if keys(tok) & siblings or modifier or foreign:
             out.append(tok)
     return out

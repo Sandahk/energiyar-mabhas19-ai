@@ -73,6 +73,11 @@ class Constraint:
     state: str = "applied"
     detail: str = ""
     reason: str = ""  # specific typed reason when invalid (e.g. ``rating_not_in_table``)
+    # provenance: the parser rule that read it («cue», «coordinated_bound», «printed_condition»,
+    # «claim», «label_condition», «rating_letter», «rating_description», «coordinated_values»)
+    # and the curated source blocks attesting a descriptive wording
+    rule: str = ""
+    attested_in: list[str] = field(default_factory=list)
 
     def describe(self) -> str:
         if self.interval is not None:

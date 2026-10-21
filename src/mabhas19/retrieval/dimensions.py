@@ -142,12 +142,26 @@ def _min_hi(a: Interval, b: Interval) -> tuple[Decimal | None, bool]:
 
 
 def ratings_requested(norm: str) -> list[str]:
-    """Every rating letter the query asks for (validated against a table later)."""
-    return sorted({m.upper() for m in _RATING.findall(norm)})
+    """Every rating grade the query states - a letter, or a description the source pairs with
+    a printed grade (validated against a table later; conflicting mentions state none)."""
+    from mabhas19.retrieval import ratings  # noqa: PLC0415
+
+    return ratings.letters(norm)
+
+
+# a further building group coordinated with a stated one («گروه‌های ج و د»)
+GROUP_MORE = re.compile(r"\s*(?:و|،|,|یا)\s*(الف|ب|پ|ج|د)(?![ؠ-ۿ])")
 
 
 def groups_requested(norm: str) -> list[str]:
-    return sorted(set(_GROUP.findall(norm)))
+    out = set()
+    for m in _GROUP.finditer(norm):
+        out.add(m[1])
+        pos = m.end()
+        while more := GROUP_MORE.match(norm, pos):
+            out.add(more[1])
+            pos = more.end()
+    return sorted(out)
 
 
 def years_requested(norm: str) -> list[int]:

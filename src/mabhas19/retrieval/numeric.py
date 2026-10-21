@@ -276,7 +276,10 @@ def find_quantities(text: str, *, printed: bool = False) -> list[Quantity]:  # n
         if unit is None and (re.search(r"[%٪]", raw) or _UNIT_BEFORE.search(text[:a])):
             unit = "percent"
         taken.append((a, end))
-        negated = bool(_EXCLUDED.search(text[max(0, a - 16) : a]))
+        lead = text[max(0, a - 16) : a]
+        if raw.lstrip().startswith("از"):
+            lead = lead.rstrip() + " از"  # «به غیر از ۷۵ تا ۲۰۰»: the range took its «از»
+        negated = bool(_EXCLUDED.search(lead))
         out.append(Quantity(iv, unit, a, end, raw, nums, ratio, negated))
 
     range_kind: BoundKind = "unspecified" if printed else "closed"

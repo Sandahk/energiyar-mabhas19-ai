@@ -30,8 +30,14 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 from mabhas19.retrieval import polarity
+from mabhas19.retrieval import ratings as rating_parser
 from mabhas19.retrieval.answerability import has_words
-from mabhas19.retrieval.dimensions import groups_requested, ratings_requested, years_requested
+from mabhas19.retrieval.dimensions import (
+    GROUP_MORE,
+    groups_requested,
+    ratings_requested,
+    years_requested,
+)
 from mabhas19.retrieval.entities import (
     FUNCTION_WORDS,
     NEGATORS,
@@ -43,7 +49,13 @@ from mabhas19.retrieval.entities import (
 )
 from mabhas19.retrieval.identity import build_indexes
 from mabhas19.retrieval.identity import query_tokens as identity_tokens
-from mabhas19.retrieval.numeric import NumInterval, Quantity, find_quantities, printed_interval
+from mabhas19.retrieval.numeric import (
+    OPEN,
+    NumInterval,
+    Quantity,
+    find_quantities,
+    printed_interval,
+)
 from mabhas19.retrieval.operations import requested as requested_operation
 from mabhas19.retrieval.plan import (
     Constraint,
@@ -150,6 +162,8 @@ class Features:
     climates: list[str] = field(default_factory=list)
     ratings: list[str] = field(default_factory=list)
     rating_mentioned: bool = False
+    rating_conflicts: list[str] = field(default_factory=list)
+    rating_mentions: list[rating_parser.RatingMention] = field(default_factory=list)
     groups: list[str] = field(default_factory=list)
     group_mentioned: bool = False
     years: list[int] = field(default_factory=list)
@@ -173,11 +187,21 @@ def features(norm: str) -> Features:
     f.climates = sorted(set(f.climates))
     for m in _RATING_SPAN.finditer(norm):
         f.consumed.append(m.span())
+    for mention in rating_parser.parse(norm):
+        f.consumed.append((mention.start, mention.end))
+        f.rating_mentions.append(mention)
+        if mention.conflict:
+            f.rating_conflicts.append(f"{mention.text}: {mention.conflict}")
     f.ratings = ratings_requested(norm)
     f.rating_mentioned = bool(re.search(r"(?:رده|رتبه)(?!\s*(?:اقلیم|بازدهی انرژی\s*[a-z]))", norm))
     for m in _GROUP_SPAN.finditer(norm):
         f.groups.append(m[1])
         f.consumed.append(m.span())
+        pos = m.end()
+        while more := GROUP_MORE.match(norm, pos):  # «گروه‌های ج و د»
+            f.groups.append(more[1])
+            f.consumed.append(more.span())
+            pos = more.end()
     f.groups = sorted(set(f.groups) | set(groups_requested(norm)))
     f.group_mentioned = bool(
         re.search(r"گروه\s*(?:های\s*)?(?:ساختمانی\s*)?[«\"'(]?\s*[ؠ-ۿ]{1,3}(?![ؠ-ۿ])", norm)
@@ -220,6 +244,20 @@ def _cue_gap(
 
 def _keyset(words: Iterable[str]) -> set[str]:
     return {k for w in words for k in keys(w)}
+
+
+def _names_all(words: Sequence[str], window: set[str], *, any_word: bool = False) -> bool:
+    """Every (or, with ``any_word``, some) printed name word is in the window, alone or written
+    solid with its printed neighbour («میل گرد» ~ «میلگرد»)."""
+    hits = [
+        bool(keys(w) & window)
+        or any(
+            j >= 0 and j + 1 < len(words) and keys(words[j] + words[j + 1]) & window
+            for j in (i - 1, i)
+        )
+        for i, w in enumerate(words)
+    ]
+    return any(hits) if any_word else all(hits)
 
 
 # ------------------------------------------------------------------ planner
@@ -327,7 +365,7 @@ class Planner:
         family = getattr(self, f"_plan_{schema.family}")
         family(p, f, schema)
         for q in f.quantities:
-            if f.free(q) and q.raw.strip() in norm:
+            if f.free(q) and (q.raw.strip() in norm or _coordinated_with_consumed(f, q)):
                 p.unresolved.append(f"number «{q.raw.strip()}»")
         for e in p.enumerations:
             e.parent = "; ".join(x.text for x in p.entities if x.status == "resolved" and x.text)
@@ -395,7 +433,12 @@ class Planner:
         elif dim is not None and dim.enumerable:
             self._enumerate(p, f, schema, "climate_class")
         dim = schema.dim("rating")
-        if f.ratings:
+        if f.rating_conflicts and dim is not None:
+            detail = f"rating_conflict: {'; '.join(f.rating_conflicts)}"
+            p.constraints.append(
+                Constraint("rating", [], state="invalid", detail=detail, reason="rating_conflict")
+            )
+        elif f.ratings:
             if dim is None:
                 p.notes.append(f"the table has no rating dimension; {f.ratings} does not filter it")
                 p.constraints.append(Constraint("rating", f.ratings, state="unsupported_by_table"))
@@ -406,9 +449,18 @@ class Planner:
                     if bad
                     else ("applied", "")
                 )
+                ok = [m for m in f.rating_mentions if m.conflict is None]
+                described = [m for m in ok if m.description]
                 p.constraints.append(
                     Constraint(
-                        "rating", f.ratings, state=state, detail=detail, reason=_reason(detail)
+                        "rating",
+                        f.ratings,
+                        source="; ".join(m.text for m in ok),
+                        state=state,
+                        detail=detail,
+                        reason=_reason(detail),
+                        rule="rating_description" if described else "rating_letter",
+                        attested_in=sorted({b for m in described for b in m.attested_in}),
                     )
                 )
         elif dim is not None and dim.enumerable and self._enumerate(p, f, schema, "rating"):
@@ -453,7 +505,14 @@ class Planner:
                 else ("applied", "")
             )
             p.constraints.append(
-                Constraint(name, values, state=state, detail=detail, reason=_reason(detail))
+                Constraint(
+                    name,
+                    values,
+                    state=state,
+                    detail=detail,
+                    reason=_reason(detail),
+                    rule="coordinated_values" if len(values) > 1 else "category",
+                )
             )
 
     # ------------------------------------------------------------------ numeric attachment
@@ -494,9 +553,10 @@ class Planner:
             ):
                 continue  # another dimension's cue is nearer: the number is not this one's
             f.consumed.append((q.start, q.end))
-            c = Constraint(name, interval=q.interval, source=q.raw.strip())
+            c = Constraint(name, interval=q.interval, source=q.raw.strip(), rule="cue")
             if q.ratio:
                 c.ratio = (str(q.ratio[0]), str(q.ratio[1]))
+            _coordinated_bound(f, q, c)
             p.constraints.append(c)
             if reverse:
                 p.operation = "reverse"
@@ -836,13 +896,16 @@ class Planner:
             before = f.norm[max(0, q.start - 14) : q.start]
             after = f.norm[q.end : q.end + 16]
             if re.search(r"(?:همون|همان|عدد|مقدار)\s*$", before) or re.match(
-                r"\s*(?:[ؠ-ۿ]{0,12}\s*)?(?:است|هست|ـه|ه|ست)?\s*(?:دیگه|دیگر|درسته|صحیحه|؟|\?)",
+                r"\s*(?:[ؠ-ۿ]{0,12}\s*)?(?:است|هست|ـه|ه|ست)?\s*[،,]?\s*"
+                r"(?:دیگه|دیگر|درسته|صحیحه|؟|\?)",
                 after,
             ):
                 f.consumed.append((q.start, q.end))
                 state = "applied" if narrowing else "checked"
                 p.constraints.append(
-                    Constraint(output, interval=q.interval, source=q.raw.strip(), state=state)
+                    Constraint(
+                        output, interval=q.interval, source=q.raw.strip(), state=state, rule="claim"
+                    )
                 )
                 p.operation = "reverse" if narrowing else "existence"
 
@@ -971,18 +1034,32 @@ class Planner:
         for rid in row_ids:
             r = self.store.app07[self.store._app07_pos[rid]]
             names |= {n for n, _ in condition_quantities(r)}
+        others = [x for x in self.cue_sets.get(p.target, []) if x[1]]
         for name in sorted(names):
             specific = [w for w in name.split() if w not in _CONDITION_GENERIC]
             for q in f.quantities:
                 if not f.free(q):
                     continue
-                window = _window_words(f.norm, q)
-                if not specific or not _keyset(specific) & _keyset(window):
+                window = _keyset(_window_words(f.norm, q))
+                if not specific or not _names_all(specific, window, any_word=True):
                     continue
-                if not _keyset(name.split()) <= _keyset(window) | _keyset(_CONDITION_GENERIC):
+                if not _names_all(name.split(), window | _keyset(_CONDITION_GENERIC)):
+                    continue
+                # the nearest cue owns a number: «چگالی ۱۶۰۰ تا ۱۸۰۰» is a density even when a
+                # printed condition name («ماسه رودخانه») follows it
+                own = _cue_gap(f.norm, q, specific)
+                if any(
+                    (g := _cue_gap(f.norm, q, x[1])) is not None and (own is None or g[0] < own[0])
+                    for x in others
+                ):
                     continue
                 f.consumed.append((q.start, q.end))
-                c = Constraint(f"condition:{name}", interval=q.interval, source=q.raw.strip())
+                c = Constraint(
+                    f"condition:{name}",
+                    interval=q.interval,
+                    source=q.raw.strip(),
+                    rule="printed_condition",
+                )
                 if q.ratio:
                     c.ratio = (str(q.ratio[0]), str(q.ratio[1]))
                 p.constraints.append(c)
@@ -1082,7 +1159,9 @@ class Planner:
         top = max(score.values())
         tied = [m for m in consistent if score[m.label.id] == top]
         kept = tied
-        numeric_tie = len({m.label.id for m in tied}) > 1 and _numeric_variants(tied)
+        numeric_tie = len({m.label.id for m in tied}) > 1 and (
+            _numeric_variants(tied) or self._same_identity(t, tied)
+        )
         if numeric_tie:
             # rows that differ only in printed numbers (PF bands, power bands): the stated
             # numbers decide through the numeric conditions (checked below)
@@ -1189,6 +1268,22 @@ class Planner:
         )
         return [r["record_id"] for r in rows], None
 
+    def _same_identity(self, t: MainTable, matches: list[Match]) -> bool:
+        """Rows whose source-derived identity words are equal (numbers, operators, units and
+        printed exceptions removed): they differ only in their printed numeric conditions
+        («با توان بیش از ۱۲۰ وات و کمتر از ۱۰۰۰ کیلووات (به غیر از …)» / «بین ۷۵ تا ۲۰۰»)."""
+        idx = self.identity.get(t.table_id)
+        if idx is None or t.label_rows is None:
+            return False
+        shapes = set()
+        for m in matches:
+            rows = t.label_rows[m.label.id]
+            if not rows:
+                return False
+            rid = t.records[rows[0]]["record_id"]
+            shapes.add(frozenset(tuple(a.words) for a in idx.by_row.get(rid, [])))
+        return len(shapes) == 1
+
     def _explained(self, t: MainTable, f: Features, q: list[str], m: Match) -> int:
         """Query words a row explains, plus the row's printed numeric condition when the
         question states a number in its unit («PF ۲۰ درصد») or explicitly asks for that band's
@@ -1240,7 +1335,12 @@ class Planner:
             if not f.free(qty) or not qty.unit or qty.unit not in units:
                 continue
             f.consumed.append((qty.start, qty.end))
-            c = Constraint(f"label:{qty.unit}", interval=qty.interval, source=qty.raw.strip())
+            c = Constraint(
+                f"label:{qty.unit}",
+                interval=qty.interval,
+                source=qty.raw.strip(),
+                rule="label_condition",
+            )
             p.constraints.append(c)
             # a row printing no condition in that unit is not constrained by the number
             rows = [r for r in rows if label_condition_ok(conds[r["record_id"]], qty)]
@@ -1469,6 +1569,52 @@ def enumeration_request(norm: str, nouns: Sequence[str]) -> str | None:
             if m:
                 return m[0]
     return None
+
+
+_COORDINATION = re.compile(r"\s*(?:و|ولی|اما|،|,)?\s*")
+
+
+def _one_sided(iv: NumInterval | None) -> bool:
+    return iv is not None and (iv.lo is None) != (iv.hi is None)
+
+
+def _coordinated_bound(f: Features, q: Quantity, c: Constraint) -> None:
+    """«بالای ۱۵۰ ولی زیر ۱۷۵», «بیشتر از ۳۰۰۰ و حداکثر ۴۰۰۰»: a one-sided bound followed only by
+    a coordinator («و», «ولی», «اما») and the complementary one-sided bound states one interval
+    of the same dimension (each bound keeps its printed inclusivity). Bounds on the same side,
+    a unit change or any other word in between are not coordinated; contradictory bounds make
+    the constraint invalid."""
+    nxt = next((x for x in f.quantities if x.start >= q.end and f.free(x)), None)
+    if nxt is None or not _COORDINATION.fullmatch(f.norm[q.end : nxt.start]):
+        return
+    a, b = q.interval, nxt.interval
+    if not (_one_sided(a) and _one_sided(b)) or (a.lo is None) == (b.lo is None):
+        return
+    if q.unit and nxt.unit and q.unit != nxt.unit:
+        return
+    lo, hi = a.lo or b.lo, a.hi or b.hi
+    assert lo is not None
+    assert hi is not None
+    f.consumed.append((nxt.start, nxt.end))
+    c.source = f.norm[q.start : nxt.end].strip()
+    c.rule = "coordinated_bound"
+    if lo.value > hi.value or (lo.value == hi.value and OPEN in (lo.kind, hi.kind)):
+        c.state = "invalid"
+        c.detail = f"contradictory_bounds: {c.source}"
+        c.reason = "contradictory_bounds"
+    else:
+        c.interval = NumInterval(lo, hi)
+
+
+def _coordinated_with_consumed(f: Features, q: Quantity) -> bool:
+    """A comparison («بالای ۱۷۵») joined only by a coordinator to a number this plan read
+    («بالای ۱۵۰ و بالای ۱۷۵») constrains the same thing, even when a decomposition put it in
+    another clause: left uninterpreted it is unresolved, never dropped."""
+    if q.raw.strip().replace(".", "").isdigit():
+        return False
+    return any(
+        e <= q.start and _COORDINATION.fullmatch(f.norm[e : q.start]) for _s, e in f.consumed
+    )
 
 
 def _reason(detail: str) -> str:

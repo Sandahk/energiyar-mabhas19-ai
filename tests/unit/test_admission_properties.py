@@ -371,3 +371,69 @@ def test_unsupported_calculations_return_zero_values(query: str) -> None:
     res = _retrieve(query)
     assert res.structured == [], query  # 6
     assert any(n.outcome == "unsupported_calculation" for n in res.no_match), query
+
+
+# ---------------------------------------------------------------- unprinted modifiers
+
+
+# ordinary attributive adjectives (a closed list); each test keeps those Mabhas 19 itself uses
+# somewhere, so the word is genuine corpus vocabulary, yet the dataset never prints
+_ADJECTIVES = (
+    "معمولی",
+    "عمومی",
+    "قدیمی",
+    "جدید",
+    "ویژه",
+    "خانگی",
+    "دولتی",
+    "خصوصی",
+    "مرکزی",
+    "سنتی",
+    "پیشرفته",
+    "استاندارد",
+    "موقت",
+    "دائمی",
+    "اصلی",
+    "فرعی",
+)
+
+
+def _unprinted_modifiers(ds: str, k: int = 3) -> list[str]:
+    """Attributive adjectives Mabhas 19 uses (corpus vocabulary) that no label of the dataset
+    prints and that are not harmless context: plausible unprinted variants of a row."""
+    from mabhas19.retrieval.admission import _generic  # noqa: PLC0415
+    from mabhas19.retrieval.entities import keys  # noqa: PLC0415
+
+    planner = _r().planner
+    printed = {x for ws in _identity()[ds].printed.values() for w in ws for x in keys(w)}
+    vocab = planner.vocab_keys()
+    generic = _generic(planner)
+    words = [
+        w
+        for w in _ADJECTIVES
+        if keys(w) & vocab and not keys(w) & printed and not keys(w) & generic
+    ]
+    return random.Random(f"{SEED}:modifier:{ds}").sample(words, min(k, len(words)))
+
+
+def _unique_rows(ds: str) -> list[tuple[str, str]]:
+    """(identity row, printed name) of rows whose whole name the identity rule accepts alone."""
+    idx = _identity()[ds]
+    out = []
+    for row, alts in sorted(idx.by_row.items()):
+        name = " ".join(w for lv in alts[0].levels for w in lv)
+        if name and idx.named(row, query_tokens(name)).status == "exact":
+            out.append((row, name))
+    return random.Random(f"{SEED}:unique:{ds}").sample(out, min(N, len(out)))
+
+
+@pytest.mark.parametrize("ds", [APP03, MAIN + "19-5-3", MAIN + "19-5-7"], ids=lambda d: d[-8:])
+def test_an_unprinted_modifier_on_a_uniquely_named_row_is_never_ignored(ds: str) -> None:
+    context = " در اقلیم 3B رده C" if ds == APP03 else ""
+    for row, name in _unique_rows(ds):
+        base = f"{_output_name(ds)} {name}{context} چقدر است؟"
+        if row not in _returned(ds, _retrieve(base)):
+            continue  # the positive control does not apply (e.g. a row needing more context)
+        for modifier in _unprinted_modifiers(ds):
+            res = _retrieve(f"{_output_name(ds)} {name} {modifier}{context} چقدر است؟")
+            assert row not in _returned(ds, res), res.query

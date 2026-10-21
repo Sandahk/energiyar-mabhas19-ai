@@ -250,17 +250,25 @@ def _constraint_holds(  # noqa: PLR0911, PLR0912
 
 
 def _covers(printed: NumInterval, stated: NumInterval) -> bool:
-    """A stated value (point or range) lies within a printed interval."""
+    """A stated value (point or range) lies within a printed interval, every bound compared with
+    its inclusivity: «3000 < x ≤ 4000» stated lies within the printed «3000 < HDD ≤ 4000»."""
     x = _point(stated)
     if x is not None:
         return _in(x, printed)
-    lo_ok = (stated.lo is not None and _in(stated.lo.value, printed)) or (
-        stated.lo is None and printed.lo is None
+    return _bound_within(stated.lo, printed.lo, lower=True) and _bound_within(
+        stated.hi, printed.hi, lower=False
     )
-    hi_ok = (stated.hi is not None and _in(stated.hi.value, printed)) or (
-        stated.hi is None and printed.hi is None
-    )
-    return bool(lo_ok and hi_ok)
+
+
+def _bound_within(stated: Bound | None, printed: Bound | None, *, lower: bool) -> bool:
+    """A stated interval end is not looser than the printed one."""
+    if printed is None:
+        return True
+    if stated is None:
+        return False
+    if stated.value != printed.value:
+        return stated.value > printed.value if lower else stated.value < printed.value
+    return printed.kind != OPEN or stated.kind == OPEN
 
 
 __all__ = ["CLOSED", "CertificationFailure", "certify"]

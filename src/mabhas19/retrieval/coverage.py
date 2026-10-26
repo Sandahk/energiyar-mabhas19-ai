@@ -66,6 +66,11 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.structured import StructuredStore
 
 COVERAGE_VERSION = "coverage-1"
+# the coverage-ledger schema (``Ledger.to_dict``): pinned by the candidate manifest, so a run's
+# ledgers stay comparable and a future proposal can be verified against the same layout
+LEDGER_SCHEMA = "coverage-ledger-1"
+LEDGER_KEYS = ("schema", "version", "clauses", "spans", "unit_intents", "violations",
+               "adjustments", "verdicts")  # fmt: skip
 INVARIANTS = ("I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9")
 # roles a span may not carry at once (across every candidate plan of a query)
 INCOMPATIBLE = frozenset(
@@ -225,6 +230,7 @@ class Ledger:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "schema": LEDGER_SCHEMA,
             "version": COVERAGE_VERSION,
             "clauses": [
                 {"index": c.index, "span": [c.start, c.end], "kind": c.kind, "owner": c.owner}
@@ -1013,6 +1019,9 @@ def _records(store: StructuredStore, ds: str) -> dict[str, dict[str, Any]]:
 
 __all__ = [
     "COVERAGE_VERSION",
+    "INVARIANTS",
+    "LEDGER_KEYS",
+    "LEDGER_SCHEMA",
     "Candidate",
     "Clause",
     "Ledger",

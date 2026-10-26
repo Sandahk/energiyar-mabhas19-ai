@@ -1,6 +1,6 @@
 """Frozen retrieval candidate manifests for the final benchmarks (reproducibility guard).
 
-``eval/retrieval/<set>_candidate.yaml`` (Final-2, Final-3, Final-4: historical; Final-5: current)
+``eval/retrieval/<set>_candidate.yaml`` (Final-2 to Final-5: historical; Final-6: current)
 pins
 everything the benchmark tests: the candidate commit and the code (git tree of ``src/``,
 per-module hashes), the curated corpus and tables, the structured schemas, the scope map, the
@@ -28,10 +28,16 @@ from mabhas19.retrieval.lexical import K1, B
 
 MANIFESTS = {
     s: EVAL_DIR / "retrieval" / f"{s}_candidate.yaml"
-    for s in ("final2", "final3", "final4", "final5")
+    for s in ("final2", "final3", "final4", "final5", "final6")
 }
-CURRENT = "final5"  # the only manifest that may be (re)written; earlier ones are historical
-LABELS = {"final2": "Final-2", "final3": "Final-3", "final4": "Final-4", "final5": "Final-5"}
+CURRENT = "final6"  # the only manifest that may be (re)written; earlier ones are historical
+LABELS = {
+    "final2": "Final-2",
+    "final3": "Final-3",
+    "final4": "Final-4",
+    "final5": "Final-5",
+    "final6": "Final-6",
+}
 MANIFEST_PATH = MANIFESTS["final2"]  # historical: the candidate Final-2 was run against
 HYBRID_CANDIDATE = EVAL_DIR / "retrieval" / "hybrid_candidate.yaml"
 SCOPE_MAP = EVAL_DIR / "retrieval" / "scope_map.yaml"
@@ -73,9 +79,9 @@ SAFETY = {
 # files that may change after the candidate commit: the manifest itself, the frozen test set and
 # its fingerprint
 SET_FILES = (
-    "eval/retrieval/final5_candidate.yaml",
-    "eval/retrieval/final5.yaml",
-    "eval/retrieval/final5.sha256",
+    "eval/retrieval/final6_candidate.yaml",
+    "eval/retrieval/final6.yaml",
+    "eval/retrieval/final6.sha256",
 )
 MODULES = (
     "src/mabhas19/indexing/chunking.py",
@@ -148,7 +154,12 @@ def live_candidate() -> dict[str, Any]:
         for p in sorted((CURATED_DIR / "tables").rglob("table.yaml"))
     }
     from mabhas19.retrieval import final_validation  # noqa: PLC0415
-    from mabhas19.retrieval.coverage import COVERAGE_VERSION  # noqa: PLC0415
+    from mabhas19.retrieval.coverage import (  # noqa: PLC0415
+        COVERAGE_VERSION,
+        INVARIANTS,
+        LEDGER_KEYS,
+        LEDGER_SCHEMA,
+    )
     from mabhas19.retrieval.plan import OUTCOMES  # noqa: PLC0415
 
     return {
@@ -159,6 +170,9 @@ def live_candidate() -> dict[str, Any]:
             "router_version": ROUTER_VERSION,
             "query_plan_version": QUERY_PLAN_VERSION,
             "coverage_version": COVERAGE_VERSION,
+            "coverage_ledger_schema": LEDGER_SCHEMA,
+            "coverage_ledger_keys": list(LEDGER_KEYS),
+            "coverage_invariants": list(INVARIANTS),
             "plan_outcomes": list(OUTCOMES),
             "numeric_parser_version": NUMERIC_PARSER_VERSION,
             "constraint_parser_version": CONSTRAINT_PARSER_VERSION,

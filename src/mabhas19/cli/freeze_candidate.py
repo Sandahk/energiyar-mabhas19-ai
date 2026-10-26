@@ -1,13 +1,13 @@
 """Freeze or check the retrieval candidate manifest of a final benchmark.
 
 Usage:
-    uv run python -m mabhas19.cli.freeze_candidate --set final5          # check (exit 2 on drift)
-    uv run python -m mabhas19.cli.freeze_candidate --set final5 --write  # write the manifest
+    uv run python -m mabhas19.cli.freeze_candidate --set final6          # check (exit 2 on drift)
+    uv run python -m mabhas19.cli.freeze_candidate --set final6 --write  # write the manifest
 
 Writing requires clean src/, eval/ and curated/ trees. A final run (embedding_experiment --set
-final5) checks the manifest and refuses to start on any difference. final2_candidate.yaml,
-final3_candidate.yaml and final4_candidate.yaml are historical: they record the candidates those
-sets were run against and are never rewritten.
+final6) checks the manifest and refuses to start on any difference. final2_candidate.yaml to
+final5_candidate.yaml are historical: they record the candidates those sets were run against and
+are never rewritten.
 """
 
 from __future__ import annotations

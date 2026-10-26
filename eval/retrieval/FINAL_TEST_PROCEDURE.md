@@ -160,3 +160,21 @@ on; Final-4 and its run stay immutable (its L338/L342 adjudication is recorded i
    `python -m mabhas19.cli.embedding_experiment --set final5`.
 6. Report safety first (hard requirement 0 / 0 / 0 / 0), then structured, routing/scope and
    prose. Nothing is changed after the run.
+
+## 11. Final-6 (after the plan-coverage and evidence-certification layer)
+Final-5 and its run (`20261021T124138Z-final5`) are immutable and are development data from now
+on, like every earlier set. The Final-4 L338/L342 adjudication is a historical evaluation
+artifact and sets no Final-6 expectation.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final6 --write` writes
+   `final6_candidate.yaml`: the §10 pins plus the plan-coverage stage (`coverage-1`, ledger
+   schema `coverage-ledger-1`, invariants I1-I9, coordinated child plans), unit canonicalisation,
+   declared schema output alternatives (in `structured_schemas.yaml`), query plan `plan-3` and
+   evaluator `corrected-5` with `final-validation-1`; and the safety invariants: wrong
+   regulatory values, wrong extra rows, silently dropped constraints, failed certifications,
+   foreign-table rows, dimension leaks, identity substitutions and refusal bypasses all 0.
+   Commit it.
+2. Anchors, exclusions, authoring and review follow §10 with all seven earlier sets excluded
+   (`EARLIER_SETS["final6"]`); the Final-6 design is approved before any case is written.
+3. Run once with `python -m mabhas19.cli.embedding_experiment --set final6`; report safety
+   first, then structured, routing/scope and prose. Nothing is changed after the run.

@@ -19,13 +19,15 @@ def test_live_candidate_pins_the_architecture() -> None:
     assert live["code"]["router_version"] == "v4.1"
     assert live["code"]["query_plan_version"] == "plan-3"
     assert live["code"]["coverage_version"] == "coverage-1"
+    assert live["code"]["coverage_ledger_schema"] == "coverage-ledger-1"
+    assert live["code"]["coverage_invariants"] == [f"I{i}" for i in range(1, 10)]
     assert live["code"]["numeric_parser_version"] == "numeric-2"
     assert live["code"]["entity_resolver_version"] == "source-structure-1"
     assert live["code"]["constraint_parser_version"] == "attested-1"
     assert len(live["code"]["identity_snapshot_sha256"]) == 64
     assert live["evaluator"]["version"] == "corrected-5"
     assert live["evaluator"]["final_validation_version"] == "final-validation-1"
-    assert live["evaluator"]["final_validated_sets"] == ["final5"]
+    assert live["evaluator"]["final_validated_sets"] == ["final5", "final6"]
     assert live["safety"] == {
         "wrong_regulatory_values_expected": 0,
         "wrong_extra_rows_expected": 0,
@@ -91,10 +93,10 @@ def test_only_the_frozen_set_may_change_after_the_candidate_commit(tmp_path: Pat
     assert any("not an ancestor" in p for p in check_manifest(path))
 
 
-def test_final5_is_the_only_writable_manifest() -> None:
+def test_final6_is_the_only_writable_manifest() -> None:
     from mabhas19.retrieval.candidate import CURRENT, LABELS, MANIFESTS, SET_FILES  # noqa: PLC0415
 
-    assert CURRENT == "final5"
-    assert LABELS[CURRENT] == "Final-5"
-    assert set(MANIFESTS) == {"final2", "final3", "final4", "final5"}
-    assert all("final5" in f for f in SET_FILES)
+    assert CURRENT == "final6"
+    assert LABELS[CURRENT] == "Final-6"
+    assert set(MANIFESTS) == {"final2", "final3", "final4", "final5", "final6"}
+    assert all("final6" in f for f in SET_FILES)

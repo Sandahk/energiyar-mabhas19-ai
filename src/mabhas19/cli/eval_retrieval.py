@@ -45,7 +45,10 @@ from mabhas19.retrieval.structured import StructuredStore
 
 DOC_ID = "m19-ed5-1404-main"
 # the evidence pool a validated final set may not seed from (authoring independence)
-EARLIER_SETS = {"final5": ("dev", "heldout", "final", "final2", "final3", "final4")}
+EARLIER_SETS = {
+    "final5": ("dev", "heldout", "final", "final2", "final3", "final4"),
+    "final6": ("dev", "heldout", "final", "final2", "final3", "final4", "final5"),
+}
 OUT = DATA_DIR / "retrieval"
 SETS = EVAL_DIR / "retrieval"
 

@@ -208,8 +208,11 @@ def test_chapter_references_are_validated(query: str, expected: list[tuple[str, 
 def test_coordinated_climate_classes_stay_one_constraint() -> None:
     r = _run("جدول ۱۹-۳-۱ برای اقلیم های 3A و 3B چه روز-درجه سرمایشی دارد؟")
     assert r.route.route == "structured"
-    assert r.structured
     assert _states(r) == {"climate_class": "applied"}
+    # plan-3 (I2): the planner reads «اقلیم» as the requested output while the same words state
+    # the classes; a lookup never asks for the concept it states, so it fails closed (typed)
+    assert r.structured == []
+    assert any(n.reason == "output_is_stated_constraint" for n in r.no_match)
 
 
 def test_unprinted_material_with_explicit_appendix_is_a_typed_no_match() -> None:

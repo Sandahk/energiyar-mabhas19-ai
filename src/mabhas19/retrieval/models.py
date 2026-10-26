@@ -72,6 +72,10 @@ class StructuredHit:
     source_issues: list[str]
     match: str  # why this record matched (auditable)
     score: float = 1.0
+    # the admitted output this row answers with and its printed unit (set after certification
+    # proved the row prints exactly that output; ``None`` for identity results)
+    output: str | None = None
+    unit: str | None = None
 
 
 @dataclass
@@ -148,3 +152,5 @@ class RetrievalResult:
     # failures: the rows of a plan with any failure are never returned)
     admissions: list[dict[str, Any]] = field(default_factory=list)
     certification_failures: list[dict[str, str]] = field(default_factory=list)
+    # the query's plan-coverage ledger (spans, roles, owners, verdicts; see retrieval.coverage)
+    coverage: dict[str, Any] = field(default_factory=dict)

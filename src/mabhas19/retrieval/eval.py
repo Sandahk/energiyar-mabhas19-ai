@@ -28,6 +28,10 @@ Metrics:
   returned record contradicts;
 * **failed result certifications** (corrected-4): returned rows that the independent result
   certification rejected (they are never passed on; any count is a safety failure upstream);
+* **wrong-row attribution** (corrected-5, :mod:`mabhas19.retrieval.safety_metrics`): every wrong
+  row is attributed to exactly one of ``foreign_table_rows``, ``refusal_bypassed[kind]``,
+  ``dimension_leak[dim]`` and ``identity_substitution`` from curated records and the case's own
+  labels only (never from the run's plans, admissions, coverage ledger or certification);
 * optional, only where a case states them (corrected-3, Final-4 onward):
 
   - **typed outcome** (``no_match_outcomes``: acceptable plan outcome codes): no record and a
@@ -48,13 +52,17 @@ from collections import Counter, defaultdict
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
+from mabhas19.core.paths import CURATED_DIR
+from mabhas19.retrieval import safety_metrics
 from mabhas19.retrieval.constraints import extract_constraints, violates
-from mabhas19.retrieval.hybrid import Retriever
 from mabhas19.retrieval.models import ProseHit, RetrievalResult
+
+if TYPE_CHECKING:  # the scorer never imports the runtime it scores
+    from mabhas19.retrieval.hybrid import Retriever
 
 KS = (1, 3, 5)
 
@@ -97,6 +105,12 @@ class CaseResult:
     calculation_refusal: bool | None = None  # ...for cases expecting unsupported_calculation
     enumeration_ok: bool | None = None  # explicit enumeration (cases with ``enumeration``)
     certification_failures: list[str] = field(default_factory=list)  # typed safety failures
+    # wrong-row attribution (safety_metrics): each wrong row in exactly one class
+    foreign_table_rows: list[str] = field(default_factory=list)
+    refusal_bypassed: dict[str, list[str]] = field(default_factory=dict)
+    dimension_leaks: dict[str, list[str]] = field(default_factory=dict)
+    identity_substitutions: list[str] = field(default_factory=list)
+    coverage_violations: list[str] = field(default_factory=list)  # runtime ledger (debug only)
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -291,9 +305,13 @@ def _original_structured_exact(r: RetrievalResult, ev: dict[str, Any]) -> bool:
 
 
 def evaluate(
-    retriever: Retriever, cases: list[dict[str, Any]], k: int = 10
+    retriever: Retriever,
+    cases: list[dict[str, Any]],
+    k: int = 10,
+    records: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[list[CaseResult], dict[str, Any]]:
     chunk_sections = {c.chunk_id: c.section_number for c in retriever.lexical.chunks}
+    records = records if records is not None else safety_metrics.load_records(CURATED_DIR)
     results = []
     for c in cases:
         ev = c.get("evidence") or {}
@@ -333,6 +351,15 @@ def evaluate(
         res.wrong_values = wrong_values(r, ev)
         res.wrong_extra = wrong_extra(r, ev, res.wrong_values)
         res.dropped_constraints = dropped_constraints(r)
+        att = safety_metrics.attribute(ev, res.wrong_values, records)
+        res.foreign_table_rows = att.foreign_table_rows
+        res.refusal_bypassed = att.refusal_bypassed
+        res.dimension_leaks = att.dimension_leaks
+        res.identity_substitutions = att.identity_substitutions
+        res.coverage_violations = [
+            f"{v['table']}: {v['invariant']} {v['reason']}"
+            for v in (r.coverage or {}).get("violations", [])
+        ]
         if ev.get("source_issues"):
             exposed = {i for h in r.structured for i in h.source_issues}
             exposed |= {x.issue_id for x in r.conflicts if x.issue_id}
@@ -393,6 +420,7 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         "failed_certifications": sum(len(r.certification_failures) for r in results),
         "failed_certification_cases": sorted(r.id for r in results if r.certification_failures),
         "dropped_constraint_cases": sorted(r.id for r in results if r.dropped_constraints),
+        **attribution_metrics(results),
         "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),
         "unsupported_original": unsupported_scores_strict(results),
@@ -419,6 +447,33 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
             }
             for cat, rs in sorted(by_cat.items())
         },
+    }
+
+
+def attribution_metrics(results: list[CaseResult]) -> dict[str, Any]:
+    """Totals and cases per wrong-row class (corrected-5); every class must be 0."""
+
+    def by_key(field_name: str) -> dict[str, int]:
+        out: Counter[str] = Counter()
+        for r in results:
+            for key, ids in getattr(r, field_name).items():
+                out[key] += len(ids)
+        return dict(sorted(out.items()))
+
+    return {
+        "foreign_table_rows": sum(len(r.foreign_table_rows) for r in results),
+        "foreign_table_row_cases": sorted(r.id for r in results if r.foreign_table_rows),
+        "refusal_bypassed": by_key("refusal_bypassed"),
+        "refusal_bypassed_rows": sum(len(v) for r in results for v in r.refusal_bypassed.values()),
+        "refusal_bypassed_cases": sorted(r.id for r in results if r.refusal_bypassed),
+        "dimension_leaks": by_key("dimension_leaks"),
+        "dimension_leak_rows": len(
+            {(r.id, i) for r in results for ids in r.dimension_leaks.values() for i in ids}
+        ),
+        "dimension_leak_cases": sorted(r.id for r in results if r.dimension_leaks),
+        "identity_substitutions": sum(len(r.identity_substitutions) for r in results),
+        "identity_substitution_cases": sorted(r.id for r in results if r.identity_substitutions),
+        "coverage_violation_cases": sorted(r.id for r in results if r.coverage_violations),
     }
 
 

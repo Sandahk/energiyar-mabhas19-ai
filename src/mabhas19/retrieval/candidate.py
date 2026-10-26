@@ -43,13 +43,17 @@ IDENTITY_SNAPSHOT = REPO_ROOT / "tests" / "fixtures" / "identity_snapshot.json"
 # caption/reference keys
 ROUTER_VERSION = "v4.1"
 # typed StructuredQueryPlan + validation gate + plan admission (grounded spans, anchors,
-# coverage, unprinted modifiers block) + independent result certification
-QUERY_PLAN_VERSION = "plan-2"
+# coverage, unprinted modifiers block) + query-level plan coverage (I1-I8: one role per span,
+# concept disjointness, output slot, unit intent, identity family, clause precedence, table
+# ownership, coordinated child plans) + independent result certification (exact output, unit,
+# identity family: I9)
+QUERY_PLAN_VERSION = "plan-3"
 # Decimal intervals with typed bounds, ratios, coordinated complementary bounds, printed range
 # exceptions negated
 NUMERIC_PARSER_VERSION = "numeric-2"
-# corrected-3 + failed result certifications (corrected-4)
-EVALUATOR_VERSION = "corrected-4"
+# corrected-4 + wrong-row attribution from curated records only: foreign-table rows, refusal
+# bypasses, dimension leaks, identity substitutions (corrected-5)
+EVALUATOR_VERSION = "corrected-5"
 # source-attested rating vocabulary, coordinated grades/groups/bounds, nearest-cue ownership,
 # checked claims, constraint provenance (M2)
 CONSTRAINT_PARSER_VERSION = "attested-1"
@@ -61,6 +65,10 @@ SAFETY = {
     "wrong_extra_rows_expected": 0,
     "dropped_constraints_expected": 0,
     "failed_certifications_expected": 0,
+    "foreign_table_rows_expected": 0,
+    "dimension_leaks_expected": 0,
+    "identity_substitutions_expected": 0,
+    "refusal_bypassed_expected": 0,
 }
 # files that may change after the candidate commit: the manifest itself, the frozen test set and
 # its fingerprint
@@ -89,6 +97,9 @@ MODULES = (
     "src/mabhas19/retrieval/executor.py",
     "src/mabhas19/retrieval/admission.py",
     "src/mabhas19/retrieval/certification.py",
+    "src/mabhas19/retrieval/coverage.py",
+    "src/mabhas19/retrieval/units.py",
+    "src/mabhas19/retrieval/safety_metrics.py",
     "src/mabhas19/retrieval/identity.py",
     "src/mabhas19/retrieval/identity_snapshot.py",
     "src/mabhas19/retrieval/polarity.py",
@@ -137,6 +148,7 @@ def live_candidate() -> dict[str, Any]:
         for p in sorted((CURATED_DIR / "tables").rglob("table.yaml"))
     }
     from mabhas19.retrieval import final_validation  # noqa: PLC0415
+    from mabhas19.retrieval.coverage import COVERAGE_VERSION  # noqa: PLC0415
     from mabhas19.retrieval.plan import OUTCOMES  # noqa: PLC0415
 
     return {
@@ -146,6 +158,7 @@ def live_candidate() -> dict[str, Any]:
             "modules_sha256": {m: _sha(REPO_ROOT / m) for m in MODULES},
             "router_version": ROUTER_VERSION,
             "query_plan_version": QUERY_PLAN_VERSION,
+            "coverage_version": COVERAGE_VERSION,
             "plan_outcomes": list(OUTCOMES),
             "numeric_parser_version": NUMERIC_PARSER_VERSION,
             "constraint_parser_version": CONSTRAINT_PARSER_VERSION,

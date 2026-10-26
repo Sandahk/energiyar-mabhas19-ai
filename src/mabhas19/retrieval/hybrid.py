@@ -15,6 +15,7 @@ references. Captions are table-level evidence, never value records.
 from __future__ import annotations
 
 import re
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
@@ -22,7 +23,9 @@ from typing import Any
 
 from mabhas19.indexing.chunking import build_chunks
 from mabhas19.retrieval.admission import PlanAdmission, admit
-from mabhas19.retrieval.certification import certify
+from mabhas19.retrieval.certification import certified_output, certify
+from mabhas19.retrieval.coverage import Candidate, clauses_of, split_coordinated
+from mabhas19.retrieval.coverage import evaluate as coverage_evaluate
 from mabhas19.retrieval.executor import Executor
 from mabhas19.retrieval.lexical import LexicalRetriever
 from mabhas19.retrieval.models import (
@@ -154,9 +157,21 @@ class Retriever:
     ) -> tuple[
         list[StructuredHit], list[StructuredNoMatch], list[str], PlanAdmission, list[dict[str, str]]
     ]:
-        """Admit, execute and certify one plan. A plan the gate rejects keeps its typed outcome;
-        a valid plan that admission refuses never executes; a row that fails certification
-        removes every row of the plan (fail closed) and is reported as a safety failure."""
+        """Admit one plan, pass it through the coverage stage alone, execute and certify it."""
+        cand = self.admit_plan(plan, text, full, explicit_targets)
+        coverage_evaluate(self.planner, self.store, [cand], full, clauses_of(full, []))
+        hits, no_match, notes, failures = self.run_candidate(cand)
+        return hits, no_match, notes, cand.admission, failures
+
+    def admit_plan(
+        self,
+        plan: StructuredQueryPlan,
+        text: str,
+        full: str,
+        explicit_targets: list[str],
+        member: str | None = None,
+    ) -> Candidate:
+        """Admission and the validation gate of one plan (nothing is executed)."""
         schema = self.store.schemas[plan.target]
         admission = admit(
             self.planner,
@@ -171,21 +186,43 @@ class Retriever:
         if gate is not None and admission.admitted:
             # the validation gate already refuses the plan: never admitted
             admission.admitted, admission.outcome = False, gate
-        if gate is None and not admission.admitted:
+        return Candidate(plan, admission, gate, text, member)
+
+    def run_candidate(
+        self, cand: Candidate
+    ) -> tuple[list[StructuredHit], list[StructuredNoMatch], list[str], list[dict[str, str]]]:
+        """Execute and certify a candidate the coverage stage left executable. A plan the gate
+        rejects keeps its typed outcome; a valid plan that admission or coverage refuses never
+        executes (an unowned one is not what the question asked: no no-match either); a row that
+        fails certification removes every row of the plan (fail closed) and is reported as a
+        safety failure."""
+        plan, admission = cand.plan, cand.admission
+        if cand.gate is None and not admission.admitted:
             assert admission.outcome is not None
-            return (
-                [],
-                [self.executor._no_match(plan, admission.outcome)],
-                list(plan.notes),
-                admission,
-                [],
-            )
+            return [], [self.executor._no_match(plan, admission.outcome)], list(plan.notes), []
+        if cand.gate is None and not cand.owned:
+            return [], [], list(plan.notes), []
+        if cand.gate is None and cand.outcome is not None:
+            return [], [self.executor._no_match(plan, cand.outcome)], list(plan.notes), []
         hits, no_match, notes = self.executor.run(plan)
-        failures = [
-            f.to_dict()
-            for h in hits
-            for f in certify(self.store, self.store.schemas, admission, h.dataset, self._record(h))
-        ]
+        schema = self.store.schemas[plan.target]
+        failures: list[dict[str, str]] = []
+        for h in hits:
+            record = self._record(h)
+            failures += [
+                f.to_dict()
+                for f in certify(self.store, self.store.schemas, admission, h.dataset, record)
+            ]
+            printed = (
+                certified_output(schema, admission.output, record) if admission.output else None
+            )
+            if printed is not None:
+                h.output, h.unit = printed
+                if h.output != admission.output:
+                    notes.append(
+                        f"{h.record_id} prints its requirement as {h.output}, the declared "
+                        f"alternative of {admission.output}"
+                    )
         if failures:
             outcome = PlanOutcome(
                 "certification_failed",
@@ -193,8 +230,30 @@ class Retriever:
                 "returned",
                 "certification_failed",
             )
-            return [], [self.executor._no_match(plan, outcome)], notes, admission, failures
-        return hits, no_match, notes, admission, []
+            return [], [self.executor._no_match(plan, outcome)], notes, failures
+        return hits, no_match, notes, []
+
+    def _check_coordination(
+        self, members: dict[str, dict[str, list[str]]], result: RetrievalResult
+    ) -> None:
+        """I8 parent check: every row of coordinated child plans answers exactly one member
+        (each child's rows are already certified against that member). A row claimed by two
+        members removes every row of that table (fail closed)."""
+        for ds, rows in members.items():
+            owners = Counter(rid for ids in rows.values() for rid in ids)
+            shared = sorted(rid for rid, n in owners.items() if n > 1)
+            if not shared:
+                continue
+            result.structured = [h for h in result.structured if h.dataset != ds]
+            result.certification_failures += [
+                {
+                    "record": rid,
+                    "table": ds,
+                    "check": "coordination",
+                    "detail": "the row maps to several coordinated members",
+                }
+                for rid in shared
+            ]
 
     def _record(self, hit: StructuredHit) -> dict[str, Any]:
         """The printed record behind a hit (certification reads the row itself)."""
@@ -250,7 +309,7 @@ class Retriever:
             )
         return out
 
-    def _structured(
+    def _structured(  # noqa: PLR0912
         self, norm: str, decision: RouteDecision, refs: list[str], result: RetrievalResult
     ) -> None:
         """Every candidate dataset: plan -> validation gate -> execution (fail closed). The
@@ -261,16 +320,27 @@ class Retriever:
         explicit_targets = _referenced_tables(refs, self.store)
         seen: set[str] = set()
         by_place: dict[str, list[StructuredHit]] = {}
+        cands: list[Candidate] = []
         for ds in decision.tables:
             explicit = ds.removeprefix(MAIN) in whole or any(
                 APPENDIX_TABLES.get(r.split("-")[0]) == ds for r in whole if r.startswith("پ")
             )
             plan = self.planner.plan(ds, norm, explicit_reference=explicit, full_norm=full)
-            hits, no_match, notes, admission, failures = self.execute(
-                plan, norm, full, explicit_targets
-            )
+            # I8: coordinated printed places run as one child plan per member
+            for child, member in split_coordinated(plan, self.store.schemas[ds]):
+                cands.append(self.admit_plan(child, norm, full, explicit_targets, member))
+        # the query-level coverage stage sees every candidate (refused ones included)
+        clauses = clauses_of(full, list(decision.signals.get("clauses") or []))
+        ledger = coverage_evaluate(self.planner, self.store, cands, full, clauses)
+        result.coverage = ledger.to_dict()
+        members: dict[str, dict[str, list[str]]] = {}
+        for cand, verdict in zip(cands, ledger.verdicts, strict=True):
+            plan, admission = cand.plan, cand.admission
+            hits, no_match, notes, failures = self.run_candidate(cand)
+            if cand.member is not None:
+                members.setdefault(plan.target, {})[cand.member] = [h.record_id for h in hits]
             result.plans.append(plan.to_dict())
-            result.admissions.append(admission.to_dict())
+            result.admissions.append({**admission.to_dict(), "coverage": verdict})
             result.certification_failures += failures
             if hits:
                 result.enumerations += [{"table": ds, **asdict(e)} for e in plan.enumerations]
@@ -294,6 +364,7 @@ class Retriever:
                 )
                 if entity is not None:
                     by_place.setdefault(entity.text, []).append(h)
+        self._check_coordination(members, result)
         for place, group in by_place.items():
             codes = {str(h.values["climate_class"]["code"]) for h in group}
             if len(codes) > 1:

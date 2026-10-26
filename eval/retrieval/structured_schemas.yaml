@@ -54,6 +54,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -180,6 +181,7 @@ tables:
       units:
       - kwh
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -283,6 +285,7 @@ tables:
       - لاندا
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     - name: density
       path: density
@@ -296,6 +299,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: interval
     directions:
     - operation: direct
@@ -391,6 +395,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -477,6 +482,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: interval
     - name: climate_class
       path: climate_classes.applies_to
@@ -488,6 +494,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -620,6 +627,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     - name: wmo_code
       path: wmo_code.ascii
@@ -632,6 +640,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -717,6 +726,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: interval
     - name: rating
       path: energy_rating.code
@@ -728,6 +738,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -817,6 +828,7 @@ tables:
       units:
       - m2k/w
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -922,6 +934,7 @@ tables:
       - ضریب بهره خورشیدی
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1021,6 +1034,8 @@ tables:
       - ضریب عملکرد
       units: []
       weak_cues: []
+      alternatives:
+      - energy_rating
       value_semantics: exact
     - name: energy_rating
       path: energy_rating.printed
@@ -1033,6 +1048,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     - name: standard
       path: standard.displayed
@@ -1043,6 +1059,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -1141,6 +1158,8 @@ tables:
       - seer
       units: []
       weak_cues: []
+      alternatives:
+      - energy_rating
       value_semantics: exact
     - name: energy_rating
       path: energy_rating.printed
@@ -1153,6 +1172,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     - name: standard
       path: standard.displayed
@@ -1163,6 +1183,7 @@ tables:
       cues: []
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -1221,6 +1242,7 @@ tables:
       units:
       - celsius
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1297,6 +1319,7 @@ tables:
       - کفایت نور روز
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1352,6 +1375,7 @@ tables:
       - یکنواختی
       units: []
       weak_cues: []
+      alternatives: []
       value_semantics: exact
     directions:
     - operation: direct

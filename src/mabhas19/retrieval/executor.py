@@ -122,8 +122,9 @@ class Executor:
         records = self._candidates(plan, schema)
         records, extra = self._filter(plan, schema, records)
         notes += extra
-        # a row printing no value (a dash or an empty cell) answers nothing: typed, never returned
-        printed = [r for r in records if _prints_a_value(schema, r)]
+        # a row printing no value (a dash or an empty cell) answers nothing: typed, never returned;
+        # a direct lookup's row must print its admitted output (or a declared alternative of it)
+        printed = [r for r in records if _prints_output(schema, plan, r)]
         if records and not printed:
             dashes = ", ".join(_rid(r) for r in records)
             return (
@@ -360,6 +361,21 @@ def _prints_a_value(schema: TableSchema, r: dict[str, Any]) -> bool:
         if o.kind == "text":
             continue
         v = _get(r, o.path)
+        if v is not None and str(v).strip() not in ("", "-", "–", "—"):
+            return True
+    return False
+
+
+def _prints_output(schema: TableSchema, plan: StructuredQueryPlan, r: dict[str, Any]) -> bool:
+    """A direct lookup's row prints the requested output or a declared alternative; other
+    operations need any printed value."""
+    o = schema.output(plan.requested_field or "") if plan.operation == "direct" else None
+    if o is None or o.kind == "text":
+        return _prints_a_value(schema, r)
+    for x in (o, *(schema.output(a) for a in o.alternatives)):
+        if x is None:
+            continue
+        v = _get(r, x.path)
         if v is not None and str(v).strip() not in ("", "-", "–", "—"):
             return True
     return False

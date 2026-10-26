@@ -73,6 +73,10 @@ class Output:
     cues: tuple[str, ...] = ()  # words that attach a stated number to this output (reverse)
     units: tuple[str, ...] = ()
     weak_cues: tuple[str, ...] = ()
+    # outputs a row may print *instead of* this one for the same requirement (a 19-5-3 row
+    # prints a minimum efficiency or a required energy rating); certification accepts only these,
+    # and the returned field names the one printed - never another output silently
+    alternatives: tuple[str, ...] = ()
     # ``exact`` printed scalars (λ, EUI, R, U…) are matched by Decimal equality only - a reverse
     # lookup never returns a nearby value; ``interval`` outputs (printed ranges) by containment;
     # ``categorical`` (classes, ratings, symbols) by equality
@@ -514,6 +518,7 @@ def _specs() -> dict[str, dict[str, Any]]:
                     "number",
                     names=("بازده", "بازدهی", "راندمان", "cop", "ضریب عملکرد", "کلاس", "ie"),
                     cues=("بازده", "بازدهی", "راندمان", "cop", "ضریب عملکرد"),
+                    alternatives=("energy_rating",),
                 ),
                 Output(
                     "energy_rating",
@@ -545,6 +550,7 @@ def _specs() -> dict[str, dict[str, Any]]:
                     "number",
                     names=("بازده", "بازدهی", "راندمان", "eei", "seer"),
                     cues=("بازده", "بازدهی", "راندمان", "eei", "seer"),
+                    alternatives=("energy_rating",),
                 ),
                 Output(
                     "energy_rating",

@@ -13,7 +13,12 @@ closed on anything it cannot verify. A row is certified only when
   equality for exact values, containment for printed intervals);
 * reverse lookups return rows whose printed output value satisfies the stated value under the
   output's ``value_semantics`` (``exact``: equality; ``interval``: containment);
-* the requested output is printed on the row (a dash or empty cell is not a value);
+* **I9** the admitted output (named, or the schema default) is printed on the row - a dash or
+  empty cell is not a value, and another output never stands in for it unless the schema
+  declares it an alternative of the same requirement (the returned field then names it);
+  its printed unit is the admitted unit, and a unit the question asks for is that unit;
+* **I5** when other identity words of the question name rows of a printed family, the row
+  shares a printed level with them (re-derived here from the row's printed level texts);
 * no calculation was requested (no row answers a refused operation);
 * provenance (source cells / source location) is present.
 
@@ -23,10 +28,12 @@ in the result metadata and counted by the evaluator.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
+from mabhas19.retrieval import units
 from mabhas19.retrieval.entities import FUNCTION_WORDS, keys
 from mabhas19.retrieval.identity import query_tokens, row_label
 from mabhas19.retrieval.numeric import (
@@ -38,7 +45,7 @@ from mabhas19.retrieval.numeric import (
     interval_from_operators,
     printed_interval,
 )
-from mabhas19.retrieval.schema import APP03, APP07, TableSchema
+from mabhas19.retrieval.schema import APP03, APP07, MAIN, Output, TableSchema
 from mabhas19.text.normalize import normalize_for_search
 
 if TYPE_CHECKING:
@@ -109,7 +116,7 @@ def _point(iv: NumInterval) -> Decimal | None:
     return None
 
 
-def certify(  # noqa: PLR0912
+def certify(  # noqa: PLR0912, PLR0915
     store: StructuredStore,
     schemas: dict[str, TableSchema],
     admission: PlanAdmission,
@@ -157,19 +164,87 @@ def certify(  # noqa: PLR0912
             fail("uncheckable", f"{c.describe()} cannot be verified on the printed row")
         elif not ok:
             fail("constraint", f"{c.describe()} does not hold on the printed row")
-    # the requested output is printed (or, where rows print one of several values, another one)
-    values = [
-        o
-        for o in schema.outputs
-        if o.kind != "text" and str(_get(record, o.path) or "").strip() not in _DASHES
-    ]
-    asked = schema.output(admission.requested_field or "")
-    if asked is not None and asked not in values and not values:
-        fail("no_printed_value", f"the row prints no {asked.name}")
+    # I9: exactly the admitted output is printed (or a declared alternative of it), in its unit
+    asked = admission.output or admission.requested_field
+    if asked is not None and schema.output(asked) is not None:
+        printed = certified_output(schema, asked, record)
+        if printed is None:
+            fail("no_printed_value", f"the row prints no {asked} (nor a declared alternative)")
+        else:
+            name, unit = printed
+            admitted = units.parse(admission.unit) if admission.unit else None
+            row_unit = units.parse(unit) if unit else None
+            if name == asked and admitted and row_unit and not units.same(admitted, row_unit):
+                fail("unit", f"the row prints {name} in «{unit}», admitted «{admission.unit}»")
+            requested = units.parse(admission.requested_unit) if admission.requested_unit else None
+            if requested is not None and not (
+                (row_unit or admitted) and units.compatible(requested, row_unit or admitted)  # type: ignore[arg-type]
+            ):
+                fail("unit", f"«{admission.requested_unit}» was asked; the row prints «{unit}»")
+    # I5: the printed family the question's other identity words name
+    if admission.family_levels:
+        mine = set(printed_levels(store, dataset, record))
+        if not mine & set(admission.family_levels):
+            fail(
+                "identity_family",
+                f"the row's printed levels {sorted(mine)[:3]} share none with "
+                f"{admission.family_levels[:3]}",
+            )
     # provenance
     if not (record.get("source_cells") or record.get("source") or record.get("provenance")):
         fail("provenance", "no source cells or source location")
     return fails
+
+
+def _printed(record: dict[str, Any], o: Output) -> bool:
+    return str(_get(record, o.path) or "").strip() not in _DASHES
+
+
+def _printed_unit(record: dict[str, Any], o: Output) -> str | None:
+    """The unit printed with an output's cell (falls back to the table's declared unit)."""
+    cell = record.get(o.path.split(".")[0])
+    unit = cell.get("unit") if isinstance(cell, dict) else None
+    return str(unit) if unit else o.unit
+
+
+def certified_output(
+    schema: TableSchema, asked: str, record: dict[str, Any]
+) -> tuple[str, str | None] | None:
+    """(the output the row prints for an admitted output, its printed unit): the output itself,
+    else a declared alternative; None when the row prints neither."""
+    o = schema.output(asked)
+    if o is None:
+        return None
+    for x in (o, *(schema.output(a) for a in o.alternatives)):
+        if x is not None and _printed(record, x):
+            return x.name, _printed_unit(record, x)
+    return None
+
+
+def printed_levels(store: StructuredStore, ds: str, record: dict[str, Any]) -> list[str]:
+    """The printed name levels of a row (category, subgroup, material; an occupancy label; a
+    main table's label fields), normalized, list numbering removed."""
+    from mabhas19.retrieval.structured import LABEL_FIELDS, _field  # noqa: PLC0415
+
+    if ds == APP07:
+        texts = [
+            str((record.get(k) or {}).get("text") or "")
+            for k in ("category", "subgroup", "material")
+        ]
+    elif ds == APP03:
+        label = record.get("label")
+        if label is None:
+            label = store.occupancies.get(str(record.get("occupancy_id")), {}).get("label", "")
+        texts = [str(label)]
+    else:
+        fields = LABEL_FIELDS.get(ds.removeprefix(MAIN), ())
+        texts = [x for path, _ in fields if (x := _field(record, path))]
+    out = []
+    for t in texts:
+        norm = re.sub(r"^\s*\d+\s*[.٫]\s*", "", normalize_for_search(t)).strip()
+        if norm:
+            out.append(norm)
+    return out
 
 
 def _constraint_holds(  # noqa: PLR0911, PLR0912
@@ -271,4 +346,4 @@ def _bound_within(stated: Bound | None, printed: Bound | None, *, lower: bool) -
     return printed.kind != OPEN or stated.kind == OPEN
 
 
-__all__ = ["CLOSED", "CertificationFailure", "certify"]
+__all__ = ["CLOSED", "CertificationFailure", "certified_output", "certify", "printed_levels"]

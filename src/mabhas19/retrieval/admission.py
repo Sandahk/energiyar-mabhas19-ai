@@ -121,6 +121,11 @@ class PlanAdmission:
     calculation: str | None = None
     explicit_targets: list[str] = field(default_factory=list)
     coverage: list[tuple[str, str]] = field(default_factory=list)  # (token, class)
+    # filled by the query-level coverage stage (retrieval.coverage) for result certification
+    output: str | None = None  # the admitted output: named, or the schema default
+    unit: str | None = None  # its printed unit
+    requested_unit: str | None = None  # a unit the question asks for (compatible with ``unit``)
+    family_levels: list[str] = field(default_factory=list)  # printed levels a row must share
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -136,6 +141,8 @@ class PlanAdmission:
             "calculation": self.calculation,
             "explicit": list(self.explicit_targets),
             "unresolved": [t for t, c in self.coverage if c == "unresolved"],
+            "output": self.output,
+            "unit": self.unit,
         }
 
 

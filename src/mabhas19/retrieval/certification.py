@@ -19,6 +19,11 @@ closed on anything it cannot verify. A row is certified only when
   its printed unit is the admitted unit, and a unit the question asks for is that unit;
 * **I5** when other identity words of the question name rows of a printed family, the row
   shares a printed level with them (re-derived here from the row's printed level texts);
+* **I5** the row prints every printed condition phrase the question uses positively
+  («بدون دودکش»);
+* **I6** the row prints no category value a correction of the question rejected;
+* **I10** every stated value of a regulatory dimension the table does not print lies inside the
+  table's declared scope (:mod:`mabhas19.retrieval.table_scope`);
 * no calculation was requested (no row answers a refused operation);
 * provenance (source cells / source location) is present.
 
@@ -33,7 +38,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
-from mabhas19.retrieval import units
+from mabhas19.retrieval import table_scope, units
 from mabhas19.retrieval.entities import FUNCTION_WORDS, keys
 from mabhas19.retrieval.identity import query_tokens, row_label
 from mabhas19.retrieval.numeric import (
@@ -155,6 +160,11 @@ def certify(  # noqa: PLR0912, PLR0915
         content = [w for w in phrase if w not in FUNCTION_WORDS]
         if content and all(keys(w) & label_keys for w in content):
             fail("exclusion", f"label «{label}» prints the excluded «{' '.join(phrase)}»")
+    # I5: every printed identity phrase the question uses positively is the row's own
+    for phrase in admission.required_phrases:
+        content = [w for w in phrase if w not in FUNCTION_WORDS]
+        if content and not all(keys(w) & label_keys for w in content):
+            fail("identity_phrase", f"label «{label}» does not print «{' '.join(phrase)}»")
     # constraints, independently re-checked on the printed fields
     for c in admission.constraints:
         if c.state != "applied":
@@ -190,10 +200,31 @@ def certify(  # noqa: PLR0912, PLR0915
                 f"the row's printed levels {sorted(mine)[:3]} share none with "
                 f"{admission.family_levels[:3]}",
             )
+    # I6: no rejected value; I10: stated values inside the declared scope
+    for dim, values in admission.rejected_values.items():
+        if _prints_value(schema, record, dim, values):
+            fail("rejected_value", f"the row prints {dim} {values}, which the question rejects")
+    for dim, values in admission.scope_values.items():
+        v = table_scope.verdict(schema, dim, values)
+        if v.blocks:
+            fail("scope", v.detail)
     # provenance
     if not (record.get("source_cells") or record.get("source") or record.get("provenance")):
         fail("provenance", "no source cells or source location")
     return fails
+
+
+def _prints_value(schema: TableSchema, record: dict[str, Any], dim: str, values: list[str]) -> bool:
+    """The row prints one of ``values`` in its own column of ``dim`` (none: it cannot)."""
+    d = schema.dim(dim)
+    printed = _get(record, d.path) if d is not None else None
+    if isinstance(printed, dict):
+        printed = printed.get("code") or printed.get("printed")
+    if printed is None:
+        return False
+    got = [str(x) for x in printed] if isinstance(printed, list) else [str(printed)]
+    norm = {normalize_for_search(x).replace(" ", "").upper() for x in got}
+    return bool(norm & {normalize_for_search(v).replace(" ", "").upper() for v in values})
 
 
 def _printed(record: dict[str, Any], o: Output) -> bool:

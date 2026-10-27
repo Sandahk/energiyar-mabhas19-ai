@@ -24,6 +24,9 @@ RUNTIME = (
     "mabhas19.retrieval.identity",
     "mabhas19.retrieval.router",
     "mabhas19.retrieval.hybrid",
+    "mabhas19.retrieval.polarity",
+    "mabhas19.retrieval.units",
+    "mabhas19.retrieval.table_scope",
 )
 
 
@@ -94,7 +97,7 @@ def test_rows_where_none_exist_bypass_the_refusal_by_kind() -> None:  # M102, M1
     table = [sm.APP07]
     out = {"no_records": True, "tables": table, "no_match_outcomes": ["unsupported_output"]}
     assert sm.attribute(out, ["app07-p006-r12"], R).refusal_bypassed == {
-        "output": ["app07-p006-r12"]
+        "quantity": ["app07-p006-r12"]
     }
     calc = {
         "no_records": True,
@@ -108,6 +111,28 @@ def test_rows_where_none_exist_bypass_the_refusal_by_kind() -> None:  # M102, M1
     assert sm.attribute(unit, ["app03-C-r22-5B"], R).refusal_bypassed == {
         "unit": ["app03-C-r22-5B"]
     }
+
+
+def test_refusal_kinds_are_refined_by_the_case_category() -> None:  # corrected-6
+    calc = {"no_records": True, "no_match_outcomes": ["unsupported_calculation"]}
+    assert sm.refusal_kind(calc) == "calculation"
+    assert sm.refusal_kind(calc, "unit_request") == "unit"
+    assert sm.refusal_kind({"no_match_outcomes": ["unsupported_output"]}) == "quantity"
+    assert sm.refusal_kind({"no_match_outcomes": ["invalid_constraint"]}) == "scope"
+    fam = {"no_match_outcomes": ["ambiguous_entity"]}
+    assert sm.refusal_kind(fam) == "entity"
+    assert sm.refusal_kind(fam, "family_wording") == "family"
+    assert sm.refusal_kind({**fam, "refusal_kind": "unit"}, "family_wording") == "unit"
+
+
+def test_member_loss_counts_a_missing_coordinated_identity() -> None:
+    ev = {"records": ["app07-p008-r18", "app07-p006-r12"]}
+    assert sm.member_loss(ev, ["app07-p008-r18"], R) == ["app07-p006-r12"]
+    assert sm.member_loss(ev, [], R) == []  # nothing answered: fail closed, not a lost member
+    assert sm.member_loss(ev, ["app07-p008-r18", "app07-p006-r12"], R) == []
+    # two ratings of one occupancy are one identity: a partial answer, not a lost member
+    same = {"records": ["app03-C-r22-5B", "app03-B-r22-5B"]}
+    assert sm.member_loss(same, ["app03-C-r22-5B"], R) == []
 
 
 def test_any_row_of_a_prose_case_is_foreign() -> None:

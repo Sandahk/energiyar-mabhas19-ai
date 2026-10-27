@@ -8,15 +8,20 @@ the admission, the coverage ledger or the certification of the run being scored:
   acceptable records and ``tables``), or any row at all when the case expects no structured
   answer: a second table leaked into the answer (unowned table admission);
 * **refusal_bypassed[kind]** - a row returned where the case expects no record
-  (``no_records``); ``kind`` comes from the case's ``refusal_kind`` or its allowed
-  ``no_match_outcomes`` (output, unit, calculation, reverse, entity, missing_dimension,
-  constraint, no_records);
+  (``no_records``); ``kind`` comes from the case's ``refusal_kind``, else from its allowed
+  ``no_match_outcomes`` refined by its ``category`` (corrected-6): quantity, unit, calculation,
+  scope, family, reverse, entity, missing_dimension, constraint, no_records;
 * **dimension_leak[dim]** - a row of an expected table that has the identity of an expected row
   but another value of a dimension (rating, climate class, group, year, density…): a constraint
   value the lookup did not own leaked into it;
 * **identity_substitution** - a row of an expected table whose identity (occupancy, material,
   printed label, city…) is not the identity of any expected row: a dropped head noun or
   modifier selected another printed row.
+
+Diagnostics (not wrong rows, corrected-6):
+
+* **member_loss** - a case expecting rows of two or more distinct identities (coordinated
+  members) gets rows of some of them and none of another: the missing member's expected rows.
 
 The per-table identity and dimension fields below are declared here, from the curated record
 layout, on purpose: the evaluator must not share the runtime's notion of identity. This module
@@ -63,16 +68,22 @@ SPEC: dict[str, tuple[tuple[str, ...], dict[str, str]]] = {
 
 # allowed no-match outcome -> refusal kind (first match in this order wins)
 _REFUSAL_KINDS = (
-    ("unsupported_output", "output"),
+    ("unsupported_output", "quantity"),
     ("unsupported_calculation", "calculation"),
     ("unsupported_reverse_lookup", "reverse"),
+    ("invalid_constraint", "scope"),
     ("unknown_entity", "entity"),
     ("ambiguous_entity", "entity"),
     ("missing_required_dimension", "missing_dimension"),
     ("unresolved_constraint", "constraint"),
-    ("invalid_constraint", "constraint"),
     ("no_printed_category", "constraint"),
 )
+# (kind from the outcome, case category) -> the finer kind the case's own label states
+_CATEGORY_KINDS = {
+    ("calculation", "unit_request"): "unit",
+    ("entity", "family_wording"): "family",
+    ("entity", "polarity_qualifier"): "family",
+}
 
 
 def dataset_of(record_id: str) -> str:
@@ -139,12 +150,13 @@ def allowed_tables(ev: dict[str, Any]) -> set[str]:
     return out - {""}
 
 
-def refusal_kind(ev: dict[str, Any]) -> str:
+def refusal_kind(ev: dict[str, Any], category: str = "") -> str:
     explicit = ev.get("refusal_kind")
     if explicit:
         return str(explicit)
     allowed = set(ev.get("no_match_outcomes") or [])
-    return next((kind for code, kind in _REFUSAL_KINDS if code in allowed), "no_records")
+    kind = next((kind for code, kind in _REFUSAL_KINDS if code in allowed), "no_records")
+    return _CATEGORY_KINDS.get((kind, category), kind)
 
 
 @dataclass
@@ -156,7 +168,10 @@ class Attribution:
 
 
 def attribute(
-    ev: dict[str, Any], wrong: list[str], records: dict[str, dict[str, Any]]
+    ev: dict[str, Any],
+    wrong: list[str],
+    records: dict[str, dict[str, Any]],
+    category: str = "",
 ) -> Attribution:
     """Attribute each wrong row of a case to exactly one class (see the module docstring)."""
     out = Attribution()
@@ -168,7 +183,7 @@ def attribute(
             out.foreign_table_rows.append(rid)
             continue
         if ev.get("no_records"):
-            out.refusal_bypassed.setdefault(refusal_kind(ev), []).append(rid)
+            out.refusal_bypassed.setdefault(refusal_kind(ev, category), []).append(rid)
             continue
         r = records.get(rid, {})
         mine = identity(ds, rid, r)
@@ -191,11 +206,29 @@ def attribute(
     return out
 
 
+def member_loss(
+    ev: dict[str, Any], returned: list[str], records: dict[str, dict[str, Any]]
+) -> list[str]:
+    """Expected rows of a coordinated member (an identity of the expected rows) none of which is
+    returned while another member's rows are: a member lost from a several-entity answer."""
+    members: dict[tuple[str, tuple[str, ...]], list[str]] = {}
+    for rid in (str(x) for x in ev.get("records", [])):
+        ds = dataset_of(rid)
+        members.setdefault((ds, identity(ds, rid, records.get(rid, {}))), []).append(rid)
+    if len(members) < 2:
+        return []
+    got = set(returned)
+    if not any(set(ids) & got for ids in members.values()):
+        return []
+    return sorted(rid for ids in members.values() if not set(ids) & got for rid in ids)
+
+
 __all__ = [
     "Attribution",
     "allowed_tables",
     "attribute",
     "dataset_of",
     "load_records",
+    "member_loss",
     "refusal_kind",
 ]

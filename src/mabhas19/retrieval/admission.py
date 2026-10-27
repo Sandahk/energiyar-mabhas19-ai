@@ -126,6 +126,13 @@ class PlanAdmission:
     unit: str | None = None  # its printed unit
     requested_unit: str | None = None  # a unit the question asks for (compatible with ``unit``)
     family_levels: list[str] = field(default_factory=list)  # printed levels a row must share
+    # stated values of regulatory dimensions the table does not print, inside its fixed scope (I10)
+    scope_values: dict[str, list[str]] = field(default_factory=dict)
+    # category values a correction rejected (I6): no returned row may print one
+    rejected_values: dict[str, list[str]] = field(default_factory=dict)
+    # printed identity phrases the question uses positively («بدون دودکش»): every returned row
+    # must print them (I5)
+    required_phrases: list[list[str]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {

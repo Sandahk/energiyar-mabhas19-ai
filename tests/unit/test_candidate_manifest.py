@@ -17,15 +17,15 @@ def test_live_candidate_pins_the_architecture() -> None:
     assert live["embedding"]["model_id"] == "intfloat/multilingual-e5-small"
     assert live["embedding"]["dimensions"] == 384
     assert live["code"]["router_version"] == "v4.1"
-    assert live["code"]["query_plan_version"] == "plan-3"
-    assert live["code"]["coverage_version"] == "coverage-1"
-    assert live["code"]["coverage_ledger_schema"] == "coverage-ledger-1"
-    assert live["code"]["coverage_invariants"] == [f"I{i}" for i in range(1, 10)]
+    assert live["code"]["query_plan_version"] == "plan-4"
+    assert live["code"]["coverage_version"] == "coverage-2"
+    assert live["code"]["coverage_ledger_schema"] == "coverage-ledger-2"
+    assert live["code"]["coverage_invariants"] == [f"I{i}" for i in range(1, 11)]
     assert live["code"]["numeric_parser_version"] == "numeric-2"
     assert live["code"]["entity_resolver_version"] == "source-structure-1"
     assert live["code"]["constraint_parser_version"] == "attested-1"
     assert len(live["code"]["identity_snapshot_sha256"]) == 64
-    assert live["evaluator"]["version"] == "corrected-5"
+    assert live["evaluator"]["version"] == "corrected-6"
     assert live["evaluator"]["final_validation_version"] == "final-validation-1"
     assert live["evaluator"]["final_validated_sets"] == ["final5", "final6"]
     assert live["safety"] == {
@@ -50,6 +50,7 @@ def test_live_candidate_pins_the_architecture() -> None:
         "certification",
         "coverage",
         "units",
+        "table_scope",
         "safety_metrics",
         "identity",
         "identity_snapshot",

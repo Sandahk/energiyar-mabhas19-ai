@@ -91,6 +91,8 @@ _REFERENCE = re.compile(
 )
 _EXISTENCE = ("وجود دارد", "وجود داره", "هست", "هستش", "داریم", "پیدا میشه", "پیدا می شود")
 _TOTAL_ENERGY = re.compile(r"(?:کیلووات\s?ساعت|kwh)(?!\s*(?:بر|در|/)\s*(?:متر|m2))")
+# nouns that head a place name («شهر یزد», «بندر انزلی»)
+PLACE_MARKERS = frozenset({"شهر", "شهرستان", "روستا", "روستای", "بخش", "شهرک", "بندر"})
 # measured quantities a question may ask for (a table must print the one asked)
 QUANTITY_WORDS = frozenset(
     {
@@ -652,7 +654,7 @@ class Planner:
         paren = {normalize_for_search(m) for m in re.findall(r"\(([^)]*)\)", norm)}
         asked: list[str] = []
         unknown: str | None = None
-        marker = {"شهر", "شهرستان", "روستا", "روستای", "بخش", "شهرک", "بندر"}
+        marker = PLACE_MARKERS
         starts = {a for a, _, _ in found}
         for i, t in enumerate(toks[:-1]):
             nxt = toks[i + 1]

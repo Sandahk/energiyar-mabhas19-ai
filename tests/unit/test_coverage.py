@@ -1,8 +1,12 @@
-"""The plan-coverage stage: pure functions and the Final-5 unsafe mechanisms (development data).
+"""The plan-coverage stage: pure functions and the Final-5 and Final-6 unsafe mechanisms
+(development data).
 
 Each Final-5 mechanism is pinned to the invariant that now stops it: M079 (I5 identity family),
 M102 (I1 + I2 + I3 output slot), M195 (I4 unit intent), M011 (I1 + I2 + I7 table ownership),
-M075 (I6 clause precedence) and M082 (I8 coordinated child plans).
+M075 (I6 clause precedence) and M082 (I8 coordinated child plans). The Final-6 mechanisms (Safety
+Closure 2): N201 and N207 (I3 complete requested quantity), N222 and N223 (I4 unit expressions),
+N254 (I10 table scope), N069 (I6 correction ownership), N300 (I8 generic coordination), N328 and
+N334 (I5 identity-span accounting).
 """
 
 from __future__ import annotations
@@ -214,6 +218,91 @@ def test_a_printed_unit_request_names_the_output() -> None:
     assert [h.record_id for h in res.structured] == ["app03-B-r03-3B"]
     assert res.structured[0].output == "max_eui"
     assert res.structured[0].unit == "kWh/m2.yr"
+
+
+# ---------------------------------------------------------------- Final-6 mechanisms
+
+
+def _refusal(res: RetrievalResult, ds: str) -> list[tuple[str | None, str]]:
+    return [(n.outcome, n.reason) for n in res.no_match if n.dataset == ds]
+
+
+def test_n201_an_unprinted_quantity_after_the_entity_is_refused() -> None:
+    res = _r().retrieve(
+        "بتن سبک‌دانه با رس منبسط که عیار سیمانش بالای ۳۰۰ و ماسه‌اش فقط سبکه، مقاومت فشاری‌اش "
+        "چند مگاپاسکاله؟"
+    )
+    assert res.structured == []
+    assert {(APP07, "I3"), (APP07, "I4")} <= _violations(res)
+    assert all(o == "unsupported_output" for o, _ in _refusal(res, APP07))
+
+
+def test_n207_a_meaning_changing_noun_inside_the_output_phrase_is_refused() -> None:
+    res = _r().retrieve(
+        "در پیوست ۳، برای ساختمان اداری عمومی در اقلیم 2A و رده D، حداکثر مصرف آب سالانه به "
+        "ازای هر متر مربع چقدر است؟"
+    )
+    assert res.structured == []
+    assert _refusal(res, APP03) == [("unsupported_output", "unattested_quantity")]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "برای مقایسه با قبض‌های ماهانه، سقف شدت مصرف اداری عمومی در اقلیم 2A و رده C را به kWh "
+        "بر متر مربع در ماه لازم دارم.",
+        "تعمیرگاه خودرو تو اقلیم 1B، رده C؛ سقف مصرفش رو به متر مکعب گاز در سال برای هر متر مربع "
+        "بگید.",
+    ],
+)
+def test_n222_n223_a_unit_of_another_basis_or_fuel_is_a_refused_conversion(query: str) -> None:
+    res = _r().retrieve(query)
+    assert res.structured == []
+    assert _refusal(res, APP03) == [("unsupported_calculation", "unit_conversion")]
+
+
+def test_n254_a_rating_outside_the_tables_fixed_scope_is_invalid() -> None:
+    res = _r().retrieve(
+        "برای کسب رده بازدهی B، حداقل مقاومت حرارتی کف مجاور هوای آزاد در اقلیم 2A چقدر باید باشد؟"
+    )
+    t = "m19-ed5-1404-main.t19-5-1"
+    assert res.structured == []
+    assert _refusal(res, t) == [("invalid_constraint", "out_of_scope_value")]
+
+
+def test_n069_a_corrected_climate_never_leaks() -> None:
+    res = _r().retrieve(
+        "مهمانسرایی در اقلیم 4B نه، در 5B بررسی می‌کنم؛ رده B برایش چه سقف مصرفی دارد؟"
+    )
+    assert [h.record_id for h in res.structured] == ["app03-B-r21-5B"]
+    assert [c["pattern"] for c in res.coverage["corrections"]] == ["A نه، B"]
+
+
+def test_n300_coordinated_materials_each_keep_their_own_density() -> None:
+    res = _r().retrieve(
+        "ضریب هدایت حرارتی سیلیکون خالص و پلی‌استایرن منبسط با چگالی ۱۴ کیلوگرم بر متر مکعب رو "
+        "می‌خوام."
+    )
+    assert sorted(h.record_id for h in res.structured) == ["app07-p006-r15", "app07-p011-r11"]
+    assert res.certification_failures == []
+
+
+def test_n328_one_subject_with_two_printed_identities_is_ambiguous() -> None:
+    res = _r().retrieve(
+        "یه ساختمون داریم که هم مهدکودکه هم پیش‌دبستانی، تو اقلیم 3B. برای رده D چقدر می‌تونه "
+        "مصرف کنه؟"
+    )
+    assert res.structured == []
+    assert _refusal(res, APP03) == [("ambiguous_entity", "one_subject_two_identities")]
+
+
+def test_n334_another_familys_printed_qualifier_is_ambiguous() -> None:
+    res = _r().retrieve(
+        "پکیج گازی بدون دودکش که تو آشپزخونه نصب می‌کنن، حداقل چه بازدهی باید داشته باشه؟"
+    )
+    t = "m19-ed5-1404-main.t19-5-4"
+    assert res.structured == []
+    assert _refusal(res, t) == [("ambiguous_entity", "qualifier_family_conflict")]
 
 
 def test_rows_carry_the_certified_output_and_its_printed_unit() -> None:

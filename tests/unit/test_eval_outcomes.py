@@ -5,7 +5,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from mabhas19.retrieval.eval import CaseResult, _typed_outcomes, check_expectations
+from mabhas19.retrieval.eval import (
+    CaseResult,
+    _typed_outcomes,
+    check_expectations,
+    dropped_constraints,
+)
 from mabhas19.retrieval.models import (
     RetrievalResult,
     RouteDecision,
@@ -93,3 +98,23 @@ def test_expectations_are_checked_before_freezing() -> None:
     problems = check_expectations(cases, {"SI-0001"}, enumerable, OUTCOMES)
     flagged = {p.split(":")[0] for p in problems}
     assert flagged == {"B", "C", "D", "E", "F"}
+
+
+def _row(rid: str, climate: str, rating: str) -> StructuredHit:
+    values = {"climate_class": climate, "energy_rating": rating}
+    return StructuredHit(APP03, "d", rid, 1, "1", [], values, {}, [], "x")
+
+
+def test_a_coordinated_members_constraint_binds_only_its_own_rows() -> None:  # corrected-6
+    a, b = _row("a", "2B", "D"), _row("b", "1B", "C")
+    r = RetrievalResult("q", "q", RouteDecision("structured", []), structured=[a, b])
+
+    def entry(dim: str, value: str, rows: list[str] | None) -> dict[str, Any]:
+        e = {"table": APP03, "constraint": dim, "dimension": dim, "value": [value]}
+        return {**e, "state": "applied", **({"rows": rows} if rows is not None else {})}
+
+    r.constraints = [entry("climate_class", "2B", ["a"]), entry("climate_class", "1B", ["b"])]
+    assert dropped_constraints(r) == []
+    # without member rows every returned row of the table must satisfy the constraint
+    r.constraints = [entry("climate_class", "2B", None)]
+    assert dropped_constraints(r) == ["climate_class: b contradicts ['2B']"]

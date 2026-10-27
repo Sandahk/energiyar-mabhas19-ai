@@ -328,8 +328,9 @@ def test_every_constraint_ends_in_exactly_one_state(name: str) -> None:
         seen = set()
         for entry in r.constraints:
             assert entry["state"] in STATES, (c["id"], entry)
-            key = (entry["table"], entry["constraint"])
-            assert key not in seen, (c["id"], key)  # one state per (table, constraint)
+            # one state per (table, coordinated member, constraint)
+            key = (entry["table"], entry.get("member"), entry["constraint"])
+            assert key not in seen, (c["id"], key)
             seen.add(key)
             if entry["state"] != "applied":
                 continue

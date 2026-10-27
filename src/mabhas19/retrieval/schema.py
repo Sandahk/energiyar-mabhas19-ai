@@ -17,6 +17,18 @@ Lookup-direction policy (audited per table, never assumed):
 * **whole_table** - an explicit table/appendix reference with no row named;
 * everything else (e.g. an energy-use limit back to an occupancy) is
   ``unsupported_reverse_lookup``.
+
+Table scope (I10, :mod:`mabhas19.retrieval.table_scope`): for every *regulatory* dimension
+(climate class, rating, group, year) a table does not print, the schema declares whether it is
+``universal`` (the dimension does not affect the table's values: a material's λ for any rating)
+or ``fixed`` to the values the source establishes, with the curated blocks that establish them
+(the prescriptive 19-5-x requirements are those for rating D). A stated value outside a fixed
+scope is an ``invalid_constraint``; an undeclared dimension fails closed. Applicability is never
+inferred from the data.
+
+Printed output headers (``Output.header``) are printed definition phrases naming an output beyond
+its query names, each attested by the curated blocks listed with it; they only attest the words
+of a requested quantity (I3) and never name an output in a question.
 """
 
 from __future__ import annotations
@@ -77,6 +89,10 @@ class Output:
     # prints a minimum efficiency or a required energy rating); certification accepts only these,
     # and the returned field names the one printed - never another output silently
     alternatives: tuple[str, ...] = ()
+    # printed definition phrases of this output (attestation of a requested quantity's words,
+    # never a query name) and the curated blocks printing them
+    header: tuple[str, ...] = ()
+    header_blocks: tuple[str, ...] = ()
     # ``exact`` printed scalars (λ, EUI, R, U…) are matched by Decimal equality only - a reverse
     # lookup never returns a nearby value; ``interval`` outputs (printed ranges) by containment;
     # ``categorical`` (classes, ratings, symbols) by equality
@@ -87,6 +103,17 @@ class Output:
             self.value_semantics = {"number": "exact", "interval": "interval"}.get(
                 self.kind, "categorical"
             )
+
+
+@dataclass
+class ScopeDecl:
+    """The scope of a regulatory dimension the table does not print."""
+
+    dimension: str
+    kind: str  # universal | fixed
+    values: tuple[str, ...] = ()  # fixed: the applicable values
+    provenance: tuple[str, ...] = ()  # curated blocks establishing a fixed scope
+    basis: str = ""
 
 
 @dataclass
@@ -110,9 +137,13 @@ class TableSchema:
     computations: list[str] = field(default_factory=list)  # permitted: none
     reverse_policy: str = ""
     records: int = 0
+    scope: list[ScopeDecl] = field(default_factory=list)  # regulatory dimensions not printed
 
     def dim(self, name: str) -> Dimension | None:
         return next((d for d in self.dimensions if d.name == name), None)
+
+    def scope_of(self, dimension: str) -> ScopeDecl | None:
+        return next((x for x in self.scope if x.dimension == dimension), None)
 
     def output(self, name: str) -> Output | None:
         return next((o for o in self.outputs if o.name == name), None)
@@ -154,6 +185,91 @@ _AREA_CUES = ("مساحت", "زیربنا", "زیر بنا", "متراژ", "مت
 
 def _main(table: str) -> str:
     return MAIN + table
+
+
+def _universal(*dims: str, basis: str) -> list[ScopeDecl]:
+    return [ScopeDecl(d, "universal", basis=basis) for d in dims]
+
+
+# the prescriptive requirements of 19-5 are set for energy rating D (19-4-1-1 الف)
+_PRESCRIPTIVE_D = ("main-p077-b007", "main-p077-b008")
+_NO_SCHEDULE = (
+    "no group or year column: table 19-2-1 schedules when a requirement applies, not its value"
+)
+_ALL_CLIMATES = "the requirement is printed without a climate column (every climate)"
+_CLASSIFICATION = "a climate classification depends on no rating, group or year"
+
+
+def _rating_d(*blocks: str) -> ScopeDecl:
+    return ScopeDecl(
+        "rating",
+        "fixed",
+        ("D",),
+        (*blocks, *_PRESCRIPTIVE_D),
+        "the printed values are the requirements for energy rating D",
+    )
+
+
+# regulatory dimensions a table does not print, per dataset (I10)
+SCOPES: dict[str, list[ScopeDecl]] = {
+    APP02: _universal("rating", "group", "year", basis=_CLASSIFICATION),
+    _main("19-3-2"): _universal("rating", "group", "year", basis=_CLASSIFICATION),
+    APP03: _universal(
+        "group", "year", basis="limits printed per occupancy, climate class and rating only"
+    ),
+    APP07: _universal(
+        "climate_class",
+        "rating",
+        "group",
+        "year",
+        basis="printed physical properties of materials (no rating, climate or schedule)",
+    ),
+    _main("19-2-1"): [
+        *_universal("climate_class", basis="the schedule applies in every part of the country"),
+        ScopeDecl(
+            "rating",
+            "fixed",
+            ("D",),
+            ("main-p063-b007",),
+            "the schedule is for meeting the requirements of energy rating D (19-2-5)",
+        ),
+    ],
+    _main("19-3-1"): _universal("rating", "group", "year", basis=_CLASSIFICATION),
+    _main("19-3-3"): _universal(
+        "climate_class", "group", "year", basis="ratings by the R ratio, the same in every climate"
+    ),
+    _main("19-5-1"): [
+        _rating_d("main-p083-b010"),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-2"): [
+        _rating_d("main-p091-b004"),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-3"): [
+        *_universal("climate_class", basis=_ALL_CLIMATES),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-4"): [
+        *_universal("climate_class", basis=_ALL_CLIMATES),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-5"): [
+        *_universal("climate_class", basis=_ALL_CLIMATES),
+        _rating_d("main-p013-b005"),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-6"): [
+        *_universal("climate_class", basis=_ALL_CLIMATES),
+        _rating_d(),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+    _main("19-5-7"): [
+        *_universal("climate_class", basis=_ALL_CLIMATES),
+        _rating_d("main-p013-b005"),
+        *_universal("group", "year", basis=_NO_SCHEDULE),
+    ],
+}
 
 
 def _specs() -> dict[str, dict[str, Any]]:
@@ -258,6 +374,11 @@ def _specs() -> dict[str, dict[str, Any]]:
                     names=("شدت مصرف", "eui", "سقف مصرف", "حداکثر مصرف"),
                     cues=("شدت مصرف", "eui"),
                     units=("kwh",),
+                    header=(
+                        "حداکثر میزان مجاز شدت مصرف انرژی",
+                        "انرژی مصرفی سالانه به‌ازای هر متر مربع فضای کنترل‌شده",
+                    ),
+                    header_blocks=("main-p072-b009", "main-p070-b003"),
                 ),
             ],
             "directions": [
@@ -682,6 +803,7 @@ def build_schemas(datasets: dict[str, tuple[str, list[dict[str, Any]]]]) -> dict
             [],
             spec.get("reverse_policy", ""),
             len(records),
+            [ScopeDecl(**asdict(x)) for x in SCOPES.get(ds, [])],
         )
     return out
 

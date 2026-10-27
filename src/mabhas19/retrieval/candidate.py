@@ -49,17 +49,20 @@ IDENTITY_SNAPSHOT = REPO_ROOT / "tests" / "fixtures" / "identity_snapshot.json"
 # caption/reference keys
 ROUTER_VERSION = "v4.1"
 # typed StructuredQueryPlan + validation gate + plan admission (grounded spans, anchors,
-# coverage, unprinted modifiers block) + query-level plan coverage (I1-I8: one role per span,
-# concept disjointness, output slot, unit intent, identity family, clause precedence, table
-# ownership, coordinated child plans) + independent result certification (exact output, unit,
-# identity family: I9)
-QUERY_PLAN_VERSION = "plan-3"
+# coverage, unprinted modifiers block) + query-level plan coverage in five contracts (I1-I8,
+# I10: one role per span, concept disjointness, complete requested quantity, unit expressions,
+# identity-span accounting, value ownership with corrections, table ownership and scope, generic
+# coordinated child plans) + independent result certification (exact output, unit, identity
+# family, rejected values, scope: I9) (plan-4)
+QUERY_PLAN_VERSION = "plan-4"
 # Decimal intervals with typed bounds, ratios, coordinated complementary bounds, printed range
 # exceptions negated
 NUMERIC_PARSER_VERSION = "numeric-2"
 # corrected-4 + wrong-row attribution from curated records only: foreign-table rows, refusal
-# bypasses, dimension leaks, identity substitutions (corrected-5)
-EVALUATOR_VERSION = "corrected-5"
+# bypasses, dimension leaks, identity substitutions (corrected-5); refusal kinds refined by the
+# case category, member loss, fail-closed-but-answerable, ledger counts per contract, per-stratum
+# headlines (corrected-6)
+EVALUATOR_VERSION = "corrected-6"
 # source-attested rating vocabulary, coordinated grades/groups/bounds, nearest-cue ownership,
 # checked claims, constraint provenance (M2)
 CONSTRAINT_PARSER_VERSION = "attested-1"
@@ -105,6 +108,7 @@ MODULES = (
     "src/mabhas19/retrieval/certification.py",
     "src/mabhas19/retrieval/coverage.py",
     "src/mabhas19/retrieval/units.py",
+    "src/mabhas19/retrieval/table_scope.py",
     "src/mabhas19/retrieval/safety_metrics.py",
     "src/mabhas19/retrieval/identity.py",
     "src/mabhas19/retrieval/identity_snapshot.py",

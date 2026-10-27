@@ -55,6 +55,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -80,6 +82,22 @@ tables:
     computations: []
     reverse_policy: class -> cities supported (one-to-many); no geographic inference
     records: 76
+    scope:
+    - dimension: rating
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
   m19-ed5-1404-app03.max_energy_use_intensity:
     dataset: m19-ed5-1404-app03.max_energy_use_intensity
     family: eui
@@ -182,6 +200,12 @@ tables:
       - kwh
       weak_cues: []
       alternatives: []
+      header:
+      - حداکثر میزان مجاز شدت مصرف انرژی
+      - انرژی مصرفی سالانه به‌ازای هر متر مربع فضای کنترل‌شده
+      header_blocks:
+      - main-p072-b009
+      - main-p070-b003
       value_semantics: exact
     directions:
     - operation: direct
@@ -210,6 +234,17 @@ tables:
     computations: []
     reverse_policy: prohibited (EUI value -> occupancy/class/rating is not defined)
     records: 1224
+    scope:
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: limits printed per occupancy, climate class and rating only
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: limits printed per occupancy, climate class and rating only
   m19-ed5-1404-app07.material_thermal_properties:
     dataset: m19-ed5-1404-app07.material_thermal_properties
     family: material
@@ -286,6 +321,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     - name: density
       path: density
@@ -300,6 +337,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: interval
     directions:
     - operation: direct
@@ -328,6 +367,27 @@ tables:
     computations: []
     reverse_policy: λ/density -> material rows supported (one-to-many)
     records: 207
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: printed physical properties of materials (no rating, climate or schedule)
+    - dimension: rating
+      kind: universal
+      values: []
+      provenance: []
+      basis: printed physical properties of materials (no rating, climate or schedule)
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: printed physical properties of materials (no rating, climate or schedule)
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: printed physical properties of materials (no rating, climate or schedule)
   m19-ed5-1404-main.t19-2-1:
     dataset: m19-ed5-1404-main.t19-2-1
     family: label
@@ -396,6 +456,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -423,6 +485,19 @@ tables:
     computations: []
     reverse_policy: prohibited
     records: 480
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the schedule applies in every part of the country
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p063-b007
+      basis: the schedule is for meeting the requirements of energy rating D (19-2-5)
   m19-ed5-1404-main.t19-3-1:
     dataset: m19-ed5-1404-main.t19-3-1
     family: criterion
@@ -483,6 +558,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: interval
     - name: climate_class
       path: climate_classes.applies_to
@@ -495,6 +572,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -520,6 +599,22 @@ tables:
     computations: []
     reverse_policy: degree days -> class supported
     records: 6
+    scope:
+    - dimension: rating
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
   m19-ed5-1404-main.t19-3-2:
     dataset: m19-ed5-1404-main.t19-3-2
     family: place
@@ -628,6 +723,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     - name: wmo_code
       path: wmo_code.ascii
@@ -641,6 +738,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -673,6 +772,22 @@ tables:
     computations: []
     reverse_policy: class -> province capitals supported (one-to-many)
     records: 31
+    scope:
+    - dimension: rating
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: a climate classification depends on no rating, group or year
   m19-ed5-1404-main.t19-3-3:
     dataset: m19-ed5-1404-main.t19-3-3
     family: rating_range
@@ -727,6 +842,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: interval
     - name: rating
       path: energy_rating.code
@@ -739,6 +856,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -764,6 +883,22 @@ tables:
     computations: []
     reverse_policy: R ratio -> rating supported (exactly one printed range or none)
     records: 4
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: ratings by the R ratio, the same in every climate
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: ratings by the R ratio, the same in every climate
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: ratings by the R ratio, the same in every climate
   m19-ed5-1404-main.t19-5-1:
     dataset: m19-ed5-1404-main.t19-5-1
     family: label
@@ -829,6 +964,8 @@ tables:
       - m2k/w
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -855,6 +992,26 @@ tables:
     computations: []
     reverse_policy: value -> cells supported (one-to-many)
     records: 60
+    scope:
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p083-b010
+      - main-p077-b007
+      - main-p077-b008
+      basis: the printed values are the requirements for energy rating D
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-2:
     dataset: m19-ed5-1404-main.t19-5-2
     family: label
@@ -935,6 +1092,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -961,6 +1120,26 @@ tables:
     computations: []
     reverse_policy: value -> cells supported (one-to-many)
     records: 45
+    scope:
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p091-b004
+      - main-p077-b007
+      - main-p077-b008
+      basis: the printed values are the requirements for energy rating D
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-3:
     dataset: m19-ed5-1404-main.t19-5-3
     family: label
@@ -1036,6 +1215,8 @@ tables:
       weak_cues: []
       alternatives:
       - energy_rating
+      header: []
+      header_blocks: []
       value_semantics: exact
     - name: energy_rating
       path: energy_rating.printed
@@ -1049,6 +1230,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     - name: standard
       path: standard.displayed
@@ -1060,6 +1243,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -1085,6 +1270,22 @@ tables:
     computations: []
     reverse_policy: rating -> equipment supported (one-to-many); threshold -> equipment prohibited
     records: 19
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the requirement is printed without a climate column (every climate)
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-4:
     dataset: m19-ed5-1404-main.t19-5-4
     family: label
@@ -1160,6 +1361,8 @@ tables:
       weak_cues: []
       alternatives:
       - energy_rating
+      header: []
+      header_blocks: []
       value_semantics: exact
     - name: energy_rating
       path: energy_rating.printed
@@ -1173,6 +1376,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     - name: standard
       path: standard.displayed
@@ -1184,6 +1389,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: categorical
     directions:
     - operation: direct
@@ -1209,6 +1416,22 @@ tables:
     computations: []
     reverse_policy: rating -> equipment supported (one-to-many); threshold -> equipment prohibited
     records: 11
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the requirement is printed without a climate column (every climate)
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-5:
     dataset: m19-ed5-1404-main.t19-5-5
     family: label
@@ -1243,6 +1466,8 @@ tables:
       - celsius
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1268,6 +1493,31 @@ tables:
     computations: []
     reverse_policy: prohibited
     records: 4
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the requirement is printed without a climate column (every climate)
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p013-b005
+      - main-p077-b007
+      - main-p077-b008
+      basis: the printed values are the requirements for energy rating D
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-6:
     dataset: m19-ed5-1404-main.t19-5-6
     family: label
@@ -1320,6 +1570,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1346,6 +1598,30 @@ tables:
     computations: []
     reverse_policy: prohibited
     records: 7
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the requirement is printed without a climate column (every climate)
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p077-b007
+      - main-p077-b008
+      basis: the printed values are the requirements for energy rating D
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
   m19-ed5-1404-main.t19-5-7:
     dataset: m19-ed5-1404-main.t19-5-7
     family: label
@@ -1376,6 +1652,8 @@ tables:
       units: []
       weak_cues: []
       alternatives: []
+      header: []
+      header_blocks: []
       value_semantics: exact
     directions:
     - operation: direct
@@ -1401,3 +1679,28 @@ tables:
     computations: []
     reverse_policy: prohibited
     records: 7
+    scope:
+    - dimension: climate_class
+      kind: universal
+      values: []
+      provenance: []
+      basis: the requirement is printed without a climate column (every climate)
+    - dimension: rating
+      kind: fixed
+      values:
+      - D
+      provenance:
+      - main-p013-b005
+      - main-p077-b007
+      - main-p077-b008
+      basis: the printed values are the requirements for energy rating D
+    - dimension: group
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'
+    - dimension: year
+      kind: universal
+      values: []
+      provenance: []
+      basis: 'no group or year column: table 19-2-1 schedules when a requirement applies, not its value'

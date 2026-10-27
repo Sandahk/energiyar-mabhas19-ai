@@ -25,13 +25,22 @@ Metrics:
   in for one) and *wrong extra rows* (every required record is returned as well);
 * **silently dropped constraints**: when records are returned, a constraint stated in the
   query that never reached the lookup's constraint ledger, or an applied constraint that a
-  returned record contradicts;
+  returned record contradicts (corrected-6: a coordinated member's constraint is checked against
+  the rows of that member's child plan);
 * **failed result certifications** (corrected-4): returned rows that the independent result
   certification rejected (they are never passed on; any count is a safety failure upstream);
 * **wrong-row attribution** (corrected-5, :mod:`mabhas19.retrieval.safety_metrics`): every wrong
   row is attributed to exactly one of ``foreign_table_rows``, ``refusal_bypassed[kind]``,
   ``dimension_leak[dim]`` and ``identity_substitution`` from curated records and the case's own
   labels only (never from the run's plans, admissions, coverage ledger or certification);
+  corrected-6 refines the refusal kind by the case's own category (quantity, unit, calculation,
+  scope, family …);
+* diagnostics (corrected-6, never safety counts): **member loss** (a coordinated member's
+  expected rows all missing while another member is answered), **fail-closed-but-answerable**
+  (a case with expected records that returns none), ledger violations **per contract and
+  invariant code** (read from the run's own coverage ledger and certification failures, so they
+  describe the runtime and never score it) and every headline **per stratum** (the case's
+  ``stratum`` metadata, where present);
 * optional, only where a case states them (corrected-3, Final-4 onward):
 
   - **typed outcome** (``no_match_outcomes``: acceptable plan outcome codes): no record and a
@@ -111,6 +120,10 @@ class CaseResult:
     dimension_leaks: dict[str, list[str]] = field(default_factory=dict)
     identity_substitutions: list[str] = field(default_factory=list)
     coverage_violations: list[str] = field(default_factory=list)  # runtime ledger (debug only)
+    stratum: str | None = None  # report metadata of stratified sets (never read by the runtime)
+    member_loss: list[str] = field(default_factory=list)  # diagnostic (safety_metrics)
+    fail_closed_answerable: bool | None = None  # expected records, none returned
+    ledger: list[str] = field(default_factory=list)  # "contract/invariant" per runtime violation
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
@@ -173,6 +186,31 @@ def check_expectations(
         if unknown:
             problems.append(f"{c['id']}: unknown source issues {unknown}")
     return problems
+
+
+# contract of each ledger code, for runs whose ledger predates the ``contract`` field
+CONTRACTS = {
+    "I1": "span_roles",
+    "I6": "span_roles",
+    "I2": "output",
+    "I3": "output",
+    "I4": "output",
+    "I7": "table",
+    "I10": "table",
+    "I5": "identity",
+    "I8": "coordination",
+    "I9": "row",
+}
+
+
+def ledger_codes(r: RetrievalResult) -> list[str]:
+    """ "contract/invariant" of every coverage violation and certification failure of a run."""
+    out = []
+    for v in (r.coverage or {}).get("violations", []):
+        inv = str(v.get("invariant"))
+        out.append(f"{v.get('contract') or CONTRACTS.get(inv, 'other')}/{inv}")
+    out += ["row/I9" for _ in r.certification_failures]
+    return out
 
 
 def _record_tables(ev: dict[str, Any]) -> set[str]:
@@ -283,7 +321,11 @@ def dropped_constraints(r: RetrievalResult) -> list[str]:
     for c in r.constraints:
         if c["state"] != "applied":
             continue
+        # a coordinated member's constraint binds the rows of that member's child plan only
+        own = set(c["rows"]) if "rows" in c else None
         for h in r.structured:
+            if own is not None and h.record_id not in own:
+                continue
             if h.dataset == c["table"] and violates(h.values, c["constraint"], c["value"]):
                 out.append(f"{c['constraint']}: {h.record_id} contradicts {c['value']}")
     return out
@@ -351,7 +393,7 @@ def evaluate(
         res.wrong_values = wrong_values(r, ev)
         res.wrong_extra = wrong_extra(r, ev, res.wrong_values)
         res.dropped_constraints = dropped_constraints(r)
-        att = safety_metrics.attribute(ev, res.wrong_values, records)
+        att = safety_metrics.attribute(ev, res.wrong_values, records, str(c.get("category")))
         res.foreign_table_rows = att.foreign_table_rows
         res.refusal_bypassed = att.refusal_bypassed
         res.dimension_leaks = att.dimension_leaks
@@ -360,6 +402,11 @@ def evaluate(
             f"{v['table']}: {v['invariant']} {v['reason']}"
             for v in (r.coverage or {}).get("violations", [])
         ]
+        res.stratum = c.get("stratum")
+        res.member_loss = safety_metrics.member_loss(ev, res.returned_records, records)
+        if ev.get("records"):
+            res.fail_closed_answerable = not res.returned_records
+        res.ledger = ledger_codes(r)
         if ev.get("source_issues"):
             exposed = {i for h in r.structured for i in h.source_issues}
             exposed |= {x.issue_id for x in r.conflicts if x.issue_id}
@@ -421,6 +468,7 @@ def metrics(results: list[CaseResult]) -> dict[str, Any]:
         "failed_certification_cases": sorted(r.id for r in results if r.certification_failures),
         "dropped_constraint_cases": sorted(r.id for r in results if r.dropped_constraints),
         **attribution_metrics(results),
+        **diagnostics(results),
         "scope_confusion": scope_confusion(results),
         "unsupported": unsupported_scores(results),
         "unsupported_original": unsupported_scores_strict(results),
@@ -474,6 +522,44 @@ def attribution_metrics(results: list[CaseResult]) -> dict[str, Any]:
         "identity_substitutions": sum(len(r.identity_substitutions) for r in results),
         "identity_substitution_cases": sorted(r.id for r in results if r.identity_substitutions),
         "coverage_violation_cases": sorted(r.id for r in results if r.coverage_violations),
+    }
+
+
+def diagnostics(results: list[CaseResult]) -> dict[str, Any]:
+    """corrected-6 diagnostics: member loss, fail-closed-but-answerable, runtime ledger counts per
+    contract and invariant code, and the headlines per stratum."""
+    ledger: dict[str, Counter[str]] = defaultdict(Counter)
+    for r in results:
+        for code in set(r.ledger):
+            contract, inv = code.split("/", 1)
+            ledger[contract][inv] += 1
+    out: dict[str, Any] = {
+        "member_loss_rows": sum(len(r.member_loss) for r in results),
+        "member_loss_cases": sorted(r.id for r in results if r.member_loss),
+        "fail_closed_answerable": _rate([r.fail_closed_answerable for r in results]),
+        "fail_closed_answerable_cases": sorted(r.id for r in results if r.fail_closed_answerable),
+        "ledger_cases_by_contract": {c: dict(sorted(n.items())) for c, n in sorted(ledger.items())},
+    }
+    strata = sorted({r.stratum for r in results if r.stratum})
+    if strata:
+        out["by_stratum"] = {st: _stratum([r for r in results if r.stratum == st]) for st in strata}
+    return out
+
+
+def _stratum(rs: list[CaseResult]) -> dict[str, Any]:
+    return {
+        "n": len(rs),
+        "wrong_regulatory_values": sum(len(r.wrong_values) - len(r.wrong_extra) for r in rs),
+        "wrong_extra_records": sum(len(r.wrong_extra) for r in rs),
+        "failed_certifications": sum(len(r.certification_failures) for r in rs),
+        "dropped_constraints": sum(len(r.dropped_constraints) for r in rs),
+        "record_exact": _rate([r.record_exact for r in rs])["rate"],
+        "typed_no_match": _rate([r.typed_no_match for r in rs])["rate"],
+        "typed_outcome": _rate([r.outcome_ok for r in rs])["rate"],
+        "route": _rate([r.route_ok for r in rs])["rate"],
+        "fail_closed_answerable": sum(1 for r in rs if r.fail_closed_answerable),
+        "answerable": sum(1 for r in rs if r.fail_closed_answerable is not None),
+        "member_loss_cases": sum(1 for r in rs if r.member_loss),
     }
 
 

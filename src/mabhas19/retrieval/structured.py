@@ -312,6 +312,12 @@ class StructuredStore:
             APP07: _yaml(t / "m19-ed5-1404-app07" / "table.yaml"),
         }
         self.main: dict[str, MainTable] = {}
+        # printed column headers per table (main: header-row cells; appendices: the curated
+        # column descriptions)
+        self.headers: dict[str, list[str]] = {
+            ds: [str(v) for v in (self.metas[ds].get("columns") or {}).values()]
+            for ds in (APP02, APP03, APP07)
+        }
         for d in sorted((t / "m19-ed5-1404-main").glob("table-*")):
             meta = _yaml(d / "table.yaml")
             recs = _jsonl(d / "records.jsonl")
@@ -320,6 +326,14 @@ class StructuredStore:
             table = MainTable(meta["table_id"], meta, recs, BM25(labels), domain)
             _index_labels(table)
             self.main[meta["table_id"]] = table
+            # the printed header cells (attest the words of a requested quantity; never a label)
+            rows = int((meta.get("grid") or {}).get("header_rows") or 0)
+            cells = _jsonl(d / "cells.jsonl") if (d / "cells.jsonl").is_file() else []
+            self.headers[meta["table_id"]] = [
+                str(c.get("text_repair_v1") or c.get("text_raw") or "")
+                for c in cells
+                if int(c.get("row", 99)) < rows
+            ]
         self.app03_domain = frozenset(r["climate_class"] for r in self.app03)
         self.material_terms = [set(index_terms(_material_name(r))) for r in self.app07]
         self.occupancy_index = list(self.occupancies.values())
@@ -338,10 +352,24 @@ class StructuredStore:
         # main-text blocks linked to source issues (curated provenance, e.g. SI-0004)
         self.block_issues: dict[str, list[str]] = {}
         blocks_path = curated / "text" / "m19-ed5-1404-main" / "blocks.jsonl"
-        if blocks_path.is_file():
-            for b in _jsonl(blocks_path):
-                if b.get("source_issue_refs"):
-                    self.block_issues[b["block_id"]] = list(b["source_issue_refs"])
+        blocks = _jsonl(blocks_path) if blocks_path.is_file() else []
+        for b in blocks:
+            if b.get("source_issue_refs"):
+                self.block_issues[b["block_id"]] = list(b["source_issue_refs"])
+        # words printed in the section that holds each main table (they attest the head noun of a
+        # named entity, never a requested quantity)
+        self.section_words: dict[str, frozenset[str]] = {}
+        by_id = {b["block_id"]: b for b in blocks}
+        for tid, mt in self.main.items():
+            cap = by_id.get(mt.meta["caption"]["blocks"][0], {})
+            nums = [x.get("number") for x in cap.get("section_path", []) if x.get("number")]
+            if nums:
+                self.section_words[tid] = frozenset(
+                    w
+                    for b in blocks
+                    if any(x.get("number") == nums[-1] for x in b.get("section_path", []))
+                    for w in etokens(normalize_for_search(str(b.get("text") or "")))
+                )
         self.schemas = build_schemas(
             {
                 APP02: (str(self.metas[APP02].get("title", APP02)), self.app02),

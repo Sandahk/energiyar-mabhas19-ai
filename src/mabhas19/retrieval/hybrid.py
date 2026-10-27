@@ -80,6 +80,15 @@ def _referenced_tables(refs: list[str], store: StructuredStore) -> list[str]:
     return out
 
 
+def _ledger(cand: Candidate, hits: list[StructuredHit]) -> list[dict[str, Any]]:
+    """The plan's constraint ledger; a coordinated member's values bind its own rows only."""
+    entries = cand.plan.ledger()
+    if cand.member is None:
+        return entries
+    rows = [h.record_id for h in hits]
+    return [{**e, "member": cand.member, "rows": rows} for e in entries]
+
+
 class Retriever:
     def __init__(self, chunks: list[Chunk], store: StructuredStore) -> None:
         self.lexical = LexicalRetriever(chunks)
@@ -321,16 +330,20 @@ class Retriever:
         seen: set[str] = set()
         by_place: dict[str, list[StructuredHit]] = {}
         cands: list[Candidate] = []
+        clauses = clauses_of(full, list(decision.signals.get("clauses") or []))
         for ds in decision.tables:
             explicit = ds.removeprefix(MAIN) in whole or any(
                 APPENDIX_TABLES.get(r.split("-")[0]) == ds for r in whole if r.startswith("پ")
             )
             plan = self.planner.plan(ds, norm, explicit_reference=explicit, full_norm=full)
-            # I8: coordinated printed places run as one child plan per member
-            for child, member in split_coordinated(plan, self.store.schemas[ds]):
-                cands.append(self.admit_plan(child, norm, full, explicit_targets, member))
+            # I8: coordinated entities run as one child plan per member
+            schema = self.store.schemas[ds]
+            for child, member in split_coordinated(plan, schema, self.planner, full, clauses):
+                # a coordinated row member is admitted on its own conjunct (the other members'
+                # words are not its modifiers); a place member on the whole structured text
+                text = member if member and schema.family != "place" and member in full else norm
+                cands.append(self.admit_plan(child, text, full, explicit_targets, member))
         # the query-level coverage stage sees every candidate (refused ones included)
-        clauses = clauses_of(full, list(decision.signals.get("clauses") or []))
         ledger = coverage_evaluate(self.planner, self.store, cands, full, clauses)
         result.coverage = ledger.to_dict()
         members: dict[str, dict[str, list[str]]] = {}
@@ -344,7 +357,7 @@ class Retriever:
             result.certification_failures += failures
             if hits:
                 result.enumerations += [{"table": ds, **asdict(e)} for e in plan.enumerations]
-            result.constraints += plan.ledger()
+            result.constraints += _ledger(cand, hits)
             result.no_match += no_match
             result.notes += [n for n in notes if n not in result.notes]
             if plan.computation:

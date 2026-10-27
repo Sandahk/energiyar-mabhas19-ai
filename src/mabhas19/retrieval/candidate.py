@@ -1,13 +1,14 @@
 """Frozen retrieval candidate manifests for the final benchmarks (reproducibility guard).
 
-``eval/retrieval/<set>_candidate.yaml`` (Final-2 to Final-5: historical; Final-6: current)
+``eval/retrieval/<set>_candidate.yaml`` (Final-2 to Final-6: historical; Final-7: current)
 pins
 everything the benchmark tests: the candidate commit and the code (git tree of ``src/``,
 per-module hashes), the curated corpus and tables, the structured schemas, the scope map, the
 external-domain taxonomy and the policy-ambiguity record, the chunk fingerprint, BM25/RRF
 parameters, the E5 model pins (from ``hybrid_candidate.yaml``, whose live weights the experiment
 runner verifies on load), the router / query-plan / numeric-parser / entity-resolver /
-constraint-parser / evaluator versions and the safety invariants. :func:`check_manifest`
+constraint-parser / unit-model / polarity / coordination / evaluator versions, the table-scope
+declarations with their provenance and the safety invariants. :func:`check_manifest`
 recomputes all of it; any difference refuses the run. After the candidate commit only the frozen
 test set itself may change. Nothing here changes retrieval behaviour.
 """
@@ -28,15 +29,16 @@ from mabhas19.retrieval.lexical import K1, B
 
 MANIFESTS = {
     s: EVAL_DIR / "retrieval" / f"{s}_candidate.yaml"
-    for s in ("final2", "final3", "final4", "final5", "final6")
+    for s in ("final2", "final3", "final4", "final5", "final6", "final7")
 }
-CURRENT = "final6"  # the only manifest that may be (re)written; earlier ones are historical
+CURRENT = "final7"  # the only manifest that may be (re)written; earlier ones are historical
 LABELS = {
     "final2": "Final-2",
     "final3": "Final-3",
     "final4": "Final-4",
     "final5": "Final-5",
     "final6": "Final-6",
+    "final7": "Final-7",
 }
 MANIFEST_PATH = MANIFESTS["final2"]  # historical: the candidate Final-2 was run against
 HYBRID_CANDIDATE = EVAL_DIR / "retrieval" / "hybrid_candidate.yaml"
@@ -69,6 +71,15 @@ CONSTRAINT_PARSER_VERSION = "attested-1"
 # source-exact identity (M1): parenthetical/list/container/linking structure, guarded
 # morphology, required printed conditions, query-position pruning
 ENTITY_RESOLVER_VERSION = "source-structure-1"
+# compositional unit expressions: atoms with dimension vectors, attached / standalone
+# expressions, ground / conversion / other-quantity verdicts (units.py, I4)
+UNIT_MODEL_VERSION = "units-compositional-1"
+# exclusions and printed negative forms + corrections («A نه، B», «نه A، B», «A نه بلکه B»,
+# «A نیست، B است»): the rejected value is owned and never applied (polarity.py, I6)
+POLARITY_VERSION = "polarity-corrections-1"
+# generic coordinated child plans: owned clauses, a label word per member, member rows union
+# equals the whole-query rows (coverage.split_coordinated, I8)
+COORDINATION_VERSION = "generic-coordination-1"
 SAFETY = {
     "wrong_regulatory_values_expected": 0,
     "wrong_extra_rows_expected": 0,
@@ -82,9 +93,9 @@ SAFETY = {
 # files that may change after the candidate commit: the manifest itself, the frozen test set and
 # its fingerprint
 SET_FILES = (
-    "eval/retrieval/final6_candidate.yaml",
-    "eval/retrieval/final6.yaml",
-    "eval/retrieval/final6.sha256",
+    "eval/retrieval/final7_candidate.yaml",
+    "eval/retrieval/final7.yaml",
+    "eval/retrieval/final7.sha256",
 )
 MODULES = (
     "src/mabhas19/indexing/chunking.py",
@@ -142,6 +153,29 @@ def _tree_digest(root: Path) -> str:
     return digest.hexdigest()
 
 
+def table_scope_pins() -> dict[str, dict[str, Any]]:
+    """Per table and regulatory dimension: printed, universal, fixed (values and provenance) or
+    undeclared (which fails closed and must not occur)."""
+    from mabhas19.retrieval import table_scope  # noqa: PLC0415
+    from mabhas19.retrieval.structured import StructuredStore  # noqa: PLC0415
+
+    pins: dict[str, dict[str, Any]] = {}
+    for ds, schema in sorted(StructuredStore(CURATED_DIR).schemas.items()):
+        row: dict[str, Any] = {}
+        for dim in table_scope.REGULATORY:
+            decl = schema.scope_of(dim)
+            if schema.dim(dim) is not None:
+                row[dim] = "printed"
+            elif decl is None:
+                row[dim] = "undeclared"
+            elif decl.kind == "universal":
+                row[dim] = "universal"
+            else:
+                row[dim] = {"fixed": list(decl.values), "provenance": list(decl.provenance)}
+        pins[ds] = row
+    return pins
+
+
 def live_candidate() -> dict[str, Any]:
     """The current candidate, computed from the working tree (no model is loaded)."""
     from mabhas19.cli.eval_retrieval import DOC_ID, _jsonl  # noqa: PLC0415
@@ -181,6 +215,9 @@ def live_candidate() -> dict[str, Any]:
             "numeric_parser_version": NUMERIC_PARSER_VERSION,
             "constraint_parser_version": CONSTRAINT_PARSER_VERSION,
             "entity_resolver_version": ENTITY_RESOLVER_VERSION,
+            "unit_model_version": UNIT_MODEL_VERSION,
+            "polarity_version": POLARITY_VERSION,
+            "coordination_version": COORDINATION_VERSION,
             "identity_snapshot_sha256": _sha(IDENTITY_SNAPSHOT),
         },
         "curated": {
@@ -188,6 +225,7 @@ def live_candidate() -> dict[str, Any]:
             "tree_sha256": _tree_digest(CURATED_DIR),
             "structured_schema_versions": schemas,
             "structured_schemas_sha256": _sha(STRUCTURED_SCHEMAS),
+            "table_scope": table_scope_pins(),
         },
         "scope": {
             "scope_map_sha256": _sha(SCOPE_MAP),

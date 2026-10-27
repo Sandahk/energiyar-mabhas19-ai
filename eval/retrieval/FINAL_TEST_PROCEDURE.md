@@ -178,3 +178,21 @@ artifact and sets no Final-6 expectation.
    (`EARLIER_SETS["final6"]`); the Final-6 design is approved before any case is written.
 3. Run once with `python -m mabhas19.cli.embedding_experiment --set final6`; report safety
    first, then structured, routing/scope and prose. Nothing is changed after the run.
+
+## 12. Final-7 (after Safety Closure 2)
+Final-6 and its run (`20261027T110636Z-final6`) are immutable and are development data from now
+on, like every earlier set.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final7 --write` writes
+   `final7_candidate.yaml`: the §11 pins plus the five safety contracts (`coverage-2`, ledger
+   schema `coverage-ledger-2` with a contract per violation, invariants I1-I10), query plan
+   `plan-4`, the compositional unit model (`units-compositional-1`), polarity corrections
+   (`polarity-corrections-1`), generic coordination (`generic-coordination-1`), the table-scope
+   declaration of every table and regulatory dimension with its provenance (none undeclared) and
+   evaluator `corrected-6` with `final-validation-1`; and the safety invariants: wrong regulatory
+   values, wrong extra rows, silently dropped constraints, failed certifications, foreign-table
+   rows, dimension leaks, identity substitutions and refusal bypasses all 0. Commit it.
+2. Anchors, exclusions, authoring and review follow §10 with all eight earlier sets excluded
+   (`EARLIER_SETS["final7"]`); the Final-7 design is approved before any case is written.
+3. Run once with `python -m mabhas19.cli.embedding_experiment --set final7`; report safety
+   first, then structured, routing/scope and prose. Nothing is changed after the run.

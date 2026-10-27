@@ -48,6 +48,7 @@ DOC_ID = "m19-ed5-1404-main"
 EARLIER_SETS = {
     "final5": ("dev", "heldout", "final", "final2", "final3", "final4"),
     "final6": ("dev", "heldout", "final", "final2", "final3", "final4", "final5"),
+    "final7": ("dev", "heldout", "final", "final2", "final3", "final4", "final5", "final6"),
 }
 OUT = DATA_DIR / "retrieval"
 SETS = EVAL_DIR / "retrieval"

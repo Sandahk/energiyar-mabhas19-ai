@@ -30,7 +30,7 @@ from typing import Any
 
 VERSION = "final-validation-1"
 # the sets these rules apply to (later final sets are added here when they are created)
-VALIDATED_SETS = ("final5", "final6")
+VALIDATED_SETS = ("final5", "final6", "final7")
 _RECORD_ID = re.compile(r"(?:app0[237]-[a-z0-9-]+|main-t19-\d+-\d+-[a-z0-9-]+)", re.IGNORECASE)
 STRUCTURED_ROUTES = ("structured", "mixed")
 

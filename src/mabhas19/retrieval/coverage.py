@@ -78,12 +78,24 @@ Invariants (each violation is recorded in the ledger; a violated plan never exec
   dimension the table does not print must fall inside the table's declared scope: ``universal``
   dimensions never block, a value outside a ``fixed`` scope is ``invalid_constraint``, an
   undeclared dimension fails closed.
+* **I11 stated-value completeness** - every value a lookup's own clauses state for a
+  value-determining dimension of the table (a printed row-selecting dimension: rating and
+  climate class of Appendix 3, group and year of 19-2-1, the climate class of 19-5-1/2; or a
+  dimension with a ``fixed`` scope) ends in exactly one explicit state: applied by the plan,
+  a member of its enumeration, rejected by a correction or an exclusion, applied by another
+  coordinated member of the same table, or checked against the declared scope. The stated
+  values are found by an independent recall-oriented scan (:func:`value_mentions`: a rating
+  letter after a rating head or standing alone - «از رده D به C», «برای C و D» -, a climate code,
+  a group letter after «گروه» and its coordinated letters, an ordinal or numbered year, an
+  elapsed-year phrase), never by the parser being checked. A value in no state silently
+  disappeared: the plan is ``unresolved_constraint`` (``unaccounted_value``). Numbers are
+  complete already: the planner leaves every uninterpreted number of the lookup unresolved.
 
 I9 (output certification) lives in :mod:`mabhas19.retrieval.certification`.
 
 The invariants are grouped into five contracts plus the row contract (``CONTRACTS``; every ledger
-violation names its contract): span roles and ownership (I1, I6), output (I2, I3, I4), table (I7,
-I10), identity (I5), coordination (I8) and row certification (I9).
+violation names its contract): span roles and ownership (I1, I6, I11), output (I2, I3, I4), table
+(I7, I10), identity (I5), coordination (I8) and row certification (I9).
 """
 
 from __future__ import annotations
@@ -112,17 +124,18 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.schema import Output, TableSchema
     from mabhas19.retrieval.structured import StructuredStore
 
-COVERAGE_VERSION = "coverage-2"
+COVERAGE_VERSION = "coverage-3"
 # the coverage-ledger schema (``Ledger.to_dict``): pinned by the candidate manifest, so a run's
 # ledgers stay comparable and a future proposal can be verified against the same layout
 LEDGER_SCHEMA = "coverage-ledger-2"
 LEDGER_KEYS = ("schema", "version", "clauses", "corrections", "spans", "unit_intents",
                "violations", "adjustments", "verdicts")  # fmt: skip
-INVARIANTS = ("I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10")
+INVARIANTS = ("I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10", "I11")
 # the contract each invariant belongs to (stable ledger codes inside named contracts)
 CONTRACTS = {
     "I1": "span_roles",
     "I6": "span_roles",
+    "I11": "span_roles",
     "I2": "output",
     "I3": "output",
     "I4": "output",
@@ -141,7 +154,7 @@ INCOMPATIBLE = frozenset(
     }
 )
 # the outcome reported for a refused plan, by first violated invariant in this order
-_PRECEDENCE = ("I4", "I3", "I10", "I2", "I6", "I5", "I8")
+_PRECEDENCE = ("I4", "I3", "I10", "I11", "I2", "I6", "I5", "I8")
 _TOKEN = re.compile(r"[a-z]*\d+(?:\.\d+)?[a-z]*|[a-z]+|[ؠ-يٮ-ۓە-ۿ]+|[≥≤<>λ]")
 _BETWEEN = re.compile(r"^[\s‌]*$")  # only spacing between two adjacent words
 # numeric comparison words that may stand between a dimension cue and its value
@@ -1236,17 +1249,22 @@ def clause_precedence(  # noqa: PLR0912
     return out, notes
 
 
-def rejected_values(full: str, corrections: list[polarity.Correction]) -> dict[str, set[str]]:
-    """Category values stated only inside rejected spans of corrections (I6 value ownership)."""
-    if not corrections:
+def rejected_values(
+    full: str,
+    corrections: list[polarity.Correction],
+    exclusions: list[polarity.Span] | None = None,
+) -> dict[str, set[str]]:
+    """Category values stated only inside rejected spans of corrections or inside exclusions
+    («به جز رده A»; I6 value ownership), read by the independent scanner of I11."""
+    spans = [(c.rejected.start, c.rejected.end) for c in corrections]
+    spans += [(x.start, x.end) for x in exclusions or [] if x.start >= 0]
+    if not spans:
         return {}
     inside: dict[str, set[str]] = {d: set() for d in _CATEGORY_DIMS}
-    rest = list(full)
-    for c in corrections:
-        for d, vals in _clause_values(c.rejected.text).items():
+    for a, b in spans:
+        for d, vals in value_mentions(full[a:b]).items():
             inside[d] |= vals
-        rest[c.rejected.start : c.rejected.end] = " " * (c.rejected.end - c.rejected.start)
-    outside = _clause_values("".join(rest))
+    outside = value_mentions(_masked(full, spans))
     return {d: inside[d] - outside[d] for d in _CATEGORY_DIMS if inside[d] - outside[d]}
 
 
@@ -1303,6 +1321,154 @@ def apply_constraints(cand: Candidate, new: dict[int, Constraint]) -> None:
         for c in cand.admission.constraints
         if old.get(id(c), c).state in ("applied", "checked")
     ]
+
+
+# ------------------------------------------------------------------ I11
+
+_ORD = {
+    "اول": "1",
+    "یکم": "1",
+    "نخست": "1",
+    "دوم": "2",
+    "سوم": "3",
+    "چهارم": "4",
+    "پنجم": "5",
+    "ششم": "6",
+    "هفتم": "7",
+    "هشتم": "8",
+    "نهم": "9",
+    "دهم": "10",
+}
+_ORD_ADJ = {
+    "اولین": "1",
+    "نخستین": "1",
+    "دومین": "2",
+    "سومین": "3",
+    "چهارمین": "4",
+    "پنجمین": "5",
+    "ششمین": "6",
+    "هفتمین": "7",
+}
+_CARD = {"یک": "1", "دو": "2", "سه": "3", "چهار": "4", "پنج": "5", "شش": "6", "هفت": "7"}
+_YEAR_VALUE = "(" + "|".join(_ORD) + r"|\d{1,2})(?![ؠ-ۿ\d])"
+_JOIN = r"\s*(?:و|،|,|یا|تا|به)\s*"
+# a rating letter standing alone: not a climate code («4 b»), a unit («°c», «درجه c», «m2.a») or
+# part of a Latin word
+_LETTER = re.compile(r"(?<![a-z0-9+°./\-])(?<!\d\s)(?<!درجه\s)([a-d])\+{0,3}(?![a-z0-9+/\-])")
+_CLIMATE_CODE = re.compile(r"(?<![a-z0-9])([0-5])\s?([a-c])(?![a-z0-9/])")
+_GROUP = re.compile(
+    r"گروه\s*(?:های\s*|ها\s*)?(?:ساختمانی\s*|ساختمان\s*(?:های\s*)?)?[«\"'(]?\s*(الف|ب|ج|د)(?![ؠ-ۿ])"
+)
+_GROUP_MORE = re.compile(_JOIN + r"(?:گروه\s*)?(الف|ب|ج|د)(?![ؠ-ۿ])")
+_YEAR = re.compile(r"سال\s*(?:های\s*|ها\s*)?" + _YEAR_VALUE)
+_YEAR_MORE = re.compile(_JOIN + r"(?:سال\s*)?" + _YEAR_VALUE)
+_YEAR_ADJ = re.compile(r"(?<![ؠ-ۿ])(" + "|".join(_ORD_ADJ) + r")\s*سال")
+_ELAPSED = re.compile(
+    r"(?<![ؠ-ۿ\d])(" + "|".join(_CARD) + r"|\d{1,2})\s*سال\s*(?:بعد|پس)\s*(?:از)?(?![ؠ-ۿ])"
+)
+
+
+def value_mentions(text: str) -> dict[str, set[str]]:
+    """Stated values of the category dimensions, read independently of the planner (I11): it
+    over-reads on purpose - a letter or year it finds and the plan never accounts for blocks."""
+    out: dict[str, set[str]] = {d: set() for d in _CATEGORY_DIMS}
+    for m in _LETTER.finditer(text):
+        out["rating"].add(m[1].upper())
+    for m in _CLIMATE_CODE.finditer(text):
+        out["climate_class"].add(f"{m[1]}{m[2].upper()}")
+    for m in _GROUP.finditer(text):
+        out["group"].add(m[1])
+        pos = m.end()
+        while g := _GROUP_MORE.match(text, pos):
+            out["group"].add(g[1])
+            pos = g.end()
+    for m in _YEAR.finditer(text):
+        out["year"].add(_ORD.get(m[1], m[1]))
+        pos = m.end()
+        while g := _YEAR_MORE.match(text, pos):
+            out["year"].add(_ORD.get(g[1], g[1]))
+            pos = g.end()
+    for m in _YEAR_ADJ.finditer(text):
+        out["year"].add(_ORD_ADJ[m[1]])
+    for m in _ELAPSED.finditer(text):  # «سه سال بعد از ابلاغ»: which column is not stated
+        out["year"].add(f"elapsed:{_CARD.get(m[1], m[1])}")
+    return out
+
+
+def _value_dims(schema: TableSchema) -> list[str]:
+    """The table's value-determining category dimensions: printed and row-selecting, or fixed."""
+    out = []
+    for d in _CATEGORY_DIMS:
+        dim, decl = schema.dim(d), schema.scope_of(d)
+        if (dim is not None and dim.required) or (dim is None and decl and decl.kind == "fixed"):
+            out.append(d)
+    return out
+
+
+def _value_key(v: object) -> str:
+    """One comparable form of a category value: «سال اول» / «اول» / 1 -> «1», «4b» -> «4B»."""
+    text = normalize_for_search(str(v)).strip()
+    word = text.split()[-1] if text.split() else text
+    return _ORD.get(word, _ORD_ADJ.get(word, word)).upper()
+
+
+def _masked(full: str, spans: list[tuple[int, int]]) -> str:
+    chars = list(full)
+    for a, b in spans:
+        chars[a:b] = " " * (b - a)
+    return "".join(chars)
+
+
+def completeness_violation(  # noqa: PLR0913
+    cand: Candidate,
+    cands: list[Candidate],
+    schema: TableSchema,
+    full: str,
+    owners: list[Clause],
+    *,
+    released: list[tuple[int, int]],
+    scope_checked: dict[str, set[str]],
+) -> Violation | None:
+    """I11: a stated value of a value-determining dimension that ends in no explicit state.
+    ``released`` are the spans whose values are rejected (corrections) or excluded (polarity);
+    ``scope_checked`` the parsed values I10 checked against a fixed scope."""
+    dims = _value_dims(schema)
+    if not dims:
+        return None
+    text = _masked(full, released)
+    own = [c for c in owners if c.owner and c.start >= 0]
+    if len(owners) >= 2 and own:
+        text = " ".join(text[c.start : c.end] for c in own)
+    stated = value_mentions(text)
+    siblings = [c for c in cands if c.target == cand.target and c.admitted]
+    lost: list[str] = []
+    for d in dims:
+        accounted: set[str] = set()
+        for c in siblings:
+            con = c.plan.constraint(d)
+            if con is not None:
+                accounted |= {_value_key(v) for v in con.values}
+            if d in c.plan.enumerated:
+                accounted |= {
+                    _value_key(v)
+                    for e in c.plan.enumerations
+                    if e.dimension == d
+                    for v in e.members
+                }
+        if schema.dim(d) is None:
+            accounted |= {_value_key(v) for v in scope_checked.get(d, set())}
+        lost += [f"{d} {v}" for v in sorted(stated[d]) if _value_key(v) not in accounted]
+    if not lost:
+        return None
+    return Violation(
+        cand.target,
+        "I11",
+        "unaccounted_value",
+        f"stated {lost} is neither applied, enumerated, rejected, another member's nor "
+        "scope-checked; no stated value may silently disappear",
+        cand.member,
+        "unresolved_constraint",
+    )
 
 
 # ------------------------------------------------------------------ I10
@@ -1568,14 +1734,19 @@ def evaluate(  # noqa: PLR0912, PLR0915
     full: str,
     clauses: list[Clause],
 ) -> Ledger:
-    """Check every candidate together; refuse or drop the admitted ones that violate I1-I7, fix
+    """Check every candidate together; refuse or drop the admitted ones that violate I1-I11, fix
     each executable plan's requested output (named or the schema default) and record the
     admitted unit and identity-family evidence for certification."""
     from mabhas19.retrieval.certification import printed_levels  # noqa: PLC0415
 
     schemas = store.schemas
     ledger = Ledger(full, clauses, polarity.corrections(full))
-    rejected = rejected_values(full, ledger.corrections)
+    exclusions = polarity.parse(full).exclusions
+    rejected = rejected_values(full, ledger.corrections, exclusions)
+    # spans whose stated values are released by a correction or an exclusion (I11)
+    released = [(c.rejected.start, c.rejected.end) for c in ledger.corrections] + [
+        (x.start, x.end) for x in exclusions if x.start >= 0
+    ]
     # I6 first: it decides which stated values each plan keeps (corrections, then clauses)
     for cand in cands:
         if not cand.admitted:
@@ -1719,8 +1890,15 @@ def evaluate(  # noqa: PLR0912, PLR0915
             output = schema.output(cand.admission.output or "")
             cand.admission.unit = output.unit if output is not None else None
         # I10
-        owned = owned_values(owned_by(clauses, full, anchors_of(cand, full)), full)
+        owners = owned_by(clauses, full, anchors_of(cand, full))
+        owned = owned_values(owners, full)
         cand.violations += scope_violations(cand, schema, owned, rejected)
+        # I11
+        lost = completeness_violation(
+            cand, cands, schema, full, owners, released=released, scope_checked=owned
+        )
+        if lost is not None:
+            cand.violations.append(lost)
         # I5
         foreign_phrases, required = phrase_accounting(planner, store, cand)
         cand.admission.required_phrases = required
@@ -1857,6 +2035,8 @@ __all__ = [
     "UnitIntent",
     "Violation",
     "clauses_of",
+    "completeness_violation",
     "evaluate",
     "split_coordinated",
+    "value_mentions",
 ]

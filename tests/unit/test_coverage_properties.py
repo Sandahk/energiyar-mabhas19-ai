@@ -1,4 +1,4 @@
-"""Property tests of the plan-coverage stage (I1-I10), generated from the curated tables.
+"""Property tests of the plan-coverage stage (I1-I11), generated from the curated tables.
 
 Every generated query goes through :func:`_retrieve`, which enforces the global invariants:
 
@@ -21,7 +21,10 @@ output, a foreign requested unit, a foreign unit on a stated number, concepts sh
 tables, ratings in an explanatory clause, two and three coordinated places, mixed
 lookup/prose ownership, a second table without an anchor of its own. Safety Closure 2 (P14-P19):
 corrections, table scope, unit expressions, complete requested quantities, identity-span
-accounting, generic coordination. Seeds are fixed.
+accounting, generic coordination. Safety Closure 3 (P20-P22): stated-value completeness (I11)
+over ratings, climate classes, groups, years, numbers, coordinated values, corrections and
+exclusions; grammatical homographs never establishing identity alone (every collision of the
+curated identity vocabulary); calculation wording. Seeds are fixed.
 """
 
 from __future__ import annotations
@@ -39,8 +42,9 @@ from mabhas19.indexing.chunking import build_chunks
 from mabhas19.retrieval import table_scope, units
 from mabhas19.retrieval.certification import printed_levels
 from mabhas19.retrieval.coverage import INCOMPATIBLE, coordinated_members, split_coordinated
+from mabhas19.retrieval.entities import GRAMMATICAL_HOMOGRAPHS
 from mabhas19.retrieval.hybrid import Retriever
-from mabhas19.retrieval.identity import row_label
+from mabhas19.retrieval.identity import query_tokens, row_label
 from mabhas19.retrieval.models import RetrievalResult
 from mabhas19.retrieval.plan import EntityRef, StructuredQueryPlan, concept
 from mabhas19.retrieval.schema import TableSchema
@@ -816,3 +820,250 @@ def test_p19_an_unknown_member_never_redirects_the_known_one() -> None:
         base = _app03_query(r)
         q = base.replace(_label(r), f"{_label(r)} و کوانتوم‌سرای مریخی", 1)
         _p13(base, q)
+
+
+# ------------------------------------------------------- P20 stated-value completeness (I11)
+
+
+def _complete(res: RetrievalResult, ds: str, value: Any, stated: set[str]) -> None:
+    """Every returned row of ``ds`` carries a stated value, and every stated value is answered by
+    a returned row - or the table returns nothing (it failed closed). A stated value never
+    silently disappears."""
+    got = {str(value(h)) for h in res.structured if h.dataset == ds}
+    if got:
+        assert got <= stated, (res.query, got, stated)
+        assert stated <= got, (res.query, "silently dropped", sorted(stated - got))
+
+
+def _rating(h: Any) -> str:
+    return str(h.values["energy_rating"])
+
+
+RATING_FRAMES = (
+    "حداکثر شدت مصرف {label} در اقلیم {cc} از رده {a} به {b} چقدر است؟",
+    "حداکثر شدت مصرف {label} در اقلیم {cc} برای {a} و {b} چقدر است؟",
+    "حداکثر شدت مصرف {label} در اقلیم {cc} رده‌های {a} تا {b} چقدر است؟",
+    "حداکثر شدت مصرف {label} در اقلیم {cc}، رده {a}، و اگر شد {b}، چقدر است؟",
+    "{label} در اقلیم {cc} رده {a} چه سقفی دارد؟ ({b} هم)",
+)
+
+
+@pytest.mark.parametrize("frame", RATING_FRAMES)
+def test_p20_every_stated_rating_is_applied_or_the_table_refuses(frame: str) -> None:
+    for r in _sample(list(_store().app03), "p20r", 4):
+        a = r["energy_rating"]
+        for b in sorted({"A", "B", "C", "D"} - {a})[:2]:
+            q = frame.format(label=_label(r), cc=r["climate_class"], a=a, b=b)
+            _complete(_retrieve(q), APP03, _rating, {a, b})
+
+
+def test_p20_every_stated_climate_class_is_applied_or_the_table_refuses() -> None:
+    for r in _sample(list(_store().app03), "p20c"):
+        other = _twin_climate(r)
+        if other is None:
+            continue
+        rt = r["energy_rating"]
+        for frame in ("از اقلیم {a} به {b}", "اقلیم {a} یا {b}", "اقلیم‌های {a}، {b}"):
+            where = frame.format(a=r["climate_class"], b=other)
+            q = f"حداکثر شدت مصرف {_label(r)} {where} رده {rt} چقدر است؟"
+            _complete(
+                _retrieve(q),
+                APP03,
+                lambda h: h.values["climate_class"],
+                {r["climate_class"], other},
+            )
+
+
+_ORDINAL = {1: "اول", 2: "دوم", 3: "سوم", 4: "چهارم", 5: "پنجم"}
+_ORDINAL_ADJ = {1: "اولین", 2: "دومین", 3: "سومین", 4: "چهارمین", 5: "پنجمین"}
+
+
+def _schedule_rows() -> list[dict[str, Any]]:
+    return [r for r in _store().main[MAIN + "19-2-1"].records if r.get("year", {}).get("index")]
+
+
+def _schedule_label(r: dict[str, Any]) -> str:
+    return row_label(_store(), MAIN + "19-2-1", r)
+
+
+def test_p20_every_stated_group_is_applied_or_the_schedule_refuses() -> None:
+    ds = MAIN + "19-2-1"
+    groups = ("الف", "ب", "ج", "د")
+    for r in _sample(_schedule_rows(), "p20g", 8):
+        g, y = r["building_group"]["text"], r["year"]["index"]
+        other = groups[(groups.index(g) + 1) % 4]
+        for frame in ("گروه {a} و {b}", "از گروه {a} تا {b}", "گروه‌های {a}، {b}"):
+            q = (
+                f"{_schedule_label(r)} برای {frame.format(a=g, b=other)} در سال {_ORDINAL[y]} "
+                "جدول ۱۹-۲-۱ چه علامتی دارد؟"
+            )
+            res = _retrieve(q)
+            got = {
+                str(h.values.get("building_group", {}).get("text"))
+                for h in res.structured
+                if h.dataset == ds
+            }
+            if got:
+                assert got <= {g, other}, (q, got)
+                assert len(got) == 2, (q, "silently dropped", got)
+
+
+def test_p20_every_stated_year_is_applied_or_the_schedule_refuses() -> None:
+    ds = MAIN + "19-2-1"
+    for r in _sample(_schedule_rows(), "p20y", 8):
+        g, y = r["building_group"]["text"], r["year"]["index"]
+        other = 1 + (y % 5)
+        label = _schedule_label(r)
+        for when, stated in (
+            (f"در سال‌های {_ORDINAL[y]} و {_ORDINAL[other]}", {y, other}),
+            (f"در {_ORDINAL_ADJ[y]} سال و سال {_ORDINAL[other]}", {y, other}),
+            (f"از سال {_ORDINAL[y]} تا سال {_ORDINAL[other]}", {y, other}),
+        ):
+            q = f"{label} برای گروه {g} {when} جدول ۱۹-۲-۱ چه علامتی دارد؟"
+            res = _retrieve(q)
+            got = {h.values.get("year", {}).get("index") for h in res.structured if h.dataset == ds}
+            if got:
+                assert got <= stated, (q, got)
+                assert stated <= got or len(stated) > 2, (q, "silently dropped", stated - got)
+
+
+def test_p20_an_elapsed_year_never_becomes_a_column() -> None:
+    """«N سال بعد از ابلاغ» does not say which printed year column applies: never read as one."""
+    ds = MAIN + "19-2-1"
+    for r in _sample(_schedule_rows(), "p20e", 6):
+        g, y = r["building_group"]["text"], r["year"]["index"]
+        q = (
+            f"{_schedule_label(r)} برای گروه {g}، {y} سال بعد از ابلاغ، در جدول ۱۹-۲-۱ چه علامتی "
+            "دارد؟"
+        )
+        assert ds not in {h.dataset for h in _retrieve(q).structured}, q
+
+
+def test_p20_every_number_in_the_lookup_ends_in_an_explicit_state() -> None:
+    """A number is applied, checked as a claim, or leaves the plan unresolved - never ignored."""
+    for r in _sample(list(_store().app03), "p20n"):
+        base = _app03_query(r)
+        for q in (
+            base.replace(" در اقلیم", " با ۷۳۹۱ در اقلیم", 1),
+            base + " برای ۷۳۹۱",
+            base.replace("حداکثر شدت مصرف", "حداکثر شدت مصرف ۷۳۹۱", 1),
+        ):
+            res = _p13(base, q)
+            if APP03 not in {h.dataset for h in res.structured}:
+                continue
+            plan = next(p for p in res.plans if p["target"] == APP03)
+            assert any("7391" in json.dumps(c) for c in plan["constraints"]), (q, plan)
+
+
+def test_p20_rejected_and_excluded_values_are_accounted_and_never_returned() -> None:
+    for r in _sample(list(_store().app03), "p20x"):
+        a = r["energy_rating"]
+        b = next(x for x in "ABCD" if x != a)
+        lead = f"حداکثر شدت مصرف {_label(r)} در اقلیم {r['climate_class']}"
+        for q in (
+            f"{lead} رده {a}، نه {b}، چقدر است؟",
+            f"{lead} رده {b} نه، رده {a} چقدر است؟",
+            f"{lead} به جز رده {b}، برای رده {a} چقدر است؟",
+        ):
+            res = _p13(_app03_query(r), q)
+            assert all(_rating(h) == a for h in res.structured if h.dataset == APP03), q
+
+
+def test_p20_the_scanner_is_independent_of_the_parser() -> None:
+    from mabhas19.retrieval.coverage import value_mentions  # noqa: PLC0415
+    from mabhas19.text.normalize import normalize_for_search  # noqa: PLC0415
+
+    def m(text: str) -> dict[str, set[str]]:
+        return {k: v for k, v in value_mentions(normalize_for_search(text)).items() if v}
+
+    assert m("از رده D به C") == {"rating": {"C", "D"}}
+    assert m("برای C و D") == {"rating": {"C", "D"}}
+    assert m("رده‌های C تا A") == {"rating": {"A", "C"}}
+    assert m("دمای آب ۶۰ درجه C در اقلیم 4b") == {"climate_class": {"4B"}}
+    assert m("kWh/m2.a") == {}
+    assert m("گروه الف و ب در سال‌های چهارم و پنجم") == {
+        "group": {"الف", "ب"},
+        "year": {"4", "5"},
+    }
+    assert m("دومین سال اجرا") == {"year": {"2"}}
+    assert m("سه سال بعد از ابلاغ") == {"year": {"elapsed:3"}}
+    assert m("در سال ۱۴۰۴ و در سال مصرف") == {}
+
+
+# ---------------------------------------------------------------- P21 grammatical homographs (A)
+
+
+def _homograph_alternatives() -> list[tuple[str, Any, str]]:
+    """Every (dataset, alternative, homograph) of the curated identity vocabulary."""
+    out = []
+    for ds, idx in sorted(_r().planner.identity.items()):
+        for a in idx.alternatives:
+            for w in a.words:
+                if w in GRAMMATICAL_HOMOGRAPHS:
+                    out.append((ds, a, w))
+    return out
+
+
+def test_p21_the_audit_finds_the_collisions() -> None:
+    words = {w for _ds, _a, w in _homograph_alternatives()}
+    assert "روی" in words, words  # zinc: the only one-word printed identity among them
+
+
+def test_p21_a_homograph_alone_never_names_a_row() -> None:
+    for ds, a, w in _homograph_alternatives():
+        idx = _r().planner.identity[ds]
+        for frame in (f"{w} بام", f"این {w} ما", f"{w}"):
+            assert idx.named(a.row, query_tokens(frame)).status == "none", (ds, a.row, frame)
+
+
+def test_p21_the_full_printed_name_still_names_the_row() -> None:
+    for ds, a, _w in _homograph_alternatives():
+        idx = _r().planner.identity[ds]
+        # another printed word beside the homograph: the rule never removes the identity
+        assert idx.named(a.row, query_tokens(" ".join(a.words))).status != "none", (ds, a.row)
+
+
+@pytest.mark.parametrize(
+    "frame",
+    [
+        "عایقی که {w} بام می‌کشیم لاندای حرارتیش طبق پیوست ۷ چقدره؟",
+        "ضریب هدایت حرارتی ورقی که {w} دیوار نصب میشه در پیوست ۷ چند است؟",
+        "{w} سقف یه لایه عایق داریم؛ λ آن طبق جدول مصالح چقدر است؟",
+    ],
+)
+def test_p21_the_grammatical_use_is_harmless_context(frame: str) -> None:
+    whole = {a.row for ds, a, w in _homograph_alternatives() if ds == APP07 and a.words == [w]} | {
+        a.row for ds, a, w in _homograph_alternatives() if ds == APP07 and len(a.levels[-1]) == 1
+    }
+    for w in sorted({w for ds, _a, w in _homograph_alternatives() if ds == APP07}):
+        res = _retrieve(frame.format(w=w))
+        assert not (_rows(res) & whole), (res.query, _rows(res) & whole)
+
+
+# ---------------------------------------------------------------- P22 calculation wording (B)
+
+CALCULATIONS = (
+    "فاصله این دو حد مجاز رو حساب کنید: {label} در اقلیم {cc}، رده {a} و {b}.",
+    "برای {label} در اقلیم {cc} از رده {a} به {b}؛ فاصله این دو سقف چند است؟",
+    "حد رده {a} را از حد رده {b} برای {label} در اقلیم {cc} کم کنید.",
+    "اختلاف سقف رده {a} و {b} برای {label} در اقلیم {cc} چقدر است؟",
+    "سقف مصرف {label} در اقلیم {cc} برای رده {a} رو حساب کن.",
+)
+
+
+@pytest.mark.parametrize("frame", CALCULATIONS)
+def test_p22_derived_values_are_refused_and_no_operand_is_returned(frame: str) -> None:
+    for r in _sample(list(_store().app03), "p22", 4):
+        a = r["energy_rating"]
+        b = next(x for x in "ABCD" if x != a)
+        res = _retrieve(frame.format(label=_label(r), cc=r["climate_class"], a=a, b=b))
+        assert APP03 not in {h.dataset for h in res.structured}, res.query
+        if _outcomes(res, APP03):  # planned: refused as a calculation, never another reason
+            assert "unsupported_calculation" in _outcomes(res, APP03), res.query
+
+
+def test_p22_method_questions_and_everyday_words_change_nothing() -> None:
+    for r in _sample(list(_store().app03), "p22b"):
+        base = _app03_query(r)
+        for extra in ("؛ این عدد رو چطور حساب کنیم؟", "؛ می‌خوایم کارهای اضافه رو کم کنیم"):
+            _narrows(base, base + extra, equal=True)

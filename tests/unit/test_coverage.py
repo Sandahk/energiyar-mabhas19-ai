@@ -309,3 +309,28 @@ def test_rows_carry_the_certified_output_and_its_printed_unit() -> None:
     res = _r().retrieve("ضریب هدایت حرارتی بتن هوادار اتوکلاو شده با چگالی اسمی ۵۰۰ چقدر است؟")
     assert res.structured
     assert all((h.output, h.unit) == ("thermal_conductivity", "W/m.K") for h in res.structured)
+
+
+# -------------------------------------------------------- Final-7 mechanisms (Safety Closure 3)
+
+
+def test_p179_a_preposition_never_names_a_printed_material() -> None:
+    res = _r().retrieve("ایزوگام که روی بام می‌کشیم لاندای حرارتیش طبق پیوست ۷ چقدره؟")
+    assert res.structured == []
+    assert _refusal(res, APP07) == [("unknown_entity", "unknown_material")]
+
+
+def test_p011_a_gap_between_two_limits_is_a_refused_calculation() -> None:
+    res = _r().retrieve(
+        "می‌خوام به کارفرمای هایپرمارکت (اقلیم 2A) نشون بدم رفتن از رده D به C چقدر سخت‌تره؛ "
+        "فاصله این دو حد مجاز رو به کیلووات ساعت بر متر مربع حساب کنید."
+    )
+    assert res.structured == []
+    assert _refusal(res, APP03) == [("unsupported_calculation", "unsupported_calculation")]
+
+
+def test_p011_a_stated_rating_the_parser_misses_is_caught_by_completeness() -> None:
+    res = _r().retrieve("هتل در اقلیم 2A از رده D به C چه سقفی دارد؟")
+    assert res.structured == []
+    assert _refusal(res, APP03) == [("unresolved_constraint", "unaccounted_value")]
+    assert {(APP03, "I11")} <= _violations(res)

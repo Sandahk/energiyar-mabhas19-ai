@@ -39,7 +39,8 @@ Metrics:
   expected rows all missing while another member is answered), **fail-closed-but-answerable**
   (a case with expected records that returns none), ledger violations **per contract and
   invariant code** (read from the run's own coverage ledger and certification failures, so they
-  describe the runtime and never score it) and every headline **per stratum** (the case's
+  describe the runtime and never score it; corrected-7 counts the stated-value completeness
+  invariant I11 under the span-roles contract) and every headline **per stratum** (the case's
   ``stratum`` metadata, where present);
 * optional, only where a case states them (corrected-3, Final-4 onward):
 
@@ -192,6 +193,7 @@ def check_expectations(
 CONTRACTS = {
     "I1": "span_roles",
     "I6": "span_roles",
+    "I11": "span_roles",
     "I2": "output",
     "I3": "output",
     "I4": "output",

@@ -55,16 +55,18 @@ ROUTER_VERSION = "v4.1"
 # I10: one role per span, concept disjointness, complete requested quantity, unit expressions,
 # identity-span accounting, value ownership with corrections, table ownership and scope, generic
 # coordinated child plans) + independent result certification (exact output, unit, identity
-# family, rejected values, scope: I9) (plan-4)
-QUERY_PLAN_VERSION = "plan-4"
+# family, rejected values, scope: I9) (plan-4); stated-value completeness (I11), grammatical
+# homographs never establish identity alone, calculation wording (difference / gap / explicit
+# calculate / subtraction) (plan-5)
+QUERY_PLAN_VERSION = "plan-5"
 # Decimal intervals with typed bounds, ratios, coordinated complementary bounds, printed range
 # exceptions negated
 NUMERIC_PARSER_VERSION = "numeric-2"
 # corrected-4 + wrong-row attribution from curated records only: foreign-table rows, refusal
 # bypasses, dimension leaks, identity substitutions (corrected-5); refusal kinds refined by the
 # case category, member loss, fail-closed-but-answerable, ledger counts per contract, per-stratum
-# headlines (corrected-6)
-EVALUATOR_VERSION = "corrected-6"
+# headlines (corrected-6); I11 in the span-roles ledger contract (corrected-7)
+EVALUATOR_VERSION = "corrected-7"
 # source-attested rating vocabulary, coordinated grades/groups/bounds, nearest-cue ownership,
 # checked claims, constraint provenance (M2)
 CONSTRAINT_PARSER_VERSION = "attested-1"

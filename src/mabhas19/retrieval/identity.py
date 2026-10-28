@@ -17,7 +17,11 @@ when the query names
    named («پمپ‌های گریز از مرکز», not «پمپ» alone).
 
 Identity words exclude function and request words, numbers, comparison operators, units, the
-table's own output words and words every row of the table prints (e.g. «مجاور» in 19-5-1). A row
+table's own output words and words every row of the table prints (e.g. «مجاور» in 19-5-1). A
+grammatical homograph (``entities.GRAMMATICAL_HOMOGRAPHS``: «روی», «پیش», «دو», «بسیار» …) stays
+an identity word of its label but never names a row by itself: the query must also name another
+printed word of the same identity (any level, the parent/category level included, or another
+printed name form); a table-level reference («پیوست ۷») does not resolve a row. A row
 whose identity words are all numeric conditions (PF or power bands) is identified by its
 numbers, not by words. Appendix 7 condition texts are qualifiers, never identities.
 
@@ -59,6 +63,7 @@ from mabhas19.retrieval.entities import (
     COUNT_PREFIXES,
     DEGREE_PREFIXES,
     FUNCTION_WORDS,
+    GRAMMATICAL_HOMOGRAPHS,
     NEGATORS,
     NUMBER_WORDS,
     etokens,
@@ -384,6 +389,8 @@ class IdentityIndex:
                 for w in a.words
                 if _named(w, a.words, forms) or self._short_plural_named(w, a, query)
             ]
+            if hit and all(w in GRAMMATICAL_HOMOGRAPHS for w in hit):
+                continue  # «روی بام»: a grammatical word alone is context, never this identity
             for li, level in enumerate(a.levels):
                 if not level or level[0] not in hit:
                     continue

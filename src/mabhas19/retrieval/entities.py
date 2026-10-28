@@ -121,6 +121,93 @@ FUNCTION_WORDS = frozenset(
         "and",
     }
 )
+# grammatical homographs: prepositions and relational nouns, quantifiers and intensifiers, small
+# numerals, demonstratives and pronouns that a printed name may also contain («روی» of zinc,
+# «پیش» of «پیش دبستان», «دو» of «دو اثره», «بسیار» of «بسیار گرم»). They stay identity words of
+# their labels, but such a word never establishes a row's identity by itself: a query must also
+# name another printed word of the same identity (its own level, a parent or category level, or
+# another printed name form); its grammatical use («روی بام») is harmless context. A
+# closed linguistic class, not derived from any test set; ``identity`` applies it to every table.
+GRAMMATICAL_HOMOGRAPHS = frozenset(
+    {
+        # prepositions and relational nouns
+        "روی",
+        "زیر",
+        "بالا",
+        "بالای",
+        "پایین",
+        "پشت",
+        "جلو",
+        "جلوی",
+        "کنار",
+        "پهلو",
+        "پهلوی",
+        "میان",
+        "درون",
+        "داخل",
+        "بیرون",
+        "سر",
+        "ته",
+        "نزد",
+        "پیش",
+        "نزدیک",
+        "دور",
+        "طرف",
+        "سمت",
+        "سوی",
+        "دنبال",
+        "همراه",
+        "جای",
+        "جا",
+        "عوض",
+        "بی",
+        "بدون",
+        "مگر",
+        "چون",
+        "پس",
+        "سپس",
+        "اما",
+        "ولی",
+        "جهت",
+        "بابت",
+        "درباره",
+        "ضمن",
+        "طی",
+        "هنگام",
+        "موقع",
+        "وقت",
+        "زمان",
+        "باز",
+        # quantifiers, intensifiers and small numerals
+        "خیلی",
+        "بسیار",
+        "زیاد",
+        "کمی",
+        "فقط",
+        "تنها",
+        "حتی",
+        "همه",
+        "هیچ",
+        "دیگر",
+        "یک",
+        "دو",
+        "سه",
+        "چهار",
+        "پنج",
+        "شش",
+        # demonstratives and pronouns
+        "همین",
+        "همان",
+        "اینجا",
+        "انجا",
+        "من",
+        "تو",
+        "او",
+        "ما",
+        "شما",
+        "خود",
+    }
+)
 
 
 def etokens(text: str) -> list[str]:

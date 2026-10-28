@@ -22,15 +22,18 @@ def test_live_candidate_pins_the_architecture() -> None:
     assert live["code"]["coverage_ledger_schema"] == "coverage-ledger-2"
     assert live["code"]["coverage_invariants"] == [f"I{i}" for i in range(1, 12)]
     assert live["code"]["numeric_parser_version"] == "numeric-2"
-    assert live["code"]["entity_resolver_version"] == "source-structure-1"
+    assert live["code"]["entity_resolver_version"] == "source-structure-2"
     assert live["code"]["constraint_parser_version"] == "attested-1"
     assert live["code"]["unit_model_version"] == "units-compositional-1"
     assert live["code"]["polarity_version"] == "polarity-corrections-1"
     assert live["code"]["coordination_version"] == "generic-coordination-1"
+    assert live["code"]["calculation_version"] == "operations-2"
+    assert live["code"]["homograph_policy_version"] == "homograph-1"
+    assert len(live["code"]["homograph_lexicon_sha256"]) == 64
     assert len(live["code"]["identity_snapshot_sha256"]) == 64
     assert live["evaluator"]["version"] == "corrected-7"
     assert live["evaluator"]["final_validation_version"] == "final-validation-1"
-    assert live["evaluator"]["final_validated_sets"] == ["final5", "final6", "final7"]
+    assert live["evaluator"]["final_validated_sets"] == ["final5", "final6", "final7", "final8"]
     scope = live["curated"]["table_scope"]
     assert len(scope) == 14
     assert not [ds for ds, row in scope.items() if "undeclared" in row.values()]
@@ -105,10 +108,18 @@ def test_only_the_frozen_set_may_change_after_the_candidate_commit(tmp_path: Pat
     assert any("not an ancestor" in p for p in check_manifest(path))
 
 
-def test_final7_is_the_only_writable_manifest() -> None:
+def test_final8_is_the_only_writable_manifest() -> None:
     from mabhas19.retrieval.candidate import CURRENT, LABELS, MANIFESTS, SET_FILES  # noqa: PLC0415
 
-    assert CURRENT == "final7"
-    assert LABELS[CURRENT] == "Final-7"
-    assert set(MANIFESTS) == {"final2", "final3", "final4", "final5", "final6", "final7"}
-    assert all("final7" in f for f in SET_FILES)
+    assert CURRENT == "final8"
+    assert LABELS[CURRENT] == "Final-8"
+    assert set(MANIFESTS) == {
+        "final2",
+        "final3",
+        "final4",
+        "final5",
+        "final6",
+        "final7",
+        "final8",
+    }
+    assert all("final8" in f for f in SET_FILES)

@@ -1,14 +1,15 @@
 """Frozen retrieval candidate manifests for the final benchmarks (reproducibility guard).
 
-``eval/retrieval/<set>_candidate.yaml`` (Final-2 to Final-6: historical; Final-7: current)
+``eval/retrieval/<set>_candidate.yaml`` (Final-2 to Final-7: historical; Final-8: current)
 pins
 everything the benchmark tests: the candidate commit and the code (git tree of ``src/``,
 per-module hashes), the curated corpus and tables, the structured schemas, the scope map, the
 external-domain taxonomy and the policy-ambiguity record, the chunk fingerprint, BM25/RRF
 parameters, the E5 model pins (from ``hybrid_candidate.yaml``, whose live weights the experiment
 runner verifies on load), the router / query-plan / numeric-parser / entity-resolver /
-constraint-parser / unit-model / polarity / coordination / evaluator versions, the table-scope
-declarations with their provenance and the safety invariants. :func:`check_manifest`
+constraint-parser / unit-model / polarity / calculation / coordination / evaluator versions, the
+homograph identity policy with its lexicon fingerprint, the table-scope declarations with their
+provenance and the safety invariants. :func:`check_manifest`
 recomputes all of it; any difference refuses the run. After the candidate commit only the frozen
 test set itself may change. Nothing here changes retrieval behaviour.
 """
@@ -24,14 +25,15 @@ from typing import Any
 import yaml
 
 from mabhas19.core.paths import CURATED_DIR, EVAL_DIR, REPO_ROOT
+from mabhas19.retrieval.entities import GRAMMATICAL_HOMOGRAPHS
 from mabhas19.retrieval.hybrid import RRF_K
 from mabhas19.retrieval.lexical import K1, B
 
 MANIFESTS = {
     s: EVAL_DIR / "retrieval" / f"{s}_candidate.yaml"
-    for s in ("final2", "final3", "final4", "final5", "final6", "final7")
+    for s in ("final2", "final3", "final4", "final5", "final6", "final7", "final8")
 }
-CURRENT = "final7"  # the only manifest that may be (re)written; earlier ones are historical
+CURRENT = "final8"  # the only manifest that may be (re)written; earlier ones are historical
 LABELS = {
     "final2": "Final-2",
     "final3": "Final-3",
@@ -39,6 +41,7 @@ LABELS = {
     "final5": "Final-5",
     "final6": "Final-6",
     "final7": "Final-7",
+    "final8": "Final-8",
 }
 MANIFEST_PATH = MANIFESTS["final2"]  # historical: the candidate Final-2 was run against
 HYBRID_CANDIDATE = EVAL_DIR / "retrieval" / "hybrid_candidate.yaml"
@@ -71,8 +74,12 @@ EVALUATOR_VERSION = "corrected-7"
 # checked claims, constraint provenance (M2)
 CONSTRAINT_PARSER_VERSION = "attested-1"
 # source-exact identity (M1): parenthetical/list/container/linking structure, guarded
-# morphology, required printed conditions, query-position pruning
-ENTITY_RESOLVER_VERSION = "source-structure-1"
+# morphology, required printed conditions, query-position pruning (source-structure-1); a
+# grammatical homograph never establishes identity alone (source-structure-2)
+ENTITY_RESOLVER_VERSION = "source-structure-2"
+# the closed grammatical-homograph class (entities.GRAMMATICAL_HOMOGRAPHS) and its use: another
+# printed word of the same identity is required; a bare table reference is not evidence
+HOMOGRAPH_POLICY_VERSION = "homograph-1"
 # compositional unit expressions: atoms with dimension vectors, attached / standalone
 # expressions, ground / conversion / other-quantity verdicts (units.py, I4)
 UNIT_MODEL_VERSION = "units-compositional-1"
@@ -82,6 +89,10 @@ POLARITY_VERSION = "polarity-corrections-1"
 # generic coordinated child plans: owned clauses, a label word per member, member rows union
 # equals the whole-query rows (coverage.split_coordinated, I8)
 COORDINATION_VERSION = "generic-coordination-1"
+# typed calculation intent (operations.py): sum, difference (incl. «فاصله», «کم/کسر کنید» with two
+# operands, «عدد منهای عدد»), average, ratio, interpolation, extrapolation, multiplication,
+# percentage change, conversion and the explicit imperative «حساب/محاسبه کنید»; never executed
+CALCULATION_VERSION = "operations-2"
 SAFETY = {
     "wrong_regulatory_values_expected": 0,
     "wrong_extra_rows_expected": 0,
@@ -95,9 +106,9 @@ SAFETY = {
 # files that may change after the candidate commit: the manifest itself, the frozen test set and
 # its fingerprint
 SET_FILES = (
-    "eval/retrieval/final7_candidate.yaml",
-    "eval/retrieval/final7.yaml",
-    "eval/retrieval/final7.sha256",
+    "eval/retrieval/final8_candidate.yaml",
+    "eval/retrieval/final8.yaml",
+    "eval/retrieval/final8.sha256",
 )
 MODULES = (
     "src/mabhas19/indexing/chunking.py",
@@ -220,6 +231,12 @@ def live_candidate() -> dict[str, Any]:
             "unit_model_version": UNIT_MODEL_VERSION,
             "polarity_version": POLARITY_VERSION,
             "coordination_version": COORDINATION_VERSION,
+            "calculation_version": CALCULATION_VERSION,
+            "homograph_policy_version": HOMOGRAPH_POLICY_VERSION,
+            "homograph_lexicon_sha256": hashlib.sha256(
+                "\n".join(sorted(GRAMMATICAL_HOMOGRAPHS)).encode()
+            ).hexdigest(),
+            "homograph_lexicon_size": len(GRAMMATICAL_HOMOGRAPHS),
             "identity_snapshot_sha256": _sha(IDENTITY_SNAPSHOT),
         },
         "curated": {

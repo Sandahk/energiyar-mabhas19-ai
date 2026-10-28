@@ -47,11 +47,12 @@ def test_the_final4_artifacts_would_be_rejected_and_nothing_else() -> None:
 
 
 def test_historical_sets_are_never_validated_with_the_final5_rules() -> None:
-    assert VALIDATED_SETS == ("final5", "final6", "final7")
+    assert VALIDATED_SETS == ("final5", "final6", "final7", "final8")
     assert "final4" not in EARLIER_SETS
     assert set(EARLIER_SETS["final5"]) == {"dev", "heldout", "final", "final2", "final3", "final4"}
     assert set(EARLIER_SETS["final6"]) == {*EARLIER_SETS["final5"], "final5"}
     assert set(EARLIER_SETS["final7"]) == {*EARLIER_SETS["final6"], "final6"}
+    assert set(EARLIER_SETS["final8"]) == {*EARLIER_SETS["final7"], "final7"}
 
 
 def _case(**evidence: Any) -> dict[str, Any]:

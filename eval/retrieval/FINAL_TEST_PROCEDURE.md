@@ -196,3 +196,19 @@ on, like every earlier set.
    (`EARLIER_SETS["final7"]`); the Final-7 design is approved before any case is written.
 3. Run once with `python -m mabhas19.cli.embedding_experiment --set final7`; report safety
    first, then structured, routing/scope and prose. Nothing is changed after the run.
+
+## 13. Final-8 (after Safety Closure 3; the last planned deterministic safety final)
+Final-7 and its run (`20261028T090215Z-final7`) are immutable and are development data from now
+on. Final-8 is the decision benchmark: is the deterministic verifier mature enough to freeze as the
+safety boundary? No Final-9 is planned.
+
+1. Freeze the candidate: `python -m mabhas19.cli.freeze_candidate --set final8 --write` writes
+   `final8_candidate.yaml`: the §12 pins plus query plan `plan-5`, `coverage-3` (invariants
+   I1-I11, stated-value completeness), entity resolver `source-structure-2` with the homograph
+   policy `homograph-1` and the fingerprint of its closed grammatical-word lexicon, calculation
+   model `operations-2` and evaluator `corrected-7`; safety invariants all 0. Commit it.
+2. Anchors, exclusions, authoring and review follow §12 with all nine earlier sets excluded
+   (`EARLIER_SETS["final8"]`); about 65% realistic core, 25% everyday situations, 10% issues,
+   conflicts, provenance and unsupported. The author is told nothing about the verifier.
+3. Run once with `python -m mabhas19.cli.embedding_experiment --set final8`; report safety first.
+   Promotion requires every genuine runtime safety metric at 0. Nothing is changed after the run.

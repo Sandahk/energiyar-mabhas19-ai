@@ -1,0 +1,29 @@
+# SH0 pilot manifest (frozen; do not edit).
+schema: sh0-pilot-provider-manifest-1
+created: '2026-10-29T14:14:18+00:00'
+purpose: SH0 pilot request contract for gemini/gemini-3.8-flash (shadow only)
+base:
+  path: pilot1.yaml
+  sha256: 038a030692b51b7401323782dd37107cf4a8203b0827a3a7c438bbb8868144e6
+  schema: sh0-pilot-manifest-1
+  cases: 80
+pins:
+  engine_fingerprint: e071ea639b0113f8e87f09daf60d6bd728849f70babeb87606b7dafd51935ccb
+  prompt_sha256: d339931719545387d1e0e1666a581944ddbc1bad8b2bed2506373ccb1e3f16da
+  canonical_schema: sh0-proposal-1
+  canonical_schema_sha256: 9b442ffdb43d751ffe4ef0f0632b540acfb798fa54280f1a308b176c6fb38731
+  provider_schema_sha256: 027a52ff8ba19425f708b00938e26fe4b866678755df3406441d0a8c8bb689b1
+  projection_version: gemini-projection-1
+  context_version: sh0-context-2
+settings:
+  provider: gemini
+  model_id: gemini-3.8-flash
+  effort: medium
+  structured_output: true
+  max_output_tokens: 16000
+  timeout_s: 120.0
+  max_retries: 1
+price_usd_per_mtok:
+  input: 0.75
+  output_incl_thinking: 3.75
+  valid_until: '2026-12-31'

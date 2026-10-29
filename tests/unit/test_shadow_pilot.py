@@ -8,12 +8,14 @@ from __future__ import annotations
 import copy
 import json
 from collections.abc import Callable
+from datetime import date
 from functools import cache
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
+import yaml
 
 from mabhas19.core.paths import CURATED_DIR
 from mabhas19.indexing.chunking import build_chunks
@@ -22,6 +24,7 @@ from mabhas19.retrieval.models import RetrievalResult
 from mabhas19.retrieval.structured import StructuredStore
 from mabhas19.shadow import pilot, replay
 from mabhas19.shadow import proposal as P
+from mabhas19.shadow import provider as PV
 from mabhas19.shadow import schema_projection as SP
 from mabhas19.shadow.context import CandidateContext, DeterministicFacts, build, redact, redactions
 from mabhas19.shadow.metrics import Gold, aggregate, case_metrics, s1v_check
@@ -30,8 +33,11 @@ from mabhas19.shadow.provider import (
     Budget,
     BudgetExceededError,
     BudgetMeter,
+    ExperimentConfigError,
     ExternalCallRefusedError,
+    GeminiProposer,
     authorize,
+    make_proposer,
 )
 from mabhas19.shadow.replay import (
     ProposerSettings,
@@ -567,3 +573,360 @@ def test_the_pilot_run_refuses_without_guards_and_stops_on_invalid_outputs(
 def test_the_cli_refuses_without_a_frozen_manifest(tmp_path: Path) -> None:
     assert pilot.main(["run", "--manifest", str(tmp_path / "none.yaml"), "--allow-external",
                        "--max-usd", "30", "--max-tokens", "1000"]) == 2  # fmt: skip
+
+
+# ---------------------------------------------------------------- Gemini (no network)
+
+GENV = {"GEMINI_API_KEY": "test-placeholder-not-a-key"}
+GEMINI = ProposerSettings.gemini()
+TODAY = date(2026, 10, 29)
+
+
+def test_the_gemini_projection_is_deterministic_and_supported() -> None:
+    canonical = P.canonical_schema()
+    projected = SP.project_gemini(canonical)
+    assert projected == SP.project_gemini(P.canonical_schema())
+    assert SP.project_gemini(projected) == projected  # idempotent
+    assert SP.sha256(projected) == SP.sha256(provider_schema("gemini"))
+    assert canonical == P.canonical_schema()
+
+    def supported(node: dict[str, Any]) -> None:
+        assert not set(node) & (SP.GEMINI_REMOVED | {"oneOf", "const", "$schema", "title"}), node
+        if "enum" in node:
+            assert node.get("type") in ("string", "integer"), node  # no untyped enum
+        if node.get("type") == "object":
+            assert node.get("additionalProperties") is False, node
+
+    _walk(projected, supported)
+    assert SP.structure(projected) == SP.structure(canonical)
+    assert SP.removed_constraints(canonical, projection=SP.GEMINI) == ["$.notes:maxLength"]
+    unit = projected["properties"]["requests"]["items"]["properties"]["unit"]
+    assert unit["anyOf"][1] == {"enum": ["none", "ambiguous"], "type": "string"}
+    assert projected["properties"]["schema"] == {"enum": [P.PROPOSAL_SCHEMA], "type": "string"}
+    # the numeric bounds Gemini enforces are kept (a negative index is refused by both)
+    assert projected["properties"]["values"]["items"]["properties"]["index"]["minimum"] == 0
+
+
+def test_the_anthropic_projection_is_unchanged_by_the_gemini_projection() -> None:
+    frozen = pilot.load(pilot.BASE_MANIFEST)["pins"]["provider_schema_sha256"]
+    assert SP.sha256(provider_schema("anthropic")) == frozen
+    assert replay.projection_version("anthropic") == "anthropic-projection-1"
+    assert replay.projection_version("gemini") == "gemini-projection-1"
+
+
+def test_canonical_constraints_reject_what_the_gemini_schema_permits() -> None:
+    doc = copy.deepcopy(_echo(BACKGROUND))
+    doc["notes"] = "x" * (P.MAX_NOTES + 1)  # maxLength is not in the Gemini projection
+    parsed, errors = P.parse(doc)
+    assert parsed is None
+    assert "longer than" in errors[0]
+
+
+def test_the_gemini_request_carries_the_same_contract_and_no_sampling() -> None:
+    ctx = _base(BACKGROUND)[1]
+    g, a = render_request(ctx, GEMINI), render_request(ctx)
+    assert set(g) == {"systemInstruction", "contents", "generationConfig"}
+    assert g["systemInstruction"] == {"parts": [{"text": a["system"]}]}
+    assert g["contents"] == [{"role": "user", "parts": [{"text": render_user(ctx)}]}]
+    assert replay.user_turn(g) == replay.user_turn(a) == render_user(ctx)
+    config = g["generationConfig"]
+    assert config == {
+        "maxOutputTokens": 16000,
+        "thinkingConfig": {"thinkingLevel": "MEDIUM"},
+        "responseMimeType": "application/json",
+        "responseJsonSchema": provider_schema("gemini"),
+    }
+    for forbidden in ("temperature", "topP", "topK", "seed", "candidateCount"):
+        assert forbidden not in config
+    for forbidden in ("safetySettings", "tools", "toolConfig", "cachedContent", "model"):
+        assert forbidden not in g
+
+
+def test_gemini_and_anthropic_records_have_separate_replay_keys(tmp_path: Path) -> None:
+    ctx = _base(BACKGROUND)[1]
+    ka = ReplayKey.of(BACKGROUND, ctx, ProposerSettings(), "e")
+    kg = ReplayKey.of(BACKGROUND, ctx, GEMINI, "e")
+    assert (kg.provider, kg.model_id) == ("gemini", "gemini-3.8-flash")
+    assert kg.projection_version == "gemini-projection-1"
+    assert kg.canonical_schema_sha256 == ka.canonical_schema_sha256
+    assert kg.prompt_sha256 == ka.prompt_sha256  # one instruction / render / schema contract
+    assert kg.provider_schema_sha256 != ka.provider_schema_sha256
+    assert kg.digest() != ka.digest()
+    store = ReplayStore(tmp_path)
+    assert store.path(kg) != store.path(ka)  # both recordings can coexist
+
+
+class _GeminiFake:
+    """An in-process stand-in for the HTTP client (records every request; no network)."""
+
+    def __init__(self, reply: Callable[[dict[str, Any]], str], model: str = "gemini-3.8-flash",
+                 statuses: tuple[int, ...] = (), fail: int = 0,
+                 blocked: str | None = None) -> None:  # fmt: skip
+        self.calls: list[dict[str, Any]] = []
+        self.reply, self.model, self.blocked = reply, model, blocked
+        self.statuses, self.fail = list(statuses), fail
+
+    def post(self, url: str, *, json: dict[str, Any], headers: dict[str, str],
+             timeout: float) -> Any:  # fmt: skip
+        self.calls.append({"url": url, "json": json, "headers": headers, "timeout": timeout})
+        if self.fail:
+            self.fail -= 1
+            raise ConnectionError("simulated")
+        status = self.statuses.pop(0) if self.statuses else 200
+        payload: dict[str, Any]
+        if status != 200:
+            message = "Invalid JSON payload: responseJsonSchema"
+            payload = {"error": {"code": status, "status": "INVALID_ARGUMENT", "message": message}}
+        elif url.endswith(":countTokens"):
+            payload = {"totalTokens": 2400}
+        elif self.blocked:
+            payload = {"promptFeedback": {"blockReason": self.blocked}, "modelVersion": self.model}
+        else:
+            payload = {
+                "candidates": [{
+                    "content": {"role": "model", "parts": [
+                        {"text": "thinking summary", "thought": True},
+                        {"text": self.reply(json)},
+                    ]},
+                    "finishReason": "STOP",
+                }],
+                "usageMetadata": {"promptTokenCount": 3000, "candidatesTokenCount": 700,
+                                  "thoughtsTokenCount": 500, "totalTokenCount": 4200},
+                "modelVersion": self.model,
+                "responseId": "resp_fixture",
+            }  # fmt: skip
+        return SimpleNamespace(status_code=status, json=lambda: payload)
+
+
+def _gemini_echo(body: dict[str, Any]) -> str:
+    return _echo_reply({"messages": [{"content": replay.user_turn(body)}]})
+
+
+def _gemini(fake: _GeminiFake, budget: Budget = BUDGET) -> GeminiProposer:
+    return GeminiProposer(GEMINI, allow_external=True, manifest_frozen=True, budget=budget,
+                          env=GENV, client=fake, today=TODAY)  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"allow_external": False, "manifest_frozen": True, "budget": BUDGET, "env": GENV},
+         "allow-external"),
+        ({"allow_external": True, "manifest_frozen": True, "budget": BUDGET, "env": ENV},
+         "GEMINI_API_KEY"),  # an Anthropic key does not authorize Gemini
+        ({"allow_external": True, "manifest_frozen": False, "budget": BUDGET, "env": GENV},
+         "manifest"),
+        ({"allow_external": True, "manifest_frozen": True, "budget": None, "env": GENV}, "budget"),
+    ],
+)  # fmt: skip
+def test_no_gemini_call_without_every_guard(kwargs: dict[str, Any], message: str) -> None:
+    fake = _GeminiFake(_gemini_echo)
+    with pytest.raises(ExternalCallRefusedError, match=message):
+        GeminiProposer(GEMINI, client=fake, today=TODAY, **kwargs)
+    assert fake.calls == []
+
+
+@pytest.mark.parametrize("model", ["gemini-3.6-flash", "gemini-flash-latest", "gemini-4-argon"])
+def test_only_the_approved_gemini_model_can_be_requested(model: str) -> None:
+    settings = ProposerSettings(provider="gemini", model_id=model)
+    with pytest.raises(ExternalCallRefusedError, match="approved pilot model"):
+        GeminiProposer(settings, allow_external=True, manifest_frozen=True, budget=BUDGET,
+                       env=GENV, client=_GeminiFake(_gemini_echo), today=TODAY)  # fmt: skip
+    with pytest.raises(ExternalCallRefusedError, match="approved pilot model"):
+        make_proposer(settings, allow_external=True, manifest_frozen=True, budget=BUDGET, env=GENV)
+    # no cross-provider substitution either
+    with pytest.raises(ExternalCallRefusedError, match="approved pilot model"):
+        make_proposer(
+            ProposerSettings(provider="gemini", model_id="claude-opus-5-5"),
+            allow_external=True,
+            manifest_frozen=True,
+            budget=BUDGET,
+            env=GENV,
+        )
+
+
+def test_an_expired_gemini_price_refuses_the_call() -> None:
+    with pytest.raises(ExternalCallRefusedError, match="price expired"):
+        GeminiProposer(GEMINI, allow_external=True, manifest_frozen=True, budget=BUDGET,
+                       env=GENV, client=_GeminiFake(_gemini_echo),
+                       today=date(2027, 1, 1))  # fmt: skip
+
+
+def test_the_gemini_proposal_is_one_rest_call_with_the_key_in_a_header() -> None:
+    fake = _GeminiFake(_gemini_echo)
+    proposer = _gemini(fake)
+    resp = proposer.propose(_base(BACKGROUND)[1])
+    [call] = fake.calls
+    assert call["url"].endswith("/v1beta/models/gemini-3.8-flash:generateContent")
+    assert GENV["GEMINI_API_KEY"] not in call["url"]
+    assert call["headers"] == {"x-goog-api-key": GENV["GEMINI_API_KEY"]}
+    assert call["json"] == render_request(_base(BACKGROUND)[1], GEMINI)
+    assert resp.experiment_valid
+    assert resp.response_model == "gemini-3.8-flash"
+    assert resp.usage["output_tokens"] == 1200  # candidates + thoughts (both bill as output)
+    assert resp.usage["thinking_tokens"] == 500
+    assert resp.usage["request_id"] == "resp_fixture"
+    parsed, errors = P.parse(resp.raw_text or "")  # thought parts are not the answer
+    assert parsed is not None, errors
+    assert proposer.meter.spent_usd == pytest.approx((3000 * 0.75 + 1200 * 3.75) / 1e6)
+
+
+def test_gemini_token_counting_measures_the_exact_generation_body() -> None:
+    fake = _GeminiFake(_gemini_echo)
+    assert _gemini(fake).count_tokens(_base(BACKGROUND)[1]) == 2400
+    [call] = fake.calls
+    assert call["url"].endswith("/v1beta/models/gemini-3.8-flash:countTokens")
+    body = render_request(_base(BACKGROUND)[1], GEMINI)
+    assert call["json"] == {"generateContentRequest": {"model": "models/gemini-3.8-flash", **body}}
+
+
+def test_gemini_failures_are_recorded_and_retried_once_at_most() -> None:
+    other = _gemini(_GeminiFake(_gemini_echo, model="gemini-3.8-flash-lite")).propose(
+        _base(BACKGROUND)[1]
+    )
+    assert not other.experiment_valid
+    assert "gemini-3.8-flash-lite" in other.invalid_reason
+    blocked = _gemini(_GeminiFake(_gemini_echo, blocked="SAFETY")).propose(_base(BACKGROUND)[1])
+    assert blocked.raw_text is None
+    assert blocked.stop_reason == "SAFETY"
+    plain = _gemini(_GeminiFake(_gemini_echo)).propose(_base(BACKGROUND)[1])
+    assert (plain.usage["attempts"], plain.usage["retried"], plain.usage["first_error"]) == (
+        1, False, None,
+    )  # fmt: skip
+    flaky = _GeminiFake(_gemini_echo, statuses=(503,))
+    resp = _gemini(flaky).propose(_base(BACKGROUND)[1])
+    assert resp.experiment_valid
+    assert len(flaky.calls) == 2  # one retry of a transient answer, one result
+    assert (resp.usage["attempts"], resp.usage["retried"], resp.usage["first_error"]) == (
+        2, True, "HTTP 503",
+    )  # fmt: skip
+    assert GENV["GEMINI_API_KEY"] not in str(resp.usage)
+    unavailable = _GeminiFake(_gemini_echo, statuses=(503, 503))
+    resp = _gemini(unavailable).propose(_base(BACKGROUND)[1])
+    assert resp.invalid_reason == "call failed: HTTP 503"
+    assert resp.usage["attempts"] == 2
+    down = _GeminiFake(_gemini_echo, fail=5)
+    resp = _gemini(down).propose(_base(BACKGROUND)[1])
+    assert len(down.calls) == 2
+    assert resp.invalid_reason == "call failed: ConnectionError"
+    assert resp.usage["first_error"] == "transport:ConnectionError"
+    invalid = _GeminiFake(lambda body: '{"schema": "sh0-proposal-1"}')
+    resp = _gemini(invalid).propose(_base(BACKGROUND)[1])
+    assert len(invalid.calls) == 1  # never regenerated
+    assert P.parse(resp.raw_text or "")[0] is None
+
+
+def test_a_gemini_http_400_is_an_experiment_configuration_failure() -> None:
+    bad_request = _GeminiFake(_gemini_echo, statuses=(400,))
+    with pytest.raises(ExperimentConfigError, match=r"INVALID_ARGUMENT.*responseJsonSchema"):
+        _gemini(bad_request).propose(_base(BACKGROUND)[1])
+    assert len(bad_request.calls) == 1  # never retried
+
+
+def test_the_gemini_budget_meter_uses_the_gemini_price() -> None:
+    fake = _GeminiFake(_gemini_echo)
+    with pytest.raises(BudgetExceededError):
+        _gemini(fake, Budget(0.05, 1_000_000)).propose(_base(BACKGROUND)[1])  # 16k out = $0.06
+    assert fake.calls == []
+    assert BudgetMeter(BUDGET, "gemini-3.8-flash").cost(1_000_000, 1_000_000) == 4.5
+
+
+def _provider_manifest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
+    base = _manifest(tmp_path, monkeypatch)
+    path = tmp_path / "pilot_gemini.yaml"
+    pilot.freeze(pilot.provider_manifest(base, GEMINI), path)
+    return base, path
+
+
+def test_a_provider_manifest_reuses_the_frozen_cases_unchanged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    base, path = _provider_manifest(tmp_path, monkeypatch)
+    assert pilot.verify(path, _r()) == []
+    doc = pilot.load(path)
+    assert doc["cases"] == pilot.load(base)["cases"]
+    assert "cases" not in yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert doc["base"]["sha256"] == pilot.file_sha256(base)
+    assert doc["pins"]["projection_version"] == "gemini-projection-1"
+    assert doc["pins"]["provider_schema_sha256"] == SP.sha256(provider_schema("gemini"))
+    assert doc["settings"] == GEMINI.to_dict()
+    # any change to the base is detected
+    base.write_text(base.read_text(encoding="utf-8").replace("T1", "T7"), encoding="utf-8")
+    assert pilot.verify(path, _r()) == [f"{base.name} changed since it was frozen"]
+
+
+def test_a_provider_manifest_detects_a_foreign_base_or_model(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, path = _provider_manifest(tmp_path, monkeypatch)
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    foreign = copy.deepcopy(doc)
+    foreign["base"]["sha256"] = "0" * 64
+    pilot.freeze(foreign, tmp_path / "foreign.yaml")
+    assert "is not the base manifest" in pilot.verify(tmp_path / "foreign.yaml", _r())[0]
+    alias = copy.deepcopy(doc)
+    alias["settings"]["model_id"] = "gemini-flash-latest"
+    pilot.freeze(alias, tmp_path / "alias.yaml")
+    assert any("not an approved" in p for p in pilot.verify(tmp_path / "alias.yaml", _r()))
+
+
+def test_the_gemini_pilot_records_once_and_replays_deterministically(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setitem(PV.PRICE_VALID_UNTIL, "gemini-3.8-flash", date(9999, 1, 1))
+    _, path = _provider_manifest(tmp_path, monkeypatch)
+    store = ReplayStore(tmp_path / "replay")
+    fake = _GeminiFake(_gemini_echo)
+    for env, allow in ((ENV, True), (GENV, False)):  # no Gemini key / no flag
+        with pytest.raises(ExternalCallRefusedError):
+            pilot.run_pilot(path, _r(), allow_external=allow, budget=BUDGET, store=store,
+                            env=env, client=fake)  # fmt: skip
+    assert fake.calls == []
+    summary = pilot.run_pilot(
+        path, _r(), allow_external=True, budget=BUDGET, store=store, env=GENV, client=fake
+    )
+    assert summary["calls"] == 3
+    assert all(c["url"].endswith(":generateContent") for c in fake.calls)
+    again = pilot.run_pilot(
+        path, _r(), allow_external=True, budget=BUDGET, store=store, env=GENV, client=fake
+    )
+    assert again["calls"] == 0
+    report = pilot.report(path, _r(), store)
+    assert report["missing_records"] == []
+    assert report["replay_determinism"] == 1.0
+    assert report["unsafe_new_rows"] == 0
+
+
+@pytest.mark.parametrize(
+    ("fake", "stop", "records"),
+    [
+        (_GeminiFake(_gemini_echo, statuses=(400,)), "experiment configuration failure", 0),
+        (_GeminiFake(_gemini_echo, model="gemini-3.8-flash-lite"), "response model", 1),
+    ],
+)
+def test_the_gemini_pilot_stops_on_a_request_shape_error_or_another_model(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fake: _GeminiFake, stop: str, records: int
+) -> None:
+    monkeypatch.setitem(PV.PRICE_VALID_UNTIL, "gemini-3.8-flash", date(9999, 1, 1))
+    _, path = _provider_manifest(tmp_path, monkeypatch)
+    store = ReplayStore(tmp_path / "replay")
+    summary = pilot.run_pilot(
+        path, _r(), allow_external=True, budget=BUDGET, store=store, env=GENV, client=fake
+    )
+    assert summary["stopped"].startswith(stop)
+    assert len(fake.calls) == 1  # no later case is sent
+    assert summary["calls"] == records
+    assert len(list((tmp_path / "replay").rglob("*.json"))) == records
+
+
+def test_the_token_summary_reports_the_distribution_and_strata() -> None:
+    doc = {"cases": [{"id": f"C{i}", "stratum": "a" if i < 5 else "b"} for i in range(10)]}
+    counts = {f"C{i}": 1000 * (i + 1) for i in range(10)}
+    s = pilot.token_summary(doc, counts)
+    assert s["input_tokens_total"] == 55000
+    assert s["mean"] == 5500
+    assert s["median"] == 5500
+    assert s["p90"] == 9000
+    assert s["max"] == 10000
+    assert list(s["largest"])[:2] == ["C9", "C8"]
+    assert s["by_stratum"] == {"a": 15000, "b": 40000}

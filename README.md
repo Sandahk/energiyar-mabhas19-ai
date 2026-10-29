@@ -37,7 +37,8 @@ model may never add a row, a value or a citation. See [`src/mabhas19/shadow/`](s
 
 ### Next steps
 
-1. Run the 80-question SH0 pilot with Claude Opus 5.5 (needs explicit approval and a budget).
+1. Run the 80-question SH0 pilot with Gemini 3.8 Flash (needs explicit approval and a budget);
+   Claude Opus 5.5 stays an optional second-provider comparison.
 2. Judge it against the S1-V criteria: 0 unsafe new rows, 0 verifier escapes, 0 harmful vetoes.
 3. Only if it passes: implement S1-V, a verified veto that can remove a wrong interpretation
    but never add one. Recovery of failed-closed questions (S1-R) comes later and separately.

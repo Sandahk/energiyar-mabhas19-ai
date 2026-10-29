@@ -12,10 +12,17 @@
   an external call under every guard);
 * ``run`` - one proposal per case, recorded once in the replay store (never regenerated); needs
   ``--allow-external``, credentials, the verified frozen manifest and ``--max-usd`` /
-  ``--max-tokens``; stops when invalid outputs exceed 10% after the first 20 calls or when the
-  budget could be exceeded;
+  ``--max-tokens``; stops when invalid outputs exceed 10% after the first 20 calls, when the
+  budget could be exceeded, when the provider rejects the request shape (HTTP 400) or when a
+  response comes from another model; records already made are kept;
 * ``report`` - replay only: re-verifies every record (determinism) and computes the S1-V /
   S1-R metrics against the frozen gold.
+
+Two kinds of frozen manifest. The **base** manifest (``pilot1.yaml``) holds the cases, queries,
+gold labels, expected results and context hashes. A **provider** manifest
+(``pilot1_gemini.yaml``) pins one provider's request contract and the live engine and refers to
+the base manifest by its file SHA-256; its cases are read from the base, never copied, so a
+provider change cannot change the sample or the gold.
 """
 
 from __future__ import annotations
@@ -34,6 +41,7 @@ from typing import Any
 
 import yaml
 
+from mabhas19.core.env import load_dotenv
 from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
 from mabhas19.shadow.context import (
     CONTEXT_VERSION,
@@ -47,30 +55,37 @@ from mabhas19.shadow.metrics import Gold, aggregate, case_metrics
 from mabhas19.shadow.proposal import PROPOSAL_SCHEMA, canonical_schema_sha256
 from mabhas19.shadow.provider import (
     CREDENTIAL_VARS,
-    AnthropicProposer,
+    PRICE_VALID_UNTIL,
+    PRICES,
     Budget,
     BudgetExceededError,
+    ExperimentConfigError,
     ExternalCallRefusedError,
     input_token_bound,
+    make_proposer,
 )
 from mabhas19.shadow.replay import (
+    APPROVED_MODELS,
     INSTRUCTIONS,
     ProposerSettings,
     ReplayKey,
     ReplayStore,
     engine_fingerprint,
+    projection_version,
     prompt_sha256,
     provider_schema,
     render_request,
+    user_turn,
 )
 from mabhas19.shadow.run import shadow
-from mabhas19.shadow.schema_projection import ANTHROPIC_PROJECTION
 from mabhas19.shadow.schema_projection import sha256 as projection_sha256
 
-MANIFEST = EVAL_DIR / "shadow" / "pilot1.yaml"
+BASE_MANIFEST = EVAL_DIR / "shadow" / "pilot1.yaml"
+MANIFEST = EVAL_DIR / "shadow" / "pilot1_gemini.yaml"  # the current pilot: Gemini first
 STORE = DATA_DIR / "shadow" / "replay"
 OUT = DATA_DIR / "shadow"
 MANIFEST_SCHEMA = "sh0-pilot-manifest-1"
+PROVIDER_MANIFEST_SCHEMA = "sh0-pilot-provider-manifest-1"
 STRATA = {
     "homograph_possessive": 12,
     "background_claim_request": 12,
@@ -92,16 +107,41 @@ INVALID_ABORT_AFTER, INVALID_ABORT_RATE = 20, 0.10
 # ---------------------------------------------------------------- manifest
 
 
-def pins() -> dict[str, str]:
+def pins(settings: ProposerSettings | None = None) -> dict[str, str]:
     """Everything a frozen manifest pins about the live engine and the request contract."""
+    provider = (settings or ProposerSettings()).provider
     return {
         "engine_fingerprint": engine_fingerprint(),
         "prompt_sha256": prompt_sha256(),
         "canonical_schema": PROPOSAL_SCHEMA,
         "canonical_schema_sha256": canonical_schema_sha256(),
-        "provider_schema_sha256": projection_sha256(provider_schema()),
-        "projection_version": ANTHROPIC_PROJECTION,
+        "provider_schema_sha256": projection_sha256(provider_schema(provider)),
+        "projection_version": projection_version(provider),
         "context_version": CONTEXT_VERSION,
+    }
+
+
+def provider_manifest(base: Path, settings: ProposerSettings) -> dict[str, Any]:
+    """A provider manifest over a frozen base manifest (the cases stay in the base)."""
+    doc = load(base)
+    model = settings.model_id
+    return {
+        "schema": PROVIDER_MANIFEST_SCHEMA,
+        "created": _now(),
+        "purpose": f"SH0 pilot request contract for {settings.provider}/{model} (shadow only)",
+        "base": {
+            "path": base.name,
+            "sha256": file_sha256(base),
+            "schema": doc.get("schema"),
+            "cases": len(doc.get("cases", [])),
+        },
+        "pins": pins(settings),
+        "settings": settings.to_dict(),
+        "price_usd_per_mtok": {
+            "input": PRICES[model][0],
+            "output_incl_thinking": PRICES[model][1],
+            "valid_until": str(PRICE_VALID_UNTIL.get(model, "")),
+        },
     }
 
 
@@ -128,22 +168,44 @@ def freeze(doc: dict[str, Any], path: Path) -> str:
 
 
 def load(path: Path) -> dict[str, Any]:
+    """A manifest; a provider manifest comes with its base manifest's cases."""
     doc: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if doc.get("schema") == PROVIDER_MANIFEST_SCHEMA:
+        base = yaml.safe_load((path.parent / doc["base"]["path"]).read_text(encoding="utf-8"))
+        doc["cases"] = base["cases"]
     return doc
 
 
-def verify(path: Path, retriever: Any | None = None) -> list[str]:
-    """Differences between the frozen manifest and the live engine (empty = frozen)."""
+def _frozen(path: Path) -> str:
+    """Why a manifest file is not frozen ("" = its fingerprint file matches)."""
     if not path.is_file() or not sha_path(path).is_file():
-        return [f"{path.name} or its fingerprint is missing"]
-    pinned = sha_path(path).read_text(encoding="utf-8").split()[0]
-    if file_sha256(path) != pinned:
-        return [f"{path.name} changed since it was frozen"]
-    doc = load(path)
+        return f"{path.name} or its fingerprint is missing"
+    if file_sha256(path) != sha_path(path).read_text(encoding="utf-8").split()[0]:
+        return f"{path.name} changed since it was frozen"
+    return ""
+
+
+def verify(path: Path, retriever: Any | None = None) -> list[str]:  # noqa: PLR0912
+    """Differences between the frozen manifest and the live engine (empty = frozen)."""
+    if why := _frozen(path):
+        return [why]
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     problems = []
-    if doc.get("schema") != MANIFEST_SCHEMA:
-        problems.append(f"manifest schema {doc.get('schema')!r}")
-    for key, value in pins().items():
+    if raw.get("schema") == PROVIDER_MANIFEST_SCHEMA:
+        base = path.parent / raw["base"]["path"]
+        if why := _frozen(base):
+            return [why]
+        if file_sha256(base) != raw["base"]["sha256"]:
+            return [f"{base.name} is not the base manifest this provider manifest pins"]
+        if load(base).get("schema") != MANIFEST_SCHEMA:
+            problems.append(f"{base.name} is not a base pilot manifest")
+    elif raw.get("schema") != MANIFEST_SCHEMA:
+        problems.append(f"manifest schema {raw.get('schema')!r}")
+    doc = load(path)
+    settings = ProposerSettings(**doc.get("settings", {}))
+    if APPROVED_MODELS.get(settings.provider) != settings.model_id:
+        problems.append(f"{settings.provider}/{settings.model_id} is not an approved pilot model")
+    for key, value in pins(settings).items():
         if doc.get("pins", {}).get(key) != value:
             problems.append(
                 f"pins.{key}: frozen {doc.get('pins', {}).get(key)!r} != live {value!r}"
@@ -264,7 +326,7 @@ def preflight(doc: Mapping[str, Any], retriever: Any) -> dict[str, Any]:
                 "problems": request_problems(body, ctx, retriever),
                 "bytes": len(canonical_json(body).encode("utf-8")),
                 "chars": len(canonical_json(body)),
-                "user_chars": len(body["messages"][0]["content"]),
+                "user_chars": len(user_turn(body)),
                 "redactions": len(ctx.redactions),
                 "input_token_bound": input_token_bound(body),
             }
@@ -316,7 +378,7 @@ def run_pilot(  # noqa: PLR0913
     """Record one proposal per case (existing records are kept, never regenerated)."""
     problems = verify(manifest, retriever)
     doc = load(manifest) if not problems else {}
-    proposer = AnthropicProposer(
+    proposer = make_proposer(
         ProposerSettings(**doc["settings"]) if doc else ProposerSettings(),
         allow_external=allow_external,
         manifest_frozen=not problems,
@@ -337,6 +399,9 @@ def run_pilot(  # noqa: PLR0913
         except BudgetExceededError as exc:
             stopped = f"budget: {exc}"
             break
+        except ExperimentConfigError as exc:  # no record: the request never reached the model
+            stopped = f"experiment configuration failure at {c['id']}: {exc}"
+            break
         calls += 1
         sh = shadow(retriever, c["query"], resp.raw_text, production=prod)
         record = sh.record(key, resp.raw_text, _now(), resp.usage)
@@ -344,6 +409,9 @@ def run_pilot(  # noqa: PLR0913
         record.experiment_valid, record.invalid_reason = resp.experiment_valid, resp.invalid_reason
         store.put(record)
         invalid += int(sh.proposal is None or not resp.experiment_valid)
+        if resp.response_model not in (None, proposer.settings.model_id):
+            stopped = f"response model {resp.response_model!r} at {c['id']}"
+            break
         if calls >= INVALID_ABORT_AFTER and invalid / calls > INVALID_ABORT_RATE:
             stopped = f"invalid outputs {invalid}/{calls} exceed {INVALID_ABORT_RATE:.0%}"
             break
@@ -387,6 +455,29 @@ def report(manifest: Path, retriever: Any, store: ReplayStore) -> dict[str, Any]
     return out
 
 
+def token_summary(doc: Mapping[str, Any], counts: Mapping[str, int]) -> dict[str, Any]:
+    """Measured input tokens: total, mean, median, p90, max, the ten largest, by stratum."""
+    values = sorted(counts.values())
+    n = len(values)
+    if not n:
+        return {"cases": 0}
+    strata: dict[str, int] = {}
+    for c in doc["cases"]:
+        if c["id"] in counts:
+            strata[c["stratum"]] = strata.get(c["stratum"], 0) + counts[c["id"]]
+    largest = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
+    return {
+        "cases": n,
+        "input_tokens_total": sum(values),
+        "mean": round(sum(values) / n, 1),
+        "median": values[n // 2] if n % 2 else (values[n // 2 - 1] + values[n // 2]) / 2,
+        "p90": values[min(n - 1, -(-9 * n // 10) - 1)],
+        "max": values[-1],
+        "largest": dict(largest),
+        "by_stratum": strata,
+    }
+
+
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
@@ -421,6 +512,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911
     if args.command == "verify":
         print("manifest verified")
         return 0
+    load_dotenv()  # the project's git-ignored .env (GEMINI_API_KEY); values are never printed
     doc = load(args.manifest)
     OUT.mkdir(parents=True, exist_ok=True)
     stem = args.manifest.stem
@@ -434,7 +526,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911
     budget = Budget(args.max_usd, args.max_tokens) if args.max_usd or args.max_tokens else None
     try:
         if args.command == "count-tokens":
-            proposer = AnthropicProposer(
+            proposer = make_proposer(
                 ProposerSettings(**doc["settings"]),
                 allow_external=args.allow_external,
                 manifest_frozen=True,
@@ -444,7 +536,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911
                 c["id"]: proposer.count_tokens(_context(r, c["query"])[1]) for c in doc["cases"]
             }
             (OUT / f"{stem}_token_counts.json").write_text(json.dumps(counts, indent=1))
-            print(json.dumps({"cases": len(counts), "input_tokens_total": sum(counts.values())}))
+            print(json.dumps(token_summary(doc, counts), ensure_ascii=False))
             return 0
         if args.command == "run":
             summary = run_pilot(

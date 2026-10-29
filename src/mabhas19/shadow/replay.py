@@ -24,7 +24,7 @@ from typing import Any
 
 from mabhas19.shadow.context import CONTEXT_VERSION, CandidateContext, canonical_json
 from mabhas19.shadow.proposal import PROPOSAL_SCHEMA, canonical_schema, canonical_schema_sha256
-from mabhas19.shadow.schema_projection import ANTHROPIC_PROJECTION, project_anthropic
+from mabhas19.shadow.schema_projection import PROJECTIONS, project_anthropic, project_gemini
 from mabhas19.shadow.schema_projection import sha256 as projection_sha256
 from mabhas19.shadow.translate import TRANSLATION_VERSION
 from mabhas19.shadow.verifier import VERIFIER_VERSION
@@ -64,7 +64,10 @@ answer in (or "none").
 
 
 ANTHROPIC = "anthropic"
-PILOT_MODEL = "claude-opus-5-5"  # the approved first-pilot model; changes need explicit approval
+GEMINI = "gemini"
+PILOT_MODEL = "claude-opus-5-5"  # the approved Anthropic model; changes need explicit approval
+GEMINI_PILOT_MODEL = "gemini-3.8-flash"  # the approved Gemini model (stable ID, not an alias)
+APPROVED_MODELS = {ANTHROPIC: PILOT_MODEL, GEMINI: GEMINI_PILOT_MODEL}
 RENDER_VERSION = "sh0-render-1"  # the user turn: canonical JSON of {render, context}
 
 
@@ -74,11 +77,17 @@ class ProposerSettings:
 
     provider: str = ANTHROPIC
     model_id: str = PILOT_MODEL  # the exact requested model (never an alias)
-    effort: str = "medium"  # output_config.effort; thinking is the model's adaptive default
-    structured_output: bool = True  # output_config.format with the provider schema projection
-    max_output_tokens: int = 16000
+    # the provider's reasoning-effort control: Anthropic ``output_config.effort`` (thinking is
+    # the model's adaptive default), Gemini ``thinkingConfig.thinkingLevel``
+    effort: str = "medium"
+    structured_output: bool = True  # constrained decoding with the provider schema projection
+    max_output_tokens: int = 16000  # thinking tokens included
     timeout_s: float = 120.0
-    max_retries: int = 1  # SDK retries of transport / transient API errors only
+    max_retries: int = 1  # retries of transport / transient API errors only
+
+    @classmethod
+    def gemini(cls) -> ProposerSettings:
+        return cls(provider=GEMINI, model_id=GEMINI_PILOT_MODEL)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -86,9 +95,15 @@ class ProposerSettings:
 
 def provider_schema(provider: str = ANTHROPIC) -> dict[str, Any]:
     """The projection of the canonical schema a provider's constrained decoding receives."""
-    if provider != ANTHROPIC:
-        raise ValueError(f"no schema projection for provider {provider!r}")
-    return project_anthropic(canonical_schema())
+    if provider == ANTHROPIC:
+        return project_anthropic(canonical_schema())
+    if provider == GEMINI:
+        return project_gemini(canonical_schema())
+    raise ValueError(f"no schema projection for provider {provider!r}")
+
+
+def projection_version(provider: str = ANTHROPIC) -> str:
+    return PROJECTIONS[provider].version
 
 
 def prompt_sha256() -> str:
@@ -110,9 +125,14 @@ def render_user(ctx: CandidateContext) -> str:
 def render_request(
     ctx: CandidateContext, settings: ProposerSettings | None = None
 ) -> dict[str, Any]:
-    """The exact Messages API request body a provider call would send (nothing else is sent:
-    no document, corpus text, credential or project metadata)."""
+    """The exact request body a provider call would send (nothing else is sent: no document,
+    corpus text, credential or project metadata). The instructions and the user turn are the
+    same for every provider; only the request envelope differs."""
     s = settings or ProposerSettings()
+    if s.provider == GEMINI:
+        return _render_gemini(ctx, s)
+    if s.provider != ANTHROPIC:
+        raise ValueError(f"no request format for provider {s.provider!r}")
     output_config: dict[str, Any] = {"effort": s.effort}
     if s.structured_output:
         output_config["format"] = {"type": "json_schema", "schema": provider_schema(s.provider)}
@@ -123,6 +143,31 @@ def render_request(
         "messages": [{"role": "user", "content": render_user(ctx)}],
         "output_config": output_config,
     }
+
+
+def _render_gemini(ctx: CandidateContext, s: ProposerSettings) -> dict[str, Any]:
+    """A Gemini ``generateContent`` REST body (the model is in the URL). The same body, with
+    the model name added, is what ``countTokens`` measures as its ``generateContentRequest``.
+    No ``temperature`` / ``topP`` / ``topK`` / ``seed`` and no safety-setting override."""
+    config: dict[str, Any] = {
+        "maxOutputTokens": s.max_output_tokens,
+        "thinkingConfig": {"thinkingLevel": s.effort.upper()},
+    }
+    if s.structured_output:
+        config["responseMimeType"] = "application/json"
+        config["responseJsonSchema"] = provider_schema(GEMINI)
+    return {
+        "systemInstruction": {"parts": [{"text": INSTRUCTIONS}]},
+        "contents": [{"role": "user", "parts": [{"text": render_user(ctx)}]}],
+        "generationConfig": config,
+    }
+
+
+def user_turn(body: dict[str, Any]) -> str:
+    """The rendered user turn of a request body, whatever the provider envelope."""
+    if "messages" in body:
+        return str(body["messages"][0]["content"])
+    return str(body["contents"][0]["parts"][0]["text"])
 
 
 def query_sha256(query: str) -> str:
@@ -174,7 +219,7 @@ class ReplayKey:
             schema_version=PROPOSAL_SCHEMA,
             canonical_schema_sha256=canonical_schema_sha256(),
             provider_schema_sha256=projection_sha256(provider_schema(settings.provider)),
-            projection_version=ANTHROPIC_PROJECTION,
+            projection_version=projection_version(settings.provider),
             settings=tuple(sorted(rest.items())),
             engine=engine,
         )

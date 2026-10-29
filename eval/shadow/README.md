@@ -1,8 +1,14 @@
-# SH0 pilot manifest
+# SH0 pilot manifests
 
-`pilot1.yaml` (checksum in `pilot1.sha256`) freezes the 80 questions of the first SH0 pilot.
-It was frozen before any model output existed. **Do not edit it**; a change to the pinned
-retrieval or shadow modules requires a new manifest.
+| File | Holds |
+|---|---|
+| `pilot1.yaml` (+ `.sha256`) | The 80 cases, queries, gold labels, expected results and context hashes. Its own pins describe the Anthropic request at freeze time |
+| `pilot1_gemini.yaml` (+ `.sha256`) | The Gemini request contract (`gemini-3.8-flash`) and the live engine; refers to `pilot1.yaml` by its SHA-256 and reads the cases from it |
+
+Both were frozen before any model output existed. **Do not edit them.** A provider manifest never
+copies the cases, so a provider change cannot alter the sample or the gold. Any change to a
+pinned retrieval or shadow module requires a new provider manifest; a later Claude comparison
+would get its own `pilot1_anthropic.yaml` over the same base.
 
 ## Contents
 
@@ -28,4 +34,5 @@ nine poor-fit cases were replaced in round two.
 Known gap: P269's immutable development record lacks an out-of-scope outcome code, so its
 expected result is incomplete.
 
-Check it with `uv run python -m mabhas19.shadow.pilot verify`.
+Check it with `uv run python -m mabhas19.shadow.pilot verify` (the Gemini manifest is the
+default).

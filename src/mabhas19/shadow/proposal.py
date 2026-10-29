@@ -26,11 +26,13 @@ canonical name or a citation; ``notes`` is free text that is logged and never pa
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import asdict, dataclass
 from typing import Any
 
-PROPOSAL_SCHEMA = "sh0-proposal-1"
+PROPOSAL_SCHEMA = "sh0-proposal-1"  # the canonical contract (parser, replay, verifier, tests)
+MAX_NOTES = 2000
 CLAUSE_ROLES = ("lookup", "verify_request", "background", "explanation", "unsupported")
 REQUESTED_CLAUSES = frozenset({"lookup", "verify_request"})
 ENTITY_USES = ("identity", "grammatical", "contextual", "ambiguous")
@@ -283,6 +285,8 @@ def _parse(doc: Any) -> Proposal:
     notes = d.get("notes", "")
     if not isinstance(notes, str):
         raise _Invalid("notes: string expected")
+    if len(notes) > MAX_NOTES:
+        raise _Invalid(f"notes: longer than {MAX_NOTES} characters")
     return Proposal(
         tuple(clauses),
         tuple(entities),
@@ -317,9 +321,11 @@ def _item(props: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def json_schema() -> dict[str, Any]:
-    """The proposal's JSON Schema (structured output for any provider). Candidate membership
-    and offsets are per query and checked by the verifier, never by the schema alone."""
+def canonical_schema() -> dict[str, Any]:
+    """The canonical JSON Schema of ``sh0-proposal-1`` (the complete contract). A provider
+    receives a projection of it (:mod:`~mabhas19.shadow.schema_projection`); every response is
+    validated locally by :func:`parse`, which enforces all of it. Candidate membership and
+    offsets are per query and checked by the verifier, never by any schema alone."""
     index = {"type": "integer", "minimum": 0}
     clause_ref = {"type": ["integer", "null"], "minimum": 0}
     return {
@@ -392,6 +398,14 @@ def json_schema() -> dict[str, Any]:
                     }
                 ),
             },
-            "notes": {"type": "string", "maxLength": 2000},
+            "notes": {"type": "string", "maxLength": MAX_NOTES},
         },
     }
+
+
+def canonical_schema_sha256() -> str:
+    return hashlib.sha256(
+        json.dumps(
+            canonical_schema(), ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()

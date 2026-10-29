@@ -43,12 +43,13 @@ from mabhas19.shadow import proposal as P
 from mabhas19.shadow.context import CandidateContext, DeterministicFacts, build, canonical_json
 from mabhas19.shadow.replay import (
     INSTRUCTIONS,
-    ProviderSettings,
+    ProposerSettings,
     ReplayConflictError,
     ReplayKey,
     ReplayRecord,
     ReplayStore,
     engine_fingerprint,
+    provider_schema,
     render_request,
 )
 from mabhas19.shadow.run import ShadowRun, echo_proposal, shadow
@@ -220,7 +221,7 @@ def test_parser_never_raises_on_garbage() -> None:
 
 
 def test_json_schema_matches_the_parser() -> None:
-    schema = P.json_schema()
+    schema = P.canonical_schema()
     props = schema["properties"]
     assert schema["required"] == list(P._TOP)
     assert schema["additionalProperties"] is False
@@ -322,11 +323,18 @@ def test_context_offers_the_identity_candidates_and_homographs() -> None:
 def test_request_sent_to_a_provider_holds_no_value_or_corpus_text() -> None:
     _, ctx, _ = _base(SOURCE_UNIT)
     request = render_request(ctx)
-    # instructions, the static schema and the context: nothing else (no document, no corpus
-    # text, no credential, no project metadata)
-    assert set(request) == {"prompt_version", "instructions", "json_schema", "context"}
-    assert request["json_schema"] == P.json_schema()
-    assert request["context"] == ctx.to_dict()
+    # model, limits, the pinned instructions, the redacted context and the projected schema:
+    # nothing else (no document, no corpus text, no credential, no sampling parameter)
+    assert set(request) == {"model", "max_tokens", "system", "messages", "output_config"}
+    assert request["model"] == "claude-opus-5-5"
+    assert request["system"] == INSTRUCTIONS
+    assert request["output_config"] == {
+        "effort": "medium",
+        "format": {"type": "json_schema", "schema": provider_schema()},
+    }
+    [message] = request["messages"]
+    assert message["role"] == "user"
+    assert json.loads(message["content"])["context"] == json.loads(json.dumps(ctx.to_dict()))
     assert not re.search(r"\d", INSTRUCTIONS.replace("Mabhas 19", ""))
     _no_values(ctx)
     texts = {line for c in _r().lexical.chunks[:200] for line in c.text.splitlines()}
@@ -767,7 +775,7 @@ def test_mask_keeps_offsets_back_to_the_query() -> None:
 
 
 def _key(query: str = BACKGROUND, **settings: Any) -> ReplayKey:
-    s = ProviderSettings("anthropic", "claude-opus-5-5", **settings)
+    s = ProposerSettings(**settings)
     return ReplayKey.of(query, _base(query)[1], s, "engine-fixture")
 
 
@@ -776,23 +784,25 @@ def test_replay_keys_are_deterministic_and_complete() -> None:
     assert a == b
     assert a.digest() == b.digest()
     assert len(a.digest()) == 64
-    assert a.settings == (("max_output_tokens", 4096), ("structured_output", True),
-                          ("temperature", 0.0), ("timeout_s", 60.0))  # fmt: skip
+    assert a.model_id == "claude-opus-5-5"
+    assert a.settings == (("effort", "medium"), ("max_output_tokens", 16000), ("max_retries", 1),
+                          ("structured_output", True), ("timeout_s", 120.0))  # fmt: skip
+    assert a.canonical_schema_sha256 == P.canonical_schema_sha256()
+    assert a.provider_schema_sha256 != a.canonical_schema_sha256
     variants = [
         _key(CLAIM),
-        _key(temperature=0.2),
-        ReplayKey.of(
-            BACKGROUND,
-            _base(BACKGROUND)[1],
-            ProviderSettings("google", "gemini-3.8-flash"),
-            "engine-fixture",
-        ),
+        _key(effort="high"),
+        _key(max_output_tokens=8000),
+        _key(model_id="claude-sonnet-5-5"),
         ReplayKey(**{**asdict(a), "settings": a.settings, "prompt_sha256": "0" * 64}),
         ReplayKey(**{**asdict(a), "settings": a.settings, "engine": "other"}),
         ReplayKey(**{**asdict(a), "settings": a.settings, "context_sha256": "1" * 64}),
+        ReplayKey(**{**asdict(a), "settings": a.settings, "provider_schema_sha256": "2" * 64}),
+        ReplayKey(**{**asdict(a), "settings": a.settings, "canonical_schema_sha256": "3" * 64}),
     ]
     assert len({a.digest(), *(v.digest() for v in variants)}) == len(variants) + 1
     assert ReplayKey.from_dict(json.loads(json.dumps(a.to_dict()))) == a
+    assert "temperature" not in json.dumps(a.to_dict())
 
 
 def test_replay_records_round_trip_byte_identically(tmp_path: Path) -> None:

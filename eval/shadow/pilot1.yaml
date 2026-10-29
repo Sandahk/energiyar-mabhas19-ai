@@ -1,0 +1,2269 @@
+# SH0 pilot manifest (frozen; do not edit).
+schema: sh0-pilot-manifest-1
+created: '2026-10-29T09:30:59+00:00'
+purpose: SH0 pilot of the LLM semantic proposer (shadow only); gold authored before any provider output
+provenance:
+  selection: deterministic seeded selection from the ten existing development sets (no new Final-N)
+  gold: isolated author agent + independent reviewer agent per round; 2 rounds (9 poor-fit cases replaced)
+  provider_calls_during_authoring: 0
+pins:
+  engine_fingerprint: 0d597d91ddafebd52151723e55acf3c0b090dceed29837a36a8aeecccc31d53b
+  prompt_sha256: d339931719545387d1e0e1666a581944ddbc1bad8b2bed2506373ccb1e3f16da
+  canonical_schema: sh0-proposal-1
+  canonical_schema_sha256: 9b442ffdb43d751ffe4ef0f0632b540acfb798fa54280f1a308b176c6fb38731
+  provider_schema_sha256: 9dffc91e6b722f27895706eeb3e13506472c97000f12ac50836b60a884671c68
+  projection_version: anthropic-projection-1
+  context_version: sh0-context-2
+settings:
+  provider: anthropic
+  model_id: claude-opus-5-5
+  effort: medium
+  structured_output: true
+  max_output_tokens: 16000
+  timeout_s: 120.0
+  max_retries: 1
+strata:
+  homograph_possessive: 12
+  background_claim_request: 12
+  meaningful_modifier: 10
+  semantic_colloquial_fail_closed: 14
+  routing_intent: 12
+  negative_control: 20
+cases:
+- id: final3-K167
+  set: final3
+  case: K167
+  stratum: homograph_possessive
+  control_group: null
+  query: مجموع حداقل R دیوار رو به فضای باز و سقف رو به فضای آزاد تو اقلیم 0B چند میشه؟
+  normalized_query: مجموع حداقل r دیوار رو به فضای باز و سقف رو به فضای ازاد تو اقلیم 0b چند میشه؟
+  context_sha256: ad22d6062dcb51087ca3214ba6b2bd59dd79fe0a4d090d72a2fed09fe2f54aa3
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: unsupported
+      1: unsupported
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final5-M299
+  set: final5
+  case: M299
+  stratum: homograph_possessive
+  control_group: null
+  query: بیمارستان تو اقلیم 0B بخواد «ساختمان کم‌مصرف» حساب بشه سقف مصرفش چقدره؟ این عنوان اصلاً مال کدوم رده‌ست؟
+  normalized_query: بیمارستان تو اقلیم 0b بخواد «ساختمان کم مصرف» حساب بشه سقف مصرفش چقدره؟ این عنوان اصلا مال کدوم
+    رده ست؟
+  context_sha256: 3b2326f3b7e79136b232157c838484a344eb3c3581a33f65bfd47cda3b86ec57
+  expected:
+    rows:
+    - app03-C-r07-0B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+      1: explanation
+    entities:
+      0: identity
+      1: grammatical
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P013
+  set: final7
+  case: P013
+  stratum: homograph_possessive
+  control_group: null
+  query: تو جدول پیوست ۳ عدد ۲۱۰ رو دیدم؛ این عدد مال کدوم کاربری و کدوم اقلیمه؟
+  normalized_query: تو جدول پیوست 3 عدد 210 رو دیدم؛ این عدد مال کدوم کاربری و کدوم اقلیمه؟
+  context_sha256: 3c0ea8ce6999f8a392780f21f950ef9e04f7bc2de143f2bf26f03ff0bbe0cf61
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_reverse_lookup
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: unsupported
+      2: unsupported
+    entities:
+      0: grammatical
+    values:
+      0: lookup_constraint
+      1: background
+  gold_review_corrections: 0
+- id: final7-P054
+  set: final7
+  case: P054
+  stratum: homograph_possessive
+  control_group: null
+  query: اندودی که برای داخل گرفتیم آهکی-سیمانیه و آزمایشگاه چگالیش رو درست ۷۵۰ اعلام کرده؛ با این عدد، لاندا رو
+    از کدوم ردیف پیوست ۷ بردارم و چنده؟
+  normalized_query: اندودی که برای داخل گرفتیم اهکی-سیمانیه و ازمایشگاه چگالیش رو درست 750 اعلام کرده؛ با این عدد،
+    لاندا رو از کدوم ردیف پیوست 7 بردارم و چنده؟
+  context_sha256: 2a76961fb1404c0d13fe66de2198b15b01d7d0b3d338bba9ee869bd9d898bc83
+  expected:
+    rows:
+    - app07-p003-r08
+    acceptable_rows:
+    - app07-p003-r07
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+      3: lookup
+      4: lookup
+    entities:
+      0: identity
+      1: contextual
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 1
+- id: final7-P179
+  set: final7
+  case: P179
+  stratum: homograph_possessive
+  control_group: null
+  query: ایزوگام که روی بام می‌کشیم لاندای حرارتیش طبق پیوست ۷ چقدره؟
+  normalized_query: ایزوگام که روی بام می کشیم لاندای حرارتیش طبق پیوست 7 چقدره؟
+  context_sha256: f747cedeb3c49dca5c45ecce21e5a4251231b50d97ae939d03218d32faadd898
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unknown_entity
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: grammatical
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P201
+  set: final7
+  case: P201
+  stratum: homograph_possessive
+  control_group: null
+  query: کف طبقه اول ما بالای یک پیلوت باز قرار دارد که فضای نیمه‌باز کنترل‌نشده محسوب می‌شود و پروژه در اقلیم 2B
+    است؛ مقاومت حرارتی این کف دست‌کم چقدر باید باشد؟
+  normalized_query: کف طبقه اول ما بالای یک پیلوت باز قرار دارد که فضای نیمه باز کنترل نشده محسوب می شود و پروژه
+    در اقلیم 2b است؛ مقاومت حرارتی این کف دست کم چقدر باید باشد؟
+  context_sha256: 86b0cfe86aa1f763978a3672fa488c1977dbeb06d122e58aed76be4122cabec3
+  expected:
+    rows:
+    - main-t19-5-1-r14c02
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+      1: contextual
+      2: identity
+      3: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P250
+  set: final7
+  case: P250
+  stratum: homograph_possessive
+  control_group: null
+  query: 'دو جور گچ تو پیش‌فاکتور هست: یکی صفحه گچی با روکش مقوایی ضدآتش و لایه‌های تقویت‌شده با الیاف معدنی، یکی
+    گچ اندود پرلیتی که دو حجم پرلیت با یک حجم گچ مخلوط شده. برای مقایسه عایق بودنشون، λ هر کدوم چیه؟'
+  normalized_query: 'دو جور گچ تو پیش فاکتور هست: یکی صفحه گچی با روکش مقوایی ضداتش و لایه های تقویت شده با الیاف
+    معدنی، یکی گچ اندود پرلیتی که دو حجم پرلیت با یک حجم گچ مخلوط شده. برای مقایسه عایق بودنشون، λ هر کدوم چیه؟'
+  context_sha256: 8ae61cc81bfd10b003b0c2ab2e26cf23dd43a5f549cde61cdfebd0fb8ad7aedc
+  expected:
+    rows:
+    - app07-p013-r19
+    - app07-p013-r21
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: lookup
+    entities:
+      0: grammatical
+      1: contextual
+      2: grammatical
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+      8: identity
+      9: identity
+      10: identity
+      11: identity
+      12: identity
+      13: identity
+      14: identity
+      15: identity
+      16: identity
+      17: identity
+      18: identity
+      19: identity
+      20: identity
+    values: {}
+  gold_review_corrections: 0
+- id: final8-Q099
+  set: final8
+  case: Q099
+  stratum: homograph_possessive
+  control_group: null
+  query: یه عدد ۸۴۰ برای رده D تو اقلیم 0B دیدم ولی نمی‌دونم مال کدوم کاربریه؛ از روی پیوست ۳ میشه فهمید؟
+  normalized_query: یه عدد 840 برای رده d تو اقلیم 0b دیدم ولی نمی دونم مال کدوم کاربریه؛ از روی پیوست 3 میشه فهمید؟
+  context_sha256: 140814b84ca1a82241a490592f49d41ea3300eebbe26e2107738351982b48b73
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_reverse_lookup
+  currently_correct: false
+  gold:
+    clauses:
+      0: unsupported
+      1: unsupported
+    entities:
+      0: grammatical
+    values:
+      0: background
+      1: lookup_constraint
+      2: lookup_constraint
+      3: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q184
+  set: final8
+  case: Q184
+  stratum: homograph_possessive
+  control_group: null
+  query: یه ویلای دو طبقه تو حاشیه شهر دارم می‌سازم. بنا میگه دیوارها رو با بلوک بتن هوادار اتوکلاو شده چگالی اسمی
+    ۷۰۰ بچینیم؛ مهندس برای حساب مقاومت دیوار عدد λ همین بلوک رو از پیوست ۷ می‌خواد. چنده؟
+  normalized_query: یه ویلای دو طبقه تو حاشیه شهر دارم می سازم. بنا میگه دیوارها رو با بلوک بتن هوادار اتوکلاو شده
+    چگالی اسمی 700 بچینیم؛ مهندس برای حساب مقاومت دیوار عدد λ همین بلوک رو از پیوست 7 می خواد. چنده؟
+  context_sha256: 2cba5af7be9714e7f8218d821f3391795bee0f475952fd5011c5a4450e469ab7
+  expected:
+    rows:
+    - app07-p006-r05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+      3: lookup
+    entities:
+      0: grammatical
+      1: identity
+      2: identity
+      3: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q245
+  set: final8
+  case: Q245
+  stratum: homograph_possessive
+  control_group: null
+  query: 'برای دیوار و عایق دو جنس داریم و λ هر دو رو می‌خوام: یکی بتن سبک‌دانه با رس منبسط با دانسیته ۱۳۰۰ (سنگدانه
+    با چگالی ظاهری بین ۳۵۰ و ۵۵۰، با ماسه سبک و حداکثر ۱۰٪ ماسه رودخانه)، دیگری پلی‌استایرن اکسترود شده با حفره‌های
+    پر از CFC و با پوسته سطحی.'
+  normalized_query: 'برای دیوار و عایق دو جنس داریم و λ هر دو رو می خوام: یکی بتن سبک دانه با رس منبسط با دانسیته
+    1300 (سنگدانه با چگالی ظاهری بین 350 و 550، با ماسه سبک و حداکثر 10٪ ماسه رودخانه)، دیگری پلی استایرن اکسترود
+    شده با حفره های پر از cfc و با پوسته سطحی.'
+  context_sha256: 675fd91e52b54c83e235d9373b9e0a14a037e2589ef1204e65089a91ec981b29
+  expected:
+    rows:
+    - app07-p004-r11
+    - app07-p011-r21
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+      3: lookup
+      4: lookup
+      5: lookup
+      6: lookup
+    entities:
+      0: grammatical
+      1: grammatical
+      2: identity
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+      8: identity
+      9: identity
+      10: identity
+      11: identity
+      12: identity
+      13: identity
+      14: identity
+      15: identity
+      16: identity
+      17: identity
+      18: identity
+      19: identity
+      20: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q247
+  set: final8
+  case: Q247
+  stratum: homograph_possessive
+  control_group: null
+  query: 'دو تا مصالح داریم: بتن سبک رس منبسط با دانسیته ۱۱۰۰ (با ماسه سبک و بدون ماسه رودخانه) و صفحه سیمانی الیافی
+    با دانسیته ۲۰۰۰؛ λ هر کدوم چنده؟'
+  normalized_query: 'دو تا مصالح داریم: بتن سبک رس منبسط با دانسیته 1100 (با ماسه سبک و بدون ماسه رودخانه) و صفحه
+    سیمانی الیافی با دانسیته 2000؛ λ هر کدوم چنده؟'
+  context_sha256: 7ec04f1c9f9156e71d16efd78435469751e5cdaba9d4e2ea90f535b754d893c4
+  expected:
+    rows:
+    - app07-p004-r12
+    - app07-p011-r05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+    entities:
+      0: grammatical
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+      8: identity
+      9: identity
+      10: identity
+      11: identity
+      12: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q259
+  set: final8
+  case: Q259
+  stratum: homograph_possessive
+  control_group: null
+  query: 'سلام. دفترچه محاسبات یه ساختمان اداری دستمونه. معمار برای دیوارها بلوک بتن هوادار اتوکلاو شده با چگالی
+    اسمی ۷۰۰ گذاشته و برای حساب مقاومت حرارتی عدد λ ش رو از پیوست ۷ کم دارم. یه موضوع دیگه هم هست: طراح تأسیسات
+    VAV پیشنهاد داده و نمی‌دونم مبحث برای خروجی‌های هوای این سیستم چه تجهیزاتی رو اجباری کرده. هر دو جواب رو لازم
+    دارم.'
+  normalized_query: 'سلام. دفترچه محاسبات یه ساختمان اداری دستمونه. معمار برای دیوارها بلوک بتن هوادار اتوکلاو شده
+    با چگالی اسمی 700 گذاشته و برای حساب مقاومت حرارتی عدد λ ش رو از پیوست 7 کم دارم. یه موضوع دیگه هم هست: طراح
+    تاسیسات vav پیشنهاد داده و نمی دونم مبحث برای خروجی های هوای این سیستم چه تجهیزاتی رو اجباری کرده. هر دو جواب
+    رو لازم دارم.'
+  context_sha256: 03473d76f730bb96e52213b88b8f87f3adbdc5ace5426504824b042055d74c2c
+  expected:
+    rows:
+    - app07-p006-r05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+      4: background
+      5: explanation
+      6: background
+    entities:
+      0: identity
+      1: identity
+      2: grammatical
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 1
+- id: final6-N125
+  set: final6
+  case: N125
+  stratum: background_claim_request
+  control_group: null
+  query: من از جدول ۱۹-۳-۳ سر درنمیارم؛ کلاً کار این جدول چیه و چه اطلاعاتی توش هست؟
+  normalized_query: من از جدول 19-3-3 سر درنمیارم؛ کلا کار این جدول چیه و چه اطلاعاتی توش هست؟
+  context_sha256: 20a4bd79eb7bb7b3ca2b9bbf0b18393c8289e7d7358970b39f8fb0a484d8d4ed
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: explanation
+      2: explanation
+    entities: {}
+    values:
+      0: background
+      1: background
+      2: background
+  gold_review_corrections: 0
+- id: final6-N221
+  set: final6
+  case: N221
+  stratum: background_claim_request
+  control_group: null
+  query: خوابگاه دانشجویی ما در اقلیم 0B است و فقط می‌خواهیم به حداقل مبحث، یعنی رده D، برسیم؛ پیوست ۳ مصرف سالانه
+    هر متر مربع آن را تا چه عددی مجاز دانسته است؟
+  normalized_query: خوابگاه دانشجویی ما در اقلیم 0b است و فقط می خواهیم به حداقل مبحث، یعنی رده d، برسیم؛ پیوست
+    3 مصرف سالانه هر متر مربع ان را تا چه عددی مجاز دانسته است؟
+  context_sha256: 4d58d05a4e628d3588e3e7be6ae1b2c48dc1bb1edfd6ea0fa4942d7a308bd34f
+  expected:
+    rows:
+    - app03-D-r22-0B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N275
+  set: final6
+  case: N275
+  stratum: background_claim_request
+  control_group: null
+  query: بعد از مقایسه با بلوک سفالی، بتن هوادار اتوکلاوشده با چگالی اسمی ۷۰۰ رو برای دیوارچینی انتخاب کردیم؛ تقریباً
+    هر متر مکعبش چند تومن درمیاد؟
+  normalized_query: بعد از مقایسه با بلوک سفالی، بتن هوادار اتوکلاوشده با چگالی اسمی 700 رو برای دیوارچینی انتخاب
+    کردیم؛ تقریبا هر متر مکعبش چند تومن درمیاد؟
+  context_sha256: 74644413089437fed4d668f64379ab5d4fce0b3b78be2905807909fe62789a4a
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_output
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: unsupported
+    entities:
+      0: contextual
+      1: contextual
+      2: identity
+    values:
+      0: background
+  gold_review_corrections: 0
+- id: final6-N283
+  set: final6
+  case: N283
+  stratum: background_claim_request
+  control_group: null
+  query: خونه‌مون درست مرز دو اقلیم 2A و 3A ـه و نمی‌دونیم کدوم رو بگیریم؛ میانگین حداقل R دیوار بیرونی مجاور فضای
+    باز بین این دو چقدر می‌شه؟
+  normalized_query: خونه مون درست مرز دو اقلیم 2a و 3a ه و نمی دونیم کدوم رو بگیریم؛ میانگین حداقل r دیوار بیرونی
+    مجاور فضای باز بین این دو چقدر می شه؟
+  context_sha256: fe11d024ec9417441b08cffbe42a09b2a451ca3cca4ba60125704d804e798886
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_calculation
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: unsupported
+    entities:
+      0: identity
+      1: identity
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P011
+  set: final7
+  case: P011
+  stratum: background_claim_request
+  control_group: null
+  query: می‌خوام به کارفرمای هایپرمارکت (اقلیم 2A) نشون بدم رفتن از رده D به C چقدر سخت‌تره؛ فاصله این دو حد مجاز
+    رو به کیلووات ساعت بر متر مربع حساب کنید.
+  normalized_query: می خوام به کارفرمای هایپرمارکت (اقلیم 2a) نشون بدم رفتن از رده d به c چقدر سخت تره؛ فاصله این
+    دو حد مجاز رو به کیلووات ساعت بر متر مربع حساب کنید.
+  context_sha256: 5fe718d623a3b97fd8bfafe79d3946e2f1c52c3bcc4a111436dc9b9d52e2a4af
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_calculation
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: unsupported
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P237
+  set: final7
+  case: P237
+  stratum: background_claim_request
+  control_group: null
+  query: مجتمع مسکونی ۴۵۰۰ متری در اقلیم 0B؛ شبیه‌سازی ۴۰ داده و دنبال رده A هستیم. سقف رده A؟
+  normalized_query: مجتمع مسکونی 4500 متری در اقلیم 0b؛ شبیه سازی 40 داده و دنبال رده a هستیم. سقف رده a؟
+  context_sha256: e733973193019637ee78f1dea9c24167e27e6f190ec00d5d912228e8df137a21
+  expected:
+    rows:
+    - app03-A-r01-0B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+      1: background
+      2: background
+      3: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: background
+      3: lookup_constraint
+      4: lookup_constraint
+  gold_review_corrections: 1
+- id: final7-P240
+  set: final7
+  case: P240
+  stratum: background_claim_request
+  control_group: null
+  query: ساختمان اداری ۵۰۰۰ متری، گزارش نور روز ۳۵٪ کفایت داده. حداقل لازم برای این کاربری؟
+  normalized_query: ساختمان اداری 5000 متری، گزارش نور روز 35٪ کفایت داده. حداقل لازم برای این کاربری؟
+  context_sha256: d47ad2a945447be6d08f96ee382eb1c42b8ed5e5ee5396c8ad4232ada7378154
+  expected:
+    rows:
+    - main-t19-5-6-r02
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: background
+  gold_review_corrections: 0
+- id: final7-P268
+  set: final7
+  case: P268
+  stratum: background_claim_request
+  control_group: null
+  query: ببینید ما همیشه می‌گفتیم مبحث ۱۹ مهمه بقیه رو بی‌خیال، ولی یکی از ناظرها گفت تو پاورقی نوشته رعایت همه
+    مباحث الزامیه. حالا جدا از این، ساختمون ما گروه ج هست و سال دوم پروانه گرفته؛ سیستم کنترل موتورخونه براش تو
+    جدول تیک خورده یا نه؟
+  normalized_query: ببینید ما همیشه می گفتیم مبحث 19 مهمه بقیه رو بی خیال، ولی یکی از ناظرها گفت تو پاورقی نوشته
+    رعایت همه مباحث الزامیه. حالا جدا از این، ساختمون ما گروه ج هست و سال دوم پروانه گرفته؛ سیستم کنترل موتورخونه
+    براش تو جدول تیک خورده یا نه؟
+  context_sha256: e1218824f2dac2eb1c57287406c87d811d78dd6cc7cd6ca125f8707a64affbb6
+  expected:
+    rows:
+    - main-t19-2-1-r13c15
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: background
+      5: lookup
+    entities:
+      0: identity
+    values:
+      0: background
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P269
+  set: final7
+  case: P269
+  stratum: background_claim_request
+  control_group: null
+  query: یه فست فود کوچیک تو بندر داریم، اقلیمش 1B هست. شوهرم می‌خواد ساختمون رو اصلاح کنه که رده A بگیره. حالا
+    اول بگید سقف مصرف رده A فست فود تو این اقلیم چقدره. یه چیز دیگه هم کنجکاوم، رییس شورای تدوین مقررات ملی ساختمون
+    تو این دوره کی بوده؟
+  normalized_query: یه فست فود کوچیک تو بندر داریم، اقلیمش 1b هست. شوهرم می خواد ساختمون رو اصلاح کنه که رده a بگیره.
+    حالا اول بگید سقف مصرف رده a فست فود تو این اقلیم چقدره. یه چیز دیگه هم کنجکاوم، رییس شورای تدوین مقررات ملی
+    ساختمون تو این دوره کی بوده؟
+  context_sha256: 11227e27e81eeb4ffdfb03f8811f3cc877133bff76c78b68976ba86e9a0640fe
+  expected:
+    rows:
+    - app03-A-r24-1B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+      4: background
+      5: unsupported
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P276
+  set: final7
+  case: P276
+  stratum: background_claim_request
+  control_group: null
+  query: ما تازه اومدیم قم و می‌خوایم خونه بسازیم. همسایه‌ها می‌گن اینجا گرم و خشکه. تو پیوست ۲ رده اقلیمی قم چیه؟
+  normalized_query: ما تازه اومدیم قم و می خوایم خونه بسازیم. همسایه ها می گن اینجا گرم و خشکه. تو پیوست 2 رده اقلیمی
+    قم چیه؟
+  context_sha256: 0c3a6550258fe543039636e7eacd3b4c413540d5132d4a92082fdfae9081e16f
+  expected:
+    rows:
+    - app02-p003-r29
+    acceptable_rows:
+    - main-t19-3-2-r19
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q187
+  set: final8
+  case: Q187
+  stratum: background_claim_request
+  control_group: null
+  query: ساختمون شعبه بانکمون تو اقلیم 2B رو داریم کامل نوسازی می‌کنیم و مدیرمون میگه بریم سراغ «ساختمان نزدیک به
+    مصرف صفر». برای این هدف، مصرف هر متر مربع در سال حداکثر چقدر می‌تونه باشه؟
+  normalized_query: ساختمون شعبه بانکمون تو اقلیم 2b رو داریم کامل نوسازی می کنیم و مدیرمون میگه بریم سراغ «ساختمان
+    نزدیک به مصرف صفر». برای این هدف، مصرف هر متر مربع در سال حداکثر چقدر می تونه باشه؟
+  context_sha256: d771b436c1e431933532813e095a2491d4addf4ee26505685847f55acabc573a
+  expected:
+    rows:
+    - app03-A-r06-2B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+      3: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 1
+- id: final8-Q264
+  set: final8
+  case: Q264
+  stratum: background_claim_request
+  control_group: null
+  query: سلام، من یه انبار یخچال‌دار برای میوه تو بندرعباس دارم که اقلیمش 0B هست. پسرعموم که تو شهرداری کار می‌کنه
+    گفته با مبحث جدید ممکنه برای مصرف انرژی سقف بذارن و من نگرانم چون یخچال‌ها شب و روز روشنن. سقف مصرف انرژی مجاز
+    برای این جور انبارها چقدره؟
+  normalized_query: سلام، من یه انبار یخچال دار برای میوه تو بندرعباس دارم که اقلیمش 0b هست. پسرعموم که تو شهرداری
+    کار می کنه گفته با مبحث جدید ممکنه برای مصرف انرژی سقف بذارن و من نگرانم چون یخچال ها شب و روز روشنن. سقف مصرف
+    انرژی مجاز برای این جور انبارها چقدره؟
+  context_sha256: b04e43d256096f08f6d86fd74d5801ad0e5b607dfd3e117ffd97b621e0b3fd38
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - missing_required_dimension
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: background
+      5: lookup
+    entities:
+      0: identity
+      1: contextual
+      2: contextual
+      3: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 1
+- id: final2-G072
+  set: final2
+  case: G072
+  stratum: meaningful_modifier
+  control_group: null
+  query: پشم شیشه خیلی سبک با چگالی حدود ۸ کیلوگرم بر متر مکعب چه ضریب هدایت حرارتی دارد؟
+  normalized_query: پشم شیشه خیلی سبک با چگالی حدود 8 کیلوگرم بر متر مکعب چه ضریب هدایت حرارتی دارد؟
+  context_sha256: b3edd14431373346ef996488a94af8261d1db5b95afee844fced6671d1c60b26
+  expected:
+    rows:
+    - app07-p012-r15
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: grammatical
+      4: contextual
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final4-L105
+  set: final4
+  case: L105
+  stratum: meaningful_modifier
+  control_group: null
+  query: در جدول زمان‌بندی ۱۹-۲-۱، پایش مصرف برای ساختمان‌های گروه ج در سال پنجم چه وضعیتی دارد؟
+  normalized_query: در جدول زمان بندی 19-2-1، پایش مصرف برای ساختمان های گروه ج در سال پنجم چه وضعیتی دارد؟
+  context_sha256: 82eaef3f849d42eddd144c46e3f47d6f8548e5adddcbc08f6a573d340de32751
+  expected:
+    rows:
+    - main-t19-2-1-r16c22
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+      3: lookup_constraint
+      4: lookup_constraint
+  gold_review_corrections: 0
+- id: final4-L122
+  set: final4
+  case: L122
+  stratum: meaningful_modifier
+  control_group: null
+  query: پایش مصرف برای گروه د از سال اول لازمه؟
+  normalized_query: پایش مصرف برای گروه د از سال اول لازمه؟
+  context_sha256: 03f4ad1d74643168b889e1f92a15c2919fc02d2ddec41a35b90575b53532804d
+  expected:
+    rows:
+    - main-t19-2-1-r17c22
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final5-M001
+  set: final5
+  case: M001
+  stratum: meaningful_modifier
+  control_group: null
+  query: λ صفحات ممتد پلی‌یورتان یا پلی‌ایزوسیانورات که از بلوک‌های منبسط‌شده با HCFC یا پنتان برش خورده‌اند چقدر
+    است؟
+  normalized_query: λ صفحات ممتد پلی یورتان یا پلی ایزوسیانورات که از بلوک های منبسط شده با hcfc یا پنتان برش خورده
+    اند چقدر است؟
+  context_sha256: d0e01ea184d54368a43bdd40d98015e86a53241f3b54293e0bf9ddd7bdec733f
+  expected:
+    rows:
+    - app07-p012-r05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+      8: identity
+      9: identity
+      10: identity
+      11: identity
+      12: identity
+      13: identity
+    values: {}
+  gold_review_corrections: 0
+- id: final5-M221
+  set: final5
+  case: M221
+  stratum: meaningful_modifier
+  control_group: null
+  query: خوابگاه دانشجویی تو اقلیم 2B برای رده C چه حداکثر مصرفی داره؟
+  normalized_query: خوابگاه دانشجویی تو اقلیم 2b برای رده c چه حداکثر مصرفی داره؟
+  context_sha256: c8d6eb0e633b50b6408122f3456bbffd5d1b5c313f05522339d22314c630542c
+  expected:
+    rows:
+    - app03-C-r22-2B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N065
+  set: final6
+  case: N065
+  stratum: meaningful_modifier
+  control_group: null
+  query: یک فروشگاه پوشاک در اقلیم 4B دارم و می‌خواهم ساختمانش را برای رده A بازسازی کنم؛ سقف مصرف سالانه به ازای
+    متر مربع چقدر است؟
+  normalized_query: یک فروشگاه پوشاک در اقلیم 4b دارم و می خواهم ساختمانش را برای رده a بازسازی کنم؛ سقف مصرف سالانه
+    به ازای متر مربع چقدر است؟
+  context_sha256: 050b515b780f6f52a6aeac8789a257071545f5245826ff40e25c99ee451fadb0
+  expected:
+    rows:
+    - app03-A-r26-4B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N324
+  set: final6
+  case: N324
+  stratum: meaningful_modifier
+  control_group: null
+  query: 'دفتر پست محله در اقلیم 5B: سقف مصرف برای رده A؟'
+  normalized_query: 'دفتر پست محله در اقلیم 5b: سقف مصرف برای رده a؟'
+  context_sha256: 6ed6c48f8b192a67ccb1cb533cea1a108d920adcc1b1fac027237f4de93aa0f4
+  expected:
+    rows:
+    - app03-A-r29-5B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P028
+  set: final7
+  case: P028
+  stratum: meaningful_modifier
+  control_group: null
+  query: ساختمون ما گروه الف حساب میشه. تو سال پنجم، الزامات بازتاب بام جلوش تیک خورده یا نه؟
+  normalized_query: ساختمون ما گروه الف حساب میشه. تو سال پنجم، الزامات بازتاب بام جلوش تیک خورده یا نه؟
+  context_sha256: 8d835b119125b37e244a1042f9ed16f8016e9151ac497e8f80880982cb5bc2b1
+  expected:
+    rows:
+    - main-t19-2-1-r06c07
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P097
+  set: final7
+  case: P097
+  stratum: meaningful_modifier
+  control_group: null
+  query: مقاومت حرارتی در مبحث ۱۹ چطور تعریف شده و واحدش چیه؟ ضریب هدایت حرارتی صفحات ساندویچی پلی‌یورتان تزریقی
+    بین دو ورق فلزی (منبسط با HCFC یا پنتان) رو هم از پیوست ۷ بگید.
+  normalized_query: مقاومت حرارتی در مبحث 19 چطور تعریف شده و واحدش چیه؟ ضریب هدایت حرارتی صفحات ساندویچی پلی یورتان
+    تزریقی بین دو ورق فلزی (منبسط با hcfc یا پنتان) رو هم از پیوست 7 بگید.
+  context_sha256: 3e4ecb940fe0732876cde18985ed16145d46f5aea1b518de492b867d1d449b12
+  expected:
+    rows:
+    - app07-p012-r06
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: explanation
+      1: explanation
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+      8: identity
+      9: identity
+    values:
+      0: background
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q105
+  set: final8
+  case: Q105
+  stratum: meaningful_modifier
+  control_group: null
+  query: ساختمون ما جزو گروه ج هست و پروانه‌اش سال چهارم اجرای مبحث صادر میشه؛ باید سامانه پایش مصرف نصب کنیم؟
+  normalized_query: ساختمون ما جزو گروه ج هست و پروانه اش سال چهارم اجرای مبحث صادر میشه؛ باید سامانه پایش مصرف
+    نصب کنیم؟
+  context_sha256: 8e5f6b9a00fbdc04208918e86e29429c74e0333cbdc8c3e27151247cd4efdadf
+  expected:
+    rows:
+    - main-t19-2-1-r15c22
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N072
+  set: final6
+  case: N072
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: یه نمایشگاه ماشین داریم تو اقلیم 1B که می‌خوایم بهترین رده انرژی، یعنی A رو بگیره. نمایشگاه خودرو برای
+    این رده حداکثر چقدر می‌تونه مصرف کنه؟
+  normalized_query: یه نمایشگاه ماشین داریم تو اقلیم 1b که می خوایم بهترین رده انرژی، یعنی a رو بگیره. نمایشگاه
+    خودرو برای این رده حداکثر چقدر می تونه مصرف کنه؟
+  context_sha256: 31cc5a7ae4c54c827cd1e476ff809449e005acc29981892195ea3c8bba0087ee
+  expected:
+    rows:
+    - app03-A-r30-1B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N204
+  set: final6
+  case: N204
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: مسافرخونه‌مون تو اقلیم 3B ـه؛ اگه بخوایم رده A بشه، حداکثر چقدر می‌تونیم مصرف کنیم؟
+  normalized_query: مسافرخونه مون تو اقلیم 3b ه؛ اگه بخوایم رده a بشه، حداکثر چقدر می تونیم مصرف کنیم؟
+  context_sha256: 1b395141a48ff4116485e1423987177b7b79259c31a0897cd9338b919f8102b7
+  expected:
+    rows:
+    - app03-A-r21-3B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N216
+  set: final6
+  case: N216
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: ویلامون تو اقلیم 1B ـه و رده B رو هدف گرفتیم؛ عدد سقف مصرف رو با همون واحد kWh/m2.yr که تو پیوست هست می‌خوام.
+  normalized_query: ویلامون تو اقلیم 1b ه و رده b رو هدف گرفتیم؛ عدد سقف مصرف رو با همون واحد kwh/m2.yr که تو پیوست
+    هست می خوام.
+  context_sha256: da152a738baa6d9bb8180920fcaa0cc902c408579f7b9e18cb3bf72f932a45eb
+  expected:
+    rows:
+    - app03-B-r03-1B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N231
+  set: final6
+  case: N231
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: کائوچوی اسفنجی چند وات بر متر کلوین گرما منتقل می‌کنه؟
+  normalized_query: کائوچوی اسفنجی چند وات بر متر کلوین گرما منتقل می کنه؟
+  context_sha256: 4f065ec48d1deb3d70f9a6531cc6cb122cdffe8447d82e2f4be2ee184e64c2a6
+  expected:
+    rows:
+    - app07-p007-r02
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities: {}
+    values: {}
+  gold_review_corrections: 0
+- id: final6-N246
+  set: final6
+  case: N246
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: کتابخانه عمومی شهرمون تو اقلیم فوق‌العاده گرم و کم‌بارونه؛ برای اینکه فقط منطبق با مبحث باشه، یعنی رده
+    D، چقدر می‌تونه مصرف کنه؟
+  normalized_query: کتابخانه عمومی شهرمون تو اقلیم فوق العاده گرم و کم بارونه؛ برای اینکه فقط منطبق با مبحث باشه،
+    یعنی رده d، چقدر می تونه مصرف کنه؟
+  context_sha256: cae2f96f71aa122acb37433ca5dcc5f83e955458ac3e28c24469c8ee70f32eea
+  expected:
+    rows:
+    - app03-D-r17-0B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P188
+  set: final7
+  case: P188
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: داریم یه مغازه بزرگ تجاری حدود ۱۲۰۰ متر مربع می‌سازیم؛ مبحث می‌گه چه سهمی از کفش باید با نور روز کافی روشن
+    بشه؟
+  normalized_query: داریم یه مغازه بزرگ تجاری حدود 1200 متر مربع می سازیم؛ مبحث می گه چه سهمی از کفش باید با نور
+    روز کافی روشن بشه؟
+  context_sha256: c78ba8ba117c4577905499a3ef21eade3c65ee6dae699ede31a6caede2f63b42
+  expected:
+    rows:
+    - main-t19-5-6-r03
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P192
+  set: final7
+  case: P192
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: زیر کف زیرزمین یه لایه شن و ماسه ریختن، چگالیش رو حدود ۲۰۰۰ گفتن. ضریب هدایت حرارتی شن و ماسه تو پیوست
+    ۷ چیه؟
+  normalized_query: زیر کف زیرزمین یه لایه شن و ماسه ریختن، چگالیش رو حدود 2000 گفتن. ضریب هدایت حرارتی شن و ماسه
+    تو پیوست 7 چیه؟
+  context_sha256: 7532e9551f44ce0f18084d0c04e163adc0216d8c0eebd18bea5c616d7cbaef5e
+  expected:
+    rows:
+    - app07-p009-r10
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+      4: lookup
+    entities:
+      0: contextual
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P246
+  set: final7
+  case: P246
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: یکی از همکارها که مدرک ارزیابی رده بازدهی نداره پیشنهاد داده خودش رده طراحی آزمایشگاه تشخیص پزشکی‌مون رو
+    به روش تجویزی تعیین کنه؛ این از نظر مبحث معتبره؟ ضمناً پروژه تو اقلیم 4B هست و دنبال رده C هستیم، سقف مصرفش
+    چنده؟
+  normalized_query: یکی از همکارها که مدرک ارزیابی رده بازدهی نداره پیشنهاد داده خودش رده طراحی ازمایشگاه تشخیص
+    پزشکی مون رو به روش تجویزی تعیین کنه؛ این از نظر مبحث معتبره؟ ضمنا پروژه تو اقلیم 4b هست و دنبال رده c هستیم،
+    سقف مصرفش چنده؟
+  context_sha256: 8dc9c0bd616970983812bbd32d31081d7f6395719e4c604b43755cd9f22ee682
+  expected:
+    rows:
+    - app03-C-r08-4B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: explanation
+      2: background
+      3: background
+      4: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q054
+  set: final8
+  case: Q054
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: کارفرمامون رده B رو برای خوابگاه خواسته و محل پروژه هم اقلیم 3B ـه. من باید بدونم مصرف سالانه هر متر مربعش
+    تا چند کیلووات‌ساعت قابل قبوله.
+  normalized_query: کارفرمامون رده b رو برای خوابگاه خواسته و محل پروژه هم اقلیم 3b ه. من باید بدونم مصرف سالانه
+    هر متر مربعش تا چند کیلووات ساعت قابل قبوله.
+  context_sha256: 53ca8a15e8c2fd938ba4a55c90e2a800c92fb6e8de856ff8729d38ca57c4f09b
+  expected:
+    rows:
+    - app03-B-r22-3B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q079
+  set: final8
+  case: Q079
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: تو اقلیم 2B داریم یه کلینیک می‌سازیم که بیمار بستری نداره؛ کارفرما رده C می‌خواد. عدد سقف مصرف رو برام
+    دربیارید.
+  normalized_query: تو اقلیم 2b داریم یه کلینیک می سازیم که بیمار بستری نداره؛ کارفرما رده c می خواد. عدد سقف مصرف
+    رو برام دربیارید.
+  context_sha256: 8d0db4e42f8d959575f96fd3c9ad899f48ccbcfe5e0175951b030f9c5f51f76a
+  expected:
+    rows:
+    - app03-C-r10-2B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q083
+  set: final8
+  case: Q083
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: در بازرسی یک کلینیک سرپایی بدون بستری در اقلیم 4A که ادعای رده C دارد، حد مجاز شدت مصرف را از پیوست ۳ چه
+    عددی بگیرم؟
+  normalized_query: در بازرسی یک کلینیک سرپایی بدون بستری در اقلیم 4a که ادعای رده c دارد، حد مجاز شدت مصرف را از
+    پیوست 3 چه عددی بگیرم؟
+  context_sha256: e7a135e467455a9e9a5739946319ea288c89e080656239034c176642fa084ced
+  expected:
+    rows:
+    - app03-C-r10-4A
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q091
+  set: final8
+  case: Q091
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: پروژه ساختمون کلانتری‌مون تو یه منطقه 5B ـه؛ واسه رده B حد مصرف انرژی چنده؟
+  normalized_query: پروژه ساختمون کلانتری مون تو یه منطقه 5b ه؛ واسه رده b حد مصرف انرژی چنده؟
+  context_sha256: 498d6b8e159623cda065a621c2f533fd2cc673670bebef1e2cce0bf22470c716
+  expected:
+    rows:
+    - app03-B-r28-5B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q226
+  set: final8
+  case: Q226
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: مشاور گفته سقف مصرف هتل ما تو اقلیم 3A عدد ۹۵ ـه؛ این عدد درسته؟
+  normalized_query: مشاور گفته سقف مصرف هتل ما تو اقلیم 3a عدد 95 ه؛ این عدد درسته؟
+  context_sha256: 8c5ceac99bed823692530ae3d70b393d5516d37fd40acbd333c967822bcf54d5
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - missing_required_dimension
+  currently_correct: false
+  gold:
+    clauses:
+      0: verify_request
+      1: verify_request
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: verify_request
+  gold_review_corrections: 0
+- id: final8-Q263
+  set: final8
+  case: Q263
+  stratum: semantic_colloquial_fail_closed
+  control_group: null
+  query: ما یه کارگاه کوچیک تولید بلوک داریم و الان یه مشتری ازمون بتن سبک‌دانه با خاکستر بادی سینتر شده خواسته.
+    خودم زیاد با این جدول‌ها کار نکردم، ولی مهندس ناظر پروژه‌اش گفته باید ضریب هدایت حرارتیش رو از پیوست ۷ دربیارم
+    و تو برگه مشخصات بنویسم. اون عدد چنده؟ دانسیته محصول ما بین ۱۰۰۰ تا ۱۲۰۰ ـه.
+  normalized_query: ما یه کارگاه کوچیک تولید بلوک داریم و الان یه مشتری ازمون بتن سبک دانه با خاکستر بادی سینتر
+    شده خواسته. خودم زیاد با این جدول ها کار نکردم، ولی مهندس ناظر پروژه اش گفته باید ضریب هدایت حرارتیش رو از پیوست
+    7 دربیارم و تو برگه مشخصات بنویسم. اون عدد چنده؟ دانسیته محصول ما بین 1000 تا 1200 ه.
+  context_sha256: 6a8f21568946bc033d11b22091a0ad34836cf6541a7d010d4a7175d35a71079c
+  expected:
+    rows:
+    - app07-p004-r07
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+      4: background
+      5: lookup
+      6: background
+    entities:
+      0: contextual
+      1: identity
+      2: identity
+      3: grammatical
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 1
+- id: final7-P067
+  set: final7
+  case: P067
+  stratum: routing_intent
+  control_group: null
+  query: 'کتابخانه در اقلیم 2A، رده B: سقف شدت مصرف چیه؟ ضمناً گواهی شدت مصرف انرژی در بازرسی پایان ساخت رو کی صادر
+    می‌کنه؟'
+  normalized_query: 'کتابخانه در اقلیم 2a، رده b: سقف شدت مصرف چیه؟ ضمنا گواهی شدت مصرف انرژی در بازرسی پایان ساخت
+    رو کی صادر می کنه؟'
+  context_sha256: 58a952067b0099168b411f6d98a6ec3ea28956523a337442c33243e029915e65
+  expected:
+    rows:
+    - app03-B-r17-2A
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+      2: explanation
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P167
+  set: final7
+  case: P167
+  stratum: routing_intent
+  control_group: null
+  query: پوسته خارجی گوشی سامسونگ رو از کجا می‌شه ارزون خرید؟
+  normalized_query: پوسته خارجی گوشی سامسونگ رو از کجا می شه ارزون خرید؟
+  context_sha256: a73b68a29cd5216318e67f0f0b98d92d54740d652379bf1fb2ae933359209709
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: unsupported
+    entities: {}
+    values: {}
+  gold_review_corrections: 0
+- id: final7-P198
+  set: final7
+  case: P198
+  stratum: routing_intent
+  control_group: null
+  query: خونه ویلایی ما تو شمال ۲۵۰ متره و اقلیمش 3A؛ اگه بخوایم فقط رده D بگیریم، جمع کل انرژی که در یک سال مجازیم
+    مصرف کنیم چند کیلووات ساعت درمیاد؟
+  normalized_query: خونه ویلایی ما تو شمال 250 متره و اقلیمش 3a؛ اگه بخوایم فقط رده d بگیریم، جمع کل انرژی که در
+    یک سال مجازیم مصرف کنیم چند کیلووات ساعت درمیاد؟
+  context_sha256: bf33b1187445e5ca6163d3fa457c6420f40190983323429a20c0f61f27e19a8e
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_calculation
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: unsupported
+    entities: {}
+    values:
+      0: background
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P218
+  set: final7
+  case: P218
+  stratum: routing_intent
+  control_group: null
+  query: برای اندود بیرونی داریم ملات سیمانی معمولی سفارش می‌دیم؛ مشاور ازمون لاندای ملات رو خواسته، چی بهش بگیم؟
+  normalized_query: برای اندود بیرونی داریم ملات سیمانی معمولی سفارش می دیم؛ مشاور ازمون لاندای ملات رو خواسته،
+    چی بهش بگیم؟
+  context_sha256: 5051aba4091df17c6513a1bb6ffb270754e6b01f63b9c1c52c0bed029938b894
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - missing_required_dimension
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+      2: lookup
+    entities: {}
+    values: {}
+  gold_review_corrections: 0
+- id: final8-Q096
+  set: final8
+  case: Q096
+  stratum: routing_intent
+  control_group: null
+  query: دفترمون یه شرکت خصوصیه با ۱۲۰۰ متر مربع زیربنا تو اقلیم 2A. اگه رده B بخوایم، کل ساختمون تو یه سال روی
+    هم چند کیلووات‌ساعت حق مصرف داره؟
+  normalized_query: دفترمون یه شرکت خصوصیه با 1200 متر مربع زیربنا تو اقلیم 2a. اگه رده b بخوایم، کل ساختمون تو
+    یه سال روی هم چند کیلووات ساعت حق مصرف داره؟
+  context_sha256: 2a2260d4d72743e8f1e2a5d8a6523869e1eb80e016fb8687d9903cd02da637d3
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_calculation
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: unsupported
+    entities: {}
+    values:
+      0: background
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q119
+  set: final8
+  case: Q119
+  stratum: routing_intent
+  control_group: null
+  query: وقتی پرونده یه ساختمون گروه ب با پروانه سال دوم دستمه، بازرسی مرحله طراحی رو هم باید انجام بدم یا هنوز
+    لازم نیست؟
+  normalized_query: وقتی پرونده یه ساختمون گروه ب با پروانه سال دوم دستمه، بازرسی مرحله طراحی رو هم باید انجام بدم
+    یا هنوز لازم نیست؟
+  context_sha256: 1920930bc30b63684271b40e60ea677e21b1a72139c6a804e76eb0e37f6342c2
+  expected:
+    rows:
+    - main-t19-2-1-r08c02
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q122
+  set: final8
+  case: Q122
+  stratum: routing_intent
+  control_group: null
+  query: در سومین سال اجرای ویرایش پنجم، ساختمان گروه د باید مدار اولیه/ثانویه داشته باشد؟
+  normalized_query: در سومین سال اجرای ویرایش پنجم، ساختمان گروه د باید مدار اولیه/ثانویه داشته باشد؟
+  context_sha256: dd07b9d0ca47ac74dc853fb36a555da255d0b1bf8b122cc73ce851f74977cb30
+  expected:
+    rows:
+    - main-t19-2-1-r19c18
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q155
+  set: final8
+  case: Q155
+  stratum: routing_intent
+  control_group: null
+  query: 'دو تا سؤال درباره پایان‌کار: گواهی‌های لازم رو کیا باید صادر کنن؟ و آیا برای ساختمون گروه ج با پروانه
+    سال دوم، بازرسی پایان‌کار تو زمان‌بندی اجباریه؟'
+  normalized_query: 'دو تا سوال درباره پایان کار: گواهی های لازم رو کیا باید صادر کنن؟ و ایا برای ساختمون گروه ج
+    با پروانه سال دوم، بازرسی پایان کار تو زمان بندی اجباریه؟'
+  context_sha256: 368eb5848026cd12462b541c5f4ed60519a1177f67044bcf2787ac0774cca2dc
+  expected:
+    rows:
+    - main-t19-2-1-r13c04
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: explanation
+      1: lookup
+      2: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q162
+  set: final8
+  case: Q162
+  stratum: routing_intent
+  control_group: null
+  query: تو بازدیدها باید بدونم زیرپایش چه مصارفی رو شامل میشه؛ و اینکه برای گروه د در سال دوم اجرا زیرپایش اجباریه
+    یا نه.
+  normalized_query: تو بازدیدها باید بدونم زیرپایش چه مصارفی رو شامل میشه؛ و اینکه برای گروه د در سال دوم اجرا زیرپایش
+    اجباریه یا نه.
+  context_sha256: 7cc66cca8c36322bc7eae6cc3e6c0bd4c1728d34734662429180d1f830d24b34
+  expected:
+    rows:
+    - main-t19-2-1-r18c23
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: explanation
+      1: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q199
+  set: final8
+  case: Q199
+  stratum: routing_intent
+  control_group: null
+  query: کف طبقه اول ساختمونمون روی پیلوته و اقلیم ما 2B ـه؛ زیرش چند سانت پشم‌سنگ بزنیم که به حد مبحث برسه؟
+  normalized_query: کف طبقه اول ساختمونمون روی پیلوته و اقلیم ما 2b ه؛ زیرش چند سانت پشم سنگ بزنیم که به حد مبحث
+    برسه؟
+  context_sha256: 723f990d6b5f951777502ab979c4fac46c9628ceb64d97131cf93ce698622fd5
+  expected:
+    rows: []
+    acceptable_rows: []
+    outcomes:
+    - unsupported_output
+    - unsupported_calculation
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: unsupported
+    entities: {}
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q258
+  set: final8
+  case: Q258
+  stratum: routing_intent
+  control_group: null
+  query: ببینید ما پیمانکار نازک‌کاری هستیم و تازه وارد یه پروژه شدیم که کارفرما میگه گروه ب حساب میشه و پروانه‌اش
+    مال سال سوم اجرای مبحثه. ناظر گیر داده به پنجره‌ها. من نمی‌دونم الان حداقل مقاومت حرارتی جداره نورگذر برای این
+    گروه و این سال الزامی شده یا هنوز نه. یه سؤال جانبی هم دارم چون مدام تو جلسه‌ها میگن «هوای تازه»، تعریفش تو
+    مبحث چیه؟
+  normalized_query: ببینید ما پیمانکار نازک کاری هستیم و تازه وارد یه پروژه شدیم که کارفرما میگه گروه ب حساب میشه
+    و پروانه اش مال سال سوم اجرای مبحثه. ناظر گیر داده به پنجره ها. من نمی دونم الان حداقل مقاومت حرارتی جداره نورگذر
+    برای این گروه و این سال الزامی شده یا هنوز نه. یه سوال جانبی هم دارم چون مدام تو جلسه ها میگن «هوای تازه»، تعریفش
+    تو مبحث چیه؟
+  context_sha256: daa410a53ca499708f05b67fbd86c15880379cd086faf8c76bb1442844cfe27b
+  expected:
+    rows:
+    - main-t19-2-1-r09c09
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q272
+  set: final8
+  case: Q272
+  stratum: routing_intent
+  control_group: null
+  query: ناظر یه مجموعه اداری در اقلیم 3B هستم که لابی‌اش روی پیلوت قرار گرفته و کف لابی مستقیم مجاور هوای آزاده.
+    تو جلسه هماهنگی قرار شد من عدد حداقل مقاومت حرارتی این کف رو از جدول تجویزی دربیارم تا طراح عایق ضخامت رو حساب
+    کنه. اون عدد چنده؟
+  normalized_query: ناظر یه مجموعه اداری در اقلیم 3b هستم که لابی اش روی پیلوت قرار گرفته و کف لابی مستقیم مجاور
+    هوای ازاده. تو جلسه هماهنگی قرار شد من عدد حداقل مقاومت حرارتی این کف رو از جدول تجویزی دربیارم تا طراح عایق
+    ضخامت رو حساب کنه. اون عدد چنده؟
+  context_sha256: 6e1adcc529dda81710cd271c7195c7bbf1d3e6efafa296af15ef8f8f1270e36a
+  expected:
+    rows:
+    - main-t19-5-1-r12c03
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: false
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+      3: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final2-G055
+  set: final2
+  case: G055
+  stratum: negative_control
+  control_group: background_constraint
+  query: هتلی در اقلیم 5B داریم و می‌خواهیم رده B بگیریم؛ حداکثر شدت مصرف انرژی مجاز چقدر است؟
+  normalized_query: هتلی در اقلیم 5b داریم و می خواهیم رده b بگیریم؛ حداکثر شدت مصرف انرژی مجاز چقدر است؟
+  context_sha256: 64a9a4c5283434cc466e95970427436c644fefafdc7e0e6fc78e57f16acc27ab
+  expected:
+    rows:
+    - app03-B-r20-5B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N081
+  set: final6
+  case: N081
+  stratum: negative_control
+  control_group: background_constraint
+  query: در بازدید از یک کلینیک تشخیصی در اقلیم 4A، حد رده D را برای مقایسه با قبض‌ها لازم دارم؛ چند است؟
+  normalized_query: در بازدید از یک کلینیک تشخیصی در اقلیم 4a، حد رده d را برای مقایسه با قبض ها لازم دارم؛ چند
+    است؟
+  context_sha256: 2db87dfaae26d4c7b17f8b687464df3a7b83c38f671eede3541f8369cbe36e41
+  expected:
+    rows:
+    - app03-D-r09-4A
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: lookup
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P267
+  set: final7
+  case: P267
+  stratum: negative_control
+  control_group: background_constraint
+  query: امروز تو جلسه بحث شد که روش تجویزی برای کاربری-اقلیم‌ها بر اساس کدوم جدول تعریف شده، یکی می‌گفت جدول پیوست
+    ۳ یکی می‌گفت نه. بعدش هم موضوع ساختمونی بود که گروه ج حساب میشه و پروانه‌اش سال سوم بعد از ابلاغ صادر شده؛ تو
+    جدول ۱۹-۲-۱ عایق‌کاری پوسته خارجی براش چه علامتی داره؟
+  normalized_query: امروز تو جلسه بحث شد که روش تجویزی برای کاربری-اقلیم ها بر اساس کدوم جدول تعریف شده، یکی می
+    گفت جدول پیوست 3 یکی می گفت نه. بعدش هم موضوع ساختمونی بود که گروه ج حساب میشه و پروانه اش سال سوم بعد از ابلاغ
+    صادر شده؛ تو جدول 19-2-1 عایق کاری پوسته خارجی براش چه علامتی داره؟
+  context_sha256: 0b750b9e0cc492aa1a4d6689e238e962f3b68df6ace7480689f13044557b027c
+  expected:
+    rows:
+    - main-t19-2-1-r14c05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: background
+      4: lookup
+    entities:
+      0: identity
+    values:
+      0: background
+      1: lookup_constraint
+      2: lookup_constraint
+      3: lookup_constraint
+      4: lookup_constraint
+      5: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q125
+  set: final8
+  case: Q125
+  stratum: negative_control
+  control_group: background_constraint
+  query: خونه ما جزو گروه ب ـه و پروانه سال چهارم صادر میشه؛ تست نشت حجمی هوا رو هم باید بدیم؟
+  normalized_query: خونه ما جزو گروه ب ه و پروانه سال چهارم صادر میشه؛ تست نشت حجمی هوا رو هم باید بدیم؟
+  context_sha256: 6c8aa48dc4b18ebd6078afa206fe2adcd2b42f6161dc4694f61dbe851410b56f
+  expected:
+    rows:
+    - main-t19-2-1-r10c12
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final4-L303
+  set: final4
+  case: L303
+  stratum: negative_control
+  control_group: colloquial_entity
+  query: دبستان و پیشدبستان در اقلیم 1B رده B سقف مصرفش چقدره؟
+  normalized_query: دبستان و پیشدبستان در اقلیم 1b رده b سقف مصرفش چقدره؟
+  context_sha256: 5649afe4262923530323f4da0a0a47c0327ad72fca12597287db6e2ce3e7088d
+  expected:
+    rows:
+    - app03-B-r15-1B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final5-M062
+  set: final5
+  case: M062
+  stratum: negative_control
+  control_group: colloquial_entity
+  query: λ تخته OSB تو پیوست ۷ چنده؟
+  normalized_query: λ تخته osb تو پیوست 7 چنده؟
+  context_sha256: d25d2b563ff50c63a2a79505ffd9a9a0db0e981691d6339d2771c16506a6d006
+  expected:
+    rows:
+    - app07-p008-r17
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P023
+  set: final7
+  case: P023
+  stratum: negative_control
+  control_group: colloquial_entity
+  query: تو جدول زمان‌بندی اجرای ویرایش پنجم، SHGC جداره نورگذر برای گروه د سال چهارم علامت تیک خورده؟
+  normalized_query: تو جدول زمان بندی اجرای ویرایش پنجم، shgc جداره نورگذر برای گروه د سال چهارم علامت تیک خورده؟
+  context_sha256: 227722c0ff352e1bc9c1d527822062860fa7b4df0fc4a47bede44705b25785e6
+  expected:
+    rows:
+    - main-t19-2-1-r20c10
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q273
+  set: final8
+  case: Q273
+  stratum: negative_control
+  control_group: colloquial_entity
+  query: یه سفارش نما داریم که کارفرما گفته سنگ آهکی سخت می‌خواد، نه مرمر و نه نرمش. برای برگه محاسبات انرژی باید
+    چگالی و ضریب هدایت حرارتی همین سنگ آهکی سخت رو از جدول پیوست ۷ بنویسیم. چنده؟
+  normalized_query: یه سفارش نما داریم که کارفرما گفته سنگ اهکی سخت می خواد، نه مرمر و نه نرمش. برای برگه محاسبات
+    انرژی باید چگالی و ضریب هدایت حرارتی همین سنگ اهکی سخت رو از جدول پیوست 7 بنویسیم. چنده؟
+  context_sha256: f2347c0335eaf4b89b6c5401985d8e0d6fd5ded3cb37ac547abed1249ddfd1f7
+  expected:
+    rows:
+    - app07-p010-r09
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+      4: lookup
+      5: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: contextual
+      4: contextual
+      5: identity
+      6: identity
+      7: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: dev-R040
+  set: dev
+  case: R040
+  stratum: negative_control
+  control_group: true_identity
+  query: حداقل مقاومت حرارتی دیوار خارجی مجاور فضای باز در اقلیم 3A
+  normalized_query: حداقل مقاومت حرارتی دیوار خارجی مجاور فضای باز در اقلیم 3a
+  context_sha256: e0534d1315a9a70d0ae6deee7f827204cf3739b2cd864d15a3b928c6fdd48edc
+  expected:
+    rows:
+    - main-t19-5-1-r02c03
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final3-K082
+  set: final3
+  case: K082
+  stratum: negative_control
+  control_group: true_identity
+  query: ضریب هدایت حرارتی پلی‌اتیلن چگالی زیاد (HDPE)؟
+  normalized_query: ضریب هدایت حرارتی پلی اتیلن چگالی زیاد (hdpe)؟
+  context_sha256: 96065e2bb8aba6a9e1be9d3b9120291fa43c66f394d9e80b44553aac2e00193e
+  expected:
+    rows:
+    - app07-p007-r11
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    values: {}
+  gold_review_corrections: 0
+- id: final3-K228
+  set: final3
+  case: K228
+  stratum: negative_control
+  control_group: true_identity
+  query: حداقل R دیوار خارجی رو به فضای باز برای اقلیم 5C چقدره؟
+  normalized_query: حداقل r دیوار خارجی رو به فضای باز برای اقلیم 5c چقدره؟
+  context_sha256: 7fecd6176926bb670bd65ba2f2a743dfed41a86360ce2464267efc17544b21be
+  expected:
+    rows:
+    - main-t19-5-1-r02c05
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N139
+  set: final6
+  case: N139
+  stratum: negative_control
+  control_group: true_identity
+  query: تو یه مرکز خرید آیا همه تجهیزات باید به سامانه پایش و واپایش یکپارچه وصل بشن؟ سقف مصرف رده D همین مال تو
+    اقلیم 3B هم چنده؟
+  normalized_query: تو یه مرکز خرید ایا همه تجهیزات باید به سامانه پایش و واپایش یکپارچه وصل بشن؟ سقف مصرف رده d
+    همین مال تو اقلیم 3b هم چنده؟
+  context_sha256: ea2caab318c2e13ed05a531a300a54e945248db56dc0a9942b3987dd1bd11aa8
+  expected:
+    rows:
+    - app03-D-r27-3B
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: explanation
+      1: explanation
+      2: lookup
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final6-N298
+  set: final6
+  case: N298
+  stratum: negative_control
+  control_group: two_results
+  query: برای سه کاربری بانک، مهدکودک و مسافرخانه در اقلیم 2A، سقف شدت مصرف رده D هر کدام را بفرمایید.
+  normalized_query: برای سه کاربری بانک، مهدکودک و مسافرخانه در اقلیم 2a، سقف شدت مصرف رده d هر کدام را بفرمایید.
+  context_sha256: f65f4918307371d1b97a45637b954b88b6d1aa433e2bddeb81337f9ce807cd2c
+  expected:
+    rows:
+    - app03-D-r06-2A
+    - app03-D-r16-2A
+    - app03-D-r21-2A
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+      2: lookup
+      3: lookup
+    entities:
+      0: identity
+      1: identity
+      2: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P095
+  set: final7
+  case: P095
+  stratum: negative_control
+  control_group: two_results
+  query: سرمایش و گرمایش ۴ لوله برای گروه ج سال پنجم؟ و طراحی سامانه مرکزی وقتی فقط کوچک‌ترین بخش مستقل کار می‌کند
+    چه شرطی دارد؟
+  normalized_query: سرمایش و گرمایش 4 لوله برای گروه ج سال پنجم؟ و طراحی سامانه مرکزی وقتی فقط کوچک ترین بخش مستقل
+    کار می کند چه شرطی دارد؟
+  context_sha256: 9e3002809b0f7f73402d07fc77cde5ae05afb5c8f4eb1522fd609f6b8763b5d8
+  expected:
+    rows:
+    - main-t19-2-1-r16c17
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: lookup
+      1: lookup
+      2: explanation
+    entities:
+      0: identity
+      1: identity
+      2: contextual
+      3: contextual
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+  gold_review_corrections: 0
+- id: final7-P245
+  set: final7
+  case: P245
+  stratum: negative_control
+  control_group: two_results
+  query: دو تا پروژه تو آبادان و سبزوار داریم و یکی هم تو دماوند. رده اقلیمی هر کدوم طبق پیوست ۲ چیه؟
+  normalized_query: دو تا پروژه تو ابادان و سبزوار داریم و یکی هم تو دماوند. رده اقلیمی هر کدوم طبق پیوست 2 چیه؟
+  context_sha256: 5aa273a6bff04b224fa147c76c5a045c0319f3020726b2e118b216652d253ebd
+  expected:
+    rows:
+    - app02-p002-r01
+    - app02-p003-r15
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+    entities: {}
+    values:
+      0: lookup_constraint
+  gold_review_corrections: 0
+- id: final8-Q243
+  set: final8
+  case: Q243
+  stratum: negative_control
+  control_group: two_results
+  query: خانواده‌ام تو قائمشهر و قم و ملایر خونه دارن؛ اقلیم هر کدوم طبق مبحث چیه؟
+  normalized_query: خانواده ام تو قائمشهر و قم و ملایر خونه دارن؛ اقلیم هر کدوم طبق مبحث چیه؟
+  context_sha256: 83146ef3f34bdd06b8abb78d4dd983084528b715fd59b95e4eeaf095f2e621cc
+  expected:
+    rows:
+    - app02-p003-r27
+    - app02-p003-r29
+    acceptable_rows:
+    - main-t19-3-2-r19
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: background
+      2: background
+      3: lookup
+    entities:
+      0: identity
+    values: {}
+  gold_review_corrections: 0
+- id: final-F151
+  set: final
+  case: F151
+  stratum: negative_control
+  control_group: verification_claim
+  query: حداکثر دمای آبگرم روشویی خصوصی ۴۳ درجه‌ست دیگه؟
+  normalized_query: حداکثر دمای ابگرم روشویی خصوصی 43 درجه ست دیگه؟
+  context_sha256: 4cf343e0efa9bde2f246655349fe9e9b1201ce228de4f56f1da6e031d20df9c2
+  expected:
+    rows:
+    - main-t19-5-5-r03
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: verify_request
+    entities:
+      0: identity
+      1: identity
+    values:
+      0: verify_request
+  gold_review_corrections: 0
+- id: final2-G109
+  set: final2
+  case: G109
+  stratum: negative_control
+  control_group: verification_claim
+  query: اگر نیروگاه CHP ساختمان بازدهی حرارتی ناخالص ۸۲ درصد داشته باشد، طبق جدول حداقل بازدهی قابل قبول است؟ و
+    در محاسبه شدت مصرف انرژی ساختمان چه اثری دارد؟
+  normalized_query: اگر نیروگاه chp ساختمان بازدهی حرارتی ناخالص 82 درصد داشته باشد، طبق جدول حداقل بازدهی قابل
+    قبول است؟ و در محاسبه شدت مصرف انرژی ساختمان چه اثری دارد؟
+  context_sha256: 4837f931a06368a305bb642b8431f602c39c1e59e2b743c4f059bbe50338eca1
+  expected:
+    rows:
+    - main-t19-5-3-item08-s2
+    acceptable_rows:
+    - main-t19-5-3-item08-s1
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: background
+      1: verify_request
+      2: explanation
+    entities:
+      0: identity
+      1: identity
+      2: contextual
+    values:
+      0: verify_request
+  gold_review_corrections: 0
+- id: final4-L337
+  set: final4
+  case: L337
+  stratum: negative_control
+  control_group: verification_claim
+  query: حداکثر شدت مصرف مسجد در اقلیم 3A برای رده A طبق پیوست ۳ عدد ۱۵ است؛ درسته؟
+  normalized_query: حداکثر شدت مصرف مسجد در اقلیم 3a برای رده a طبق پیوست 3 عدد 15 است؛ درسته؟
+  context_sha256: 6c5a6193fc6df38a1b78e09b7cfbf8bab8315d5d7ac19e6509218dbf0c43e867
+  expected:
+    rows:
+    - app03-A-r18-3A
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: verify_request
+      1: verify_request
+    entities:
+      0: identity
+    values:
+      0: lookup_constraint
+      1: lookup_constraint
+      2: lookup_constraint
+      3: verify_request
+  gold_review_corrections: 0
+- id: heldout-H114
+  set: heldout
+  case: H114
+  stratum: negative_control
+  control_group: verification_claim
+  query: رده اقلیمی اصفهان 3B است یا 4B؟ کدام درست است
+  normalized_query: رده اقلیمی اصفهان 3b است یا 4b؟ کدام درست است
+  context_sha256: a93f7c12e9eea421512947d439956bd3a44c2f0124a328ea43201a7dfc76ee8f
+  expected:
+    rows:
+    - app02-p002-r07
+    - main-t19-3-2-r04
+    acceptable_rows: []
+    outcomes: []
+  currently_correct: true
+  gold:
+    clauses:
+      0: verify_request
+      1: verify_request
+    entities:
+      0: identity
+    values:
+      0: verify_request
+      1: verify_request
+  gold_review_corrections: 0

@@ -29,7 +29,7 @@ import hashlib
 import json
 import re
 from collections.abc import Iterable, Sequence
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from functools import cache
 from typing import TYPE_CHECKING, Any
 
@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import RetrievalResult
     from mabhas19.retrieval.structured import StructuredStore
 
-CONTEXT_VERSION = "sh0-context-1"
+CONTEXT_VERSION = "sh0-context-2"  # + same-length personal-data redaction
 MAX_CANDIDATES = 12  # candidate rows listed per entity span (exact ones first)
 VALUE_DIMENSIONS = ("rating", "climate_class", "group", "year", "number")
 _DIGITS = re.compile(r"\d+(?:[.٫/]\d+)*")
@@ -150,6 +150,13 @@ class CoordinationItem:
 
 
 @dataclass(frozen=True)
+class Redaction:
+    start: int
+    end: int
+    kind: str  # email | url | long_number
+
+
+@dataclass(frozen=True)
 class CandidateContext:
     """Everything the proposer may refer to (by index or ID); sent to the model."""
 
@@ -164,6 +171,7 @@ class CandidateContext:
     polarity: tuple[PolarityItem, ...]
     coordination: tuple[CoordinationItem, ...]
     aligned: bool  # query tokens were aligned to offsets (else no entity span is offered)
+    redactions: tuple[Redaction, ...] = ()  # personal data masked in every text (same length)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -222,6 +230,7 @@ class DeterministicFacts:
     route: str
     tables: tuple[str, ...]  # the router's decision
     per_table: dict[str, TableFacts] = field(default_factory=dict)
+    query: str = ""  # the unredacted normalized query (never sent; offsets equal the context's)
 
     def rows(self) -> frozenset[str]:
         return frozenset(r for f in self.per_table.values() for r in f.rows)
@@ -269,7 +278,68 @@ def build(
         coordination=_coordination(full, facts),
         aligned=tokens is not None,
     )
-    return ctx, facts
+    return redact_context(ctx), facts
+
+
+# ---------------------------------------------------------------- redaction
+
+# personal data never sent: e-mail addresses, URLs and digit runs of 8 or more (phone, national
+# ID, postal code, account numbers; no Mabhas 19 value or code is that long - WMO codes have 6)
+_PERSONAL = (
+    ("email", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")),
+    ("url", re.compile(r"(?:https?://|www\.)\S+")),
+    ("long_number", re.compile(r"\+?\d(?:[\d\s-]{6,}\d)")),
+)
+
+
+def redactions(text: str) -> tuple[Redaction, ...]:
+    found: list[Redaction] = []
+    for kind, pattern in _PERSONAL:
+        for m in pattern.finditer(text):
+            if kind == "long_number" and sum(ch.isdigit() for ch in m[0]) < 8:
+                continue
+            if not any(r.start < m.end() and m.start() < r.end for r in found):
+                found.append(Redaction(m.start(), m.end(), kind))
+    return tuple(sorted(found, key=lambda r: r.start))
+
+
+def redact(text: str) -> str:
+    """The text with personal data masked character by character (offsets are kept)."""
+    chars = list(text)
+    for r in redactions(text):
+        for i in range(r.start, r.end):
+            if not chars[i].isspace():
+                chars[i] = "#"
+    return "".join(chars)
+
+
+def redact_context(ctx: CandidateContext) -> CandidateContext:
+    """Every query slice of the context taken from the redacted query."""
+    found = redactions(ctx.query)
+    if not found:
+        return ctx
+    q = redact(ctx.query)
+
+    def sl(item: Any) -> Any:
+        return replace(item, text=q[item.start : item.end])
+
+    return replace(
+        ctx,
+        query=q,
+        clauses=tuple(sl(c) for c in ctx.clauses),
+        entities=tuple(sl(e) for e in ctx.entities),
+        values=tuple(
+            replace(sl(v), value=q[v.start : v.end] if v.dimension == "number" else v.value)
+            for v in ctx.values
+        ),
+        units=tuple(sl(u) for u in ctx.units),
+        operations=tuple(sl(o) for o in ctx.operations),
+        polarity=tuple(sl(x) for x in ctx.polarity),
+        coordination=tuple(
+            replace(c, members=tuple(sl(m) for m in c.members)) for c in ctx.coordination
+        ),
+        redactions=found,
+    )
 
 
 def _candidate_tables(production: RetrievalResult) -> list[str]:
@@ -508,7 +578,9 @@ def _facts(production: RetrievalResult) -> DeterministicFacts:
             applied_values=_values_of(plans, "applied"),
             checked_values=_values_of(plans, "checked"),
         )
-    return DeterministicFacts(production.route.route, tuple(production.route.tables), per)
+    return DeterministicFacts(
+        production.route.route, tuple(production.route.tables), per, production.normalized_query
+    )
 
 
 def _values_of(plans: list[dict[str, Any]], state: str) -> frozenset[tuple[str, str]]:

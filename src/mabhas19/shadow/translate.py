@@ -91,9 +91,13 @@ class Counterfactual:
     guard: str  # ok | restriction_added_rows | mask_alignment
     certification_failures: int
     diff: dict[str, bool]
+    # the rows the pipeline run returned before the guard (what a recovery would have returned;
+    # never returned in SH0)
+    run_rows: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "run_rows": list(self.run_rows),
             "query": self.query,
             "route": self.route,
             "tables": list(self.tables),
@@ -250,10 +254,11 @@ def counterfactual(
     production: RetrievalResult,
 ) -> Counterfactual:
     """Run the shadow plan through the unchanged pipeline; production is only read."""
-    masked = mask(ctx.query, plan.masked)
+    query = facts.query or ctx.query  # the unredacted query (same offsets)
+    masked = mask(query, plan.masked)
     prod_rows = [h.record_id for h in production.structured]
     if masked is None:
-        return _closed(ctx.query, production, "mask_alignment")
+        return _closed(query, production, "mask_alignment")
     text, index = masked
     keep = frozenset(plan.requested) - set(plan.dropped)
     view = copy.copy(retriever)
@@ -282,6 +287,7 @@ def counterfactual(
         if any(h.dataset == t for h in res.structured)
     ]
     added = [r for r in rows if r not in prod_rows]
+    run_rows = list(rows)
     guard = "ok"
     if added:  # a restriction never adds a row: refuse them all
         guard, rows = "restriction_added_rows", []
@@ -296,6 +302,7 @@ def counterfactual(
         guard=guard,
         certification_failures=len(res.certification_failures),
         diff={},
+        run_rows=run_rows,
     )
     out.diff = diff(production, out)
     return out

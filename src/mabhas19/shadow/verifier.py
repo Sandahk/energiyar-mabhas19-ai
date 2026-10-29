@@ -348,7 +348,7 @@ def _requests(  # noqa: PLR0912
     run: _Run, p: Proposal, schemas: dict[str, TableSchema]
 ) -> tuple[tuple[Request, ...], list[dict[str, str]]]:
     ctx = run.ctx
-    found = units.find(ctx.query)
+    found = units.find(run.facts.query or ctx.query)  # offsets equal; never redacted
     stated = {
         _concept(ctx.values[v.index].dimension) for v in p.values if v.role == "lookup_constraint"
     }

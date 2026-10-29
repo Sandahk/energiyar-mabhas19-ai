@@ -9,8 +9,8 @@ result and token/latency metadata. Evaluation replays records only; a missing ke
 never fetched silently, and a record is never overwritten with different content.
 
 The request a provider would receive (:func:`render_request`) holds the instructions, the
-proposal's JSON Schema and the candidate context - no document, corpus text, regulatory value,
-credential or project metadata.
+provider projection of the proposal schema and the redacted candidate context - no document,
+corpus text, regulatory value, credential or project metadata.
 """
 
 from __future__ import annotations
@@ -23,7 +23,9 @@ from pathlib import Path
 from typing import Any
 
 from mabhas19.shadow.context import CONTEXT_VERSION, CandidateContext, canonical_json
-from mabhas19.shadow.proposal import PROPOSAL_SCHEMA, json_schema
+from mabhas19.shadow.proposal import PROPOSAL_SCHEMA, canonical_schema, canonical_schema_sha256
+from mabhas19.shadow.schema_projection import ANTHROPIC_PROJECTION, project_anthropic
+from mabhas19.shadow.schema_projection import sha256 as projection_sha256
 from mabhas19.shadow.translate import TRANSLATION_VERSION
 from mabhas19.shadow.verifier import VERIFIER_VERSION
 from mabhas19.text.normalize import normalize_for_search
@@ -61,35 +63,65 @@ answer in (or "none").
 """
 
 
-@dataclass(frozen=True)
-class ProviderSettings:
-    """A provider call as it would be made (both adapters take the same fields)."""
+ANTHROPIC = "anthropic"
+PILOT_MODEL = "claude-opus-5-5"  # the approved first-pilot model; changes need explicit approval
+RENDER_VERSION = "sh0-render-1"  # the user turn: canonical JSON of {render, context}
 
-    provider: str  # anthropic | google
-    model_id: str  # the exact pinned model ID (never an alias)
-    temperature: float = 0.0
-    max_output_tokens: int = 4096
-    timeout_s: float = 60.0
-    structured_output: bool = True  # schema-constrained decoding where the provider supports it
+
+@dataclass(frozen=True)
+class ProposerSettings:
+    """How a proposal is requested (every field is part of the replay key)."""
+
+    provider: str = ANTHROPIC
+    model_id: str = PILOT_MODEL  # the exact requested model (never an alias)
+    effort: str = "medium"  # output_config.effort; thinking is the model's adaptive default
+    structured_output: bool = True  # output_config.format with the provider schema projection
+    max_output_tokens: int = 16000
+    timeout_s: float = 120.0
+    max_retries: int = 1  # SDK retries of transport / transient API errors only
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
+def provider_schema(provider: str = ANTHROPIC) -> dict[str, Any]:
+    """The projection of the canonical schema a provider's constrained decoding receives."""
+    if provider != ANTHROPIC:
+        raise ValueError(f"no schema projection for provider {provider!r}")
+    return project_anthropic(canonical_schema())
+
+
 def prompt_sha256() -> str:
-    """The instruction text and the proposal schema, as sent."""
-    return hashlib.sha256(
-        (PROMPT_VERSION + "\n" + INSTRUCTIONS + "\n" + canonical_json(json_schema())).encode()
-    ).hexdigest()
-
-
-def render_request(ctx: CandidateContext) -> dict[str, Any]:
-    """Everything a provider would receive for one question (nothing else is sent)."""
-    return {
+    """The system instructions, the render format and the schema contract, as sent."""
+    doc = {
         "prompt_version": PROMPT_VERSION,
         "instructions": INSTRUCTIONS,
-        "json_schema": json_schema(),
-        "context": ctx.to_dict(),
+        "render_version": RENDER_VERSION,
+        "canonical_schema": [PROPOSAL_SCHEMA, canonical_schema_sha256()],
+    }
+    return hashlib.sha256(canonical_json(doc).encode("utf-8")).hexdigest()
+
+
+def render_user(ctx: CandidateContext) -> str:
+    """The user turn: the (redacted) candidate context, byte-stable."""
+    return canonical_json({"render": RENDER_VERSION, "context": ctx.to_dict()})
+
+
+def render_request(
+    ctx: CandidateContext, settings: ProposerSettings | None = None
+) -> dict[str, Any]:
+    """The exact Messages API request body a provider call would send (nothing else is sent:
+    no document, corpus text, credential or project metadata)."""
+    s = settings or ProposerSettings()
+    output_config: dict[str, Any] = {"effort": s.effort}
+    if s.structured_output:
+        output_config["format"] = {"type": "json_schema", "schema": provider_schema(s.provider)}
+    return {
+        "model": s.model_id,
+        "max_tokens": s.max_output_tokens,
+        "system": INSTRUCTIONS,
+        "messages": [{"role": "user", "content": render_user(ctx)}],
+        "output_config": output_config,
     }
 
 
@@ -121,13 +153,16 @@ class ReplayKey:
     provider: str
     model_id: str
     prompt_sha256: str
-    schema_version: str
+    schema_version: str  # the canonical contract
+    canonical_schema_sha256: str
+    provider_schema_sha256: str
+    projection_version: str
     settings: tuple[tuple[str, Any], ...]  # sorted (name, value) pairs
     engine: str
 
     @classmethod
     def of(
-        cls, query: str, ctx: CandidateContext, settings: ProviderSettings, engine: str
+        cls, query: str, ctx: CandidateContext, settings: ProposerSettings, engine: str
     ) -> ReplayKey:
         rest = {k: v for k, v in settings.to_dict().items() if k not in ("provider", "model_id")}
         return cls(
@@ -137,6 +172,9 @@ class ReplayKey:
             model_id=settings.model_id,
             prompt_sha256=prompt_sha256(),
             schema_version=PROPOSAL_SCHEMA,
+            canonical_schema_sha256=canonical_schema_sha256(),
+            provider_schema_sha256=projection_sha256(provider_schema(settings.provider)),
+            projection_version=ANTHROPIC_PROJECTION,
             settings=tuple(sorted(rest.items())),
             engine=engine,
         )
@@ -164,8 +202,12 @@ class ReplayRecord:
     verifier: dict[str, Any] = field(default_factory=dict)  # Verification.to_dict()
     translated_plan: dict[str, Any] | None = None
     counterfactual: dict[str, Any] | None = None
-    # input_tokens, output_tokens, latency_ms, provider_model_version, error (never a key/secret)
+    # input_tokens, output_tokens, latency_ms, stop_reason, request_id, error (never a secret)
     usage: dict[str, Any] = field(default_factory=dict)
+    response_model: str | None = None  # the model the API reports having run
+    # False when the record cannot count in the experiment (another model ran, no response…)
+    experiment_valid: bool = True
+    invalid_reason: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)

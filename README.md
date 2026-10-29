@@ -109,7 +109,10 @@ filenames, hashes and provenance are kept in `sources/manifest.yaml`.
 - Source bytes are never modified. The test suite verifies every file against its SHA-256.
 - A better original is added as a new version (`-v2`, `supersedes: v1`). Nothing is overwritten.
 - See [`docs/source-audit.md`](docs/source-audit.md) for known text-layer issues.
-- The PDFs and curated text are official publications; this repository is private.
+- The PDFs are official publications of Iran's National Building Regulations (Mabhas 19, 5th edition, 1404),
+  included unmodified for research and reproducibility; the curated text and tables are derived from them.
+  All rights in the source documents remain with the publisher. The code in this repository is the
+  author's own work.
 
 ## Development
 

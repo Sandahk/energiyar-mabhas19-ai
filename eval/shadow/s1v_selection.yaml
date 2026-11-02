@@ -1,0 +1,104 @@
+# SH0 pilot manifest (frozen; do not edit).
+schema: s1v-selection-record-1
+created: '2026-11-02T16:52:00+00:00'
+purpose: 'The S1-V configuration chosen from development evidence. Shadow only: selecting it deploys nothing.'
+selected_configuration:
+  provider: gemini
+  model: gemini-4-argon
+  thinking: medium
+  structured_output: true
+  max_output_tokens: 16000
+  timeout_s: 1200.0
+  max_retries: 1
+  adapter: sh0-gemini-proposer-2
+  policy: s1v-grammatical-veto-1
+  metrics: s1v-veto-metrics-1
+  semantic_authority: 'grammatical only: every other proposal field stays non-authoritative'
+  non_authoritative_fields:
+  - ambiguous
+  - none
+  - contextual
+  - entity candidate
+  - clause role
+  - value role
+  - request intent
+  - output
+  - unit
+  - operation
+  - coordination
+  - background
+  nested_span_abstention: enabled (unchanged V1 rule)
+  add_row_guard: enabled (unchanged counterfactual rule)
+  invariant: V1_rows subset of production_rows
+unchanged_pins:
+  prompt_sha256: d339931719545387d1e0e1666a581944ddbc1bad8b2bed2506373ccb1e3f16da
+  canonical_schema: sh0-proposal-1
+  canonical_schema_sha256: 9b442ffdb43d751ffe4ef0f0632b540acfb798fa54280f1a308b176c6fb38731
+  provider_schema_sha256: 027a52ff8ba19425f708b00938e26fe4b866678755df3406441d0a8c8bb689b1
+  projection_version: gemini-projection-1
+  context_version: sh0-context-2
+  engine_fingerprint: 5291fb7158d7cb5df090d48238b9912e782b078e1fe52d0bdbaa9b6915c5e8e7
+  veto_py_sha256: ab8f22dc5be797089ff530529f7d0a2cdad214a0f1745761dc5b23843cbdce6e
+thinking_tokens:
+  setting: medium, as requested; the model's dynamic use of thinking tokens is model behaviour and does not invalidate
+    the comparison
+  recording: usage fields kept exactly as returned; missing thought tokens are never estimated into replay records
+  cost: reported usage is the experimental usage unless provider billing later proves otherwise
+development_evidence:
+  rule: These runs are development or model-selection evidence and cannot be used as final promotion evidence.
+  runs:
+  - manifest: eval/shadow/pilot1_gemini.yaml
+    sha256: 6e65c66ce32aaffa6a05ca88312aa3bb402929c03d54996a76a0b0a83635beca
+    name: Pilot 1
+    role: policy development
+  - manifest: eval/shadow/veto1_gemini.yaml
+    sha256: 5b82d98ac95e232acf3a2408b64531160d12a06c09e91c9d78012eff882f5301
+    name: veto1 Flash
+    role: model selection
+    base_sha256: d5ac38a37907a866cabfd39e78c5b858107aaa9644704521f2fdcf00887e0a88
+  - manifest: eval/shadow/veto1_argon.yaml
+    sha256: 0f596fae7d6c015fad6f2d021841ea9ea90c039bf3eea63a657ae6e55f9cc489
+    name: veto1 Argon
+    role: model selection
+    base_sha256: d5ac38a37907a866cabfd39e78c5b858107aaa9644704521f2fdcf00887e0a88
+    result:
+      correct: 19
+      harmful: 0
+      neutral: 0
+      opportunities: 40
+      precision: 1.0
+      recall: 0.475
+      all_frozen_thresholds_passed: true
+holdout:
+  purpose: Does the frozen Argon + V1 configuration maintain extremely high veto precision while producing useful
+    grammatical-veto recall on unseen realistic queries?
+  kind: 'one fresh holdout for the selected configuration: not Final-9, not a model-selection benchmark'
+  promotion_criteria:
+    harmful_vetoes: 0
+    veto_precision: 1.0
+    opportunity_recall: 0.4
+    rows_outside_production: 0
+    certification_failures: 0
+    replay_determinism: 1.0
+    schema_valid_rate: 0.98
+  criteria_rule: same criteria as veto1; never weakened after seeing the holdout
+  intervals: exact binomial, 95%, for veto precision, harmful-veto rate and opportunity recall
+  recall_definitions:
+    frozen_policy: opportunities whose existing V1 veto class is correct / opportunities (the official threshold
+      applies to this figure)
+    strict_effective: the same, but a case counts only when the final safe counterfactual removes the wrong interpretation
+      without the add-row guard refusing the answer; same denominator; shown beside the official figure, never a
+      replacement threshold
+  reported_separately:
+  - ordinary correct veto
+  - veto that triggers the add-row guard
+  - nested-span abstention
+  - proposal rejected, partial or invalid
+  decision_rule:
+    all_criteria_pass: 'Do not deploy globally. Recommend a limited S1-V live/pilot transition: V1 only, Argon only,
+      grammatical veto only, deterministic answer retained when V1 does not fire, complete logging, immediate kill
+      switch, no S1-R.'
+    any_harmful_veto: Do not promote. Classify it before deciding whether S1-V is viable at all.
+    precision_perfect_recall_below_threshold: Do not tune on this holdout. Argon+V1 is safe but insufficient; stop
+      this S1-V line, no new benchmark loop.
+    safety_failure: Stop S1-V work.

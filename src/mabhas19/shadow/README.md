@@ -3,9 +3,11 @@
 A language model in **shadow mode**: it proposes how to read a question, deterministic code
 verifies the proposal, and the result is only measured. Production output is never changed.
 
-**Status:** built and tested offline. The 80-question pilot is frozen; the first provider is
+**Status:** built and tested offline; shadow only. The first provider is
 Gemini (`gemini-3.8-flash`), with Claude (`claude-opus-5-5`) kept as an optional later
-comparison. No model has been called yet. S1-V and S1-R are not implemented.
+comparison. The 80-question Gemini pilot ran once: safety held, but the broad veto reading
+harmed correct controls. The candidate S1-V policy is now `s1v-grammatical-veto-1`; its unseen
+benchmark `veto1` is frozen and not yet run. S1-V and S1-R are not promoted.
 
 Both providers receive the same instructions and the same rendered candidate context; only the
 request envelope and the schema projection differ. The canonical parser and the verifier
@@ -39,6 +41,7 @@ and logged as a blocked recovery.
 | `replay.py` | Record/replay keys (provider and exact model included) and records; request rendering and prompt hash |
 | `provider.py` | Text-only `GeminiProposer` (REST) and `AnthropicProposer`, and the external-call guards |
 | `metrics.py` | Veto (S1-V), recovery (S1-R) and preservation metrics; S1-V criteria check |
+| `veto.py` | Candidate S1-V policy `s1v-grammatical-veto-1` (one lever: a verifier-accepted `grammatical` label masks a grounded span) and the veto-benchmark metrics |
 | `pilot.py` | Pilot CLI: `verify`, `preflight`, `count-tokens`, `run`, `report` |
 
 ## External-call guards

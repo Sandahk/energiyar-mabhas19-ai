@@ -16,10 +16,12 @@
   budget could be exceeded, when the provider rejects the request shape (HTTP 400) or when a
   response comes from another model; records already made are kept;
 * ``report`` - replay only: re-verifies every record (determinism) and computes the S1-V /
-  S1-R metrics against the frozen gold.
+  S1-R metrics against the frozen gold; on a veto-benchmark manifest, the metrics of the
+  candidate V1 policy (:mod:`mabhas19.shadow.veto`).
 
-Two kinds of frozen manifest. The **base** manifest (``pilot1.yaml``) holds the cases, queries,
-gold labels, expected results and context hashes. A **provider** manifest
+Two kinds of frozen manifest. A **base** manifest holds the cases, queries, gold labels,
+expected results and context hashes: ``pilot1.yaml`` (the semantic pilot) or a veto benchmark
+(``veto1.yaml``, which also pins each case's production rows). A **provider** manifest
 (``pilot1_gemini.yaml``) pins one provider's request contract and the live engine and refers to
 the base manifest by its file SHA-256; its cases are read from the base, never copied, so a
 provider change cannot change the sample or the gold.
@@ -43,6 +45,7 @@ import yaml
 
 from mabhas19.core.env import load_dotenv
 from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
+from mabhas19.shadow import veto as V
 from mabhas19.shadow.context import (
     CONTEXT_VERSION,
     CandidateContext,
@@ -81,11 +84,13 @@ from mabhas19.shadow.run import shadow
 from mabhas19.shadow.schema_projection import sha256 as projection_sha256
 
 BASE_MANIFEST = EVAL_DIR / "shadow" / "pilot1.yaml"
-MANIFEST = EVAL_DIR / "shadow" / "pilot1_gemini.yaml"  # the current pilot: Gemini first
+MANIFEST = EVAL_DIR / "shadow" / "veto1_gemini.yaml"  # the current benchmark (pilot 1 is closed)
 STORE = DATA_DIR / "shadow" / "replay"
 OUT = DATA_DIR / "shadow"
 MANIFEST_SCHEMA = "sh0-pilot-manifest-1"
 PROVIDER_MANIFEST_SCHEMA = "sh0-pilot-provider-manifest-1"
+VETO_MANIFEST_SCHEMA = "sh0-veto-manifest-1"  # a base manifest of the S1-V veto benchmark
+BASE_SCHEMAS = (MANIFEST_SCHEMA, VETO_MANIFEST_SCHEMA)
 STRATA = {
     "homograph_possessive": 12,
     "background_claim_request": 12,
@@ -168,11 +173,16 @@ def freeze(doc: dict[str, Any], path: Path) -> str:
 
 
 def load(path: Path) -> dict[str, Any]:
-    """A manifest; a provider manifest comes with its base manifest's cases."""
+    """A manifest; a provider manifest comes with its base manifest's cases, strata and
+    schema (``base_schema``)."""
     doc: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
     if doc.get("schema") == PROVIDER_MANIFEST_SCHEMA:
         base = yaml.safe_load((path.parent / doc["base"]["path"]).read_text(encoding="utf-8"))
         doc["cases"] = base["cases"]
+        doc["strata"] = base.get("strata")
+        doc["base_schema"] = base.get("schema")
+    else:
+        doc["base_schema"] = doc.get("schema")
     return doc
 
 
@@ -197,9 +207,9 @@ def verify(path: Path, retriever: Any | None = None) -> list[str]:  # noqa: PLR0
             return [why]
         if file_sha256(base) != raw["base"]["sha256"]:
             return [f"{base.name} is not the base manifest this provider manifest pins"]
-        if load(base).get("schema") != MANIFEST_SCHEMA:
+        if load(base).get("schema") not in BASE_SCHEMAS:
             problems.append(f"{base.name} is not a base pilot manifest")
-    elif raw.get("schema") != MANIFEST_SCHEMA:
+    elif raw.get("schema") not in BASE_SCHEMAS:
         problems.append(f"manifest schema {raw.get('schema')!r}")
     doc = load(path)
     settings = ProposerSettings(**doc.get("settings", {}))
@@ -213,13 +223,19 @@ def verify(path: Path, retriever: Any | None = None) -> list[str]:  # noqa: PLR0
     counts: dict[str, int] = {}
     for c in doc.get("cases", []):
         counts[c["stratum"]] = counts.get(c["stratum"], 0) + 1
-    if counts != STRATA:
-        problems.append(f"strata {counts} != {STRATA}")
+    strata = doc.get("strata") or STRATA
+    if counts != strata:
+        problems.append(f"strata {counts} != {strata}")
     if retriever is not None and not problems:
         for c in doc["cases"]:
-            _, ctx, _ = _context(retriever, c["query"])
+            prod, ctx, _ = _context(retriever, c["query"])
             if ctx.sha256() != c["context_sha256"]:
                 problems.append(f"{c['id']}: candidate context changed")
+            if (
+                "production_rows" in c
+                and [h.record_id for h in prod.structured] != c["production_rows"]
+            ):
+                problems.append(f"{c['id']}: production rows changed")
     return problems
 
 
@@ -430,6 +446,7 @@ def report(manifest: Path, retriever: Any, store: ReplayStore) -> dict[str, Any]
     doc = load(manifest)
     settings = ProposerSettings(**doc["settings"])
     rows, missing, nondeterministic = [], [], []
+    v1_rows: list[dict[str, Any]] = []
     for c in doc["cases"]:
         prod, ctx, _ = _context(retriever, c["query"])
         key = ReplayKey.of(c["query"], ctx, settings, doc["pins"]["engine_fingerprint"])
@@ -445,9 +462,13 @@ def report(manifest: Path, retriever: Any, store: ReplayStore) -> dict[str, Any]
             rec.counterfactual,
         ):
             nondeterministic.append(c["id"])
-        if rec.experiment_valid:
+        if rec.experiment_valid and doc.get("base_schema") == VETO_MANIFEST_SCHEMA:
+            v1_rows.append({"id": c["id"], **V.case_metrics(sh, V.decide(retriever, sh),
+                                                            V.gold_of(c))})  # fmt: skip
+        elif rec.experiment_valid:
             rows.append((case_metrics(sh, gold_of(c)), gold_of(c)))
-    out = aggregate(rows)
+    veto_rows = {**V.aggregate(v1_rows), "per_case": v1_rows}
+    out = aggregate(rows) if doc.get("base_schema") != VETO_MANIFEST_SCHEMA else veto_rows
     out["missing_records"] = missing
     total = len(doc["cases"]) - len(missing)
     out["replay_determinism"] = 1 - len(nondeterministic) / total if total else 0.0

@@ -20,7 +20,7 @@ does not support.** Every design decision below follows from that rule.
 | Curated knowledge | Main text structure and page maps; structured tables from the main text and appendices 2, 3 and 7, reviewed |
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
-| LLM semantic shadow (SH0) | Built, offline only. The 80-question pilot is frozen; **no model has been called** |
+| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy and a new unseen benchmark frozen, **not yet run** |
 | Answer generation, API, UI | Not started (blocked until retrieval is promoted) |
 
 ### Where the project stands
@@ -37,11 +37,11 @@ model may never add a row, a value or a citation. See [`src/mabhas19/shadow/`](s
 
 ### Next steps
 
-1. Run the 80-question SH0 pilot with Gemini 3.8 Flash (needs explicit approval and a budget);
-   Claude Opus 5.5 stays an optional second-provider comparison.
-2. Judge it against the S1-V criteria: 0 unsafe new rows, 0 verifier escapes, 0 harmful vetoes.
-3. Only if it passes: implement S1-V, a verified veto that can remove a wrong interpretation
-   but never add one. Recovery of failed-closed questions (S1-R) comes later and separately.
+1. Run the frozen `veto1` benchmark for the candidate S1-V policy (needs explicit approval and
+   a budget). The 80-question Gemini pilot is done: safety held, but its broad veto reading removed
+   correct answers, so the candidate now has one lever only.
+2. Judge it precision first: no harmful vetoes, then useful recall.
+3. Only if it passes, consider promotion. Recovery of failed-closed questions (S1-R) stays paused.
 4. Answer generation, the API and a user interface follow only after retrieval is promoted.
 
 ## How retrieval works
@@ -80,7 +80,7 @@ regulatory value blocks promotion. See [`eval/retrieval/`](eval/retrieval/README
 | `curated/` | Human-verified knowledge: page maps, section structure, structured tables, text ([details](docs/curated.md)) | yes |
 | `data/` | Derived, regenerable outputs (renders, OCR, indexes, run records, replay stores) | no |
 | `eval/retrieval/` | Frozen retrieval evaluation sets, candidate pins and the final-test procedure | yes |
-| `eval/shadow/` | Frozen SH0 pilot manifest | yes |
+| `eval/shadow/` | Frozen SH0 pilot and veto-benchmark manifests | yes |
 | `eval/extraction/` | Extraction benchmark references | yes |
 | `src/mabhas19/` | Application package (see below) | yes |
 | `tests/` | `unit`, `integration`, `regression` tests and small `fixtures` | yes |

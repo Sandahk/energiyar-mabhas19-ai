@@ -3,14 +3,30 @@
 | File | Holds |
 |---|---|
 | `pilot1.yaml` (+ `.sha256`) | The 80 cases, queries, gold labels, expected results and context hashes. Its own pins describe the Anthropic request at freeze time |
-| `pilot1_gemini.yaml` (+ `.sha256`) | The Gemini request contract (`gemini-3.8-flash`) and the live engine; refers to `pilot1.yaml` by its SHA-256 and reads the cases from it |
+| `pilot1_gemini.yaml` (+ `.sha256`) | The Gemini request contract of the pilot, which ran once. Closed: it no longer verifies against the live engine, because the shadow code has changed since |
+| `veto1.yaml` (+ `.sha256`) | The unseen benchmark for the candidate S1-V policy `s1v-grammatical-veto-1`: cases, gold labels, each case's production rows and expected V1 rows. Not a Final-N set |
+| `veto1_gemini.yaml` (+ `.sha256`) | The Gemini request contract of that benchmark; refers to `veto1.yaml` by its SHA-256. **Not yet run** |
 
 Both were frozen before any model output existed. **Do not edit them.** A provider manifest never
 copies the cases, so a provider change cannot alter the sample or the gold. Any change to a
 pinned retrieval or shadow module requires a new provider manifest; a later Claude comparison
 would get its own `pilot1_anthropic.yaml` over the same base.
 
-## Contents
+## `veto1`
+
+| Group | Cases | Purpose |
+|---|---|---|
+| A grammatical misread | 40 | Production returns a wrong row because a word used grammatically, possessively or relationally matched a printed label |
+| B identity lookalike | 69 | Hard controls: a genuine entity whose name holds a word that could be grammatical elsewhere |
+| C plain identity | 49 | Ordinary controls |
+| D ambiguous | 10 | No safe decision: a veto here earns no credit and lowers precision, but is not counted as harmful |
+
+Two isolated authors wrote the cases with the deterministic engine as a probe; two independent
+reviewers labelled them blind, with one adjudication round. A label stands only where author and
+reviewer agree, and a surviving disagreement drops the case. Gold labels were frozen before any
+provider call.
+
+## `pilot1` contents
 
 - **Pins:** engine fingerprint, prompt hash, canonical and provider schema hashes, projection
   and context versions, proposer settings.
@@ -34,5 +50,5 @@ nine poor-fit cases were replaced in round two.
 Known gap: P269's immutable development record lacks an out-of-scope outcome code, so its
 expected result is incomplete.
 
-Check it with `uv run python -m mabhas19.shadow.pilot verify` (the Gemini manifest is the
-default).
+Check the current benchmark with `uv run python -m mabhas19.shadow.pilot verify`
+(`veto1_gemini.yaml` is the default).

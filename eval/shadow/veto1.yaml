@@ -1,0 +1,3863 @@
+# SH0 pilot manifest (frozen; do not edit).
+schema: sh0-veto-manifest-1
+created: '2026-11-02T10:08:46+00:00'
+purpose: unseen veto benchmark for the candidate S1-V policy (shadow only; not a Final-N)
+policy: s1v-grammatical-veto-1
+metrics: s1v-veto-metrics-1
+provenance:
+  authoring: two isolated authors (groups A+D, groups B+C) with the deterministic engine as probe; no access to
+    pilot-1 outputs or the V1 replay study
+  review: two independent reviewers labelled blind on shuffled halves; one adjudication round; a surviving disagreement
+    drops the case
+  provider_calls_during_authoring: 0
+pins:
+  engine_fingerprint: 32ec521721c91a7bf5d0bec17ca91d1d45b763533a27ea1cc4f4ced7a1f99036
+  prompt_sha256: d339931719545387d1e0e1666a581944ddbc1bad8b2bed2506373ccb1e3f16da
+  canonical_schema: sh0-proposal-1
+  canonical_schema_sha256: 9b442ffdb43d751ffe4ef0f0632b540acfb798fa54280f1a308b176c6fb38731
+  provider_schema_sha256: 027a52ff8ba19425f708b00938e26fe4b866678755df3406441d0a8c8bb689b1
+  projection_version: gemini-projection-1
+  context_version: sh0-context-2
+settings:
+  provider: gemini
+  model_id: gemini-3.8-flash
+  effort: medium
+  structured_output: true
+  max_output_tokens: 16000
+  timeout_s: 300.0
+  max_retries: 1
+strata:
+  B_identity_lookalike: 69
+  D_ambiguous: 10
+  C_plain_identity: 49
+  A_grammatical_misread: 40
+cases:
+- id: veto1-B001
+  stratum: B_identity_lookalike
+  query: موتور الکتروموتور سه فاز تک سرعته ۱۵۰ کیلوواتی چه کلاس بازدهی باید داشته باشه؟
+  normalized_query: موتور الکتروموتور سه فاز تک سرعته 150 کیلوواتی چه کلاس بازدهی باید داشته باشه؟
+  context_sha256: 9640d10f306c0e983e6c496090b6be8054e3bbe662fdf03306eca1ef6329c699
+  production_rows:
+  - main-t19-5-3-item13
+  expected_v1_rows:
+  - main-t19-5-3-item13
+  gold:
+    rows:
+      main-t19-5-3-item13: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: A 150 kW three-phase single-speed motor; «تک سرعته» names the motor class whose 75-200 kW row applies.
+  label_source: first_pass
+  natural: awkward
+  author_id: B-012
+- id: veto1-D001
+  stratum: D_ambiguous
+  query: آبگرمکن گازسوز فوری لازم دارم، حداقل بازدهش چقدره؟
+  normalized_query: ابگرمکن گازسوز فوری لازم دارم، حداقل بازدهش چقدره؟
+  context_sha256: 88e23131cbc98e11b1e33a65fb1ee21aa96a2361d58003c3f70fc7670b2538d7
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows:
+  - main-t19-5-4-item02
+  gold:
+    rows:
+      main-t19-5-4-item02: uncertain
+    spans:
+      0: identity
+      1: identity
+      2: ambiguous
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_uncertain
+      2: removes_uncertain
+      3: removes_uncertain
+    opportunity: false
+  rationale: «آبگرمکن گازسوز فوری لازم دارم» can be 'I need an instantaneous gas heater' or 'I urgently need a gas
+    heater'.
+  label_source: adjudicated
+  natural: natural
+  author_id: D-018
+- id: veto1-B002
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی مجاز دفتر پست، اقلیم 0B، رده D
+  normalized_query: شدت مصرف انرژی مجاز دفتر پست، اقلیم 0b، رده d
+  context_sha256: 520d6f69f78892ddfa5e199a17a4d533f2787563f3ec672b756d8798af1c9edf
+  production_rows:
+  - app03-D-r29-0B
+  expected_v1_rows:
+  - app03-D-r29-0B
+  gold:
+    rows:
+      app03-D-r29-0B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Terse EUI request for the post office occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: B-031
+- id: veto1-B003
+  stratum: B_identity_lookalike
+  query: برای درهای لولادار غیرنورگذر تو اقلیم 2A کمترین مقاومت حرارتی قابل قبول چنده؟
+  normalized_query: برای درهای لولادار غیرنورگذر تو اقلیم 2a کمترین مقاومت حرارتی قابل قبول چنده؟
+  context_sha256: f6ecb7c41296db83737577eef84fd1817e828b6985e6239e1909c6466abde006
+  production_rows:
+  - main-t19-5-1-r18c02
+  expected_v1_rows:
+  - main-t19-5-1-r18c02
+  gold:
+    rows:
+      main-t19-5-1-r18c02: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: Hinged opaque doors with reordered words; «درهای» is doors, not the preposition «در».
+  label_source: first_pass
+  natural: natural
+  author_id: B-032
+- id: veto1-B004
+  stratum: B_identity_lookalike
+  query: کف مجاور خاک توی اقلیم 3B کمترین مقاومت حرارتی مجازش چقدره؟
+  normalized_query: کف مجاور خاک توی اقلیم 3b کمترین مقاومت حرارتی مجازش چقدره؟
+  context_sha256: 94c258f59d372ca81e55a032328176afe58a8b19878a8223652390e0eaecc48c
+  production_rows:
+  - main-t19-5-1-r16c03
+  expected_v1_rows:
+  - main-t19-5-1-r16c03
+  gold:
+    rows:
+      main-t19-5-1-r16c03: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Slab on ground; «کف» is the building floor, not foam.
+  label_source: first_pass
+  natural: natural
+  author_id: B-049
+- id: veto1-B005
+  stratum: B_identity_lookalike
+  query: برای چیلر جذبی دو اثره حداقل ضریب عملکرد چقدر تعیین شده؟
+  normalized_query: برای چیلر جذبی دو اثره حداقل ضریب عملکرد چقدر تعیین شده؟
+  context_sha256: 4ae7c0c5f51e3d38150b3ba43983c908b8bd052c184eb94ba7634b9373145eff
+  production_rows:
+  - main-t19-5-3-item07
+  expected_v1_rows:
+  - main-t19-5-3-item07
+  gold:
+    rows:
+      main-t19-5-3-item07: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Asks the minimum COP of a double-effect absorption chiller; «دو» is part of the printed equipment name,
+    not a count.
+  label_source: first_pass
+  natural: natural
+  author_id: B-005
+- id: veto1-C001
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی مهد کودک در اقلیم 0B رده C
+  normalized_query: شدت مصرف انرژی مهد کودک در اقلیم 0b رده c
+  context_sha256: af2449702b5a9f34e46ee6702c0e79514ed4023114b1f58a8de9e41cc9ebe2ab
+  production_rows:
+  - app03-C-r16-0B
+  expected_v1_rows:
+  - app03-C-r16-0B
+  gold:
+    rows:
+      app03-C-r16-0B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Kindergarten EUI in 0B, rating C.
+  label_source: first_pass
+  natural: natural
+  author_id: C-012
+- id: veto1-B006
+  stratum: B_identity_lookalike
+  query: ساری تو کدوم اقلیم قرار میگیره؟
+  normalized_query: ساری تو کدوم اقلیم قرار میگیره؟
+  context_sha256: f9765685791dbe7d74eea8aee3e15b7b12c6483d9e8a6479fe60d514d81e952b
+  production_rows:
+  - app02-p003-r14
+  - main-t19-3-2-r27
+  expected_v1_rows:
+  - app02-p003-r14
+  - main-t19-3-2-r27
+  gold:
+    rows:
+      app02-p003-r14: correct
+      main-t19-3-2-r27: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Climate of the city Sari; «ساری» is the city, not the adjective contagious.
+  label_source: first_pass
+  natural: natural
+  author_id: B-066
+- id: veto1-C002
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی مجاز تشخیص پزشکی آزمایشگاه در اقلیم 2A رده B
+  normalized_query: شدت مصرف انرژی مجاز تشخیص پزشکی ازمایشگاه در اقلیم 2a رده b
+  context_sha256: 20efd3ede9b31d22ac874e2487c8f4da7aefd4531212f82eb51c9fed75074e3d
+  production_rows:
+  - app03-B-r08-2A
+  expected_v1_rows:
+  - app03-B-r08-2A
+  gold:
+    rows:
+      app03-B-r08-2A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Medical diagnostic lab EUI in 2A, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-016
+- id: veto1-B007
+  stratum: B_identity_lookalike
+  query: جدول ۱۹-۲-۱ گروه الف سال اول بازرسی حین ساخت
+  normalized_query: جدول 19-2-1 گروه الف سال اول بازرسی حین ساخت
+  context_sha256: 9776a6b885d4a69f9377bd23200a4cf2b013f5027cd0594057bce67fc56dbfa4
+  production_rows:
+  - main-t19-2-1-r02c03
+  expected_v1_rows:
+  - main-t19-2-1-r02c03
+  gold:
+    rows:
+      main-t19-2-1-r02c03: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+    opportunity: false
+  rationale: In-construction inspection; «حین» is part of the printed requirement name, not a free temporal word.
+  label_source: first_pass
+  natural: natural
+  author_id: B-069
+- id: veto1-A001
+  stratum: A_grammatical_misread
+  query: این مغازه مال منه، شدت مصرف انرژی مجاز آن در اقلیم 3B رده B چقدر است؟
+  normalized_query: این مغازه مال منه، شدت مصرف انرژی مجاز ان در اقلیم 3b رده b چقدر است؟
+  context_sha256: 220957d146646c3bcd74c60e434d465e32c4f3e73c119bdd41e04e81e6933537
+  production_rows:
+  - app03-B-r27-3B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-B-r27-3B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: The user asks the EUI limit for a shop they own; «مال منه» is a possessive predicate ('is mine'), not
+    the shopping mall.
+  label_source: first_pass
+  natural: natural
+  author_id: A-001
+- id: veto1-C003
+  stratum: C_plain_identity
+  query: حداقل کلاس انرژی برای هواساز چیه؟
+  normalized_query: حداقل کلاس انرژی برای هواساز چیه؟
+  context_sha256: bf558080ba46e155758103790270e259bc9e76cfa72f70e8caa0ab6e6617782a
+  production_rows:
+  - main-t19-5-3-item17
+  expected_v1_rows:
+  - main-t19-5-3-item17
+  gold:
+    rows:
+      main-t19-5-3-item17: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Minimum energy class of an air handling unit.
+  label_source: first_pass
+  natural: natural
+  author_id: C-031
+- id: veto1-A002
+  stratum: A_grammatical_misread
+  query: حداقل بازده چیلر تراکمی برای آب و هوای گرم چقدره؟
+  normalized_query: حداقل بازده چیلر تراکمی برای اب و هوای گرم چقدره؟
+  context_sha256: e9c3ae38f3d12cbb690690956615f46bec92ea7cf6c0e3180c28d7edb3a314d9
+  production_rows:
+  - main-t19-5-3-item06
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-3-item06: wrong
+    spans:
+      0: identity
+      1: identity
+      2: grammatical
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+      2: removes_wrong
+    opportunity: true
+  rationale: «آب و هوای گرم» is the idiom 'hot climate'; «آب» does not mean a water-cooled chiller, which the user
+    did not specify.
+  label_source: first_pass
+  natural: natural
+  author_id: A-049
+- id: veto1-A003
+  stratum: A_grammatical_misread
+  query: اون عددی که برای اقلیم 3B رده D گفتید مال شدت مصرف انرژی بود؟
+  normalized_query: اون عددی که برای اقلیم 3b رده d گفتید مال شدت مصرف انرژی بود؟
+  context_sha256: 59fb607f685167ca651780886c11a3608ea9942d9c989a8e3f19dacb55baf70e
+  production_rows:
+  - app03-D-r27-3B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-D-r27-3B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: The user checks whether an earlier number was the EUI value; «مال شدت مصرف انرژی بود» means 'was for/of',
+    not the mall.
+  label_source: first_pass
+  natural: natural
+  author_id: A-004
+- id: veto1-A004
+  stratum: A_grammatical_misread
+  query: هوش مصنوعی یه عدد داد برای ضریب هدایت حرارتی، درسته؟
+  normalized_query: هوش مصنوعی یه عدد داد برای ضریب هدایت حرارتی، درسته؟
+  context_sha256: 214fb130b5da7755ebe64725bd798e86d6a28fd78165403312d9ea48cb22bb2a
+  production_rows:
+  - app07-p010-r20
+  expected_v1_rows: []
+  gold:
+    rows:
+      app07-p010-r20: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «هوش مصنوعی» is 'artificial intelligence'; «مصنوعی» does not name artificial stone, and no material
+    is named.
+  label_source: first_pass
+  natural: natural
+  author_id: A-051
+- id: veto1-C004
+  stratum: C_plain_identity
+  query: دیگ بخار تو مبحث ۱۹ حداقل بازدهی حرارتی ناخالصش چقدره؟
+  normalized_query: دیگ بخار تو مبحث 19 حداقل بازدهی حرارتی ناخالصش چقدره؟
+  context_sha256: 600a3adc54e10ebc54a04a6b43dab77ad712f718993c0f02e4b627350a883d19
+  production_rows:
+  - main-t19-5-3-item03
+  expected_v1_rows:
+  - main-t19-5-3-item03
+  gold:
+    rows:
+      main-t19-5-3-item03: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: no_effect
+    opportunity: false
+  rationale: Minimum gross thermal efficiency of a steam boiler.
+  label_source: first_pass
+  natural: natural
+  author_id: C-035
+- id: veto1-A005
+  stratum: A_grammatical_misread
+  query: حداقل یکنواختی نور مصنوعی چند است؟ با این عدد کار می‌کنیم
+  normalized_query: حداقل یکنواختی نور مصنوعی چند است؟ با این عدد کار می کنیم
+  context_sha256: 8d7f51b1529c41141a9bd4f434d8b17e49277e536a101ff0470292ea142f969d
+  production_rows:
+  - main-t19-5-7-r03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-7-r03: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «با این عدد کار می‌کنیم» means 'we will work with this number'; no space type is named.
+  label_source: first_pass
+  natural: natural
+  author_id: A-035
+- id: veto1-B008
+  stratum: B_identity_lookalike
+  query: سقف مجاور فضای نیمه باز کنترل نشده تو اقلیم 3A حداقل R چقدره
+  normalized_query: سقف مجاور فضای نیمه باز کنترل نشده تو اقلیم 3a حداقل r چقدره
+  context_sha256: 24a23bb0b8b25b0697cb010599441b511f33e3c302b512784532ab10bee76f1c
+  production_rows:
+  - main-t19-5-1-r10c03
+  expected_v1_rows:
+  - main-t19-5-1-r10c03
+  gold:
+    rows:
+      main-t19-5-1-r10c03: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Roof adjacent to uncontrolled semi-open space; «نیمه باز» names the adjacency category in the printed
+    row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-017
+- id: veto1-A006
+  stratum: A_grammatical_misread
+  query: جدول ۱۹-۲-۱ گروه الف، بازرسی تا پایان سال اول
+  normalized_query: جدول 19-2-1 گروه الف، بازرسی تا پایان سال اول
+  context_sha256: 44e858ba31214bec9aa6cc7832e6c7731a25d27953aaf1a75082ade484293448
+  production_rows:
+  - main-t19-2-1-r02c04
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-2-1-r02c04: wrong
+    spans:
+      0: identity
+      1: grammatical
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «تا پایان سال اول» means 'until the end of year one'; the user asks about inspection generally, not
+    the completion inspection.
+  label_source: first_pass
+  natural: natural
+  author_id: A-043
+- id: veto1-C005
+  stratum: C_plain_identity
+  query: حداقل نسبت کفایت نور روز برای انبار و سوله صنعتی
+  normalized_query: حداقل نسبت کفایت نور روز برای انبار و سوله صنعتی
+  context_sha256: e8a18bf95f3e1c13453739a0c3f0f497152c999b0a2c70a8d6e0b13652f75ac6
+  production_rows:
+  - main-t19-5-6-r06
+  expected_v1_rows:
+  - main-t19-5-6-r06
+  gold:
+    rows:
+      main-t19-5-6-r06: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: no_effect
+      1: no_effect
+    opportunity: false
+  rationale: Minimum daylight-sufficiency area for warehouses/industrial sheds.
+  label_source: first_pass
+  natural: natural
+  author_id: C-040
+- id: veto1-A007
+  stratum: A_grammatical_misread
+  query: مقدار ثابتی برای حداکثر ضریب انتقال حرارت پنجره در اقلیم 4B هست؟
+  normalized_query: مقدار ثابتی برای حداکثر ضریب انتقال حرارت پنجره در اقلیم 4b هست؟
+  context_sha256: e429ab3e9e6a7bc0bc6460771898e005f4b5dcf315efb010257143c06d301101
+  production_rows:
+  - main-t19-5-2-r02c04
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-2-r02c04: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «مقدار ثابتی» asks whether there is a fixed value for windows in general; «ثابت» qualifies «مقدار»,
+    not the window type.
+  label_source: first_pass
+  natural: natural
+  author_id: A-009
+- id: veto1-B009
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی مجاز پیش دبستانی در اقلیم 1B رده A
+  normalized_query: شدت مصرف انرژی مجاز پیش دبستانی در اقلیم 1b رده a
+  context_sha256: d73bc5b3793309e0bf66c95e595e197e649a5affea6f0f737ea506895b9a31de
+  production_rows:
+  - app03-A-r15-1B
+  expected_v1_rows:
+  - app03-A-r15-1B
+  gold:
+    rows:
+      app03-A-r15-1B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Pre-school occupancy; «پیش» is part of «پیش دبستانی», not the relational near.
+  label_source: first_pass
+  natural: natural
+  author_id: B-067
+- id: veto1-B010
+  stratum: B_identity_lookalike
+  query: دیگ بخار ری هیت دار حداقل بازدهی حرارتی ناخالص چقدر باید باشه؟
+  normalized_query: دیگ بخار ری هیت دار حداقل بازدهی حرارتی ناخالص چقدر باید باشه؟
+  context_sha256: 4153d036726c1c4660fae420bea61594f03634c8ca75dd9c226234e5c1359131
+  production_rows:
+  - main-t19-5-3-item04
+  expected_v1_rows:
+  - main-t19-5-3-item04
+  gold:
+    rows:
+      main-t19-5-3-item04: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: Steam boiler with reheat; «دار» completes the printed name «ری‌هیت‌دار».
+  label_source: first_pass
+  natural: natural
+  author_id: B-045
+- id: veto1-C006
+  stratum: C_plain_identity
+  query: حداقل بازده بخاری برقی خانگی
+  normalized_query: حداقل بازده بخاری برقی خانگی
+  context_sha256: f24047d4b4dde8e30eed39cfb92c83e89df4167db017dff5b880e2d45a2b0352
+  production_rows:
+  - main-t19-5-4-item06
+  expected_v1_rows:
+  - main-t19-5-4-item06
+  gold:
+    rows:
+      main-t19-5-4-item06: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Minimum efficiency of a domestic electric heater.
+  label_source: first_pass
+  natural: natural
+  author_id: C-036
+- id: veto1-B011
+  stratum: B_identity_lookalike
+  query: دمای آبگرم مصرفی برای روشویی خصوصی حداکثر چقدر مجازه؟
+  normalized_query: دمای ابگرم مصرفی برای روشویی خصوصی حداکثر چقدر مجازه؟
+  context_sha256: e43617b1c7a5faa410a356e1fb63945f6765363faa008c02a4decef7fd2de8af
+  production_rows:
+  - main-t19-5-5-r03
+  expected_v1_rows:
+  - main-t19-5-5-r03
+  gold:
+    rows:
+      main-t19-5-5-r03: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Private washbasin hot-water limit; «خصوصی» is part of the printed place of use.
+  label_source: first_pass
+  natural: natural
+  author_id: B-040
+- id: veto1-C007
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی چدن چقدر است؟
+  normalized_query: ضریب هدایت حرارتی چدن چقدر است؟
+  context_sha256: aef781143f09888d9d67d0c020c551bc209340bd30c5deb88ac73a3a19f1d738
+  production_rows:
+  - app07-p013-r06
+  expected_v1_rows:
+  - app07-p013-r06
+  gold:
+    rows:
+      app07-p013-r06: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of cast iron.
+  label_source: first_pass
+  natural: natural
+  author_id: C-021
+- id: veto1-B012
+  stratum: B_identity_lookalike
+  query: حداقل بازده الکتروموتور تک فاز چند سرعته با توان بیش از ۱۲۰ وات چند درصده؟
+  normalized_query: حداقل بازده الکتروموتور تک فاز چند سرعته با توان بیش از 120 وات چند درصده؟
+  context_sha256: 002ab64aa57ebd9f8f83d6f2b8bfbf3f5730509d828c101f96210d5d6cf8663d
+  production_rows:
+  - main-t19-5-3-item11
+  expected_v1_rows:
+  - main-t19-5-3-item11
+  gold:
+    rows:
+      main-t19-5-3-item11: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: no_effect
+    opportunity: false
+  rationale: '«چند» appears twice: inside the motor name (identity, grounded) and in «چند درصده» (question word,
+    not a span).'
+  label_source: first_pass
+  natural: natural
+  author_id: B-009
+- id: veto1-C008
+  stratum: C_plain_identity
+  query: حداقل ضریب یکنواختی نور مصنوعی در آزمایشگاه و فضاهای فعالیت های دقیق
+  normalized_query: حداقل ضریب یکنواختی نور مصنوعی در ازمایشگاه و فضاهای فعالیت های دقیق
+  context_sha256: 6267c59cbfb6016e9817739ccbb30f462bdb43f69f9ac5be8f98b3316bd1d672
+  production_rows:
+  - main-t19-5-7-r06
+  expected_v1_rows:
+  - main-t19-5-7-r06
+  gold:
+    rows:
+      main-t19-5-7-r06: correct
+    spans:
+      0: identity
+    span_effects:
+      0: no_effect
+    opportunity: false
+  rationale: Minimum lighting uniformity for labs and precision-work spaces.
+  label_source: first_pass
+  natural: natural
+  author_id: C-038
+- id: veto1-B013
+  stratum: B_identity_lookalike
+  query: حداقل مقاومت حرارتی کف مجاور هوای آزاد در اقلیم 1B
+  normalized_query: حداقل مقاومت حرارتی کف مجاور هوای ازاد در اقلیم 1b
+  context_sha256: 81bfb0d02b02ed4208d9b51d78355c7b7a2cbc65fbd496353982b20b9aca3c88
+  production_rows:
+  - main-t19-5-1-r12c01
+  expected_v1_rows:
+  - main-t19-5-1-r12c01
+  gold:
+    rows:
+      main-t19-5-1-r12c01: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Floor over open air; «کف» is the floor element, «آزاد» names the adjacency.
+  label_source: first_pass
+  natural: natural
+  author_id: B-048
+- id: veto1-C009
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی بازالت
+  normalized_query: ضریب هدایت حرارتی بازالت
+  context_sha256: dd6ef1779ba846dcb59c279c705d418ddc0ed62bc21a99fe9526bd1182e6534f
+  production_rows:
+  - app07-p010-r04
+  expected_v1_rows:
+  - app07-p010-r04
+  gold:
+    rows:
+      app07-p010-r04: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of basalt.
+  label_source: first_pass
+  natural: natural
+  author_id: C-022
+- id: veto1-B014
+  stratum: B_identity_lookalike
+  query: اگه دیوار خارجی مجاور فضای باز باشه، تو اقلیم 4B حداقل مقاومت حرارتی چقدر لازمه؟
+  normalized_query: اگه دیوار خارجی مجاور فضای باز باشه، تو اقلیم 4b حداقل مقاومت حرارتی چقدر لازمه؟
+  context_sha256: 81cc854d4e6ac021dc008edabce163322643c5c1a341579688a7c2ef07aae31f
+  production_rows:
+  - main-t19-5-1-r02c04
+  expected_v1_rows:
+  - main-t19-5-1-r02c04
+  gold:
+    rows:
+      main-t19-5-1-r02c04: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Conditional framing; «فضای باز» still names the open-air adjacency of the printed wall row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-021
+- id: veto1-B015
+  stratum: B_identity_lookalike
+  query: تو گروه ب، بازرسی پایان کار از سال اول لازمه یا نه؟ جدول ۱۹-۲-۱
+  normalized_query: تو گروه ب، بازرسی پایان کار از سال اول لازمه یا نه؟ جدول 19-2-1
+  context_sha256: 514311ac36a9463f7d0913eaafde74c82f52ecaf3bbf7f8e297798363404e4d3
+  production_rows:
+  - main-t19-2-1-r07c04
+  expected_v1_rows:
+  - main-t19-2-1-r07c04
+  gold:
+    rows:
+      main-t19-2-1-r07c04: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+    opportunity: false
+  rationale: Completion inspection; «پایان کار» is the printed requirement name, not end of the work in general.
+  label_source: first_pass
+  natural: natural
+  author_id: B-043
+- id: veto1-B016
+  stratum: B_identity_lookalike
+  query: ضریب یکنواختی نور مصنوعی کلاس های درس حداقل چقدر باید باشه؟
+  normalized_query: ضریب یکنواختی نور مصنوعی کلاس های درس حداقل چقدر باید باشه؟
+  context_sha256: 37e50e54cc0757510be910a30d1785e137854a753c462a002e9ad1a1a8bf5298
+  production_rows:
+  - main-t19-5-7-r04
+  expected_v1_rows:
+  - main-t19-5-7-r04
+  gold:
+    rows:
+      main-t19-5-7-r04: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Classrooms; «درس» is part of the printed space name «کلاس‌های درس».
+  label_source: first_pass
+  natural: natural
+  author_id: B-042
+- id: veto1-B017
+  stratum: B_identity_lookalike
+  query: حداکثر شدت مصرف انرژی مال در اقلیم 3B رده C چقدره؟
+  normalized_query: حداکثر شدت مصرف انرژی مال در اقلیم 3b رده c چقدره؟
+  context_sha256: 71f2c36365bd1d0d6e7c41930ecd0b41795fc950adba001160e996f6fe5f0845
+  production_rows:
+  - app03-C-r27-3B
+  expected_v1_rows:
+  - app03-C-r27-3B
+  gold:
+    rows:
+      app03-C-r27-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Asks the EUI cap of a shopping mall; «مال» right after «انرژی» could be misread as possessive (belonging
+    to) but names the mall occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: B-001
+- id: veto1-A008
+  stratum: A_grammatical_misread
+  query: برای سرگرمی می‌پرسم، شدت مصرف انرژی مجاز در اقلیم 0B رده A چقدره؟
+  normalized_query: برای سرگرمی می پرسم، شدت مصرف انرژی مجاز در اقلیم 0b رده a چقدره؟
+  context_sha256: 58b725c95fa5d98cea24be18e23d435f7e05461661195dec6c0a6b84a1d15646
+  production_rows:
+  - app03-A-r19-0B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-A-r19-0B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «برای سرگرمی می‌پرسم» means 'I ask just for fun'; no occupancy is named, so the entertainment row is
+    not asked.
+  label_source: first_pass
+  natural: natural
+  author_id: A-025
+- id: veto1-C010
+  stratum: C_plain_identity
+  query: کافه‌ای در اقلیم 1B داریم، برای رده C شدت مصرف انرژی مجازش چقدره؟
+  normalized_query: کافه ای در اقلیم 1b داریم، برای رده c شدت مصرف انرژی مجازش چقدره؟
+  context_sha256: 4b4223f1fd1718368f821815a0ea89b774d365f21c9f73905a237874c05b07b4
+  production_rows:
+  - app03-C-r25-1B
+  expected_v1_rows:
+  - app03-C-r25-1B
+  gold:
+    rows:
+      app03-C-r25-1B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Cafe (restaurant/cafe occupancy) EUI in 1B, rating C.
+  label_source: first_pass
+  natural: natural
+  author_id: C-006
+- id: veto1-C011
+  stratum: C_plain_identity
+  query: انرژی تجدیدپذیر در جدول ۱۹-۲-۱ برای گروه د سال دوم
+  normalized_query: انرژی تجدیدپذیر در جدول 19-2-1 برای گروه د سال دوم
+  context_sha256: 634e92561c9cc2c88c4ad961117e5f50497b926464a4113bbcd7405ac5ed0b16
+  production_rows:
+  - main-t19-2-1-r18c25
+  expected_v1_rows:
+  - main-t19-2-1-r18c25
+  gold:
+    rows:
+      main-t19-2-1-r18c25: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Renewable-energy requirement for group D, year two.
+  label_source: first_pass
+  natural: natural
+  author_id: C-042
+- id: veto1-A009
+  stratum: A_grammatical_misread
+  query: مسائل مالی به کنار، شدت مصرف انرژی مجاز اقلیم 3A رده C چقدره؟
+  normalized_query: مسائل مالی به کنار، شدت مصرف انرژی مجاز اقلیم 3a رده c چقدره؟
+  context_sha256: d2678141c40de2b5e5347a057723862a4a75eb4ec35bbe87664373623ea1a7f9
+  production_rows:
+  - app03-C-r27-3A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r27-3A: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «مسائل مالی به کنار» means 'money matters aside'; «مالی» is financial, not the shopping mall, and no
+    occupancy is named.
+  label_source: first_pass
+  natural: natural
+  author_id: A-007
+- id: veto1-B018
+  stratum: B_identity_lookalike
+  query: یک مال در اقلیم 2B داریم؛ برای رده D شدت مصرف انرژی مجاز چقدر است؟
+  normalized_query: یک مال در اقلیم 2b داریم؛ برای رده d شدت مصرف انرژی مجاز چقدر است؟
+  context_sha256: 2f1087f001571109d326436715c730f07021e9c918bfa47bcdcaa9c252ca1c64
+  production_rows:
+  - app03-D-r27-2B
+  expected_v1_rows:
+  - app03-D-r27-2B
+  gold:
+    rows:
+      app03-D-r27-2B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: A mall in 2B asking its rating-D EUI; «مال» is the counted entity («یک مال»), not a possessive.
+  label_source: first_pass
+  natural: natural
+  author_id: B-004
+- id: veto1-D002
+  stratum: D_ambiguous
+  query: جدول ۱۹-۲-۱ گروه الف سال اول، الزامات طراحی چیه؟
+  normalized_query: جدول 19-2-1 گروه الف سال اول، الزامات طراحی چیه؟
+  context_sha256: e9b5b34641e8ceecab46fb9d5a9bc3e8a8a49a3b450c186f47b486e19f662118
+  production_rows:
+  - main-t19-2-1-r02c02
+  expected_v1_rows:
+  - main-t19-2-1-r02c02
+  gold:
+    rows:
+      main-t19-2-1-r02c02: uncertain
+    spans:
+      0: ambiguous
+    span_effects:
+      0: removes_uncertain
+    opportunity: false
+  rationale: «الزامات طراحی» can mean the design-inspection item or design requirements in general.
+  label_source: first_pass
+  natural: natural
+  author_id: D-024
+- id: veto1-A010
+  stratum: A_grammatical_misread
+  query: 'صرفاً آموزشی می‌پرسم: حداقل نسبت کفایت نور روز چقدره؟'
+  normalized_query: 'صرفا اموزشی می پرسم: حداقل نسبت کفایت نور روز چقدره؟'
+  context_sha256: a7ef124fd8a9408e080718743f36556ce623d29640460ac0a5fc0dfb71e3f696
+  production_rows:
+  - main-t19-5-6-r05
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-6-r05: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «صرفاً آموزشی می‌پرسم» means 'I ask only for learning'; it does not name an educational building.
+  label_source: first_pass
+  natural: natural
+  author_id: A-048
+- id: veto1-B019
+  stratum: B_identity_lookalike
+  query: حداکثر شدت مصرف انرژی اداری خصوصی اقلیم 3B رده A
+  normalized_query: حداکثر شدت مصرف انرژی اداری خصوصی اقلیم 3b رده a
+  context_sha256: f3d0cfbb32557cfac5a52c1f9df02420c0da1a2106946b7c85dee0c57fa846ad
+  production_rows:
+  - app03-A-r05-3B
+  expected_v1_rows:
+  - app03-A-r05-3B
+  gold:
+    rows:
+      app03-A-r05-3B: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Private office occupancy EUI; «خصوصی» names the printed occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: B-041
+- id: veto1-A011
+  stratum: A_grammatical_misread
+  query: جدول ۱۹-۲-۱ در سطح گروه ب سال دوم برای تست نشت هوا چی گفته؟
+  normalized_query: جدول 19-2-1 در سطح گروه ب سال دوم برای تست نشت هوا چی گفته؟
+  context_sha256: b82417aafffb4bf854fdcee89ae5ba2caef6949f6e3d988dcd26c65b2c6f9325
+  production_rows:
+  - main-t19-2-1-r08c11
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-2-1-r08c11: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «در سطح گروه ب سال دوم» is a relational 'for group B, year two'; «سطح» does not name the surface-leakage
+    row.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-031
+- id: veto1-B020
+  stratum: B_identity_lookalike
+  query: حداکثر دمای آب گرم روشویی عمومی چند درجه است؟
+  normalized_query: حداکثر دمای اب گرم روشویی عمومی چند درجه است؟
+  context_sha256: 612a6ad20df661e057ac969d52fbde2ec7375dbf567f53691cd6070e1de825a9
+  production_rows:
+  - main-t19-5-5-r02
+  expected_v1_rows:
+  - main-t19-5-5-r02
+  gold:
+    rows:
+      main-t19-5-5-r02: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Public washbasin hot-water limit; «عمومی» is part of the printed place of use.
+  label_source: first_pass
+  natural: natural
+  author_id: B-038
+- id: veto1-C012
+  stratum: C_plain_identity
+  query: برای بیمارستانی در اقلیم 4A که می‌خواد رده A بگیره، حداکثر شدت مصرف انرژی مجاز چقدره؟
+  normalized_query: برای بیمارستانی در اقلیم 4a که می خواد رده a بگیره، حداکثر شدت مصرف انرژی مجاز چقدره؟
+  context_sha256: 6aa0563f82468f98f37d3d68a9b8b30df08bc16bfe2b28c1ccef4eedf8223c0b
+  production_rows:
+  - app03-A-r07-4A
+  expected_v1_rows:
+  - app03-A-r07-4A
+  gold:
+    rows:
+      app03-A-r07-4A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Hospital EUI cap in 4A, rating A.
+  label_source: first_pass
+  natural: natural
+  author_id: C-002
+- id: veto1-A012
+  stratum: A_grammatical_misread
+  query: حداقل یکنواختی نور مصنوعی رو بگید تا کار رو شروع کنیم
+  normalized_query: حداقل یکنواختی نور مصنوعی رو بگید تا کار رو شروع کنیم
+  context_sha256: 89dd10ece0fb7ecc0e0c23cfd02db9caffe3484dc60487c7ffd1024d622e7969
+  production_rows:
+  - main-t19-5-7-r03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-7-r03: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «تا کار رو شروع کنیم» means 'so we can start the job'; «کار» is the job, not workspaces.
+  label_source: first_pass
+  natural: natural
+  author_id: A-034
+- id: veto1-C013
+  stratum: C_plain_identity
+  query: برای کاربری آموزشی حداقل نسبت مساحت کفایت نور روز چند درصده؟
+  normalized_query: برای کاربری اموزشی حداقل نسبت مساحت کفایت نور روز چند درصده؟
+  context_sha256: e03c10f0e119dff6a5aeb809c1a0aaa992b4561e010b2ecf377c386990840d06
+  production_rows:
+  - main-t19-5-6-r05
+  expected_v1_rows:
+  - main-t19-5-6-r05
+  gold:
+    rows:
+      main-t19-5-6-r05: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Minimum daylight-sufficiency area for educational use.
+  label_source: first_pass
+  natural: natural
+  author_id: C-039
+- id: veto1-B021
+  stratum: B_identity_lookalike
+  query: رده بازده لازم برای الکتروموتور تک فاز تک سرعته بالای ۱۲۰ وات چیه؟
+  normalized_query: رده بازده لازم برای الکتروموتور تک فاز تک سرعته بالای 120 وات چیه؟
+  context_sha256: 621ef26bc53d7213041b4c1908325b4c7c6d57fd1e4afeb1cd52cf9155c217c1
+  production_rows:
+  - main-t19-5-3-item10
+  expected_v1_rows:
+  - main-t19-5-3-item10
+  gold:
+    rows:
+      main-t19-5-3-item10: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Asks the rating of a single-phase single-speed motor; «تک» is part of the printed motor type.
+  label_source: first_pass
+  natural: natural
+  author_id: B-010
+- id: veto1-C014
+  stratum: C_plain_identity
+  query: حداقل بازده پکیج گازی غیر چگالشی با توان ورودی نامی کمتر از ۷۰ کیلووات
+  normalized_query: حداقل بازده پکیج گازی غیر چگالشی با توان ورودی نامی کمتر از 70 کیلووات
+  context_sha256: 1a497b3debfd9c82a3fe5043b3ee25e33cdbba02a1f1e0a252ec491b44ac99dc
+  production_rows:
+  - main-t19-5-4-item03
+  expected_v1_rows:
+  - main-t19-5-4-item03
+  gold:
+    rows:
+      main-t19-5-4-item03: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: Minimum efficiency of a non-condensing gas combi under 70 kW.
+  label_source: first_pass
+  natural: natural
+  author_id: C-049
+- id: veto1-B022
+  stratum: B_identity_lookalike
+  query: مقدار حداکثر ضریب انتقال حرارت پنجره متحرک برای اقلیم 3B را می‌خواستم.
+  normalized_query: مقدار حداکثر ضریب انتقال حرارت پنجره متحرک برای اقلیم 3b را می خواستم.
+  context_sha256: 55778e318e7fb761894d3c62ef3f1a72b92bc9a0d712be8c697c5741770a3ba5
+  production_rows:
+  - main-t19-5-2-r03c03
+  expected_v1_rows:
+  - main-t19-5-2-r03c03
+  gold:
+    rows:
+      main-t19-5-2-r03c03: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Operable window U-value; «متحرک» names the operable glazing row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-037
+- id: veto1-B023
+  stratum: B_identity_lookalike
+  query: یه مرکز خرید/ مال تو شیراز طراحی می‌کنیم، اقلیم 3B و هدف رده B؛ سقف شدت مصرف انرژی چقدره؟
+  normalized_query: یه مرکز خرید/ مال تو شیراز طراحی می کنیم، اقلیم 3b و هدف رده b؛ سقف شدت مصرف انرژی چقدره؟
+  context_sha256: 68ff41ff957597c6a3ab66b99ff97c680b0b206d62329033b9729268ea99af52
+  production_rows:
+  - app03-B-r27-3B
+  expected_v1_rows:
+  - app03-B-r27-3B
+  gold:
+    rows:
+      app03-B-r27-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Shopping centre in Shiraz; «مرکز» is part of «مرکز خرید», and «سقف» here means cap but is not grounded.
+  label_source: first_pass
+  natural: natural
+  author_id: B-052
+- id: veto1-C015
+  stratum: C_plain_identity
+  query: شیراز تو کدوم دسته اقلیمی قرار داره؟
+  normalized_query: شیراز تو کدوم دسته اقلیمی قرار داره؟
+  context_sha256: 292ba63797e3f3db742af3308ec8a47b15d29ca58f3054ea8cb0fefa34487631
+  production_rows:
+  - app02-p003-r25
+  - main-t19-3-2-r17
+  expected_v1_rows:
+  - app02-p003-r25
+  - main-t19-3-2-r17
+  gold:
+    rows:
+      app02-p003-r25: correct
+      main-t19-3-2-r17: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Climate class of Shiraz.
+  label_source: first_pass
+  natural: natural
+  author_id: C-045
+- id: veto1-C016
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی تجاری/ فروشگاه اقلیم 1B رده C
+  normalized_query: شدت مصرف انرژی تجاری/ فروشگاه اقلیم 1b رده c
+  context_sha256: 9a07b6bfe7eecc3d8b3f8b956e603d8a56669316c5596c0846ad6c5c59e3b99e
+  production_rows:
+  - app03-C-r26-1B
+  expected_v1_rows:
+  - app03-C-r26-1B
+  gold:
+    rows:
+      app03-C-r26-1B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Commercial/shop EUI in 1B, rating C.
+  label_source: first_pass
+  natural: natural
+  author_id: C-018
+- id: veto1-A013
+  stratum: A_grammatical_misread
+  query: 'سوالم جنبه آموزشی داره: حداقل نسبت کفایت نور روز چقدره؟'
+  normalized_query: 'سوالم جنبه اموزشی داره: حداقل نسبت کفایت نور روز چقدره؟'
+  context_sha256: 7771fb789f8cb503a4c87837819ea0df10080247ec3663dace1ec998d079c8ad
+  production_rows:
+  - main-t19-5-6-r05
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-6-r05: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «جنبه آموزشی داره» says the question is for learning; no building use is named for the daylight requirement.
+  label_source: first_pass
+  natural: natural
+  author_id: A-047
+- id: veto1-A014
+  stratum: A_grammatical_misread
+  query: جدول ۱۹-۲-۱ تست نشت هوا در سطح گروه الف سال اول
+  normalized_query: جدول 19-2-1 تست نشت هوا در سطح گروه الف سال اول
+  context_sha256: a4ab66345c26535bcd13bc470812620635abd28807891255b3e69cbab04e13c8
+  production_rows:
+  - main-t19-2-1-r02c11
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-2-1-r02c11: wrong
+    spans:
+      0: identity
+      1: grammatical
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «در سطح گروه الف» means 'at the level of group A'; the user asks about the air-leakage test generally,
+    not facade-surface leakage.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-030
+- id: veto1-C017
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی مجاز تعمیرگاه خودرو اقلیم 3B رده B
+  normalized_query: شدت مصرف انرژی مجاز تعمیرگاه خودرو اقلیم 3b رده b
+  context_sha256: 6da713c05b7b86c81647046ca5044631f55f56f1da5b5c81dbe8dc8b9f2fe740
+  production_rows:
+  - app03-B-r31-3B
+  expected_v1_rows:
+  - app03-B-r31-3B
+  gold:
+    rows:
+      app03-B-r31-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Car repair shop EUI in 3B, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-010
+- id: veto1-A015
+  stratum: A_grammatical_misread
+  query: به طور عمومی حداکثر دمای آب گرم در روشویی چند درجه است؟
+  normalized_query: به طور عمومی حداکثر دمای اب گرم در روشویی چند درجه است؟
+  context_sha256: 85c98824c7da9eb047a2817a458994af93d29af260a0590eb95b59e577a1270c
+  production_rows:
+  - main-t19-5-5-r02
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-5-r02: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «به طور عمومی» means 'in general'; the user asks about washbasins generally, not specifically public
+    washbasins.
+  label_source: first_pass
+  natural: natural
+  author_id: A-019
+- id: veto1-B024
+  stratum: B_identity_lookalike
+  query: حداقل ضریب یکنواختی نور مصنوعی برای فضاهای عمومی و بستری بیمارستان ها
+  normalized_query: حداقل ضریب یکنواختی نور مصنوعی برای فضاهای عمومی و بستری بیمارستان ها
+  context_sha256: e42eefed17a6824e18f3c9069cca473a6d1ee243ad77c29f659a8e72659a8d9e
+  production_rows:
+  - main-t19-5-7-r05
+  expected_v1_rows:
+  - main-t19-5-7-r05
+  gold:
+    rows:
+      main-t19-5-7-r05: correct
+    spans:
+      0: identity
+    span_effects:
+      0: no_effect
+    opportunity: false
+  rationale: Hospital public and ward spaces; «عمومی» is part of the printed space name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-039
+- id: veto1-B025
+  stratum: B_identity_lookalike
+  query: حداقل مقاومت حرارتی دیوار خارجی مجاور فضای باز برای اقلیم 1B چقدر باید باشه؟
+  normalized_query: حداقل مقاومت حرارتی دیوار خارجی مجاور فضای باز برای اقلیم 1b چقدر باید باشه؟
+  context_sha256: d56804cd140111fdaed4acf912c04b24153bc71333c1e51167c71ecd3f926372
+  production_rows:
+  - main-t19-5-1-r02c01
+  expected_v1_rows:
+  - main-t19-5-1-r02c01
+  gold:
+    rows:
+      main-t19-5-1-r02c01: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Wall adjacent to open air; «باز» means open (air) in the printed element name, not again.
+  label_source: first_pass
+  natural: natural
+  author_id: B-020
+- id: veto1-B026
+  stratum: B_identity_lookalike
+  query: طبق جدول ۱۹-۲-۱ سیستم سرمایش و گرمایش ۴ لوله برای گروه ب در سال اول چه وضعیتی داره؟
+  normalized_query: طبق جدول 19-2-1 سیستم سرمایش و گرمایش 4 لوله برای گروه ب در سال اول چه وضعیتی داره؟
+  context_sha256: 8d27eaac06a5fb84f3325f25e8978c88e316e6eb951ac2d4b905be68a737d6fd
+  production_rows:
+  - main-t19-2-1-r07c17
+  expected_v1_rows:
+  - main-t19-2-1-r07c17
+  gold:
+    rows:
+      main-t19-2-1-r07c17: correct
+    spans:
+      1: identity
+      2: identity
+    span_effects:
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Four-pipe heating/cooling requirement; the numeral «۴» is part of the printed requirement name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-059
+- id: veto1-D003
+  stratum: D_ambiguous
+  query: حداکثر ضریب انتقال حرارت پنجره ورودی در اقلیم 2B چقدر است؟
+  normalized_query: حداکثر ضریب انتقال حرارت پنجره ورودی در اقلیم 2b چقدر است؟
+  context_sha256: f5b9b4b2a72831fc217440e54a91b49aacb3604d41db96d1badefabacc499d2c
+  production_rows:
+  - main-t19-5-2-r04c02
+  expected_v1_rows:
+  - main-t19-5-2-r04c02
+  gold:
+    rows:
+      main-t19-5-2-r04c02: uncertain
+    spans:
+      0: ambiguous
+    span_effects:
+      0: removes_uncertain
+    opportunity: false
+  rationale: '«پنجره ورودی» is not a standard term: it may mean the glazed entrance door or simply a window at the
+    entrance.'
+  label_source: first_pass
+  natural: awkward
+  author_id: D-008
+- id: veto1-C018
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی مجاز مسجد تو اقلیم 2B رده C چنده؟
+  normalized_query: شدت مصرف انرژی مجاز مسجد تو اقلیم 2b رده c چنده؟
+  context_sha256: 749346a13629bd4f66e1334e3e64915463f24510f522f6ef2011f736477626e8
+  production_rows:
+  - app03-C-r18-2B
+  expected_v1_rows:
+  - app03-C-r18-2B
+  gold:
+    rows:
+      app03-C-r18-2B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Mosque EUI in 2B, rating C.
+  label_source: first_pass
+  natural: natural
+  author_id: C-003
+- id: veto1-B027
+  stratum: B_identity_lookalike
+  query: حداقل مقاومت حرارتی درهای غیرنورگذر بدون لولا در اقلیم 2B
+  normalized_query: حداقل مقاومت حرارتی درهای غیرنورگذر بدون لولا در اقلیم 2b
+  context_sha256: 1fb7eecc87da2df35f3a9696ab0adaaa268a6cdfb2b473cd04f8d3c1621cbe8e
+  production_rows:
+  - main-t19-5-1-r20c02
+  expected_v1_rows:
+  - main-t19-5-1-r20c02
+  gold:
+    rows:
+      main-t19-5-1-r20c02: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Non-hinged opaque doors; «بدون لولا» is part of the printed door type.
+  label_source: first_pass
+  natural: natural
+  author_id: B-022
+- id: veto1-B028
+  stratum: B_identity_lookalike
+  query: اقلیم 2A؛ حداکثر ضریب انتقال حرارت مجاز برای در ورودی چنده؟
+  normalized_query: اقلیم 2a؛ حداکثر ضریب انتقال حرارت مجاز برای در ورودی چنده؟
+  context_sha256: b8737507e05324fb9f015310528336d137e3a29de887b7c160baeb1ca57ee22b
+  production_rows:
+  - main-t19-5-2-r04c02
+  expected_v1_rows:
+  - main-t19-5-2-r04c02
+  gold:
+    rows:
+      main-t19-5-2-r04c02: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Entrance door in 2A; «ورودی» names the printed entrance-door row, not input.
+  label_source: first_pass
+  natural: natural
+  author_id: B-035
+- id: veto1-D004
+  stratum: D_ambiguous
+  query: حداکثر ضریب انتقال حرارت ثابت برای پنجره در اقلیم 3B
+  normalized_query: حداکثر ضریب انتقال حرارت ثابت برای پنجره در اقلیم 3b
+  context_sha256: 1a1229c954399ef5f5a775b45e76187cb480204a7f33fce91d561a6e7e697c3d
+  production_rows:
+  - main-t19-5-2-r02c03
+  expected_v1_rows:
+  - main-t19-5-2-r02c03
+  gold:
+    rows:
+      main-t19-5-2-r02c03: uncertain
+    spans:
+      0: ambiguous
+    span_effects:
+      0: removes_uncertain
+    opportunity: false
+  rationale: «ضریب انتقال حرارت ثابت برای پنجره» can mean a constant U-value limit for windows or the U-value of
+    fixed windows.
+  label_source: first_pass
+  natural: awkward
+  author_id: D-005
+- id: veto1-A016
+  stratum: A_grammatical_misread
+  query: ضریب هدایت حرارتی سنگ آهکی به سختی پیدا میشه، عددش چنده؟
+  normalized_query: ضریب هدایت حرارتی سنگ اهکی به سختی پیدا میشه، عددش چنده؟
+  context_sha256: ec9ad8ffc67e18c993abfd77662620d48b42c1a684b2f796c1e76a2ae490b03f
+  production_rows:
+  - app07-p010-r09
+  expected_v1_rows: []
+  gold:
+    rows:
+      app07-p010-r09: wrong
+    spans:
+      0: identity
+      1: grammatical
+    span_effects:
+      0: no_effect
+      1: removes_wrong
+    opportunity: true
+  rationale: «به سختی پیدا میشه» means 'is hard to find'; the user asks about limestone generally, not hard limestone.
+  label_source: first_pass
+  natural: natural
+  author_id: A-040
+- id: veto1-B029
+  stratum: B_identity_lookalike
+  query: دانشجوی معماری هستم؛ ضریب هدایت حرارتی برنج طبق پیوست ۷ چنده؟
+  normalized_query: دانشجوی معماری هستم؛ ضریب هدایت حرارتی برنج طبق پیوست 7 چنده؟
+  context_sha256: 28414c2dbec59d98dc690debc5b3310efade6d1f09420e0f01cba771dc1fdba1
+  production_rows:
+  - app07-p013-r10
+  expected_v1_rows:
+  - app07-p013-r10
+  gold:
+    rows:
+      app07-p013-r10: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Asks conductivity of brass; «برنج» is the metal in Appendix 7, not rice.
+  label_source: first_pass
+  natural: natural
+  author_id: B-027
+- id: veto1-C019
+  stratum: C_plain_identity
+  query: بازرسی طراحی برای ساختمان‌های گروه ج در سال اول الزامی است؟ جدول ۱۹-۲-۱
+  normalized_query: بازرسی طراحی برای ساختمان های گروه ج در سال اول الزامی است؟ جدول 19-2-1
+  context_sha256: 9249d927c974222c5d423b85360d09f84d36130176507f2199822de85c966792
+  production_rows:
+  - main-t19-2-1-r12c02
+  expected_v1_rows:
+  - main-t19-2-1-r12c02
+  gold:
+    rows:
+      main-t19-2-1-r12c02: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+    opportunity: false
+  rationale: Design inspection requirement for group C, year one.
+  label_source: first_pass
+  natural: natural
+  author_id: C-043
+- id: veto1-C020
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی سنگ مرمر چقدره؟
+  normalized_query: ضریب هدایت حرارتی سنگ مرمر چقدره؟
+  context_sha256: b83ce2b7ec87d04aa6ecd0901c3354aae502af72dfb69d6f4fcca2645d2e9bec
+  production_rows:
+  - app07-p010-r07
+  expected_v1_rows:
+  - app07-p010-r07
+  gold:
+    rows:
+      app07-p010-r07: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of marble.
+  label_source: first_pass
+  natural: natural
+  author_id: C-023
+- id: veto1-B030
+  stratum: B_identity_lookalike
+  query: برای پلی اتیلن با چگالی زیاد (HD) ضریب هدایت حرارتی چنده؟
+  normalized_query: برای پلی اتیلن با چگالی زیاد (hd) ضریب هدایت حرارتی چنده؟
+  context_sha256: 36a384d0177a01a758d2eb1ee71f5dc0d967c4ff01dce3d90e4226793c19fa50
+  production_rows:
+  - app07-p007-r11
+  expected_v1_rows:
+  - app07-p007-r11
+  gold:
+    rows:
+      app07-p007-r11: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: no_effect
+      3: removes_correct
+    opportunity: false
+  rationale: High-density polyethylene; «زیاد» is part of the printed grade, not an intensifier.
+  label_source: first_pass
+  natural: natural
+  author_id: B-047
+- id: veto1-B031
+  stratum: B_identity_lookalike
+  query: رده اقلیمی خرم آباد
+  normalized_query: رده اقلیمی خرم اباد
+  context_sha256: 9a948d769d6ea4f492def99667603082927ba7d3881f5165d94721d61c403f97
+  production_rows:
+  - app02-p003-r05
+  - main-t19-3-2-r26
+  expected_v1_rows:
+  - app02-p003-r05
+  - main-t19-3-2-r26
+  gold:
+    rows:
+      app02-p003-r05: correct
+      main-t19-3-2-r26: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Climate class of Khorramabad; «خرم» is part of the city name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-065
+- id: veto1-B032
+  stratum: B_identity_lookalike
+  query: تو اقلیم 5B، پنجره ثابت حداکثر چه ضریب انتقال حرارتی می‌تونه داشته باشه؟
+  normalized_query: تو اقلیم 5b، پنجره ثابت حداکثر چه ضریب انتقال حرارتی می تونه داشته باشه؟
+  context_sha256: 563d736ffa2baad167cd0278f135caf481dab65c9e99d651335fd1217fb147d6
+  production_rows:
+  - main-t19-5-2-r02c05
+  expected_v1_rows:
+  - main-t19-5-2-r02c05
+  gold:
+    rows:
+      main-t19-5-2-r02c05: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Fixed window U-value; «ثابت» names the fixed glazing row, not constant.
+  label_source: first_pass
+  natural: natural
+  author_id: B-036
+- id: veto1-C021
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی فست فود در اقلیم 0B با رده B
+  normalized_query: شدت مصرف انرژی فست فود در اقلیم 0b با رده b
+  context_sha256: b86e157da4a191cc7b4e18132bc74cfddc4d4355fc3fb3e4b750e2f7460d0504
+  production_rows:
+  - app03-B-r24-0B
+  expected_v1_rows:
+  - app03-B-r24-0B
+  gold:
+    rows:
+      app03-B-r24-0B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Fast-food occupancy EUI in 0B, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-007
+- id: veto1-B033
+  stratum: B_identity_lookalike
+  query: کف مجاور نیمه باز کنترل نشده، اقلیم 4A، حداقل مقاومت حرارتی؟
+  normalized_query: کف مجاور نیمه باز کنترل نشده، اقلیم 4a، حداقل مقاومت حرارتی؟
+  context_sha256: ec11f143c7dd586fb8a65be9ea997a1b8bf4eaf16e5f453ff239ca07a71530de
+  production_rows:
+  - main-t19-5-1-r14c04
+  expected_v1_rows:
+  - main-t19-5-1-r14c04
+  gold:
+    rows:
+      main-t19-5-1-r14c04: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Floor adjacent to uncontrolled semi-open space; «کف» and «نیمه باز» are printed name words.
+  label_source: first_pass
+  natural: natural
+  author_id: B-018
+- id: veto1-A017
+  stratum: A_grammatical_misread
+  query: شدت مصرف انرژی مجاز اداری اقلیم 3B رده A؟ به طور عمومی می‌خوام بدونم
+  normalized_query: شدت مصرف انرژی مجاز اداری اقلیم 3b رده a؟ به طور عمومی می خوام بدونم
+  context_sha256: 3f979273716c64b7e08d016aa499e7049724d21c0f9ff84621016fd0359c5d03
+  production_rows:
+  - app03-A-r04-3B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-A-r04-3B: wrong
+    spans:
+      0: identity
+      1: grammatical
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: The trailing «به طور عمومی می‌خوام بدونم» means 'I just want to know in general'; it does not make
+    the office public.
+  label_source: first_pass
+  natural: natural
+  author_id: A-021
+- id: veto1-C022
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی هایپر مارکت/ سوپر مارکت در اقلیم 4A رده B
+  normalized_query: شدت مصرف انرژی هایپر مارکت/ سوپر مارکت در اقلیم 4a رده b
+  context_sha256: ecd86da28696624b5cf7c877b867b3b5c13e58d498dbacc423327fed1a0552a7
+  production_rows:
+  - app03-B-r23-4A
+  expected_v1_rows:
+  - app03-B-r23-4A
+  gold:
+    rows:
+      app03-B-r23-4A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Hypermarket/supermarket EUI in 4A, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-013
+- id: veto1-B034
+  stratum: B_identity_lookalike
+  query: حداکثر شدت مصرف انرژی ساختمان فرهنگی/ سرگرمی در اقلیم 3B رده C
+  normalized_query: حداکثر شدت مصرف انرژی ساختمان فرهنگی/ سرگرمی در اقلیم 3b رده c
+  context_sha256: 600bb59f1161f3358c269e7037b120ffed1067c459fa0d900290fb56bbe402a6
+  production_rows:
+  - app03-C-r19-3B
+  expected_v1_rows:
+  - app03-C-r19-3B
+  gold:
+    rows:
+      app03-C-r19-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Cultural/entertainment occupancy; «سرگرمی» names the printed occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: B-068
+- id: veto1-B035
+  stratum: B_identity_lookalike
+  query: جدول ۱۹-۲-۱ گروه ج سال دوم سرمایش و گرمایش چهار لوله
+  normalized_query: جدول 19-2-1 گروه ج سال دوم سرمایش و گرمایش چهار لوله
+  context_sha256: e6386cebe8cf9163d159aafbdfceca47bba04a2ddb106aead960377977726b25
+  production_rows:
+  - main-t19-2-1-r13c17
+  expected_v1_rows:
+  - main-t19-2-1-r13c17
+  gold:
+    rows:
+      main-t19-2-1-r13c17: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Four-pipe system written as a word; «چهار لوله» is the printed requirement, not a count.
+  label_source: first_pass
+  natural: natural
+  author_id: B-060
+- id: veto1-C023
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی بتن هوادار اتوکلاو شده با چگالی اسمی ۶۰۰
+  normalized_query: ضریب هدایت حرارتی بتن هوادار اتوکلاو شده با چگالی اسمی 600
+  context_sha256: 5bec8704176004e37d57dcd795208fff6a95aca821ecbb21509ea66eaf4c02c6
+  production_rows:
+  - app07-p006-r07
+  expected_v1_rows:
+  - app07-p006-r07
+  gold:
+    rows:
+      app07-p006-r07: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of autoclaved aerated concrete, nominal density 600.
+  label_source: first_pass
+  natural: natural
+  author_id: C-028
+- id: veto1-A018
+  stratum: A_grammatical_misread
+  query: 'فوری: حداقل بازده و رتبه انرژی آبگرمکن گازسوز'
+  normalized_query: 'فوری: حداقل بازده و رتبه انرژی ابگرمکن گازسوز'
+  context_sha256: 24ea8494e84eaf3201b6e0aae33c888616143c6bcec1e51216b221fbc1289f98
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-4-item02: wrong
+    spans:
+      0: grammatical
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+      2: removes_wrong
+      3: removes_wrong
+    opportunity: true
+  rationale: The header «فوری:» marks the message as urgent; it does not select the tankless (instantaneous) gas
+    water heater.
+  label_source: first_pass
+  natural: natural
+  author_id: A-017
+- id: veto1-A019
+  stratum: A_grammatical_misread
+  query: حداکثر ضریب انتقال حرارت پنجره در اقلیم 3B که ثابت شده چقدره؟
+  normalized_query: حداکثر ضریب انتقال حرارت پنجره در اقلیم 3b که ثابت شده چقدره؟
+  context_sha256: dced2fd58c894b691aa984bd57a01774d71fa174fae61305ecbd7401484c9c9a
+  production_rows:
+  - main-t19-5-2-r02c03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-2-r02c03: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «که ثابت شده» means 'which has been established'; the user asks about windows generally, not fixed
+    (non-operable) windows.
+  label_source: first_pass
+  natural: awkward
+  author_id: A-010
+- id: veto1-D005
+  stratum: D_ambiguous
+  query: حداکثر دمای آبگرم روشویی در حالت عمومی چقدره؟
+  normalized_query: حداکثر دمای ابگرم روشویی در حالت عمومی چقدره؟
+  context_sha256: 1301260180d42e6e5c345f9ab7b900c0996e46a04f19e8f8e7c6d590fc771908
+  production_rows:
+  - main-t19-5-5-r02
+  expected_v1_rows:
+  - main-t19-5-5-r02
+  gold:
+    rows:
+      main-t19-5-5-r02: uncertain
+    spans:
+      0: identity
+      1: ambiguous
+    span_effects:
+      0: removes_uncertain
+      1: removes_uncertain
+    opportunity: false
+  rationale: «در حالت عمومی» can mean 'for the public case' or 'in the general case'; both readings are natural.
+  label_source: first_pass
+  natural: natural
+  author_id: D-030
+- id: veto1-B036
+  stratum: B_identity_lookalike
+  query: حداقل بازده چیلر تراکمی هوا خنک
+  normalized_query: حداقل بازده چیلر تراکمی هوا خنک
+  context_sha256: a91902dad0bb7960f7d5909fc0884530012b920883eb92af198db44e2337e94c
+  production_rows:
+  - main-t19-5-3-item05
+  expected_v1_rows:
+  - main-t19-5-3-item05
+  gold:
+    rows:
+      main-t19-5-3-item05: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: removes_correct
+      3: no_effect
+    opportunity: false
+  rationale: Air-cooled compression chiller; «هوا» is part of the printed equipment name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-061
+- id: veto1-A020
+  stratum: A_grammatical_misread
+  query: به طور کلی و عمومی شدت مصرف انرژی ساختمان اداری در اقلیم 2A رده B چقدر است؟
+  normalized_query: به طور کلی و عمومی شدت مصرف انرژی ساختمان اداری در اقلیم 2a رده b چقدر است؟
+  context_sha256: 07ff51a35902734bc2f394ac6430b7d07e143956d6c2194927b3516527e90339
+  production_rows:
+  - app03-B-r04-2A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-B-r04-2A: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «به طور کلی و عمومی» is a coordinated adverb 'generally'; the user names an office building without
+    saying public or private.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-020
+- id: veto1-D006
+  stratum: D_ambiguous
+  query: حداقل بازده آبگرمکن گازسوز، فوری
+  normalized_query: حداقل بازده ابگرمکن گازسوز، فوری
+  context_sha256: 80c8f48c1d267e560d1ad851284c1545cac8cf0add49b3f3563b6427bbf2edb0
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows:
+  - main-t19-5-4-item02
+  gold:
+    rows:
+      main-t19-5-4-item02: uncertain
+    spans:
+      0: identity
+      1: identity
+      2: ambiguous
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_uncertain
+      2: removes_uncertain
+      3: removes_uncertain
+    opportunity: false
+  rationale: The trailing «، فوری» can specify the instantaneous heater or mark the request as urgent.
+  label_source: first_pass
+  natural: natural
+  author_id: D-017
+- id: veto1-B037
+  stratum: B_identity_lookalike
+  query: یه ساختمون دفتر پست در اقلیم 3A داریم، برای رده B شدت مصرف انرژی مجازش چقدره؟
+  normalized_query: یه ساختمون دفتر پست در اقلیم 3a داریم، برای رده b شدت مصرف انرژی مجازش چقدره؟
+  context_sha256: 582c64d9d09cf80051033f736890a97d0e4fb8121b2103bb68ce1ab6f4d0ef6e
+  production_rows:
+  - app03-B-r29-3A
+  expected_v1_rows:
+  - app03-B-r29-3A
+  gold:
+    rows:
+      app03-B-r29-3A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Post office occupancy; «پست» in «دفتر پست» names the printed occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: B-030
+- id: veto1-C024
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی مسکونی کمتر از ۳۰۰۰ مترمربع در اقلیم 3B رده B
+  normalized_query: شدت مصرف انرژی مسکونی کمتر از 3000 مترمربع در اقلیم 3b رده b
+  context_sha256: 220afeb7d8ffc808b840a3ce51f448e43feca08bf8aae960a9694d5778d31e9f
+  production_rows:
+  - app03-B-r02-3B
+  expected_v1_rows:
+  - app03-B-r02-3B
+  gold:
+    rows:
+      app03-B-r02-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Residential under 3000 m2 EUI in 3B, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-014
+- id: veto1-B038
+  stratum: B_identity_lookalike
+  query: سنگ‌های آهکی نیمه سخت چه ضریب هدایت حرارتی دارن؟
+  normalized_query: سنگ های اهکی نیمه سخت چه ضریب هدایت حرارتی دارن؟
+  context_sha256: 16875a2ff5ba2c985541e8fa59903b26c53f627c095fdb54a165cb07455ca549
+  production_rows:
+  - app07-p010-r10
+  expected_v1_rows:
+  - app07-p010-r10
+  gold:
+    rows:
+      app07-p010-r10: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+    opportunity: false
+  rationale: Asks about medium-hard limestone; «نیمه سخت» is the printed grade.
+  label_source: first_pass
+  natural: natural
+  author_id: B-019
+- id: veto1-B039
+  stratum: B_identity_lookalike
+  query: آبگرمکن گازسوز بدون مخزن یا همون فوری حداقل چه بازدهی باید داشته باشه؟
+  normalized_query: ابگرمکن گازسوز بدون مخزن یا همون فوری حداقل چه بازدهی باید داشته باشه؟
+  context_sha256: 3af3d4e8442a619e1fafbf526ce4d329587a049945cdc41da1a48f99c532f5d9
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows:
+  - main-t19-5-4-item02
+  gold:
+    rows:
+      main-t19-5-4-item02: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+      4: no_effect
+    opportunity: false
+  rationale: Tankless (instant) gas water heater; «فوری» is the printed parenthetical name, not urgently.
+  label_source: first_pass
+  natural: natural
+  author_id: B-026
+- id: veto1-C025
+  stratum: C_plain_identity
+  query: فن کویل‌ها باید حداقل چه رده انرژی داشته باشن؟
+  normalized_query: فن کویل ها باید حداقل چه رده انرژی داشته باشن؟
+  context_sha256: 5cdf86cd90a84af5388a4d1ff89a2eebe4b4204e846058fd52edb8f140336486
+  production_rows:
+  - main-t19-5-3-item18
+  expected_v1_rows:
+  - main-t19-5-3-item18
+  gold:
+    rows:
+      main-t19-5-3-item18: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Minimum energy rating of fan coils.
+  label_source: first_pass
+  natural: natural
+  author_id: C-032
+- id: veto1-A021
+  stratum: A_grammatical_misread
+  query: 'یه سوال خصوصی از شما: شدت مصرف انرژی مجاز اداری اقلیم 3A رده B چنده؟'
+  normalized_query: 'یه سوال خصوصی از شما: شدت مصرف انرژی مجاز اداری اقلیم 3a رده b چنده؟'
+  context_sha256: 1e1bb0fa60aa332aa32bbab6dcc1217f80e2cd288f7b2eba9ee938f6a9d56722
+  production_rows:
+  - app03-B-r05-3A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-B-r05-3A: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «یه سوال خصوصی از شما» is 'a private question for you'; «خصوصی» qualifies the question, not the office.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-024
+- id: veto1-B040
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی مجاز انبار یخچال دار در اقلیم 0B رده B
+  normalized_query: شدت مصرف انرژی مجاز انبار یخچال دار در اقلیم 0b رده b
+  context_sha256: 08291e1e12a7041efb6263a3a0e4b733e29e119b4642a0e4e7648b7e6f14d5ad
+  production_rows:
+  - app03-B-r32-0B
+  expected_v1_rows:
+  - app03-B-r32-0B
+  gold:
+    rows:
+      app03-B-r32-0B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Refrigerated warehouse occupancy; «یخچال دار» is the printed name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-046
+- id: veto1-A022
+  stratum: A_grammatical_misread
+  query: از نظر مالی، شدت مصرف انرژی مجاز در اقلیم 4A رده C برامون مهمه؛ چقدره؟
+  normalized_query: از نظر مالی، شدت مصرف انرژی مجاز در اقلیم 4a رده c برامون مهمه؛ چقدره؟
+  context_sha256: 12f3a96a2efcbcc04ef3141117ed79f7d9af9ba3da30b9c0b72d81a4b68704da
+  production_rows:
+  - app03-C-r27-4A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r27-4A: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «از نظر مالی» is an adverbial 'financially'; the question names no occupancy, so the mall row is not
+    asked for.
+  label_source: first_pass
+  natural: natural
+  author_id: A-006
+- id: veto1-C026
+  stratum: C_plain_identity
+  query: دبیرستان در اقلیم 4A رده A حداکثر شدت مصرف انرژی سالانه چقدر تعیین شده است؟
+  normalized_query: دبیرستان در اقلیم 4a رده a حداکثر شدت مصرف انرژی سالانه چقدر تعیین شده است؟
+  context_sha256: 17b9587204d82ed408cf97ae7efc7412ef57dd4b06a39342ac691b6b7f529cd8
+  production_rows:
+  - app03-A-r14-4A
+  expected_v1_rows:
+  - app03-A-r14-4A
+  gold:
+    rows:
+      app03-A-r14-4A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: High-school EUI in 4A, rating A.
+  label_source: first_pass
+  natural: natural
+  author_id: C-008
+- id: veto1-A023
+  stratum: A_grammatical_misread
+  query: شدت مصرف انرژی مجاز اقلیم 1B رده C فقط محض سرگرمی
+  normalized_query: شدت مصرف انرژی مجاز اقلیم 1b رده c فقط محض سرگرمی
+  context_sha256: ddea83aa9c35edf064b087518e6e415ff8d10fa0a06e2bd12c48385d69d25fbc
+  production_rows:
+  - app03-C-r19-1B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r19-1B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «فقط محض سرگرمی» means 'just for fun'; the question names no occupancy.
+  label_source: first_pass
+  natural: awkward
+  author_id: A-027
+- id: veto1-B041
+  stratum: B_identity_lookalike
+  query: چوب پنبه متراکم چه ضریب هدایت حرارتی داره؟
+  normalized_query: چوب پنبه متراکم چه ضریب هدایت حرارتی داره؟
+  context_sha256: 1c6ac4ba38f57a955ed5904e3b112e02d7a5e4957213c97140745dfd43c86f80
+  production_rows:
+  - app07-p009-r06
+  expected_v1_rows:
+  - app07-p009-r06
+  gold:
+    rows:
+      app07-p009-r06: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Dense cork; «پنبه» in «چوب پنبه» names cork, not cotton.
+  label_source: first_pass
+  natural: natural
+  author_id: B-055
+- id: veto1-C027
+  stratum: C_plain_identity
+  query: هدایت حرارتی مس
+  normalized_query: هدایت حرارتی مس
+  context_sha256: c974c2aa80dfc63e0ede74efacd3650775fec8fd9da7502d432eefce7a126690
+  production_rows:
+  - app07-p013-r09
+  expected_v1_rows:
+  - app07-p013-r09
+  gold:
+    rows:
+      app07-p013-r09: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of copper.
+  label_source: first_pass
+  natural: natural
+  author_id: C-024
+- id: veto1-B042
+  stratum: B_identity_lookalike
+  query: الکتروموتور سه فاز تک سرعته با توان بین ۷۵ تا ۲۰۰ کیلووات حداقل چه بازدهی لازم داره؟
+  normalized_query: الکتروموتور سه فاز تک سرعته با توان بین 75 تا 200 کیلووات حداقل چه بازدهی لازم داره؟
+  context_sha256: 4cdd4b4537828005121cfd205eab0f1b63d6c5097342ba6c0e6a753eb9c3f349
+  production_rows:
+  - main-t19-5-3-item13
+  expected_v1_rows:
+  - main-t19-5-3-item13
+  gold:
+    rows:
+      main-t19-5-3-item13: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: no_effect
+      3: no_effect
+    opportunity: false
+  rationale: Three-phase single-speed motor in the 75-200 kW band; «تک سرعته» is a printed name part, not a count.
+  label_source: first_pass
+  natural: natural
+  author_id: B-011
+- id: veto1-A024
+  stratum: A_grammatical_misread
+  query: حداقل بازده آبگرمکن گازسوز رو فوری لازم دارم
+  normalized_query: حداقل بازده ابگرمکن گازسوز رو فوری لازم دارم
+  context_sha256: fa40a962e0f232627a6f80a48990f81b0fa8c85fc16b920d54cd7539ecfb8dcf
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-4-item02: wrong
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: grammatical
+    span_effects:
+      0: no_effect
+      1: removes_wrong
+      2: removes_wrong
+      3: removes_wrong
+    opportunity: true
+  rationale: «فوری لازم دارم» means 'I need it urgently'; the user asks about gas water heaters in general, not
+    the instantaneous (tankless) type.
+  label_source: first_pass
+  natural: natural
+  author_id: A-016
+- id: veto1-C028
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی فولاد ساختمانی
+  normalized_query: ضریب هدایت حرارتی فولاد ساختمانی
+  context_sha256: bfb5579831073f19f473a609066fba18618dd888d437b5b4774abe189e3a9411
+  production_rows:
+  - app07-p013-r05
+  expected_v1_rows:
+  - app07-p013-r05
+  gold:
+    rows:
+      app07-p013-r05: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of steel.
+  label_source: first_pass
+  natural: natural
+  author_id: C-019
+- id: veto1-C029
+  stratum: C_plain_identity
+  query: هدایت حرارتی آلومینیوم طبق پیوست هفت
+  normalized_query: هدایت حرارتی الومینیوم طبق پیوست هفت
+  context_sha256: 68581857ae97da1cf34a84bfcea192207bdba8819e35a1fb32ef4e7ed071ec0b
+  production_rows:
+  - app07-p013-r07
+  expected_v1_rows:
+  - app07-p013-r07
+  gold:
+    rows:
+      app07-p013-r07: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of aluminium per Appendix 7.
+  label_source: first_pass
+  natural: natural
+  author_id: C-020
+- id: veto1-B043
+  stratum: B_identity_lookalike
+  query: چیلر تراکمی آب خنک حداقل چه COP ای باید داشته باشه
+  normalized_query: چیلر تراکمی اب خنک حداقل چه cop ای باید داشته باشه
+  context_sha256: 84d0f45267781c04f23c102c182a62f001eb95d602943d77fe4a7f6c1f2d7c47
+  production_rows:
+  - main-t19-5-3-item06
+  expected_v1_rows:
+  - main-t19-5-3-item06
+  gold:
+    rows:
+      main-t19-5-3-item06: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: removes_correct
+      3: no_effect
+    opportunity: false
+  rationale: Water-cooled compression chiller; «آب خنک» names the equipment.
+  label_source: first_pass
+  natural: natural
+  author_id: B-063
+- id: veto1-B044
+  stratum: B_identity_lookalike
+  query: برای نمای ساختمان از سنگ آهکی خیلی سخت استفاده می‌کنیم، ضریب هدایت حرارتیش چقدره؟
+  normalized_query: برای نمای ساختمان از سنگ اهکی خیلی سخت استفاده می کنیم، ضریب هدایت حرارتیش چقدره؟
+  context_sha256: 3c6f16119d16230d1f77eff85deba159623d877e8dfb25ba81fe283ce4c20a98
+  production_rows:
+  - app07-p010-r08
+  expected_v1_rows:
+  - app07-p010-r08
+  gold:
+    rows:
+      app07-p010-r08: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+    opportunity: false
+  rationale: Facade stone is very hard limestone; «خیلی سخت» is the printed grade of the material asked about.
+  label_source: first_pass
+  natural: natural
+  author_id: B-015
+- id: veto1-C030
+  stratum: C_plain_identity
+  query: یک کتابخانه در اقلیم 4B با رده B چه حداکثر شدت مصرف انرژی‌ای می‌تواند داشته باشد؟
+  normalized_query: یک کتابخانه در اقلیم 4b با رده b چه حداکثر شدت مصرف انرژی ای می تواند داشته باشد؟
+  context_sha256: 02f0fca94f42a98a68ecb7c87686041379fc8470b6edd92b5765c4d31f1a011b
+  production_rows:
+  - app03-B-r17-4B
+  expected_v1_rows:
+  - app03-B-r17-4B
+  gold:
+    rows:
+      app03-B-r17-4B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Library EUI in 4B, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-004
+- id: veto1-C031
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی دانشگاه و آموزش عالی در اقلیم 2A و رده D
+  normalized_query: شدت مصرف انرژی دانشگاه و اموزش عالی در اقلیم 2a و رده d
+  context_sha256: 11618e938e6e031b19cac5f9e75f279fb101566741e9b8f5af388d1fbc32cc66
+  production_rows:
+  - app03-D-r13-2A
+  expected_v1_rows:
+  - app03-D-r13-2A
+  gold:
+    rows:
+      app03-D-r13-2A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: no_effect
+    opportunity: false
+  rationale: University occupancy EUI in 2A, rating D.
+  label_source: first_pass
+  natural: natural
+  author_id: C-009
+- id: veto1-C032
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی کاه فشرده
+  normalized_query: ضریب هدایت حرارتی کاه فشرده
+  context_sha256: 1f16bac0bd9405c7306df165ba7d27ed1ddd3544a56b375fbaeadd7cba541ce7
+  production_rows:
+  - app07-p009-r09
+  expected_v1_rows:
+  - app07-p009-r09
+  gold:
+    rows:
+      app07-p009-r09: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of compressed straw.
+  label_source: first_pass
+  natural: natural
+  author_id: C-025
+- id: veto1-A025
+  stratum: A_grammatical_misread
+  query: این عدد مال کدوم کاربریه؟ شدت مصرف انرژی اقلیم 3A رده B
+  normalized_query: این عدد مال کدوم کاربریه؟ شدت مصرف انرژی اقلیم 3a رده b
+  context_sha256: eb5cdbee06a17e64396f3ec4cf7bbdc41a9797eeb62d7936633cdbc3b29031c0
+  production_rows:
+  - app03-B-r27-3A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-B-r27-3A: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: The user asks which occupancy a number belongs to; «مال کدوم کاربریه» is possessive 'belongs to', not
+    the mall.
+  label_source: first_pass
+  natural: natural
+  author_id: A-003
+- id: veto1-A026
+  stratum: A_grammatical_misread
+  query: تو سطح گروه د، تست نشت هوا در سال اول طبق جدول ۱۹-۲-۱ الزامیه؟
+  normalized_query: تو سطح گروه د، تست نشت هوا در سال اول طبق جدول 19-2-1 الزامیه؟
+  context_sha256: 6ebda2301907932b533bcbf250810a9b9b9abca61af10f40e05e230fc454866d
+  production_rows:
+  - main-t19-2-1-r17c11
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-2-1-r17c11: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: Colloquial «تو سطح گروه د» means 'for group D'; the leakage test type is not specified.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-032
+- id: veto1-B045
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی کلینیک بدون بستری بیمار اقلیم 4B رده C
+  normalized_query: شدت مصرف انرژی کلینیک بدون بستری بیمار اقلیم 4b رده c
+  context_sha256: 2fde675a3b0608aa4488606a8f14fb0a89817706f21271db7f82f3ebce382455
+  production_rows:
+  - app03-C-r10-4B
+  expected_v1_rows:
+  - app03-C-r10-4B
+  gold:
+    rows:
+      app03-C-r10-4B: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Outpatient clinic occupancy; «بدون بستری» is the printed occupancy name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-024
+- id: veto1-A027
+  stratum: A_grammatical_misread
+  query: 'خصوصی می‌پرسم: حداکثر دمای آبگرم مصرفی روشویی چند درجه است؟'
+  normalized_query: 'خصوصی می پرسم: حداکثر دمای ابگرم مصرفی روشویی چند درجه است؟'
+  context_sha256: d8443443f288dda5b2125309e430a40bbc5d35cb9f90e31ca242b38180817042
+  production_rows:
+  - main-t19-5-5-r03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-5-r03: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «خصوصی می‌پرسم» means 'I am asking privately'; the washbasin is not specified as a private one.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-023
+- id: veto1-B046
+  stratum: B_identity_lookalike
+  query: دیوار خارجی مجاور خاک تو اقلیم 2A، کمترین مقاومت حرارتی مجاز؟
+  normalized_query: دیوار خارجی مجاور خاک تو اقلیم 2a، کمترین مقاومت حرارتی مجاز؟
+  context_sha256: b70d2a74f0f14d63c2c1bd9c632dc364bd05ab895707fc1fad7d014718965611
+  production_rows:
+  - main-t19-5-1-r06c02
+  expected_v1_rows:
+  - main-t19-5-1-r06c02
+  gold:
+    rows:
+      main-t19-5-1-r06c02: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Wall against soil; «خاک» (an everyday word) and «مجاور» (relational elsewhere) name the printed element.
+  label_source: first_pass
+  natural: natural
+  author_id: B-051
+- id: veto1-B047
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی چوب کاج نقره ای و کاج سواحل دریا چقدره؟
+  normalized_query: ضریب هدایت حرارتی چوب کاج نقره ای و کاج سواحل دریا چقدره؟
+  context_sha256: c1c80a67df3af509477739edab86018dd23e013e78121f97b13ffd8fa0665aa7
+  production_rows:
+  - app07-p008-r04
+  expected_v1_rows:
+  - app07-p008-r04
+  gold:
+    rows:
+      app07-p008-r04: correct
+    spans:
+      0: identity
+      1: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: no_effect
+      3: no_effect
+    opportunity: false
+  rationale: Silver pine and maritime pine; «نقره ای» and «دریا» are parts of the printed wood names.
+  label_source: first_pass
+  natural: natural
+  author_id: B-054
+- id: veto1-D007
+  stratum: D_ambiguous
+  query: جدول ۱۹-۲-۱ گروه ج سال دوم، تست نشت هوا در سطح ساختمان
+  normalized_query: جدول 19-2-1 گروه ج سال دوم، تست نشت هوا در سطح ساختمان
+  context_sha256: 541aa094f024487017562977c0d4469de2cbb060243117fb485986430280da10
+  production_rows:
+  - main-t19-2-1-r13c11
+  expected_v1_rows:
+  - main-t19-2-1-r13c11
+  gold:
+    rows:
+      main-t19-2-1-r13c11: uncertain
+    spans:
+      0: identity
+      1: ambiguous
+    span_effects:
+      0: removes_uncertain
+      1: removes_uncertain
+    opportunity: false
+  rationale: «در سطح ساختمان» can mean 'across the building' or the building surface (facade-surface leakage).
+  label_source: adjudicated
+  natural: natural
+  author_id: D-026
+- id: veto1-C033
+  stratum: C_plain_identity
+  query: نمایشگاه خودرو در اقلیم 4A با رده A حداکثر چه شدت مصرف انرژی مجازه؟
+  normalized_query: نمایشگاه خودرو در اقلیم 4a با رده a حداکثر چه شدت مصرف انرژی مجازه؟
+  context_sha256: 807d29cce750a989567bb4fa919756171a818691c6aa5d2a8746c95b6501a140
+  production_rows:
+  - app03-A-r30-4A
+  expected_v1_rows:
+  - app03-A-r30-4A
+  gold:
+    rows:
+      app03-A-r30-4A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Car showroom EUI in 4A, rating A.
+  label_source: first_pass
+  natural: natural
+  author_id: C-011
+- id: veto1-B048
+  stratum: B_identity_lookalike
+  query: هدایت حرارتی آلیاژ برنج چقدره؟
+  normalized_query: هدایت حرارتی الیاژ برنج چقدره؟
+  context_sha256: 5b7b54de148c6b93a14208cd2f8006d76921d2d4be46af3de796d913f80ec939
+  production_rows:
+  - app07-p013-r10
+  expected_v1_rows:
+  - app07-p013-r10
+  gold:
+    rows:
+      app07-p013-r10: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: «آلیاژ برنج» makes clear the brass alloy row is meant.
+  label_source: first_pass
+  natural: natural
+  author_id: B-028
+- id: veto1-B049
+  stratum: B_identity_lookalike
+  query: کارفرما می‌خواد کل ساختمون رو مال کنه؛ تو اقلیم 4A با رده C حداکثر شدت مصرف انرژی چقدر میشه؟
+  normalized_query: کارفرما می خواد کل ساختمون رو مال کنه؛ تو اقلیم 4a با رده c حداکثر شدت مصرف انرژی چقدر میشه؟
+  context_sha256: 6c4bf16960ecff822744b05a870698e65052390ee0f4167855225c8b87058fec
+  production_rows:
+  - app03-C-r27-4A
+  expected_v1_rows:
+  - app03-C-r27-4A
+  gold:
+    rows:
+      app03-C-r27-4A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Owner wants to convert the building into a mall; «مال» in «مال کنه» names the mall occupancy whose
+    EUI is asked.
+  label_source: first_pass
+  natural: awkward
+  author_id: B-003
+- id: veto1-A028
+  stratum: A_grammatical_misread
+  query: به دلایل تجاری، حداکثر شدت مصرف انرژی اقلیم 2A رده A رو می‌خوایم
+  normalized_query: به دلایل تجاری، حداکثر شدت مصرف انرژی اقلیم 2a رده a رو می خوایم
+  context_sha256: dae90e3fcd94ad92368fb132ae1870b8c2cf97037c2dccd0f97f2f505685d806
+  production_rows:
+  - app03-A-r26-2A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-A-r26-2A: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «به دلایل تجاری» means 'for business reasons'; it explains motive and names no occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: A-046
+- id: veto1-A029
+  stratum: A_grammatical_misread
+  query: یه پیمانکار تبریزی ضریب هدایت حرارتی رو می‌خواد
+  normalized_query: یه پیمانکار تبریزی ضریب هدایت حرارتی رو می خواد
+  context_sha256: 58be8c3b9f09709bc3e745f56b27971fae797ef1774f417c77fcb1755047f128
+  production_rows:
+  - app07-p008-r06
+  expected_v1_rows: []
+  gold:
+    rows:
+      app07-p008-r06: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «پیمانکار تبریزی» is a contractor from Tabriz; «تبریزی» describes the person, not poplar wood, and
+    no material is named.
+  label_source: first_pass
+  natural: awkward
+  author_id: A-050
+- id: veto1-D008
+  stratum: D_ambiguous
+  query: حداکثر ضریب انتقال حرارت پنجره ثابت است؟ اقلیم 2A
+  normalized_query: حداکثر ضریب انتقال حرارت پنجره ثابت است؟ اقلیم 2a
+  context_sha256: c703165e19a88b1611e8edb24b14e94e473a8814e5c3fcf9f11f3917d7a1eabb
+  production_rows:
+  - main-t19-5-2-r02c02
+  expected_v1_rows:
+  - main-t19-5-2-r02c02
+  gold:
+    rows:
+      main-t19-5-2-r02c02: uncertain
+    spans:
+      0: ambiguous
+    span_effects:
+      0: removes_uncertain
+    opportunity: false
+  rationale: «پنجره ثابت است؟» can ask 'is the window limit constant?' or be a clipped question about fixed windows.
+  label_source: adjudicated
+  natural: awkward
+  author_id: D-004
+- id: veto1-B050
+  stratum: B_identity_lookalike
+  query: نشت حجمی در تست نشت هوا برای ساختمان‌های گروه ج سال دوم الزامیه؟
+  normalized_query: نشت حجمی در تست نشت هوا برای ساختمان های گروه ج سال دوم الزامیه؟
+  context_sha256: f44b31e0b8dfd5c4dc97df86aa2bfd2ab34a83e98c3e83c9736ef04afae3797f
+  production_rows:
+  - main-t19-2-1-r13c12
+  expected_v1_rows:
+  - main-t19-2-1-r13c12
+  gold:
+    rows:
+      main-t19-2-1-r13c12: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: Volumetric air-leakage test; «هوا» is part of the printed requirement «تست نشت هوا».
+  label_source: first_pass
+  natural: natural
+  author_id: B-062
+- id: veto1-A030
+  stratum: A_grammatical_misread
+  query: حداقل یکنواختی نور مصنوعی رو برای پروژه‌ای که دارم روش کار می‌کنم می‌خوام
+  normalized_query: حداقل یکنواختی نور مصنوعی رو برای پروژه ای که دارم روش کار می کنم می خوام
+  context_sha256: 9da56014ec2400a8af47ee5fa26b60abbe27e63f713fb8d0e4fd67bf9c04090f
+  production_rows:
+  - main-t19-5-7-r03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-7-r03: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «روش کار می‌کنم» is the light verb 'I am working on it'; the user names no space type, so the office/workspace
+    row is not asked.
+  label_source: first_pass
+  natural: natural
+  author_id: A-033
+- id: veto1-A031
+  stratum: A_grammatical_misread
+  query: از نظر تجاری، شدت مصرف انرژی مجاز در اقلیم 2B رده C چقدره؟
+  normalized_query: از نظر تجاری، شدت مصرف انرژی مجاز در اقلیم 2b رده c چقدره؟
+  context_sha256: 4cc5fc3bc70e8d096eedbc9a59ea2479933184b569c60457c44b7353a0d397c2
+  production_rows:
+  - app03-C-r26-2B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r26-2B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «از نظر تجاری» means 'commercially speaking'; the question names no occupancy.
+  label_source: first_pass
+  natural: natural
+  author_id: A-045
+- id: veto1-B051
+  stratum: B_identity_lookalike
+  query: سنگ‌های آهکی خیلی نرم چه ضریب هدایت حرارتی دارند؟
+  normalized_query: سنگ های اهکی خیلی نرم چه ضریب هدایت حرارتی دارند؟
+  context_sha256: 54410b634970000c45508becae096fa9987486c45586a4f485895bd52c1bfd90
+  production_rows:
+  - app07-p010-r12
+  expected_v1_rows:
+  - app07-p010-r12
+  gold:
+    rows:
+      app07-p010-r12: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+    opportunity: false
+  rationale: Asks about the printed grade very soft limestone; «خیلی نرم» names the row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-014
+- id: veto1-B052
+  stratum: B_identity_lookalike
+  query: طبق جدول ۱۹-۵-۳ برای چیلر جذبی دو اثره چه COP حداقلی لازمه؟
+  normalized_query: طبق جدول 19-5-3 برای چیلر جذبی دو اثره چه cop حداقلی لازمه؟
+  context_sha256: 670a80a94788e0ee819b1bfd9a8be04ab118e3adf72962c093929acb3ce2d0a8
+  production_rows:
+  - main-t19-5-3-item07
+  expected_v1_rows:
+  - main-t19-5-3-item07
+  gold:
+    rows:
+      main-t19-5-3-item07: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Same equipment cited by table number; «دو اثره» is the printed name of the chiller type.
+  label_source: first_pass
+  natural: natural
+  author_id: B-006
+- id: veto1-A032
+  stratum: A_grammatical_misread
+  query: به صورت فوری حداقل بازده آبگرمکن گازسوز رو اعلام کنید
+  normalized_query: به صورت فوری حداقل بازده ابگرمکن گازسوز رو اعلام کنید
+  context_sha256: 427287b53892bbab63f3863828237d557860c6e1c876fa5d31410390d290a1ca
+  production_rows:
+  - main-t19-5-4-item02
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-4-item02: wrong
+    spans:
+      0: grammatical
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+      2: removes_wrong
+      3: removes_wrong
+    opportunity: true
+  rationale: «به صورت فوری ... اعلام کنید» means 'announce urgently'; the adverb does not name the instantaneous
+    heater.
+  label_source: first_pass
+  natural: natural
+  author_id: A-018
+- id: veto1-B053
+  stratum: B_identity_lookalike
+  query: بخاری گازسوز بدون دودکش حداقل چه بازدهی باید داشته باشه؟
+  normalized_query: بخاری گازسوز بدون دودکش حداقل چه بازدهی باید داشته باشه؟
+  context_sha256: 55f35f266a6e2ef17eacc6302ab783aeec9ec03fdfff8393fb72da2d8bce47ca
+  production_rows:
+  - main-t19-5-4-item07
+  expected_v1_rows:
+  - main-t19-5-4-item07
+  gold:
+    rows:
+      main-t19-5-4-item07: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+    opportunity: false
+  rationale: Flueless gas heater; «بدون دودکش» is part of the printed heater name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-023
+- id: veto1-C034
+  stratum: C_plain_identity
+  query: مدیر یه هتل در اقلیم 3A هستم؛ برای گرفتن رده B سقف شدت مصرف انرژی چقدره؟
+  normalized_query: مدیر یه هتل در اقلیم 3a هستم؛ برای گرفتن رده b سقف شدت مصرف انرژی چقدره؟
+  context_sha256: 4811508239adc1367fd1f70b7fba2b62723905b7fa8e979258329b132e87b9c4
+  production_rows:
+  - app03-B-r20-3A
+  expected_v1_rows:
+  - app03-B-r20-3A
+  gold:
+    rows:
+      app03-B-r20-3A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Hotel manager asks the hotel EUI cap for rating B in 3A.
+  label_source: first_pass
+  natural: natural
+  author_id: C-001
+- id: veto1-A033
+  stratum: A_grammatical_misread
+  query: در پایان، جدول ۱۹-۲-۱ برای بازرسی گروه ج سال اول چی میگه؟
+  normalized_query: در پایان، جدول 19-2-1 برای بازرسی گروه ج سال اول چی میگه؟
+  context_sha256: 485933bc05abc186e33f1531e6b844df8696f64f4f96c0d753c426a4bb7d106e
+  production_rows:
+  - main-t19-2-1-r12c04
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-2-1-r12c04: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: Sentence-initial «در پایان» means 'finally'; it introduces the last question and does not name the
+    completion inspection.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-044
+- id: veto1-A034
+  stratum: A_grammatical_misread
+  query: برای گزارش سال مالی، شدت مصرف انرژی مجاز اقلیم 3B رده C چنده؟
+  normalized_query: برای گزارش سال مالی، شدت مصرف انرژی مجاز اقلیم 3b رده c چنده؟
+  context_sha256: 7d15602c05596e15ba2c6073eee9572d67e37357aeefba0137325aaae1f360f3
+  production_rows:
+  - app03-C-r27-3B
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r27-3B: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «سال مالی» is the fiscal year of a report; no occupancy is named and «مالی» (financial) does not name
+    the mall.
+  label_source: first_pass
+  natural: natural
+  author_id: A-005
+- id: veto1-B054
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی مجاز برای مال، اقلیم 2A، رده A
+  normalized_query: شدت مصرف انرژی مجاز برای مال، اقلیم 2a، رده a
+  context_sha256: 7cce1fdc31f01bdbc21b1e08525c6cb2f493b03e3e960d5ff459e5e3b5eb6cd2
+  production_rows:
+  - app03-A-r27-2A
+  expected_v1_rows:
+  - app03-A-r27-2A
+  gold:
+    rows:
+      app03-A-r27-2A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Terse request for the mall occupancy EUI; «مال» is the object of «برای» and names the shopping mall.
+  label_source: first_pass
+  natural: natural
+  author_id: B-002
+- id: veto1-B055
+  stratum: B_identity_lookalike
+  query: حداقل مقاومت حرارتی سقف مجاور فضای آزاد در اقلیم 5B
+  normalized_query: حداقل مقاومت حرارتی سقف مجاور فضای ازاد در اقلیم 5b
+  context_sha256: 6e7e5f03833c1688a95ab3f11a6634bd70fb1337c876335aff5ab8e8551d53b4
+  production_rows:
+  - main-t19-5-1-r08c05
+  expected_v1_rows:
+  - main-t19-5-1-r08c05
+  gold:
+    rows:
+      main-t19-5-1-r08c05: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Roof exposed to open air; «آزاد» names the printed adjacency.
+  label_source: first_pass
+  natural: natural
+  author_id: B-050
+- id: veto1-B056
+  stratum: B_identity_lookalike
+  query: حداقل بازده برج های خنک کن چقدره؟
+  normalized_query: حداقل بازده برج های خنک کن چقدره؟
+  context_sha256: 5adb70360c8cddc4b6b685f525e7c30ff3e56c3915b0bc34b76dd6a1f22e9bf0
+  production_rows:
+  - main-t19-5-3-item16
+  expected_v1_rows:
+  - main-t19-5-3-item16
+  gold:
+    rows:
+      main-t19-5-3-item16: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Cooling towers; «برج» names the equipment (not month or a building tower).
+  label_source: first_pass
+  natural: natural
+  author_id: B-064
+- id: veto1-B057
+  stratum: B_identity_lookalike
+  query: روستایی‌ها با خشت، گل و خاک تثبیت شده خونه می‌سازن؛ ضریب هدایت حرارتی این مصالح چنده؟
+  normalized_query: روستایی ها با خشت، گل و خاک تثبیت شده خونه می سازن؛ ضریب هدایت حرارتی این مصالح چنده؟
+  context_sha256: bc9f521b77acfd5922469f5882ef2c16a5b7c84d11329e9d09112d9f9d7783f7
+  production_rows:
+  - app07-p009-r12
+  expected_v1_rows:
+  - app07-p009-r12
+  gold:
+    rows:
+      app07-p009-r12: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: no_effect
+      2: no_effect
+      3: no_effect
+    opportunity: false
+  rationale: Mud-brick, mud and stabilised earth; «گل» is mud (printed material), not flower.
+  label_source: first_pass
+  natural: natural
+  author_id: B-029
+- id: veto1-B058
+  stratum: B_identity_lookalike
+  query: الکتروموتور تک فاز چند سرعته بالای ۱۲۰ وات حداقل باید چه کلاس بازدهی داشته باشه؟
+  normalized_query: الکتروموتور تک فاز چند سرعته بالای 120 وات حداقل باید چه کلاس بازدهی داشته باشه؟
+  context_sha256: 9065ed58a2ed5dbb18a8def2402360f5bcb5e1942798af09cb8f06c98321b1fe
+  production_rows:
+  - main-t19-5-3-item11
+  expected_v1_rows:
+  - main-t19-5-3-item11
+  gold:
+    rows:
+      main-t19-5-3-item11: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Asks the efficiency class of a single-phase multi-speed motor; «چند» is part of «چند سرعته», not an
+    interrogative.
+  label_source: first_pass
+  natural: natural
+  author_id: B-008
+- id: veto1-C035
+  stratum: C_plain_identity
+  query: هدایت حرارتی چوب کاج یا صنوبر چقدره؟
+  normalized_query: هدایت حرارتی چوب کاج یا صنوبر چقدره؟
+  context_sha256: 4aa9514e79eb3550b9d0414dfa6d4b23e02ef9f18e9a055b51882bfffb828574
+  production_rows:
+  - app07-p008-r05
+  expected_v1_rows:
+  - app07-p008-r05
+  gold:
+    rows:
+      app07-p008-r05: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Conductivity of pine or poplar wood.
+  label_source: first_pass
+  natural: natural
+  author_id: C-030
+- id: veto1-B059
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی خاک رس یا لای چقدره؟
+  normalized_query: ضریب هدایت حرارتی خاک رس یا لای چقدره؟
+  context_sha256: b1a96bf3bfd5caeb210a1ed2ca441dbc3f9c745dff75edd2a3b9a70c4034da22
+  production_rows:
+  - app07-p009-r11
+  expected_v1_rows:
+  - app07-p009-r11
+  gold:
+    rows:
+      app07-p009-r11: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: no_effect
+    opportunity: false
+  rationale: Clay or silt soil; «لای» names silt in the printed row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-057
+- id: veto1-B060
+  stratum: B_identity_lookalike
+  query: حداقل مقاومت حرارتی لازم برای درهای غیرنورگذر لولادار تو اقلیم گرم 0B چقدره؟
+  normalized_query: حداقل مقاومت حرارتی لازم برای درهای غیرنورگذر لولادار تو اقلیم گرم 0b چقدره؟
+  context_sha256: a754c48cab3efabce93ff74d1911908266c45ad3d1485d13517ef01172a3e97b
+  production_rows:
+  - main-t19-5-1-r18c00
+  expected_v1_rows:
+  - main-t19-5-1-r18c00
+  gold:
+    rows:
+      main-t19-5-1-r18c00: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Hinged opaque doors in 0B; «درهای» names the door element.
+  label_source: first_pass
+  natural: natural
+  author_id: B-033
+- id: veto1-C036
+  stratum: C_plain_identity
+  query: کد ایستگاه هواشناسی رشت
+  normalized_query: کد ایستگاه هواشناسی رشت
+  context_sha256: 49805c499b8dd9b5c90ef05b722c0a8393242c60ec4e9d9bdf69d5236138f487
+  production_rows:
+  - main-t19-3-2-r25
+  expected_v1_rows:
+  - main-t19-3-2-r25
+  gold:
+    rows:
+      main-t19-3-2-r25: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Weather-station code of Rasht.
+  label_source: first_pass
+  natural: natural
+  author_id: C-047
+- id: veto1-C037
+  stratum: C_plain_identity
+  query: نورگیر سقفی در اقلیم 2B حداکثر ضریب بهره خورشیدی چقدر است؟
+  normalized_query: نورگیر سقفی در اقلیم 2b حداکثر ضریب بهره خورشیدی چقدر است؟
+  context_sha256: 16449645d9ff92426c4112ef9d58832dd3d57a44929e9241ac959b4aa18535db
+  production_rows:
+  - main-t19-5-2-r12c02
+  expected_v1_rows:
+  - main-t19-5-2-r12c02
+  gold:
+    rows:
+      main-t19-5-2-r12c02: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Maximum SHGC of a skylight in 2B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-048
+- id: veto1-C038
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی کلینیک تشخیصی اقلیم 3B رده B
+  normalized_query: شدت مصرف انرژی کلینیک تشخیصی اقلیم 3b رده b
+  context_sha256: ad72883beff4290b4a11d0f7bd70605daa4faa1456b049a2521a16fa18edb021
+  production_rows:
+  - app03-B-r09-3B
+  expected_v1_rows:
+  - app03-B-r09-3B
+  gold:
+    rows:
+      app03-B-r09-3B: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: removes_correct
+    opportunity: false
+  rationale: Diagnostic clinic EUI in 3B, rating B.
+  label_source: first_pass
+  natural: natural
+  author_id: C-017
+- id: veto1-A035
+  stratum: A_grammatical_misread
+  query: حداکثر شدت مصرف انرژی اقلیم 3A رده A، صرفا برای سرگرمی
+  normalized_query: حداکثر شدت مصرف انرژی اقلیم 3a رده a، صرفا برای سرگرمی
+  context_sha256: 82ffdf443b476df85d5d0aa9ceaadb4e638053957bbba919cf385d14ac3cde2c
+  production_rows:
+  - app03-A-r19-3A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-A-r19-3A: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: The trailing «صرفا برای سرگرمی» ('purely for fun') explains the motive; it does not name an entertainment
+    occupancy.
+  label_source: adjudicated
+  natural: awkward
+  author_id: A-026
+- id: veto1-C039
+  stratum: C_plain_identity
+  query: شدت مصرف انرژی کلانتری/ آتش نشانی در اقلیم 3A رده D
+  normalized_query: شدت مصرف انرژی کلانتری/ اتش نشانی در اقلیم 3a رده d
+  context_sha256: 8bd45d3b26ea30f3473c3bfe06031cc7bcb3b39d84f62957c41540035ad9f2f8
+  production_rows:
+  - app03-D-r28-3A
+  expected_v1_rows:
+  - app03-D-r28-3A
+  gold:
+    rows:
+      app03-D-r28-3A: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Police/fire station EUI in 3A, rating D.
+  label_source: first_pass
+  natural: natural
+  author_id: C-015
+- id: veto1-A036
+  stratum: A_grammatical_misread
+  query: حداکثر ضریب انتقال حرارت پنجره در اقلیم 2A ثابت می‌مونه یا تغییر می‌کنه؟
+  normalized_query: حداکثر ضریب انتقال حرارت پنجره در اقلیم 2a ثابت می مونه یا تغییر می کنه؟
+  context_sha256: eaf6ce5469dadfc6f02a51a42ff907024d1814e4d00aec8e22b73205a9b26733
+  production_rows:
+  - main-t19-5-2-r02c02
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-2-r02c02: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: The user asks whether the window U-value limit stays constant or changes; «ثابت» is a predicate adjective,
+    not the fixed-window row.
+  label_source: first_pass
+  natural: natural
+  author_id: A-008
+- id: veto1-C040
+  stratum: C_plain_identity
+  query: حداکثر شدت مصرف انرژی خوابگاه در اقلیم 3B رده D
+  normalized_query: حداکثر شدت مصرف انرژی خوابگاه در اقلیم 3b رده d
+  context_sha256: daff3ca167bbc73aa3f057d391f8d1283a54eab0fdb49c485a3e177549e80410
+  production_rows:
+  - app03-D-r22-3B
+  expected_v1_rows:
+  - app03-D-r22-3B
+  gold:
+    rows:
+      app03-D-r22-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Dormitory EUI in 3B, rating D.
+  label_source: first_pass
+  natural: natural
+  author_id: C-005
+- id: veto1-C041
+  stratum: C_plain_identity
+  query: شیشه چندجداره برای گروه الف از سال اول اجباریه؟ جدول ۱۹-۲-۱
+  normalized_query: شیشه چندجداره برای گروه الف از سال اول اجباریه؟ جدول 19-2-1
+  context_sha256: d9c522ad4e29d930b68b459b96f622f02f46a0b6db6a049cafc30484bbd6974a
+  production_rows:
+  - main-t19-2-1-r02c08
+  expected_v1_rows:
+  - main-t19-2-1-r02c08
+  gold:
+    rows:
+      main-t19-2-1-r02c08: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Multi-pane glazing requirement for group A, year one.
+  label_source: first_pass
+  natural: natural
+  author_id: C-041
+- id: veto1-C042
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی پشم سنگ با چگالی ۵۰
+  normalized_query: ضریب هدایت حرارتی پشم سنگ با چگالی 50
+  context_sha256: 25ff1419214a304080d75f42908d0791998231129908c40d56af7522f81bb85d
+  production_rows:
+  - app07-p012-r10
+  expected_v1_rows:
+  - app07-p012-r10
+  gold:
+    rows:
+      app07-p012-r10: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Conductivity of rock wool at density 50.
+  label_source: first_pass
+  natural: natural
+  author_id: C-027
+- id: veto1-A037
+  stratum: A_grammatical_misread
+  query: یه اپ هوش مصنوعی ضریب هدایت حرارتی رو حساب کرد؛ با جدول می‌خونه؟
+  normalized_query: یه اپ هوش مصنوعی ضریب هدایت حرارتی رو حساب کرد؛ با جدول می خونه؟
+  context_sha256: e0f0c1de3cabfda5634450a44c0bedfaa688d31ab38f3c045c85730fc8202845
+  production_rows:
+  - app07-p010-r20
+  expected_v1_rows: []
+  gold:
+    rows:
+      app07-p010-r20: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «اپ هوش مصنوعی» is an AI app that computed a value; «مصنوعی» is part of 'AI', not artificial stone.
+  label_source: first_pass
+  natural: natural
+  author_id: A-052
+- id: veto1-C043
+  stratum: C_plain_identity
+  query: جدول ۱۹-۲-۱ گروه د سال دوم شارژر خودرو برقی
+  normalized_query: جدول 19-2-1 گروه د سال دوم شارژر خودرو برقی
+  context_sha256: c9daf2ea1d1f953009086e5781f3a5e9f7c3c79df728d4b31cc6b014b8acb309
+  production_rows:
+  - main-t19-2-1-r18c21
+  expected_v1_rows:
+  - main-t19-2-1-r18c21
+  gold:
+    rows:
+      main-t19-2-1-r18c21: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: EV charger requirement for group D, year two.
+  label_source: first_pass
+  natural: natural
+  author_id: C-044
+- id: veto1-B061
+  stratum: B_identity_lookalike
+  query: دیوار خارجی که مجاور فضای نیمه باز کنترل نشده است در اقلیم 5B حداقل چه مقاومت حرارتی باید داشته باشه؟
+  normalized_query: دیوار خارجی که مجاور فضای نیمه باز کنترل نشده است در اقلیم 5b حداقل چه مقاومت حرارتی باید داشته
+    باشه؟
+  context_sha256: c11890b2bb077004f488b9d35deef8fb9822c81a7392eb46101278059dda1975
+  production_rows:
+  - main-t19-5-1-r04c05
+  expected_v1_rows:
+  - main-t19-5-1-r04c05
+  gold:
+    rows:
+      main-t19-5-1-r04c05: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: no_effect
+      2: removes_correct
+    opportunity: false
+  rationale: Wall adjacent to uncontrolled semi-open space; «مجاور» and «نیمه باز» are parts of the printed element
+    name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-016
+- id: veto1-B062
+  stratum: B_identity_lookalike
+  query: شدت مصرف انرژی مجاز مراکز نگهداری/ پرستاری در اقلیم 3B رده B
+  normalized_query: شدت مصرف انرژی مجاز مراکز نگهداری/ پرستاری در اقلیم 3b رده b
+  context_sha256: ca4e05f005aa172f4441fd2fa6ed0f5a5daf3417f87284f1c805838dceb4287c
+  production_rows:
+  - app03-B-r12-3B
+  expected_v1_rows:
+  - app03-B-r12-3B
+  gold:
+    rows:
+      app03-B-r12-3B: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Care/nursing centres; «مراکز» is part of the printed occupancy name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-053
+- id: veto1-D009
+  stratum: D_ambiguous
+  query: حداقل مقاومت حرارتی دیوار خارجی باز چقدره؟ اقلیم 4A
+  normalized_query: حداقل مقاومت حرارتی دیوار خارجی باز چقدره؟ اقلیم 4a
+  context_sha256: 03e9c0fe01e00e63a3faf4676cd5f4660bb9d9322278c1fbc39306601a8081de
+  production_rows:
+  - main-t19-5-1-r02c04
+  expected_v1_rows:
+  - main-t19-5-1-r02c04
+  gold:
+    rows:
+      main-t19-5-1-r02c04: uncertain
+    spans:
+      0: identity
+      1: ambiguous
+    span_effects:
+      0: removes_uncertain
+      1: removes_uncertain
+    opportunity: false
+  rationale: «دیوار خارجی باز چقدره؟» can name the wall adjacent to open space or use colloquial «باز» = 'again'.
+  label_source: adjudicated
+  natural: awkward
+  author_id: D-029
+- id: veto1-B063
+  stratum: B_identity_lookalike
+  query: برای در ورودی ساختمان تو اقلیم 4A حداکثر U-value چقدر باید باشه؟
+  normalized_query: برای در ورودی ساختمان تو اقلیم 4a حداکثر u-value چقدر باید باشه؟
+  context_sha256: aeb54dda4d5152d679ba1b5ccb4d0655e7b53ad9eb28d06bc455efaad3def402
+  production_rows:
+  - main-t19-5-2-r04c04
+  expected_v1_rows:
+  - main-t19-5-2-r04c04
+  gold:
+    rows:
+      main-t19-5-2-r04c04: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Entrance door U-value; «ورودی» names the printed entrance row and «در» means door.
+  label_source: first_pass
+  natural: natural
+  author_id: B-034
+- id: veto1-C044
+  stratum: C_plain_identity
+  query: اقلیم شهر اصفهان طبق مبحث ۱۹ چیه؟
+  normalized_query: اقلیم شهر اصفهان طبق مبحث 19 چیه؟
+  context_sha256: e69a91e5caeea366ed450060fbefc9a7b41fa7adc15c82d9177c6e19b261bd01
+  production_rows:
+  - app02-p002-r07
+  - main-t19-3-2-r04
+  expected_v1_rows:
+  - app02-p002-r07
+  - main-t19-3-2-r04
+  gold:
+    rows:
+      app02-p002-r07: correct
+      main-t19-3-2-r04: correct
+    spans:
+      0: identity
+    span_effects:
+      0: removes_correct
+    opportunity: false
+  rationale: Climate class of Isfahan.
+  label_source: first_pass
+  natural: natural
+  author_id: C-046
+- id: veto1-B064
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی صفحات پلی یورتان تزریق شده بین دو ورق فلزی با گاز پنتان
+  normalized_query: ضریب هدایت حرارتی صفحات پلی یورتان تزریق شده بین دو ورق فلزی با گاز پنتان
+  context_sha256: 5bc8a9ad2188ac9f5d340a2961e64c62c9ca0fa7a6a846e3adc676772079b259
+  production_rows:
+  - app07-p012-r06
+  expected_v1_rows:
+  - app07-p012-r06
+  gold:
+    rows:
+      app07-p012-r06: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+      5: identity
+      6: identity
+      7: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: removes_correct
+      3: no_effect
+      4: no_effect
+      5: no_effect
+      6: no_effect
+      7: no_effect
+    opportunity: false
+  rationale: Asks conductivity of PU panels injected between two metal sheets; «بین دو ورق» is part of the printed
+    material description.
+  label_source: first_pass
+  natural: natural
+  author_id: B-007
+- id: veto1-C045
+  stratum: C_plain_identity
+  query: دمای آبگرم در دوش و وان حداکثر چند درجه می‌تونه باشه؟
+  normalized_query: دمای ابگرم در دوش و وان حداکثر چند درجه می تونه باشه؟
+  context_sha256: 3c158d8f9b883574d0e673d5e7d95b4a8ddcc77108d2ab1012245e7af90d7a72
+  production_rows:
+  - main-t19-5-5-r01
+  expected_v1_rows:
+  - main-t19-5-5-r01
+  gold:
+    rows:
+      main-t19-5-5-r01: correct
+    spans:
+      0: identity
+    span_effects:
+      0: no_effect
+    opportunity: false
+  rationale: Maximum hot-water temperature at shower and bath.
+  label_source: first_pass
+  natural: natural
+  author_id: C-037
+- id: veto1-A038
+  stratum: A_grammatical_misread
+  query: ضریب هدایت حرارتی آلومینیوم رو به سختی تو جدول پیدا کردم
+  normalized_query: ضریب هدایت حرارتی الومینیوم رو به سختی تو جدول پیدا کردم
+  context_sha256: a5da6f20caed81f87cbc799bc72008c253378ddd057698a5c7cac1634c2302a8
+  production_rows:
+  - app07-p013-r08
+  expected_v1_rows: []
+  gold:
+    rows:
+      app07-p013-r08: wrong
+    spans:
+      0: identity
+      1: grammatical
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «به سختی ... پیدا کردم» means 'I found it with difficulty'; the user asks about aluminium, not hard
+    aluminium alloy.
+  label_source: first_pass
+  natural: natural
+  author_id: A-041
+- id: veto1-A039
+  stratum: A_grammatical_misread
+  query: مشاور باید ثابت کند پنجره‌ها حداکثر ضریب انتقال حرارت اقلیم 3A را رعایت کرده‌اند؛ آن حداکثر چقدر است؟
+  normalized_query: مشاور باید ثابت کند پنجره ها حداکثر ضریب انتقال حرارت اقلیم 3a را رعایت کرده اند؛ ان حداکثر
+    چقدر است؟
+  context_sha256: fc0523eed27cf7959d7c7ef5412643e2ed7b88af02d712b01000eaf23c96c90a
+  production_rows:
+  - main-t19-5-2-r02c03
+  expected_v1_rows: []
+  gold:
+    rows:
+      main-t19-5-2-r02c03: wrong
+    spans:
+      0: grammatical
+    span_effects:
+      0: removes_wrong
+    opportunity: true
+  rationale: «ثابت کند» is the verb 'to prove'; the consultant must prove compliance for windows in general, not
+    for fixed windows.
+  label_source: adjudicated
+  natural: natural
+  author_id: A-011
+- id: veto1-C046
+  stratum: C_plain_identity
+  query: حداقل بازده پکیج چگالشی با توان ورودی کمتر از ۷۰ کیلووات
+  normalized_query: حداقل بازده پکیج چگالشی با توان ورودی کمتر از 70 کیلووات
+  context_sha256: b185a428dad1046735aef4ff756f148402eba65416928d828a431a7ffaa53864
+  production_rows:
+  - main-t19-5-4-item04
+  expected_v1_rows:
+  - main-t19-5-4-item04
+  gold:
+    rows:
+      main-t19-5-4-item04: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+      2: no_effect
+    opportunity: false
+  rationale: Minimum efficiency of a condensing combi boiler under 70 kW.
+  label_source: first_pass
+  natural: natural
+  author_id: C-034
+- id: veto1-B065
+  stratum: B_identity_lookalike
+  query: سوله بدون تهویه در اقلیم 2B رده B حداکثر شدت مصرف انرژیش چنده؟
+  normalized_query: سوله بدون تهویه در اقلیم 2b رده b حداکثر شدت مصرف انرژیش چنده؟
+  context_sha256: b62382a708954761c7c08bd81d1025f6a5fa08382f38162ab572c3c571629fff
+  production_rows:
+  - app03-B-r34-2B
+  expected_v1_rows:
+  - app03-B-r34-2B
+  gold:
+    rows:
+      app03-B-r34-2B: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Unventilated industrial shed; «بدون تهویه» distinguishes the printed occupancy row.
+  label_source: first_pass
+  natural: natural
+  author_id: B-025
+- id: veto1-B066
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی بتن سبک دانه با سنگدانه سبک پومیس
+  normalized_query: ضریب هدایت حرارتی بتن سبک دانه با سنگدانه سبک پومیس
+  context_sha256: f631aa3f1f8069b06ca440eb7576c7433ef2138a390e1a47755789e6c45248a6
+  production_rows:
+  - app07-p004-r08
+  expected_v1_rows:
+  - app07-p004-r08
+  gold:
+    rows:
+      app07-p004-r08: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+      6: identity
+    span_effects:
+      0: no_effect
+      1: no_effect
+      2: removes_correct
+      3: removes_correct
+      4: removes_correct
+      6: removes_correct
+    opportunity: false
+  rationale: Lightweight pumice aggregate concrete; «سبک» means lightweight in the printed name, not style.
+  label_source: first_pass
+  natural: natural
+  author_id: B-058
+- id: veto1-B067
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی رس یا لای (سیلت)
+  normalized_query: ضریب هدایت حرارتی رس یا لای (سیلت)
+  context_sha256: 7cbf5aa9fe526c13cc37bd5cbd887da064f1594cb2f2a262d733dad014ea9421
+  production_rows:
+  - app07-p009-r11
+  expected_v1_rows:
+  - app07-p009-r11
+  gold:
+    rows:
+      app07-p009-r11: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Clay or silt; «لای» is silt (printed), not the relational in-between.
+  label_source: first_pass
+  natural: natural
+  author_id: B-056
+- id: veto1-C047
+  stratum: C_plain_identity
+  query: کولر گازی که می‌خریم حداقل چه SEER و رتبه انرژی باید داشته باشه؟
+  normalized_query: کولر گازی که می خریم حداقل چه seer و رتبه انرژی باید داشته باشه؟
+  context_sha256: 83d327f0200f745543aa0f18178e69df124167e77eb80a68144474f21cd34e55
+  production_rows:
+  - main-t19-5-4-item11
+  expected_v1_rows:
+  - main-t19-5-4-item11
+  gold:
+    rows:
+      main-t19-5-4-item11: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Minimum SEER and rating of a split air conditioner.
+  label_source: first_pass
+  natural: natural
+  author_id: C-033
+- id: veto1-B068
+  stratum: B_identity_lookalike
+  query: ضریب هدایت حرارتی سنگ آهکی خیلی سخت رو برای محاسبه نیاز دارم
+  normalized_query: ضریب هدایت حرارتی سنگ اهکی خیلی سخت رو برای محاسبه نیاز دارم
+  context_sha256: 5f62d937935271581bc640a4e10df6d426b8ee373c2d3c1431de8ec7ee5c8179
+  production_rows:
+  - app07-p010-r08
+  expected_v1_rows:
+  - app07-p010-r08
+  gold:
+    rows:
+      app07-p010-r08: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+    opportunity: false
+  rationale: Asks conductivity of very hard limestone; «خیلی» is part of the printed material grade, not a free
+    intensifier.
+  label_source: first_pass
+  natural: natural
+  author_id: B-013
+- id: veto1-B069
+  stratum: B_identity_lookalike
+  query: بخاری گازسوز دودکش دار حداقل بازده
+  normalized_query: بخاری گازسوز دودکش دار حداقل بازده
+  context_sha256: 36a1c2ebe77c4277be626f716eeaa97aaf10747f95d02b54ffcfeff792ada104
+  production_rows:
+  - main-t19-5-4-item05
+  expected_v1_rows:
+  - main-t19-5-4-item05
+  gold:
+    rows:
+      main-t19-5-4-item05: correct
+    spans:
+      0: identity
+      1: identity
+      2: identity
+      3: identity
+      4: identity
+    span_effects:
+      0: no_effect
+      1: removes_correct
+      2: removes_correct
+      3: removes_correct
+      4: no_effect
+    opportunity: false
+  rationale: Flued gas heater; «دار» is the suffix of «دودکش دار» in the printed name.
+  label_source: first_pass
+  natural: natural
+  author_id: B-044
+- id: veto1-C048
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی شن و ماسه
+  normalized_query: ضریب هدایت حرارتی شن و ماسه
+  context_sha256: 01fff7c0a4c9db061d5cd1834128abf4449518120760448f1949df4bdd24226a
+  production_rows:
+  - app07-p009-r10
+  expected_v1_rows:
+  - app07-p009-r10
+  gold:
+    rows:
+      app07-p009-r10: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Conductivity of sand and gravel.
+  label_source: first_pass
+  natural: natural
+  author_id: C-029
+- id: veto1-C049
+  stratum: C_plain_identity
+  query: ضریب هدایت حرارتی پلی کربنات
+  normalized_query: ضریب هدایت حرارتی پلی کربنات
+  context_sha256: d55a56ce5e47888fbc6b1f213d8a689a6a3f243213214c469165651c2b13d54d
+  production_rows:
+  - app07-p007-r25
+  expected_v1_rows:
+  - app07-p007-r25
+  gold:
+    rows:
+      app07-p007-r25: correct
+    spans:
+      0: identity
+      1: identity
+    span_effects:
+      0: removes_correct
+      1: removes_correct
+    opportunity: false
+  rationale: Conductivity of polycarbonate.
+  label_source: first_pass
+  natural: natural
+  author_id: C-026
+- id: veto1-D010
+  stratum: D_ambiguous
+  query: ضریب هدایت حرارتی کائوچو طبیعی است؟
+  normalized_query: ضریب هدایت حرارتی کائوچو طبیعی است؟
+  context_sha256: e082fa04ca6d88332df4e4d0d9cc30360b9f636bef47e7e2ba971cdcf71ab40a
+  production_rows:
+  - app07-p007-r01
+  expected_v1_rows:
+  - app07-p007-r01
+  gold:
+    rows:
+      app07-p007-r01: uncertain
+    spans:
+      0: identity
+      1: ambiguous
+      2: ambiguous
+    span_effects:
+      0: removes_uncertain
+      1: removes_uncertain
+      2: removes_uncertain
+    opportunity: false
+  rationale: «کائوچو طبیعی است؟» can ask about natural rubber or ask whether the rubber value is normal.
+  label_source: first_pass
+  natural: awkward
+  author_id: D-032
+- id: veto1-A040
+  stratum: A_grammatical_misread
+  query: به طور خصوصی شدت مصرف انرژی مجاز ساختمان اداری در اقلیم 4A رده C رو بگید
+  normalized_query: به طور خصوصی شدت مصرف انرژی مجاز ساختمان اداری در اقلیم 4a رده c رو بگید
+  context_sha256: c5ce62ccd9cb2a42dd752991cd2d67a68f500ae26123b16c41d28a7b43492fc4
+  production_rows:
+  - app03-C-r05-4A
+  expected_v1_rows: []
+  gold:
+    rows:
+      app03-C-r05-4A: wrong
+    spans:
+      0: grammatical
+      1: identity
+    span_effects:
+      0: removes_wrong
+      1: removes_wrong
+    opportunity: true
+  rationale: «به طور خصوصی ... بگید» asks to be told privately; the office building is not specified as private.
+  label_source: adjudicated
+  natural: awkward
+  author_id: A-022

@@ -4,12 +4,13 @@ A language model in **shadow mode**: it proposes how to read a question, determi
 verifies the proposal, and the result is only measured. Production output is never changed.
 
 **Status:** built and tested offline; shadow only. The first provider is
-Gemini (`gemini-3.8-flash`), with Claude (`claude-opus-5-5`) kept as an optional later
-comparison. The 80-question Gemini pilot ran once: safety held, but the broad veto reading
+Gemini, with Claude (`claude-opus-5-5`) kept as an optional later comparison. The 80-question Gemini pilot ran once: safety held, but the broad veto reading
 harmed correct controls. The candidate S1-V policy is now `s1v-grammatical-veto-1`. On its
 unseen benchmark `veto1`, Gemini 3.8 Flash ran once: 0 harmful vetoes and 100% precision, but
-recall 10/40 = 25%, below the 40% threshold. `gemini-4-argon` is approved for one comparison on
-the same frozen cases with the same policy. S1-V and S1-R are not promoted.
+recall 10/40 = 25%, below the 40% threshold. `gemini-4-argon` then ran once on the same frozen
+cases with the same policy: 0 harmful vetoes, 100% precision, recall 19/40 = 47.5%, every frozen
+threshold passed. Argon with V1 is the leading S1-V configuration, but `veto1` has now been used
+to choose a model, so it needs a fresh holdout. S1-V and S1-R are not promoted.
 
 Both providers receive the same instructions and the same rendered candidate context; only the
 request envelope and the schema projection differ. The canonical parser and the verifier

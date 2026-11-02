@@ -6,7 +6,7 @@
 | `pilot1_gemini.yaml` (+ `.sha256`) | The Gemini request contract of the pilot, which ran once. Closed: it no longer verifies against the live engine, because the shadow code has changed since |
 | `veto1.yaml` (+ `.sha256`) | The unseen benchmark for the candidate S1-V policy `s1v-grammatical-veto-1`: cases, gold labels, each case's production rows and expected V1 rows. Not a Final-N set |
 | `veto1_gemini.yaml` (+ `.sha256`) | The `gemini-3.8-flash` request contract of that benchmark, which ran once: safe (0 harmful vetoes, 100% precision) but recall 10/40 = 25%, below the 40% threshold. Closed: it no longer verifies against the live engine, because the shadow code has changed since |
-| `veto1_argon.yaml` (+ `.sha256`) | The `gemini-4-argon` request contract for one model comparison on the same cases: only the model and the client timeout differ from Flash |
+| `veto1_argon.yaml` (+ `.sha256`) | The `gemini-4-argon` request contract for one model comparison on the same cases, which ran once: only the model and the client timeout differ from Flash. 0 harmful vetoes, 100% precision, recall 19/40 = 47.5%, every frozen threshold passed. Model-selection evidence, not promotion evidence |
 
 Each benchmark and its first manifest were frozen before any model output existed. **Do not edit
 them.** A provider manifest never copies the cases, so a provider change cannot alter the sample

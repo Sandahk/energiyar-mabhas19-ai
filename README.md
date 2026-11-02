@@ -12,7 +12,7 @@ cites the document, section or table, and page (both the PDF page and the printe
 one non-negotiable rule: **it must never state a regulatory value or citation that the source
 does not support.** Every design decision below follows from that rule.
 
-## Status (2026-10-29)
+## Status (2026-11-02)
 
 | Area | State |
 |---|---|
@@ -20,7 +20,7 @@ does not support.** Every design decision below follows from that rule.
 | Curated knowledge | Main text structure and page maps; structured tables from the main text and appendices 2, 3 and 7, reviewed |
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
-| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy tested on a new unseen benchmark with Gemini 3.8 Flash: no harmful veto, but it caught only 25% of opportunities against a 40% threshold, so **not promoted**. A one-off Gemini 4 Argon comparison on the same cases is approved |
+| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy tested on a new unseen benchmark with Gemini 3.8 Flash: no harmful veto, but it caught only 25% of opportunities against a 40% threshold, so **not promoted**. Gemini 4 Argon then ran once on the same cases: no harmful veto, 100% precision, 47.5% of opportunities, every frozen threshold passed. Argon with that policy is the leading configuration, **not deployed** and awaiting a fresh holdout |
 | Answer generation, API, UI | Not started (blocked until retrieval is promoted) |
 
 ### Where the project stands
@@ -37,11 +37,10 @@ model may never add a row, a value or a citation. See [`src/mabhas19/shadow/`](s
 
 ### Next steps
 
-1. Compare Gemini 4 Argon with Gemini 3.8 Flash on the frozen `veto1` benchmark, with the policy,
-   prompt and thresholds unchanged. Flash was safe but caught too few opportunities.
-2. Judge it precision first: no harmful vetoes, then useful recall.
-3. Even a pass does not deploy anything: `veto1` would then have been used to choose a model, so
-   a fresh holdout comes first. Recovery of failed-closed questions (S1-R) stays paused.
+1. Test the selected configuration (Gemini 4 Argon with `s1v-grammatical-veto-1`) on one fresh
+   holdout. `veto1` was used to choose the model, so it cannot be promotion evidence.
+2. Judge it precision first: no harmful vetoes, then useful recall, with the thresholds unchanged.
+3. Even a pass deploys nothing by itself. Recovery of failed-closed questions (S1-R) stays paused.
 4. Answer generation, the API and a user interface follow only after retrieval is promoted.
 
 ## How retrieval works

@@ -22,7 +22,7 @@
 Two kinds of frozen manifest. A **base** manifest holds the cases, queries, gold labels,
 expected results and context hashes: ``pilot1.yaml`` (the semantic pilot) or a veto benchmark
 (``veto1.yaml``, which also pins each case's production rows). A **provider** manifest
-(``pilot1_gemini.yaml``) pins one provider's request contract and the live engine and refers to
+(``veto1_argon.yaml``) pins one provider's request contract and the live engine and refers to
 the base manifest by its file SHA-256; its cases are read from the base, never copied, so a
 provider change cannot change the sample or the gold.
 """
@@ -60,6 +60,7 @@ from mabhas19.shadow.provider import (
     CREDENTIAL_VARS,
     PRICE_VALID_UNTIL,
     PRICES,
+    PROVIDER_VERSIONS,
     Budget,
     BudgetExceededError,
     ExperimentConfigError,
@@ -84,7 +85,7 @@ from mabhas19.shadow.run import shadow
 from mabhas19.shadow.schema_projection import sha256 as projection_sha256
 
 BASE_MANIFEST = EVAL_DIR / "shadow" / "pilot1.yaml"
-MANIFEST = EVAL_DIR / "shadow" / "veto1_gemini.yaml"  # the current benchmark (pilot 1 is closed)
+MANIFEST = EVAL_DIR / "shadow" / "veto1_argon.yaml"  # the current benchmark (earlier runs closed)
 STORE = DATA_DIR / "shadow" / "replay"
 OUT = DATA_DIR / "shadow"
 MANIFEST_SCHEMA = "sh0-pilot-manifest-1"
@@ -142,6 +143,7 @@ def provider_manifest(base: Path, settings: ProposerSettings) -> dict[str, Any]:
         },
         "pins": pins(settings),
         "settings": settings.to_dict(),
+        "adapter": PROVIDER_VERSIONS[settings.provider],
         "price_usd_per_mtok": {
             "input": PRICES[model][0],
             "output_incl_thinking": PRICES[model][1],
@@ -213,7 +215,7 @@ def verify(path: Path, retriever: Any | None = None) -> list[str]:  # noqa: PLR0
         problems.append(f"manifest schema {raw.get('schema')!r}")
     doc = load(path)
     settings = ProposerSettings(**doc.get("settings", {}))
-    if APPROVED_MODELS.get(settings.provider) != settings.model_id:
+    if settings.model_id not in APPROVED_MODELS.get(settings.provider, ()):
         problems.append(f"{settings.provider}/{settings.model_id} is not an approved pilot model")
     for key, value in pins(settings).items():
         if doc.get("pins", {}).get(key) != value:

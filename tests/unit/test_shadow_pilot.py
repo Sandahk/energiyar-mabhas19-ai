@@ -726,7 +726,9 @@ def test_no_gemini_call_without_every_guard(kwargs: dict[str, Any], message: str
     assert fake.calls == []
 
 
-@pytest.mark.parametrize("model", ["gemini-3.6-flash", "gemini-flash-latest", "gemini-4-argon"])
+@pytest.mark.parametrize(
+    "model", ["gemini-3.6-flash", "gemini-flash-latest", "gemini-4-argon-latest", "gemini-4"]
+)
 def test_only_the_approved_gemini_model_can_be_requested(model: str) -> None:
     settings = ProposerSettings(provider="gemini", model_id=model)
     with pytest.raises(ExternalCallRefusedError, match="approved pilot model"):
@@ -829,6 +831,75 @@ def test_the_gemini_budget_meter_uses_the_gemini_price() -> None:
         _gemini(fake, Budget(0.05, 1_000_000)).propose(_base(BACKGROUND)[1])  # 16k out = $0.06
     assert fake.calls == []
     assert BudgetMeter(BUDGET, "gemini-3.8-flash").cost(1_000_000, 1_000_000) == 4.5
+
+
+ARGON = ProposerSettings(provider="gemini", model_id="gemini-4-argon", timeout_s=1200.0)
+
+
+def _argon(fake: Any, budget: Budget = BUDGET, today: date = TODAY) -> GeminiProposer:
+    return GeminiProposer(ARGON, allow_external=True, manifest_frozen=True, budget=budget,
+                          env=GENV, client=fake, today=today)  # fmt: skip
+
+
+class _ArgonReply:
+    """A canned generateContent answer (candidate and usage as given; records every call)."""
+
+    def __init__(self, candidate: dict[str, Any], usage: dict[str, int]) -> None:
+        self.calls: list[dict[str, Any]] = []
+        self.payload = {"candidates": [candidate], "usageMetadata": usage,
+                        "modelVersion": "gemini-4-argon"}  # fmt: skip
+
+    def post(self, url: str, *, json: dict[str, Any], headers: dict[str, str],
+             timeout: float) -> Any:  # fmt: skip
+        self.calls.append({"url": url, "json": json, "timeout": timeout})
+        return SimpleNamespace(status_code=200, json=lambda: self.payload)
+
+
+def test_argon_gets_the_identical_body_and_only_the_exact_model_changes() -> None:
+    ctx = _base(BACKGROUND)[1]
+    assert render_request(ctx, ARGON) == render_request(ctx, GEMINI)
+    fake = _GeminiFake(_gemini_echo, model="gemini-4-argon")
+    resp = _argon(fake).propose(ctx)
+    [call] = fake.calls
+    assert call["url"].endswith("/v1beta/models/gemini-4-argon:generateContent")
+    assert call["timeout"] == 1200.0
+    assert resp.experiment_valid
+    assert ReplayKey.of(BACKGROUND, ctx, ARGON, "e").digest() != (
+        ReplayKey.of(BACKGROUND, ctx, GEMINI, "e").digest()
+    )
+    assert not _argon(_GeminiFake(_gemini_echo)).propose(ctx).experiment_valid  # a Flash reply
+
+
+def test_the_argon_price_is_pinned_to_its_introductory_period() -> None:
+    assert BudgetMeter(BUDGET, "gemini-4-argon").cost(1_000_000, 1_000_000) == 12.0
+    assert _argon(_GeminiFake(_gemini_echo), today=date(2026, 11, 30))
+    with pytest.raises(ExternalCallRefusedError, match="price expired"):
+        _argon(_GeminiFake(_gemini_echo), today=date(2026, 12, 1))
+
+
+def test_a_missing_thoughts_count_cannot_understate_the_budget() -> None:
+    answer = {"content": {"parts": [{"text": "{}"}]}, "finishReason": "STOP"}
+    usage = {"promptTokenCount": 1000, "candidatesTokenCount": 200, "totalTokenCount": 5200}
+    resp = _argon(_ArgonReply(answer, usage)).propose(_base(BACKGROUND)[1])
+    assert (resp.usage["output_tokens"], resp.usage["thinking_tokens"]) == (4200, 4000)
+    proposer = _argon(_ArgonReply(answer, {"promptTokenCount": 1000}))
+    proposer.propose(_base(BACKGROUND)[1])
+    assert proposer.meter.output_tokens == ARGON.max_output_tokens  # no total: the worst case
+
+
+@pytest.mark.parametrize("finish", ["CONTINUATION", "MAX_TOKENS"])
+def test_a_token_capped_response_is_a_result_and_is_never_resumed(finish: str) -> None:
+    fake = _ArgonReply(
+        {"content": {"parts": [{"text": ""}]}, "finishReason": finish,
+         "continuationToken": "opaque"},
+        {"promptTokenCount": 1000, "candidatesTokenCount": 0, "thoughtsTokenCount": 16000,
+         "totalTokenCount": 17000},
+    )  # fmt: skip
+    resp = _argon(fake).propose(_base(BACKGROUND)[1])
+    assert len(fake.calls) == 1
+    assert resp.raw_text is None
+    assert resp.stop_reason == finish
+    assert resp.usage["thinking_tokens"] == 16000
 
 
 def _provider_manifest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:

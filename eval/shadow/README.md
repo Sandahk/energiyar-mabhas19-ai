@@ -5,12 +5,13 @@
 | `pilot1.yaml` (+ `.sha256`) | The 80 cases, queries, gold labels, expected results and context hashes. Its own pins describe the Anthropic request at freeze time |
 | `pilot1_gemini.yaml` (+ `.sha256`) | The Gemini request contract of the pilot, which ran once. Closed: it no longer verifies against the live engine, because the shadow code has changed since |
 | `veto1.yaml` (+ `.sha256`) | The unseen benchmark for the candidate S1-V policy `s1v-grammatical-veto-1`: cases, gold labels, each case's production rows and expected V1 rows. Not a Final-N set |
-| `veto1_gemini.yaml` (+ `.sha256`) | The Gemini request contract of that benchmark; refers to `veto1.yaml` by its SHA-256. **Not yet run** |
+| `veto1_gemini.yaml` (+ `.sha256`) | The `gemini-3.8-flash` request contract of that benchmark, which ran once: safe (0 harmful vetoes, 100% precision) but recall 10/40 = 25%, below the 40% threshold. Closed: it no longer verifies against the live engine, because the shadow code has changed since |
+| `veto1_argon.yaml` (+ `.sha256`) | The `gemini-4-argon` request contract for one model comparison on the same cases: only the model and the client timeout differ from Flash |
 
-Both were frozen before any model output existed. **Do not edit them.** A provider manifest never
-copies the cases, so a provider change cannot alter the sample or the gold. Any change to a
-pinned retrieval or shadow module requires a new provider manifest; a later Claude comparison
-would get its own `pilot1_anthropic.yaml` over the same base.
+Each benchmark and its first manifest were frozen before any model output existed. **Do not edit
+them.** A provider manifest never copies the cases, so a provider change cannot alter the sample
+or the gold. Any change to a pinned retrieval or shadow module requires a new provider manifest;
+a later Claude comparison would get its own `pilot1_anthropic.yaml` over the same base.
 
 ## `veto1`
 
@@ -51,4 +52,4 @@ Known gap: P269's immutable development record lacks an out-of-scope outcome cod
 expected result is incomplete.
 
 Check the current benchmark with `uv run python -m mabhas19.shadow.pilot verify`
-(`veto1_gemini.yaml` is the default).
+(`veto1_argon.yaml` is the default).

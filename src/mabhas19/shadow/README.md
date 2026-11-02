@@ -6,8 +6,10 @@ verifies the proposal, and the result is only measured. Production output is nev
 **Status:** built and tested offline; shadow only. The first provider is
 Gemini (`gemini-3.8-flash`), with Claude (`claude-opus-5-5`) kept as an optional later
 comparison. The 80-question Gemini pilot ran once: safety held, but the broad veto reading
-harmed correct controls. The candidate S1-V policy is now `s1v-grammatical-veto-1`; its unseen
-benchmark `veto1` is frozen and not yet run. S1-V and S1-R are not promoted.
+harmed correct controls. The candidate S1-V policy is now `s1v-grammatical-veto-1`. On its
+unseen benchmark `veto1`, Gemini 3.8 Flash ran once: 0 harmful vetoes and 100% precision, but
+recall 10/40 = 25%, below the 40% threshold. `gemini-4-argon` is approved for one comparison on
+the same frozen cases with the same policy. S1-V and S1-R are not promoted.
 
 Both providers receive the same instructions and the same rendered candidate context; only the
 request envelope and the schema projection differ. The canonical parser and the verifier
@@ -49,10 +51,11 @@ and logged as a blocked recovery.
 A provider call happens only when **all** of these hold: `--allow-external`, the provider's
 credential in the environment (`GEMINI_API_KEY`, or `ANTHROPIC_API_KEY` /
 `ANTHROPIC_AUTH_TOKEN`), a frozen provider manifest that verifies against the live engine, a
-positive dollar and token budget, and the exact approved model for that provider. There is no
+positive dollar and token budget, and an exact approved model for that provider. There is no
 fallback to another model or provider. A Gemini call is also refused once its pinned price has
-expired (2026-12-31). Each recorded case is called once and replayed afterwards; invalid
-outputs are recorded, never regenerated. One transient retry is allowed and recorded in the
+expired (Flash 2026-12-31, Argon 2026-11-30). Each recorded case is called once and replayed
+afterwards; invalid outputs are recorded, never regenerated, and a token-capped response is never
+resumed. One transient retry is allowed and recorded in the
 case's usage metadata. The run stops on an HTTP 400 (the request shape itself is rejected), on
 a response from another model, at the budget, or when invalid outputs exceed 10% after 20
 calls.

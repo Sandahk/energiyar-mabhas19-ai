@@ -67,7 +67,11 @@ ANTHROPIC = "anthropic"
 GEMINI = "gemini"
 PILOT_MODEL = "claude-opus-5-5"  # the approved Anthropic model; changes need explicit approval
 GEMINI_PILOT_MODEL = "gemini-3.8-flash"  # the approved Gemini model (stable ID, not an alias)
-APPROVED_MODELS = {ANTHROPIC: PILOT_MODEL, GEMINI: GEMINI_PILOT_MODEL}
+GEMINI_ARGON_MODEL = "gemini-4-argon"  # the approved comparison model (stable ID, not an alias)
+APPROVED_MODELS = {
+    ANTHROPIC: (PILOT_MODEL,),
+    GEMINI: (GEMINI_PILOT_MODEL, GEMINI_ARGON_MODEL),
+}
 RENDER_VERSION = "sh0-render-1"  # the user turn: canonical JSON of {render, context}
 
 

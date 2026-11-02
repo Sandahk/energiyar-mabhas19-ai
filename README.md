@@ -20,7 +20,7 @@ does not support.** Every design decision below follows from that rule.
 | Curated knowledge | Main text structure and page maps; structured tables from the main text and appendices 2, 3 and 7, reviewed |
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
-| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy and a new unseen benchmark frozen, **not yet run** |
+| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy tested on a new unseen benchmark with Gemini 3.8 Flash: no harmful veto, but it caught only 25% of opportunities against a 40% threshold, so **not promoted**. A one-off Gemini 4 Argon comparison on the same cases is approved |
 | Answer generation, API, UI | Not started (blocked until retrieval is promoted) |
 
 ### Where the project stands
@@ -37,11 +37,11 @@ model may never add a row, a value or a citation. See [`src/mabhas19/shadow/`](s
 
 ### Next steps
 
-1. Run the frozen `veto1` benchmark for the candidate S1-V policy (needs explicit approval and
-   a budget). The 80-question Gemini pilot is done: safety held, but its broad veto reading removed
-   correct answers, so the candidate now has one lever only.
+1. Compare Gemini 4 Argon with Gemini 3.8 Flash on the frozen `veto1` benchmark, with the policy,
+   prompt and thresholds unchanged. Flash was safe but caught too few opportunities.
 2. Judge it precision first: no harmful vetoes, then useful recall.
-3. Only if it passes, consider promotion. Recovery of failed-closed questions (S1-R) stays paused.
+3. Even a pass does not deploy anything: `veto1` would then have been used to choose a model, so
+   a fresh holdout comes first. Recovery of failed-closed questions (S1-R) stays paused.
 4. Answer generation, the API and a user interface follow only after retrieval is promoted.
 
 ## How retrieval works

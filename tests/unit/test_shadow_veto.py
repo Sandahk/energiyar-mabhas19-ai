@@ -316,13 +316,26 @@ def test_the_veto_report_scores_v1_from_replay_only(
 # ---------------------------------------------------------------- the frozen benchmark
 
 
+def test_the_argon_manifest_differs_from_flash_only_in_the_model_contract() -> None:
+    flash_path = EVAL_DIR / "shadow" / "veto1_gemini.yaml"
+    assert pilot.file_sha256(flash_path) == pilot.sha_path(flash_path).read_text().split()[0]
+    flash = yaml.safe_load(flash_path.read_text(encoding="utf-8"))
+    argon = yaml.safe_load(pilot.MANIFEST.read_text(encoding="utf-8"))
+    assert argon["base"] == flash["base"]
+    same_pins = set(flash["pins"]) - {"engine_fingerprint"}
+    assert {k: argon["pins"][k] for k in same_pins} == {k: flash["pins"][k] for k in same_pins}
+    changed = {k for k, v in flash["settings"].items() if argon["settings"][k] != v}
+    assert changed == {"model_id", "timeout_s"}
+    assert argon["settings"]["timeout_s"] == 1200.0
+
+
 def test_the_frozen_veto_benchmark_is_unseen_and_structurally_sound() -> None:
     base = EVAL_DIR / "shadow" / "veto1.yaml"
     assert pilot.file_sha256(base) == pilot.sha_path(base).read_text().split()[0]
     doc = pilot.load(pilot.MANIFEST)
     assert doc["base"]["sha256"] == pilot.file_sha256(base)
     assert doc["base_schema"] == pilot.VETO_MANIFEST_SCHEMA
-    assert doc["settings"]["model_id"] == "gemini-3.8-flash"
+    assert doc["settings"]["model_id"] == "gemini-4-argon"
     assert doc["settings"]["effort"] == "medium"
     cases = doc["cases"]
     assert len(cases) >= 120

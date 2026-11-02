@@ -23,7 +23,11 @@ cannot: in Developer-API mode it refuses a system instruction or generation conf
 of transport errors and 429 / 5xx answers, recorded in the usage metadata (attempts, whether a
 retry occurred, the first error's category) of the one record; an HTTP 400 rejects the request
 shape itself and stops the pilot (:class:`ExperimentConfigError`); anything else is recorded as
-the result. The reported ``modelVersion`` must equal the requested model.
+the result. The reported ``modelVersion`` must equal the requested model. ``gemini-3.8-flash``
+and ``gemini-4-argon`` receive the identical body. A response ending in ``CONTINUATION`` or
+``MAX_TOKENS`` is a result, never resumed: a ``continuationToken`` is not followed. Billed output
+is what ``totalTokenCount`` implies when that exceeds candidates + thoughts, and a response with
+no token total meters the worst case, so a missing usage field cannot understate the budget.
 
 No call is possible unless every guard holds (:func:`authorize`): ``allow_external`` explicitly
 given, the provider's credential present in the environment (never read, printed or stored
@@ -46,6 +50,7 @@ from mabhas19.shadow.replay import (
     ANTHROPIC,
     APPROVED_MODELS,
     GEMINI,
+    GEMINI_ARGON_MODEL,
     GEMINI_PILOT_MODEL,
     PILOT_MODEL,
     ProposerSettings,
@@ -56,12 +61,22 @@ if TYPE_CHECKING:
     from mabhas19.shadow.context import CandidateContext
 
 PROVIDER_VERSION = "sh0-anthropic-proposer-1"
-GEMINI_PROVIDER_VERSION = "sh0-gemini-proposer-1"
+GEMINI_PROVIDER_VERSION = "sh0-gemini-proposer-2"
+PROVIDER_VERSIONS = {ANTHROPIC: PROVIDER_VERSION, GEMINI: GEMINI_PROVIDER_VERSION}
 # list prices, $ per million tokens (input, output); thinking bills as output for both.
 # Gemini 3.8 Flash standard tier: $0.75 / $3.75 through 2026-12-31 ($1.50 / $7.50 from
 # 2027-01-01), ai.google.dev/gemini-api/docs/pricing, read 2026-10-29.
-PRICES = {PILOT_MODEL: (4.00, 20.00), GEMINI_PILOT_MODEL: (0.75, 3.75)}
-PRICE_VALID_UNTIL = {GEMINI_PILOT_MODEL: date(2026, 12, 31)}
+# Gemini 4 Argon standard tier: $2 / $10 through 2026-11-30 ($4 / $20 from 2026-12-01), same
+# page, read 2026-11-02.
+PRICES = {
+    PILOT_MODEL: (4.00, 20.00),
+    GEMINI_PILOT_MODEL: (0.75, 3.75),
+    GEMINI_ARGON_MODEL: (2.00, 10.00),
+}
+PRICE_VALID_UNTIL = {
+    GEMINI_PILOT_MODEL: date(2026, 12, 31),
+    GEMINI_ARGON_MODEL: date(2026, 11, 30),
+}
 CREDENTIAL_VARS = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
 CREDENTIALS = {ANTHROPIC: CREDENTIAL_VARS, GEMINI: ("GEMINI_API_KEY",)}
 GEMINI_API = "https://generativelanguage.googleapis.com/v1beta"
@@ -260,7 +275,7 @@ class AnthropicProposer:
 
 
 class GeminiProposer:
-    """Text-only proposals from ``gemini-3.8-flash`` over REST; constructed only when every
+    """Text-only proposals from an approved Gemini model over REST; constructed only when every
     guard holds. ``client`` is anything with an httpx-style ``post(url, json=, headers=,
     timeout=)`` (tests inject an in-process fake)."""
 
@@ -276,10 +291,13 @@ class GeminiProposer:
         today: date | None = None,
     ) -> None:
         self.settings = settings or ProposerSettings.gemini()
-        if self.settings.provider != GEMINI or self.settings.model_id != GEMINI_PILOT_MODEL:
+        if (
+            self.settings.provider != GEMINI
+            or self.settings.model_id not in APPROVED_MODELS[GEMINI]
+        ):
             raise ExternalCallRefusedError(
-                f"model {self.settings.model_id!r} is not the approved pilot model "
-                f"{GEMINI_PILOT_MODEL}"
+                f"model {self.settings.model_id!r} is not an approved pilot model "
+                f"{APPROVED_MODELS[GEMINI]}"
             )
         if self.settings.effort not in ("low", "medium", "high"):
             raise ExternalCallRefusedError(f"thinking level {self.settings.effort!r}")
@@ -291,10 +309,11 @@ class GeminiProposer:
             provider=GEMINI,
         )
         day = today or datetime.now(UTC).date()
-        if day > PRICE_VALID_UNTIL[GEMINI_PILOT_MODEL]:
+        expiry = PRICE_VALID_UNTIL[self.settings.model_id]
+        if day > expiry:
             raise ExternalCallRefusedError(
-                f"the pinned {GEMINI_PILOT_MODEL} price expired on "
-                f"{PRICE_VALID_UNTIL[GEMINI_PILOT_MODEL]}; re-pin it before any call"
+                f"the pinned {self.settings.model_id} price expired on {expiry}; "
+                "re-pin it before any call"
             )
         assert budget is not None
         self.meter = BudgetMeter(budget, self.settings.model_id)
@@ -371,9 +390,12 @@ class GeminiProposer:
         doc = resp.json()
         u = doc.get("usageMetadata") or {}
         tokens_in = int(u.get("promptTokenCount") or 0)
-        thoughts = int(u.get("thoughtsTokenCount") or 0)
-        tokens_out = int(u.get("candidatesTokenCount") or 0) + thoughts  # both bill as output
-        self.meter.add(tokens_in, tokens_out)
+        visible = int(u.get("candidatesTokenCount") or 0)
+        total = int(u.get("totalTokenCount") or 0)
+        # candidates and thoughts both bill as output; the total covers a missing thoughts count
+        tokens_out = max(visible + int(u.get("thoughtsTokenCount") or 0), total - tokens_in)
+        thoughts = tokens_out - visible
+        self.meter.add(tokens_in, tokens_out if total else self.settings.max_output_tokens)
         blocked = (doc.get("promptFeedback") or {}).get("blockReason")
         cand = (doc.get("candidates") or [{}])[0]
         stop = blocked or cand.get("finishReason")
@@ -409,7 +431,7 @@ def make_proposer(  # noqa: PLR0913
     client: Any = None,
 ) -> AnthropicProposer | GeminiProposer:
     """The adapter for the settings' provider (never another provider or model)."""
-    if APPROVED_MODELS.get(settings.provider) != settings.model_id:
+    if settings.model_id not in APPROVED_MODELS.get(settings.provider, ()):
         raise ExternalCallRefusedError(
             f"{settings.provider}/{settings.model_id} is not an approved pilot model"
         )

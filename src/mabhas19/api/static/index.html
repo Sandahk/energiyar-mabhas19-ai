@@ -82,15 +82,27 @@
   }
   form button { padding: 0 18px; background: var(--accent); color: #fff; border: none; }
   form button:disabled { opacity: 0.5; cursor: wait; }
+  .privacy { max-width: 860px; margin: 0 auto 6px; font-size: 13px; color: var(--muted); }
+  .who { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .who input {
+    width: 150px; font: inherit; font-size: 13px; padding: 1px 6px; direction: ltr;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--text);
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>دستیار آزمایشی مبحث ۱۹ (ویرایش پنجم)</h1>
   <div class="warning" id="warning">این دستیار آزمایشی مبحث ۱۹ است. برای تصمیم‌های مهم مهندسی، پاسخ را با منبع استنادشده تطبیق دهید.</div>
+  <div class="who">
+    <label for="participant">شناسه آزمایشی شما (بدون نام یا ایمیل):</label>
+    <input id="participant" maxlength="40" spellcheck="false" autocomplete="off">
+    <span id="who-status"></span>
+  </div>
 </header>
 <main id="log"></main>
 <form id="ask">
+  <div class="privacy" id="privacy">آزمایش بسته: پرسش‌ها و بازخوردهای شما برای ارزیابی و بهبود این دستیار ذخیره می‌شود؛ لطفاً اطلاعات شخصی یا محرمانه وارد نکنید. تصمیم‌های مهم مهندسی را با منبع استنادشده مبحث ۱۹ تطبیق دهید.</div>
   <div class="inner">
     <textarea id="question" maxlength="1000" placeholder="سؤال خود را درباره مبحث ۱۹ بنویسید…" required></textarea>
     <button id="send" type="submit">ارسال</button>
@@ -104,6 +116,39 @@ const TYPES = {
 };
 const STATUS = { ambiguous: " (نامشخص)", unresolved: " (تفسیرنشده)" };
 const logEl = document.getElementById("log");
+const ID_PATTERN = /^[A-Za-z0-9_-]{1,40}$/;
+const ID_KEY = "m19_pilot_participant";
+
+function newId() {
+  const bytes = new Uint8Array(3);
+  crypto.getRandomValues(bytes);
+  return "pilot-" + Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function loadId() {
+  try {
+    const saved = localStorage.getItem(ID_KEY);
+    if (saved && ID_PATTERN.test(saved)) return saved;
+  } catch (e) { /* storage unavailable: a new ID for this page */ }
+  return newId();
+}
+
+let participant = loadId();
+const idInput = document.getElementById("participant");
+const idStatus = document.getElementById("who-status");
+idInput.value = participant;
+try { localStorage.setItem(ID_KEY, participant); } catch (e) { /* not persisted */ }
+idInput.addEventListener("change", () => {
+  const value = idInput.value.trim();
+  if (ID_PATTERN.test(value)) {
+    participant = value;
+    try { localStorage.setItem(ID_KEY, value); } catch (e) { /* not persisted */ }
+    idStatus.textContent = "ذخیره شد";
+  } else {
+    idInput.value = participant;
+    idStatus.textContent = "فقط حروف و اعداد انگلیسی، - و _";
+  }
+});
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -222,7 +267,7 @@ function feedback(requestId) {
     try {
       const r = await fetch("/api/feedback", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ request_id: requestId, rating, note: note.value }),
+        body: JSON.stringify({ request_id: requestId, rating, note: note.value, participant }),
       });
       status.textContent = r.ok ? "ثبت شد، سپاس." : "ثبت نشد.";
     } catch (e) {
@@ -249,7 +294,7 @@ document.getElementById("ask").addEventListener("submit", async (ev) => {
   try {
     const r = await fetch("/api/ask", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: text }),
+      body: JSON.stringify({ question: text, participant }),
     });
     const data = await r.json();
     waiting.replaceWith(r.ok ? renderAnswer(data.answer, data.latency_ms)

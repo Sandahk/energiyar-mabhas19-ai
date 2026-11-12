@@ -1,17 +1,21 @@
-"""Local JSONL logs of the pilot: one line per request, one per feedback (``data/chat/``).
+"""Local JSONL logs of the closed pilot (``data/chat/``), append-only.
 
-Request lines hold everything M2 needs to classify a real failure without rerunning anything:
-the question, the engine's route and typed outcomes, the deterministic interpretation, the
-certified rows and retrieved chunks, the response type, the sources shown and the latency.
-``triage`` is left empty for the pilot review; ``auto_hint`` is a deterministic first guess
-from the engine's own outcome, never a judgement of correctness.
+* ``requests.jsonl`` - one immutable event per question: participant, question, the engine's
+  route and typed outcomes, the deterministic interpretation, certified rows, retrieved chunks,
+  response type, sources, provenance violations and latency; ``auto_hint`` is a deterministic
+  pointer from the engine's own outcome, never a judgement of correctness;
+* ``feedback.jsonl`` - one event per rating (participant, request, up/down, optional note);
+* ``reviews.jsonl`` - manual review, one event per review, keyed by request ID. The request
+  log is never rewritten: a later review of the same request supersedes an earlier one.
 
-Nothing secret is logged: no environment, credential or client address.
+A participant is a pseudonymous pilot ID (``engineer_01``, ``pilot-3fa9c1``), never a name,
+email or password. Nothing secret is logged: no environment, credential, header or address.
 """
 
 from __future__ import annotations
 
 import json
+import re
 import threading
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,8 +26,10 @@ from mabhas19.generation.contract import Answer
 from mabhas19.retrieval.models import RetrievalResult
 
 LOG_DIR = DATA_DIR / "chat"
-LOG_SCHEMA = "m1-chat-log-1"
-# the M2 review labels one of these per request (``triage``)
+LOG_SCHEMA = "m2-chat-log-1"
+ANONYMOUS = "anonymous"
+PARTICIPANT = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
+# the manual review labels one of these per request
 TRIAGE_CLASSES = (
     "correct_answer",
     "routing",
@@ -33,10 +39,19 @@ TRIAGE_CLASSES = (
     "out_of_scope",
     "presentation",
 )
+JUDGEMENTS = ("yes", "no", "uncertain", "not_applicable")
 
 
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="milliseconds")
+
+
+def participant_id(raw: object) -> str | None:
+    """The pilot ID to log (``anonymous`` when absent), or None when it is not a valid ID."""
+    text = str(raw or "").strip()
+    if not text:
+        return ANONYMOUS
+    return text if PARTICIPANT.match(text) else None
 
 
 def auto_hint(answer: Answer) -> str:
@@ -52,20 +67,26 @@ def auto_hint(answer: Answer) -> str:
 
 
 def request_record(
-    answer: Answer, result: RetrievalResult, latency_ms: float, engine: dict[str, Any]
+    answer: Answer,
+    result: RetrievalResult,
+    latency_ms: float,
+    engine: dict[str, Any],
+    participant: str = ANONYMOUS,
 ) -> dict[str, Any]:
     return {
         "schema": LOG_SCHEMA,
         "kind": "request",
         "timestamp": _now(),
         "request_id": answer.request_id,
+        "participant": participant,
         "question": result.query,
         "normalized_question": result.normalized_query,
         "route": result.route.route,
         "route_reasons": result.route.reasons,
         "scope": result.route.signals.get("scope"),
         "interpretation": [
-            {"key": i.key, "value": i.value, "status": i.status} for i in answer.interpretation
+            {"key": i.key, "label": i.label, "value": i.value, "status": i.status}
+            for i in answer.interpretation
         ],
         "plans": [
             {
@@ -99,6 +120,7 @@ def request_record(
         "certification_failures": len(result.certification_failures),
         "prose_chunks": [h.chunk_id for h in result.prose],
         "response_type": answer.response_type,
+        "structured_answer": answer.response_type == "structured_value",
         "headline": answer.headline,
         "refusals": [{"outcome": r.outcome, "reason": r.reason} for r in answer.refusals],
         "sources": [
@@ -109,8 +131,25 @@ def request_record(
         "latency_ms": latency_ms,
         "engine": engine,
         "auto_hint": auto_hint(answer),
-        "triage": None,
     }
+
+
+def review_problems(review: dict[str, Any]) -> list[str]:
+    """Why a manual review entry is not valid (empty = valid)."""
+    out = []
+    if not re.fullmatch(r"[0-9a-f]{32}", str(review.get("request_id") or "")):
+        out.append("request_id must be the 32-character ID of a logged request")
+    for key in ("answer_correct", "answerable"):
+        if review.get(key) not in JUDGEMENTS:
+            out.append(f"{key} must be one of {JUDGEMENTS}")
+    if review.get("triage") not in TRIAGE_CLASSES:
+        out.append(f"triage must be one of {TRIAGE_CLASSES}")
+    for key in ("wrong_regulatory_value", "unsupported_numeric_claim"):
+        if not isinstance(review.get(key), bool):
+            out.append(f"{key} must be true or false")
+    if review.get("wrong_regulatory_value") and review.get("answer_correct") == "yes":
+        out.append("an answer with a wrong regulatory value cannot be correct")
+    return out
 
 
 class ChatLog:
@@ -127,7 +166,7 @@ class ChatLog:
     def request(self, record: dict[str, Any]) -> None:
         self._append("requests.jsonl", record)
 
-    def error(self, request_id: str, question: str, error: str) -> None:
+    def error(self, request_id: str, question: str, error: str, participant: str) -> None:
         self._append(
             "requests.jsonl",
             {
@@ -135,12 +174,13 @@ class ChatLog:
                 "kind": "error",
                 "timestamp": _now(),
                 "request_id": request_id,
+                "participant": participant,
                 "question": question,
                 "error": error,
             },
         )
 
-    def feedback(self, request_id: str, rating: str, note: str) -> None:
+    def feedback(self, request_id: str, rating: str, note: str, participant: str) -> None:
         self._append(
             "feedback.jsonl",
             {
@@ -148,7 +188,33 @@ class ChatLog:
                 "kind": "feedback",
                 "timestamp": _now(),
                 "request_id": request_id,
+                "participant": participant,
                 "rating": rating,
                 "note": note,
             },
         )
+
+    def review(self, review: dict[str, Any], reviewer: str = "") -> dict[str, Any]:
+        """Append a manual review (validated); the request log itself is never changed."""
+        problems = review_problems(review)
+        if problems:
+            raise ValueError("; ".join(problems))
+        record = {
+            "schema": LOG_SCHEMA,
+            "kind": "review",
+            "timestamp": _now(),
+            "reviewed": True,
+            "reviewer": reviewer,
+            **{k: review[k] for k in ("request_id", "answer_correct", "answerable", "triage")},
+            "wrong_regulatory_value": review["wrong_regulatory_value"],
+            "unsupported_numeric_claim": review["unsupported_numeric_claim"],
+            "note": str(review.get("note") or ""),
+        }
+        self._append("reviews.jsonl", record)
+        return record
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.is_file():
+        return []
+    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]

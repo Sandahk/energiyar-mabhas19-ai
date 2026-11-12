@@ -73,7 +73,8 @@ promoted" is replaced by a product-level safety contract:
 - a failed or ambiguous lookup stays a refusal, explained in Persian, with what is missing;
 - no language model generates, rewrites or interprets anything; the retrieval engine is
   unchanged and verified against its Final-8 pins at startup;
-- every request and feedback is logged locally for the pilot review.
+- every request and feedback is logged locally for the pilot review, under a pseudonymous
+  participant ID; testers are told so on the page.
 
 See [`src/mabhas19/api/`](src/mabhas19/api/README.md).
 
@@ -176,6 +177,10 @@ uv run --group embeddings python -m mabhas19.cli.embedding_experiment --set dev 
 
 # Closed-pilot chatbot on http://127.0.0.1:8019/ (frozen hybrid engine; logs to data/chat/)
 uv run --group embeddings python -m mabhas19.api.server
+
+# Closed-pilot review and report from the logs (no engine call)
+uv run python -m mabhas19.cli.pilot_report pending
+uv run python -m mabhas19.cli.pilot_report report
 
 # Answer snapshots over the development sets -> data/answers/
 uv run --group embeddings python -m mabhas19.cli.answer_snapshots

@@ -84,13 +84,17 @@ def test_page_and_health(server: tuple[str, StubEngine, Path]) -> None:
     assert health["status"] == "ok"
     assert health["engine"]["mode"] == "stub"
     assert health["warning"]
+    assert "ذخیره" in health["privacy"]
+    assert "status" in health
+    assert 'id="privacy"' in page
+    assert 'id="participant"' in page
 
 
 def test_ask_returns_the_contract_and_logs_the_request(
     server: tuple[str, StubEngine, Path],
 ) -> None:
     base, engine, logs = server
-    status, body = _call(base + "/api/ask", {"question": " قیمت آجر؟ "})
+    status, body = _call(base + "/api/ask", {"question": " قیمت آجر؟ ", "participant": "eng_01"})
     assert status == 200
     assert isinstance(body, dict)
     assert body["answer"]["response_type"] == "out_of_scope"
@@ -102,7 +106,9 @@ def test_ask_returns_the_contract_and_logs_the_request(
     assert line["response_type"] == "out_of_scope"
     assert line["latency_ms"] == 1.5
     assert line["auto_hint"].startswith("out_of_scope")
-    assert line["triage"] is None
+    assert line["participant"] == "eng_01"
+    assert line["structured_answer"] is False
+    assert "triage" not in line  # review lives in reviews.jsonl; this log is never rewritten
     assert not any("KEY" in k.upper() or "SECRET" in k.upper() for k in line)
 
 
@@ -130,12 +136,37 @@ def test_engine_failure_is_logged_and_never_shown_raw(server: tuple[str, StubEng
 
 def test_feedback_is_validated_and_logged(server: tuple[str, StubEngine, Path]) -> None:
     base, _, logs = server
-    ok = {"request_id": "b" * 32, "rating": "down", "note": "ردیف اشتباه"}
+    ok = {"request_id": "b" * 32, "rating": "down", "note": "ردیف اشتباه", "participant": "s_03"}
     assert _call(base + "/api/feedback", ok)[0] == 200
-    for bad in ({**ok, "rating": "meh"}, {**ok, "request_id": "../x"}, {}):
+    bad_cases: tuple[dict[str, Any], ...] = (
+        {**ok, "rating": "meh"},
+        {**ok, "request_id": "../x"},
+        {**ok, "participant": "علی رضایی"},
+        {},
+    )
+    for bad in bad_cases:
         assert _call(base + "/api/feedback", bad)[0] == 400
     [line] = _lines(logs / "feedback.jsonl")
     assert (line["request_id"], line["rating"], line["note"]) == ("b" * 32, "down", "ردیف اشتباه")
+    assert line["participant"] == "s_03"
+
+
+def test_participant_defaults_to_anonymous_and_rejects_names_or_emails(
+    server: tuple[str, StubEngine, Path],
+) -> None:
+    base, engine, logs = server
+    assert _call(base + "/api/ask", {"question": "سؤال"})[0] == 200
+    for bad in ("ali@example.com", "علی", "a" * 41, "x y"):
+        assert _call(base + "/api/ask", {"question": "سؤال", "participant": bad})[0] == 400
+    [line] = _lines(logs / "requests.jsonl")
+    assert line["participant"] == "anonymous"
+    assert engine.questions == ["سؤال"]
+
+
+def test_server_refuses_a_network_interface_without_explicit_permission() -> None:
+    from mabhas19.api.server import main  # noqa: PLC0415
+
+    assert main(["--host", "0.0.0.0", "--mode", "lexical"]) == 2
 
 
 def test_unknown_paths_are_404(server: tuple[str, StubEngine, Path]) -> None:

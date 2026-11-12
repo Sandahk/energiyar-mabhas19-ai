@@ -12,7 +12,7 @@ cites the document, section or table, and page (both the PDF page and the printe
 one non-negotiable rule: **it must never state a regulatory value or citation that the source
 does not support.** Every design decision below follows from that rule.
 
-## Status (2026-11-02)
+## Status (2026-11-12)
 
 | Area | State |
 |---|---|
@@ -20,7 +20,7 @@ does not support.** Every design decision below follows from that rule.
 | Curated knowledge | Main text structure and page maps; structured tables from the main text and appendices 2, 3 and 7, reviewed |
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
-| LLM semantic shadow (SH0) | Gemini pilot run once (80 questions): safety held, the first veto policy failed. Narrow candidate policy tested on a new unseen benchmark with Gemini 3.8 Flash: no harmful veto, but it caught only 25% of opportunities against a 40% threshold, so **not promoted**. Gemini 4 Argon then ran once on the same cases: no harmful veto, 100% precision, 47.5% of opportunities, every frozen threshold passed. Argon with that policy is the leading configuration, **not deployed** and awaiting a fresh holdout |
+| LLM semantic shadow (SH0) | **Closed, not promoted.** The semantic veto (S1-V) stayed safe but caught too few misreads: on its final holdout, 0 harmful vetoes and 100% precision, but recall 15/67 = 22.4% against a 40% threshold. No result-affecting LLM layer is approved |
 | Answer generation, API, UI | Not started (blocked until retrieval is promoted) |
 
 ### Where the project stands
@@ -31,17 +31,36 @@ possessive «مال» read as the occupancy name "mall", and a background remark
 verify. Fixing such cases with more rules was judged the wrong direction, so deterministic
 safety work stopped there.
 
-The current phase tests whether a language model can help **only by proposing** an
-interpretation of the question, which deterministic code then verifies field by field. The
-model may never add a row, a value or a citation. See [`src/mabhas19/shadow/`](src/mabhas19/shadow/README.md).
+The next phase tested whether a language model could help **only by proposing** an
+interpretation of the question, which deterministic code then verified field by field, with no
+power to add a row, a value or a citation. See [`src/mabhas19/shadow/`](src/mabhas19/shadow/README.md).
+That line is now closed:
 
-### Next steps
+1. **Pilot 1** (80 questions, Gemini): the original veto policy was too aggressive and harmed
+   correct answers.
+2. **V1** (`s1v-grammatical-veto-1`) narrowed the model's authority to one lever: an explicit,
+   verified `grammatical` label on a grounded word.
+3. **`veto1`** (168 cases): Gemini 3.8 Flash was safe but caught 10/40 = 25% of opportunities,
+   below the 40% usefulness threshold. Gemini 4 Argon passed every threshold (19/40 = 47.5%).
+   `veto1` was used to choose the model, so it is model-selection evidence only.
+4. **`s1v_holdout1`** (223 cases, a fresh holdout with a documented limited isolation exception):
+   Argon with V1 made 0 harmful vetoes at 100% precision, but caught only 15/67 = 22.4% of
+   opportunities. Recall failed, so S1-V is **not promoted** and the line is closed.
 
-1. Test the selected configuration (Gemini 4 Argon with `s1v-grammatical-veto-1`) on one fresh
-   holdout. `veto1` was used to choose the model, so it cannot be promotion evidence.
-2. Judge it precision first: no harmful vetoes, then useful recall, with the thresholds unchanged.
-3. Even a pass deploys nothing by itself. Recovery of failed-closed questions (S1-R) stays paused.
-4. Answer generation, the API and a user interface follow only after retrieval is promoted.
+### Stopping decision (2026-11-12)
+
+Semantic veto with the tested LLM configurations did not reach the required recall at the
+required precision. The deterministic safety engine remains the production boundary. No
+result-affecting LLM semantic layer is approved.
+
+- Nested-span abstention was necessary: on the final holdout it stopped two vetoes that would
+  have removed correct answers.
+- All 52 missed opportunities were semantic-label misses: the model called the word
+  `contextual`, not `grammatical`. No miss came from the verifier, the guards or invalid output.
+- The limit is therefore semantic usefulness, not verifier safety.
+
+Recovery of failed-closed questions (S1-R) was never started and is not planned. Answer
+generation, the API and a user interface remain blocked until retrieval is promoted.
 
 ## How retrieval works
 

@@ -3,14 +3,25 @@
 A language model in **shadow mode**: it proposes how to read a question, deterministic code
 verifies the proposal, and the result is only measured. Production output is never changed.
 
-**Status:** built and tested offline; shadow only. The first provider is
-Gemini, with Claude (`claude-opus-5-5`) kept as an optional later comparison. The 80-question Gemini pilot ran once: safety held, but the broad veto reading
-harmed correct controls. The candidate S1-V policy is now `s1v-grammatical-veto-1`. On its
-unseen benchmark `veto1`, Gemini 3.8 Flash ran once: 0 harmful vetoes and 100% precision, but
-recall 10/40 = 25%, below the 40% threshold. `gemini-4-argon` then ran once on the same frozen
-cases with the same policy: 0 harmful vetoes, 100% precision, recall 19/40 = 47.5%, every frozen
-threshold passed. Argon with V1 is the leading S1-V configuration, but `veto1` has now been used
-to choose a model, so it needs a fresh holdout. S1-V and S1-R are not promoted.
+**Status: closed, not promoted.** Built and tested offline; shadow only; nothing here affects a
+production result.
+
+- The 80-question Gemini pilot ran once: safety held, but the original veto policy was too
+  aggressive and harmed correct controls.
+- V1 (`s1v-grammatical-veto-1`) narrowed authority to an explicit, verified `grammatical` label.
+- On `veto1`, Gemini 3.8 Flash was safe (0 harmful, 100% precision) but recall was 10/40 = 25%,
+  below the 40% threshold. `gemini-4-argon` passed every threshold (recall 19/40 = 47.5%), which
+  made `veto1` model-selection evidence.
+- On `s1v_holdout1`, a fresh holdout with a documented limited isolation exception, Argon with
+  V1 made 0 harmful vetoes at 100% precision (15/15), but recall was 15/67 = 22.4%. S1-V is not
+  promoted and the line is closed. S1-R was never started.
+
+**Stopping decision:** semantic veto with the tested LLM configurations did not reach the
+required recall at the required precision. The deterministic safety engine remains the
+production boundary. No result-affecting LLM semantic layer is approved. On the final holdout,
+nested-span abstention was necessary to avoid two harmful vetoes, and all 52 missed
+opportunities were semantic-label misses (`contextual`), so the limit is semantic usefulness,
+not verifier safety.
 
 Both providers receive the same instructions and the same rendered candidate context; only the
 request envelope and the schema projection differ. The canonical parser and the verifier

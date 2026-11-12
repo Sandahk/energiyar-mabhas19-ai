@@ -21,7 +21,7 @@ does not support.** Every design decision below follows from that rule.
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
 | LLM semantic shadow (SH0) | **Closed, not promoted.** The semantic veto (S1-V) stayed safe but caught too few misreads: on its final holdout, 0 harmful vetoes and 100% precision, but recall 15/67 = 22.4% against a 40% threshold. No result-affecting LLM layer is approved |
-| Answer generation, API, UI | Not started (blocked until retrieval is promoted) |
+| Answer generation, API, UI | **M1 closed-pilot chatbot built**: deterministic Persian answers from certified rows and quoted sections, with an interpretation echo, a local API and a chat page. No LLM; not deployed |
 
 ### Where the project stands
 
@@ -59,8 +59,23 @@ result-affecting LLM semantic layer is approved.
   `contextual`, not `grammatical`. No miss came from the verifier, the guards or invalid output.
 - The limit is therefore semantic usefulness, not verifier safety.
 
-Recovery of failed-closed questions (S1-R) was never started and is not planned. Answer
-generation, the API and a user interface remain blocked until retrieval is promoted.
+Recovery of failed-closed questions (S1-R) was never started and is not planned.
+
+### Closed-pilot chatbot (M1)
+
+For a **closed pilot only** (not public production), the rule "no product before retrieval is
+promoted" is replaced by a product-level safety contract:
+
+- a table answer shows only rows the frozen engine has certified, and every number shown comes
+  from the question or a certified row;
+- every answer shows its source (table or section, page); a table answer also shows how the
+  question was read («برداشت سیستم از سؤال شما»), so a misreading is visible;
+- a failed or ambiguous lookup stays a refusal, explained in Persian, with what is missing;
+- no language model generates, rewrites or interprets anything; the retrieval engine is
+  unchanged and verified against its Final-8 pins at startup;
+- every request and feedback is logged locally for the pilot review.
+
+See [`src/mabhas19/api/`](src/mabhas19/api/README.md).
 
 ## How retrieval works
 
@@ -117,7 +132,7 @@ Package modules:
 | `providers` | Embedding, OCR and vision provider adapters | in use |
 | `benchmark` | Extraction benchmark scoring | in use |
 | `cli` | Command-line entry points | in use |
-| `generation`, `api` | Answer generation and HTTP API | empty placeholders |
+| `generation`, `api` | Deterministic answer composer with provenance checks; pilot server and Persian chat page | closed pilot (M1) |
 
 ## Source documents
 
@@ -158,6 +173,12 @@ uv run python -m mabhas19.cli.eval_retrieval --set dev
 
 # Hybrid retrieval on development sets (BM25 + local multilingual-e5-small, CPU PyTorch)
 uv run --group embeddings python -m mabhas19.cli.embedding_experiment --set dev --set heldout
+
+# Closed-pilot chatbot on http://127.0.0.1:8019/ (frozen hybrid engine; logs to data/chat/)
+uv run --group embeddings python -m mabhas19.api.server
+
+# Answer snapshots over the development sets -> data/answers/
+uv run --group embeddings python -m mabhas19.cli.answer_snapshots
 
 # SH0 pilot, local checks only (no network)
 uv run python -m mabhas19.shadow.pilot verify

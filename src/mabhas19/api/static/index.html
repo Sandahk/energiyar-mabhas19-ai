@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دستیار مبحث ۱۹</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5d6576; --line: #dde1e8;
+    --accent: #1f5fae; --accent-soft: #e8f0fb; --warn: #8a5a00; --warn-soft: #fff6e0;
+    --refuse: #8b2c2c; --refuse-soft: #fbeeee; --ok-soft: #eef7ef;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181e; --card: #1e232b; --text: #e6e9ee; --muted: #a0a8b6; --line: #333a45;
+      --accent: #7fb0f0; --accent-soft: #1d2a3d; --warn: #f0c060; --warn-soft: #2e2716;
+      --refuse: #f09a9a; --refuse-soft: #3a2222; --ok-soft: #1d2b20;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: Vazirmatn, "Segoe UI", Tahoma, sans-serif; font-size: 16px; line-height: 1.75;
+  }
+  header { padding: 14px 16px 6px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  .warning {
+    background: var(--warn-soft); color: var(--warn); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; font-size: 14px;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 8px 16px 160px; }
+  .q { margin: 18px 0 6px; font-weight: 600; }
+  .q::before { content: "پرسش: "; color: var(--muted); font-weight: 400; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .badge {
+    display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 10px;
+    background: var(--accent-soft); color: var(--accent); margin-bottom: 6px;
+  }
+  .badge.refusal, .badge.out_of_scope { background: var(--refuse-soft); color: var(--refuse); }
+  .headline { font-size: 18px; font-weight: 700; margin: 2px 0 10px; }
+  .echo {
+    background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0 12px;
+    font-size: 14px;
+  }
+  .echo b { display: block; margin-bottom: 4px; }
+  .chip { display: inline-block; margin: 2px 0 2px 10px; }
+  .chip .st { color: var(--refuse); font-size: 12px; }
+  .value { border-top: 1px solid var(--line); padding: 8px 0; }
+  .value .row { font-weight: 600; }
+  .value .num { font-size: 17px; }
+  .value .num span.v { font-weight: 700; }
+  .cond, .src, .small { color: var(--muted); font-size: 14px; }
+  .refuse { background: var(--refuse-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+  .refuse.secondary { background: transparent; border: 1px dashed var(--line); font-size: 14px; }
+  blockquote {
+    margin: 8px 0; padding: 6px 12px; border-right: 3px solid var(--accent);
+    background: var(--ok-soft); border-radius: 4px; white-space: pre-wrap;
+  }
+  .notice { font-size: 14px; margin: 6px 0; }
+  .notice.conflict, .notice.source_issue { color: var(--warn); }
+  details { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  details pre { white-space: pre-wrap; direction: ltr; text-align: left; }
+  .fb { margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .fb button { font-size: 16px; padding: 2px 10px; }
+  .fb input { flex: 1; min-width: 180px; padding: 4px 8px; font: inherit; font-size: 14px; }
+  form {
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg);
+    border-top: 1px solid var(--line); padding: 10px 16px;
+  }
+  form .inner { max-width: 860px; margin: 0 auto; display: flex; gap: 8px; }
+  textarea {
+    flex: 1; resize: vertical; min-height: 52px; max-height: 200px; font: inherit; padding: 8px;
+    border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  button {
+    font: inherit; border-radius: 8px; border: 1px solid var(--line); background: var(--card);
+    color: var(--text); cursor: pointer;
+  }
+  form button { padding: 0 18px; background: var(--accent); color: #fff; border: none; }
+  form button:disabled { opacity: 0.5; cursor: wait; }
+</style>
+</head>
+<body>
+<header>
+  <h1>دستیار آزمایشی مبحث ۱۹ (ویرایش پنجم)</h1>
+  <div class="warning" id="warning">این دستیار آزمایشی مبحث ۱۹ است. برای تصمیم‌های مهم مهندسی، پاسخ را با منبع استنادشده تطبیق دهید.</div>
+</header>
+<main id="log"></main>
+<form id="ask">
+  <div class="inner">
+    <textarea id="question" maxlength="1000" placeholder="سؤال خود را درباره مبحث ۱۹ بنویسید…" required></textarea>
+    <button id="send" type="submit">ارسال</button>
+  </div>
+</form>
+<script>
+"use strict";
+const TYPES = {
+  structured_value: "مقدار جدول", prose: "متن مبحث", refusal: "پاسخ داده نشد",
+  out_of_scope: "خارج از محدوده",
+};
+const STATUS = { ambiguous: " (نامشخص)", unresolved: " (تفسیرنشده)" };
+const logEl = document.getElementById("log");
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined && text !== null) e.textContent = text;
+  return e;
+}
+
+function fa(text) {
+  return String(text).replace(/[0-9]/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+}
+
+function cite(s) {
+  if (!s) return "";
+  let t = s.label;
+  if (s.title) t += "، «" + s.title + "»";
+  if (s.printed_pages && s.printed_pages.length) t += "، صفحه " + fa(s.printed_pages.join("، "));
+  return t;
+}
+
+function renderRefusal(r, secondary, repeated) {
+  const box = el("div", "refuse" + (secondary ? " secondary" : ""));
+  if (!repeated) box.appendChild(el("div", "", (secondary && r.table ? r.table + ": " : "") + r.message));
+  if (r.options && r.options.length) {
+    box.appendChild(el("div", "small", "گزینه‌های چاپ‌شده: " + r.options.join(" / ")));
+  }
+  if (r.missing && r.missing.length) {
+    box.appendChild(el("div", "small", "اطلاعات لازم: " + r.missing.join("، ")));
+  }
+  if (r.hint) box.appendChild(el("div", "small", r.hint));
+  return box;
+}
+
+function renderAnswer(a, latency) {
+  const card = el("div", "card");
+  card.appendChild(el("span", "badge " + a.response_type, TYPES[a.response_type] || ""));
+  card.appendChild(el("div", "headline", a.headline));
+
+  if (a.interpretation && a.interpretation.length) {
+    const echo = el("div", "echo");
+    echo.appendChild(el("b", "", "برداشت سیستم از سؤال شما"));
+    for (const i of a.interpretation) {
+      const chip = el("span", "chip", i.label + " = " + i.value);
+      if (STATUS[i.status]) chip.appendChild(el("span", "st", STATUS[i.status]));
+      echo.appendChild(chip);
+    }
+    card.appendChild(echo);
+  }
+
+  for (const v of a.values || []) {
+    const box = el("div", "value");
+    if (v.row_label) box.appendChild(el("div", "row", v.row_label));
+    if (v.value) {
+      const num = el("div", "num");
+      if (v.output_label) num.appendChild(document.createTextNode(v.output_label + ": "));
+      num.appendChild(el("span", "v", v.value));
+      if (v.unit) num.appendChild(document.createTextNode(" " + v.unit));
+      if (v.unit_label) num.appendChild(el("span", "small", " (" + v.unit_label + ")"));
+      box.appendChild(num);
+    }
+    for (const c of v.conditions || []) box.appendChild(el("div", "cond", c.label + ": " + c.value));
+    box.appendChild(el("div", "src", "منبع: " + cite(v.source)));
+    card.appendChild(box);
+  }
+  if (a.hidden_values) {
+    card.appendChild(el("div", "small", a.hidden_values + " ردیف دیگر نیز مطابقت دارد؛ برای فهرست کامل به منبع مراجعه کنید."));
+  }
+
+  const secondary = a.response_type === "structured_value";
+  if (secondary && a.refusals && a.refusals.length) {
+    card.appendChild(el("div", "small", "جدول‌های دیگری که بررسی شد:"));
+  }
+  (a.refusals || []).forEach((r, k) => {
+    const repeated = !secondary && k === 0 && r.message === a.headline;
+    if (repeated && !r.options.length && !r.missing.length && !r.hint) return;
+    card.appendChild(renderRefusal(r, secondary, repeated));
+  });
+
+  for (const e of a.excerpts || []) {
+    card.appendChild(el("blockquote", "", e.text));
+    card.appendChild(el("div", "src", "منبع: " + cite(e.source)));
+  }
+
+  const technical = [];
+  for (const n of a.notices || []) {
+    if (n.kind === "technical") technical.push(n.text);
+    else card.appendChild(el("div", "notice " + n.kind, n.text));
+  }
+  const det = el("details");
+  det.appendChild(el("summary", "", "جزئیات فنی"));
+  const pre = el("pre", "", [
+    "request: " + a.request_id,
+    "route: " + (a.safety && a.safety.route),
+    "certified rows: " + ((a.safety && a.safety.certified_row_ids) || []).join(", "),
+    "latency: " + latency + " ms",
+    ...technical,
+  ].join("\n"));
+  det.appendChild(pre);
+  card.appendChild(det);
+  card.appendChild(feedback(a.request_id));
+  return card;
+}
+
+function feedback(requestId) {
+  const box = el("div", "fb");
+  box.appendChild(el("span", "small", "این پاسخ مفید بود؟"));
+  const up = el("button", "", "👍"), down = el("button", "", "👎");
+  up.type = down.type = "button";
+  up.title = "مفید"; down.title = "نادرست یا نامفید";
+  const note = el("input");
+  note.placeholder = "توضیح کوتاه (اختیاری)";
+  note.maxLength = 1000;
+  const status = el("span", "small");
+  async function send(rating) {
+    up.disabled = down.disabled = true;
+    try {
+      const r = await fetch("/api/feedback", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ request_id: requestId, rating, note: note.value }),
+      });
+      status.textContent = r.ok ? "ثبت شد، سپاس." : "ثبت نشد.";
+    } catch (e) {
+      status.textContent = "ثبت نشد.";
+      up.disabled = down.disabled = false;
+    }
+  }
+  up.onclick = () => send("up");
+  down.onclick = () => send("down");
+  box.append(up, down, note, status);
+  return box;
+}
+
+document.getElementById("ask").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const q = document.getElementById("question");
+  const button = document.getElementById("send");
+  const text = q.value.trim();
+  if (!text) return;
+  logEl.appendChild(el("div", "q", text));
+  const waiting = el("div", "card small", "در حال جستجو…");
+  logEl.appendChild(waiting);
+  button.disabled = true;
+  try {
+    const r = await fetch("/api/ask", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text }),
+    });
+    const data = await r.json();
+    waiting.replaceWith(r.ok ? renderAnswer(data.answer, data.latency_ms)
+      : el("div", "card refuse", "خطا در پردازش سؤال" + (data.request_id ? " (" + data.request_id + ")" : "")));
+    if (r.ok) q.value = "";
+  } catch (e) {
+    waiting.replaceWith(el("div", "card refuse", "ارتباط با سرور برقرار نشد."));
+  }
+  button.disabled = false;
+  window.scrollTo(0, document.body.scrollHeight);
+});
+document.getElementById("question").addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter" && !ev.shiftKey) {
+    ev.preventDefault();
+    document.getElementById("ask").requestSubmit();
+  }
+});
+</script>
+</body>
+</html>

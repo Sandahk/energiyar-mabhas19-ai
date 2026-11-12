@@ -1,1 +1,1 @@
-"""FastAPI application and HTTP schemas."""
+"""Pilot chatbot server: the frozen engine, the answer composer, logging (standard library)."""

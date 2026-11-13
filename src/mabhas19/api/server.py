@@ -3,8 +3,9 @@
 ``python -m mabhas19.api.server [--mode hybrid|lexical] [--host 127.0.0.1] [--port 8019]``
 
 * ``GET /`` - the Persian chat page;
-* ``POST /api/ask`` ``{"question", "participant"}`` -> the typed answer contract
-  (:class:`~mabhas19.generation.contract.Answer`);
+* ``POST /api/ask`` ``{"question", "participant", "clarify"?}`` -> the typed answer contract
+  (:class:`~mabhas19.generation.contract.Answer`); ``clarify`` continues a clarification (see
+  :func:`clarify_request`);
 * ``GET /api/health`` -> status, versions and the engine's pin check;
 * ``POST /api/feedback`` ``{"request_id", "rating": "up"|"down", "note", "participant"}``.
 
@@ -40,6 +41,31 @@ MAX_NOTE = 1000
 MAX_BODY = 16_384
 _REQUEST_ID = re.compile(r"^[0-9a-f]{32}$")
 LOOPBACK = ("127.0.0.1", "localhost", "::1")
+
+
+MAX_CLARIFY_TEXT = 120
+_FIELD = re.compile(r"^[a-z_]{1,40}$")
+
+
+def clarify_request(raw: Any) -> dict[str, Any] | None:
+    """A validated clarification follow-up, or ``None``.
+
+    ``{"parent": <request ID>, "field": <field>, "kind": "option"|"free", "text": <words>}``:
+    ``text`` (a printed option or the user's typed value) is added to the original question in
+    parentheses and the whole question goes through the frozen engine again; nothing is answered
+    from the client's choice.
+    """
+    if not isinstance(raw, dict):
+        return None
+    parent = str(raw.get("parent") or "")
+    field = str(raw.get("field") or "")
+    kind = str(raw.get("kind") or "")
+    text = " ".join(str(raw.get("text") or "").replace("(", " ").replace(")", " ").split())
+    if not (_REQUEST_ID.match(parent) and _FIELD.match(field) and kind in ("option", "free")):
+        return None
+    if not text or len(text) > MAX_CLARIFY_TEXT:
+        return None
+    return {"parent_request_id": parent, "field": field, "kind": kind, "text": text}
 
 
 class AnswerEngine(Protocol):
@@ -110,6 +136,14 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
             if participant is None:
                 self._json(HTTPStatus.BAD_REQUEST, {"error": "invalid_participant"})
                 return
+            follow_up = None
+            if (data or {}).get("clarify") is not None:
+                follow_up = clarify_request((data or {}).get("clarify"))
+                if follow_up is None:
+                    self._json(HTTPStatus.BAD_REQUEST, {"error": "invalid_clarification"})
+                    return
+                # the original question with only the chosen item added; the engine runs again
+                question = f"{question} ({follow_up['text']})"
             if not question or len(question) > MAX_QUESTION:
                 self._json(
                     HTTPStatus.BAD_REQUEST,
@@ -126,7 +160,11 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
                     {"error": "internal_error", "request_id": request_id},
                 )
                 return
-            log.request(request_record(answer, result, latency, engine.info, participant))
+            log.request(
+                request_record(
+                    answer, result, latency, engine.info, participant, follow_up=follow_up
+                )
+            )
             self._json(HTTPStatus.OK, {"answer": answer.to_dict(), "latency_ms": latency})
 
         def _feedback(self) -> None:

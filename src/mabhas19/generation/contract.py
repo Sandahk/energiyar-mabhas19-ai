@@ -3,13 +3,17 @@
 An :class:`Answer` is built only by :mod:`mabhas19.generation.composer` from one frozen
 :class:`~mabhas19.retrieval.models.RetrievalResult`. A client never reads retrieval internals.
 
-Four response types:
+Five response types:
 
 * ``structured_value`` - certified table rows (values, units, printed conditions, the row
   each claim comes from), with the interpretation echo;
 * ``prose`` - retrieved source excerpts, quoted verbatim with their section and page;
 * ``refusal`` - a typed fail-closed outcome explained in Persian, with what is missing;
-* ``out_of_scope`` - the question is not answerable from the loaded Mabhas 19 corpus.
+* ``out_of_scope`` - the question is not answerable from the loaded Mabhas 19 corpus;
+* ``clarification`` - the engine refused because one item is missing or ambiguous, and the
+  answer asks for exactly that item (with the printed options, when the source prints a finite
+  list). Choosing an option re-asks the original question with the choice added; nothing is
+  answered from the UI.
 
 A mixed question may carry several kinds of block at once (values and excerpts, or a refusal
 and excerpts); ``response_type`` names the primary one.
@@ -20,9 +24,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
-ResponseType = Literal["structured_value", "prose", "refusal", "out_of_scope"]
+ResponseType = Literal["structured_value", "prose", "refusal", "out_of_scope", "clarification"]
 EchoStatus = Literal["resolved", "ambiguous", "unresolved", "requested"]
-CONTRACT_VERSION = "m1-answer-1"
+CONTRACT_VERSION = "m2-answer-2"
 
 
 @dataclass(frozen=True)
@@ -96,6 +100,32 @@ class Refusal:
 
 
 @dataclass(frozen=True)
+class ClarifyOption:
+    """One printed choice: its chip label and the words added to the question when chosen."""
+
+    label: str
+    text: str
+
+
+@dataclass(frozen=True)
+class Clarification:
+    """A follow-up question for exactly one missing or ambiguous item of a refused lookup."""
+
+    field: str  # machine name: a dimension, an entity kind or ``output``
+    field_label: str  # Persian name of the field
+    prompt: str  # Persian question shown to the user
+    outcome: str  # the engine's typed outcome this clarification answers
+    dataset: str = ""
+    table: str = ""  # Persian citation of the table the options come from
+    options: tuple[ClarifyOption, ...] = ()  # printed values only
+    free_text: bool = False  # the user may type the value (no finite printed list)
+    free_text_prefix: str = ""  # words put before the typed value (e.g. «مساحت»)
+    placeholder: str = ""  # unit-neutral, never an example number
+    hint: str = ""
+    note: str = ""  # a fixed explanation (e.g. R versus λ); no regulatory value
+
+
+@dataclass(frozen=True)
 class Notice:
     kind: Literal["conflict", "source_issue", "note", "technical"]
     text: str
@@ -113,6 +143,7 @@ class Answer:
     excerpts: list[Excerpt] = field(default_factory=list)
     refusals: list[Refusal] = field(default_factory=list)
     notices: list[Notice] = field(default_factory=list)
+    clarifications: list[Clarification] = field(default_factory=list)
     sources: list[Source] = field(default_factory=list)
     hidden_values: int = 0  # certified rows beyond the display limit (still in ``row_ids``)
     safety: dict[str, Any] = field(default_factory=dict)
@@ -132,5 +163,8 @@ class Answer:
         for r in self.refusals:
             out += [r.message, r.hint, *r.missing, *r.options]
         out += [n.text for n in self.notices]
+        for c in self.clarifications:
+            out += [c.prompt, c.field_label, c.table, c.placeholder, c.hint, c.note]
+            out += [x for o in c.options for x in (o.label, o.text)]
         out += [f"{s.label} {s.title} {' '.join(s.printed_pages)}" for s in self.sources]
         return [t for t in out if t]

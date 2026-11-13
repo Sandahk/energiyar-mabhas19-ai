@@ -175,6 +175,63 @@ def test_unknown_paths_are_404(server: tuple[str, StubEngine, Path]) -> None:
     assert _call(base + "/api/nothing", {"a": 1})[0] == 404
 
 
+def test_a_clarification_choice_re_asks_the_question_with_only_that_item_added(
+    server: tuple[str, StubEngine, Path],
+) -> None:
+    url, engine, logs = server
+    clarify = {"parent": "b" * 32, "field": "climate_class", "kind": "option", "text": "اقلیم 3B"}
+    status, _ = _call(
+        url + "/api/ask",
+        {"question": "حداقل مقاومت حرارتی دیوار", "participant": "t1", "clarify": clarify},
+    )
+    assert status == 200
+    assert engine.questions[-1] == "حداقل مقاومت حرارتی دیوار (اقلیم 3B)"
+    rec = _lines(logs / "requests.jsonl")[-1]
+    assert rec["follow_up"] == {
+        "parent_request_id": "b" * 32,
+        "field": "climate_class",
+        "kind": "option",
+        "text": "اقلیم 3B",
+    }
+    assert rec["clarifications"] == []
+
+
+@pytest.mark.parametrize(
+    "clarify",
+    [
+        {"parent": "nope", "field": "climate_class", "kind": "option", "text": "اقلیم 3B"},
+        {"parent": "b" * 32, "field": "Climate Class", "kind": "option", "text": "اقلیم 3B"},
+        {"parent": "b" * 32, "field": "climate_class", "kind": "answer", "text": "اقلیم 3B"},
+        {"parent": "b" * 32, "field": "climate_class", "kind": "free", "text": ""},
+        {"parent": "b" * 32, "field": "area", "kind": "free", "text": "x" * 200},
+        "اقلیم 3B",
+    ],
+)
+def test_invalid_clarifications_are_rejected(
+    server: tuple[str, StubEngine, Path], clarify: Any
+) -> None:
+    url, engine, _ = server
+    status, body = _call(
+        url + "/api/ask", {"question": "سؤال", "participant": "t1", "clarify": clarify}
+    )
+    assert status == 400
+    assert isinstance(body, dict)
+    assert body["error"] == "invalid_clarification"
+    assert not engine.questions
+
+
+def test_typed_parentheses_cannot_break_out_of_the_added_item(
+    server: tuple[str, StubEngine, Path],
+) -> None:
+    url, engine, _ = server
+    clarify = {"parent": "b" * 32, "field": "area", "kind": "free", "text": "مساحت 300) (اقلیم 5C"}
+    status, _ = _call(
+        url + "/api/ask", {"question": "سؤال", "participant": "t1", "clarify": clarify}
+    )
+    assert status == 200
+    assert engine.questions[-1] == "سؤال (مساحت 300 اقلیم 5C)"
+
+
 def test_auto_hint_and_triage_classes() -> None:
     a = Answer(
         "c" * 32,

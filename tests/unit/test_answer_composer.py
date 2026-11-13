@@ -81,10 +81,10 @@ def test_structured_value_answer_is_built_from_the_certified_row() -> None:
     assert v.source is not None
     assert v.source.label == "پیوست ۷"
     assert v.source.printed_pages == ("۵",)
-    assert answer.headline.startswith("ضریب هدایت حرارتی: ۰٫۱۵")
+    assert answer.headline.startswith("ضریب هدایت حرارتی (λ): ۰٫۱۵")
     echo = {i.key: i.value for i in answer.interpretation}
     assert echo["density"] == "400"
-    assert echo["output"] == "ضریب هدایت حرارتی"
+    assert echo["output"] == "ضریب هدایت حرارتی (λ)"
     assert answer.safety["provenance_violations"] == []
 
 
@@ -97,16 +97,19 @@ def test_eui_answer_echoes_occupancy_climate_and_rating() -> None:
     assert answer.values[0].value == "50"
 
 
-def test_ambiguous_entity_stays_a_refusal_with_the_printed_options() -> None:
+def test_ambiguous_entity_asks_which_printed_option_and_keeps_the_refusal() -> None:
     result = _result(AMBIGUOUS)
     assert not result.structured
     answer = compose(result, _store(), "r3")
-    assert answer.response_type == "refusal"
+    assert answer.response_type == "clarification"
     assert not answer.values
-    r = answer.refusals[0]
+    r = answer.refusals[0]  # the engine's refusal is kept underneath
     assert r.outcome == "ambiguous_entity"
     assert len(r.options) == 2
-    assert r.hint
+    c = answer.clarifications[0]
+    assert c.field == "occupancy"
+    assert {o.label for o in c.options} == {"اداری خصوصی", "اداری عمومی"}
+    assert answer.headline == c.prompt
     assert any(i.status == "ambiguous" for i in answer.interpretation)
 
 
@@ -219,8 +222,10 @@ def test_compose_replaces_a_violating_answer_with_a_refusal(
 ) -> None:
     real = composer._compose
 
-    def forged(result: RetrievalResult, store: StructuredStore, rid: str) -> Answer:
-        a = real(result, store, rid)
+    def forged(
+        result: RetrievalResult, store: StructuredStore, rid: str, clarify_ok: bool = True
+    ) -> Answer:
+        a = real(result, store, rid, clarify_ok)
         a.headline = "مقدار: ۱۲۳۴۵"
         return a
 

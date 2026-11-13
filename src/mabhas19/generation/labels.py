@@ -50,7 +50,7 @@ LABEL_KIND: dict[str, str] = {
 OUTPUT_LABELS: dict[str, str] = {
     "climate_class": "رده اقلیمی",
     "max_eui": "حداکثر شدت مصرف انرژی مجاز",
-    "thermal_conductivity": "ضریب هدایت حرارتی",
+    "thermal_conductivity": "ضریب هدایت حرارتی (λ)",
     "density": "چگالی",
     "printed_symbol": "علامت درج‌شده در جدول",
     "criterion": "معیار روز-درجه",
@@ -187,6 +187,60 @@ MISSING_HINTS: dict[str, str] = {
 }
 
 AMBIGUOUS_HINT = "لطفاً یکی از گزینه‌های چاپ‌شده را دقیق در سؤال بنویسید."
+
+# ---------------------------------------------------------------- clarifications
+# A clarification asks for one missing or ambiguous item; its options are printed values only.
+
+# the words put before a chosen value when it is added to the question (the engine reads them)
+APPEND_PREFIX: dict[str, str] = {
+    "climate_class": "اقلیم",
+    "rating": "رده انرژی",
+    "group": "گروه",
+    "area": "مساحت",
+    "density": "چگالی",
+}
+
+CLARIFY_PROMPTS: dict[str, str] = {
+    "climate_class": "برای پاسخ دقیق، لطفاً اقلیم را مشخص کنید.",
+    "rating": "رده انرژی ساختمان کدام است؟",
+    "group": "گروه ساختمان کدام است؟",
+    "year": "کدام سال اجرا منظور است؟",
+    "area": "مساحت زیربنای ساختمان چقدر است؟",
+    "density": "چگالی مصالح چقدر است؟",
+    "occupancy": "نوع کاربری دقیق‌تر کدام است؟",
+    "material": "کدام مصالح منظور است؟",
+    "element": "کدام جزء پوسته غیرنورگذر ساختمان منظور است؟",
+    "component": "کدام بخش پوسته نورگذر منظور است؟",
+    "equipment": "کدام تجهیز منظور است؟",
+    "place_of_use": "محل مصرف آب گرم کدام است؟",
+    "use": "کدام کاربری منظور است؟",
+    "space": "کدام فضا منظور است؟",
+    "requirement": "کدام الزام جدول منظور است؟",
+}
+CLARIFY_GENERIC = "سؤال با چند ردیف چاپ‌شده مطابقت دارد؛ کدام منظور است؟"
+CLARIFY_TABLE = "گزینه‌ها از {table} است."
+# free-text placeholders: unit-neutral, no example numbers
+CLARIFY_PLACEHOLDER: dict[str, str] = {
+    "area": "مقدار مساحت را همراه با واحد بنویسید",
+    "density": "مقدار چگالی را همراه با واحد بنویسید",
+}
+CLARIFY_CLIMATE_HINT = (
+    "اگر اقلیم را نمی‌دانید، ابتدا بپرسید «رده اقلیمی شهر …» و سپس اقلیم را انتخاب کنید."
+)
+# the engine resolved the entity and the printed quantity, but not every word of the question
+CLARIFY_OUTPUT = "منظور شما «{output}» برای «{entity}» است؟"
+CLARIFY_R_LAMBDA = (
+    "{table} برای «{entity}» ضریب هدایت حرارتی (λ) را چاپ کرده است، نه مقاومت حرارتی (R). "
+    "مقاومت حرارتی به ضخامت لایه بستگی دارد و این دستیار آن را محاسبه نمی‌کند."
+)
+CLARIFY_SHOW = "نمایش {output}"
+# ambiguity matched only by the name of the requested quantity, not by what the user named
+AMBIGUOUS_UNGROUNDED = (
+    "در {table} ردیفی پیدا نشد که با مورد نام‌برده در سؤال مطابقت داشته باشد؛ "
+    "فقط نام کمیت خواسته‌شده با چند ردیف این جدول جور بود. لطفاً جزء یا مورد را با نام "
+    "چاپ‌شده در مبحث ۱۹ بنویسید."
+)
+CLARIFY_WHY = "چرا این پرسش؟"
 
 GATE_MESSAGES: dict[str, str] = {
     "commercial": (

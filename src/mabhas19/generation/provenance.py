@@ -12,7 +12,9 @@ violations; an empty list means the answer may be displayed.
 * **citation** - every cited page, table and section exists in the result or source metadata;
 * **refusal** - no answer shows a value unless the engine returned certified rows, and every
   certified row is accounted for;
-* **interpretation** - every echoed value is rendered from strings the engine produced.
+* **interpretation** - every echoed value is rendered from strings the engine produced;
+* **clarification** - a clarification never comes with a value, answers a refused lookup of
+  the result, and every option it offers is a value its own table prints.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ from dataclasses import asdict
 from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
+from mabhas19.generation import options
 from mabhas19.generation.labels import CORPUS_NUMBERS, SYMBOLS, YEAR_ORDINALS
 from mabhas19.text.normalize import normalize_for_search
 
@@ -121,7 +124,30 @@ def _printed_in(text: str, fields: list[str]) -> bool:
     )
 
 
-def check(  # noqa: PLR0912
+def _clarifications(
+    answer: Answer, result: RetrievalResult, store: StructuredStore
+) -> tuple[list[str], list[str]]:
+    """Problems of the clarifications (no value, a refused lookup of this result, printed
+    options only) and the printed option strings they may show."""
+    problems: list[str] = []
+    printed: list[str] = []
+    refused = {n.dataset for n in result.no_match}
+    for clar in answer.clarifications:
+        if answer.values or result.structured:
+            problems.append("clarification: shown together with certified values")
+        if clar.dataset not in refused:
+            problems.append(f"clarification: {clar.dataset} has no refused lookup in this result")
+        labels, texts = options.allowed(store, clar.dataset, clar.field)
+        for o in clar.options:
+            if o.label not in labels or o.text not in texts:
+                problems.append(
+                    f"clarification: option «{o.label}» is not printed in {clar.dataset}"
+                )
+        printed += [*labels, *texts]
+    return problems, printed
+
+
+def check(  # noqa: PLR0912, PLR0915
     answer: Answer, result: RetrievalResult, store: StructuredStore
 ) -> list[str]:
     hits = {h.record_id: h for h in result.structured}
@@ -158,11 +184,14 @@ def check(  # noqa: PLR0912
         for n in sorted({n for t in item_text for n in numbers(t)} - allowed):
             problems.append(f"numeric: {n} in {v.record_id} is neither asked nor printed")
 
+    clarify_problems, printed_options = _clarifications(answer, result, store)
+    problems += clarify_problems
+
     # numeric provenance of everything else shown
     certified = [s for h in result.structured for s in _hit_text(h)]
     meta = _metadata(result, store)
     engine = _engine_text(result)
-    allowed_all = asked | set(CORPUS_NUMBERS)
+    allowed_all = asked | set(CORPUS_NUMBERS) | {n for s in printed_options for n in numbers(s)}
     prose = [p.text for p in result.prose]  # excerpts are checked below to be verbatim slices
     for s in [*certified, *meta, *engine, *prose, *_derivation_records(result, store)]:
         allowed_all |= numbers(s)

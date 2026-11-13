@@ -8,7 +8,10 @@ turns a refusal into an answer:
 * the interpretation echo is rendered from the engine's plans (or, for a route-level unknown
   entity, from its typed no-match), never inferred;
 * excerpts are verbatim slices of retrieved chunks, chosen by the engine's matched terms;
-* refusals and out-of-scope answers come from the typed outcomes and the scope decision.
+* refusals and out-of-scope answers come from the typed outcomes and the scope decision;
+* a refusal for one missing or ambiguous item becomes a clarification: a Persian question for
+  exactly that item, offering only the values the source prints for it. Choosing one re-asks
+  the original question with the choice added; the engine answers (or refuses) again.
 
 Every composed answer is checked by :func:`mabhas19.generation.provenance.check` before it is
 returned; an answer that fails any check is replaced by a refusal that shows nothing.
@@ -18,11 +21,14 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from mabhas19.generation import labels as L
+from mabhas19.generation import options as O
 from mabhas19.generation.contract import (
     Answer,
+    Clarification,
+    ClarifyOption,
     Condition,
     EchoStatus,
     Excerpt,
@@ -42,11 +48,12 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import ProseHit, RetrievalResult, StructuredHit
     from mabhas19.retrieval.structured import StructuredStore
 
-COMPOSER_VERSION = "m1-composer-1"
+COMPOSER_VERSION = "m2-composer-2"
 MAX_VALUES = 12  # certified rows displayed; the rest are counted, never dropped silently
 MAX_EXCERPTS = 3
 EXCERPT_CHARS = 420
 MIN_EXCERPT = 60
+MAX_OPTIONS = 16  # more printed choices than this: no clarification (the user retypes)
 _FA_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 _PRINTED_KEYS = ("printed", "displayed", "raw", "text", "code", "value", "label")
 _BOOKKEEPING = frozenset(
@@ -228,7 +235,10 @@ def _entity_label(kind: str, dataset: str) -> str:
 
 
 def interpretation(  # noqa: PLR0912
-    result: RetrievalResult, datasets: set[str] | None, store: StructuredStore
+    result: RetrievalResult,
+    datasets: set[str] | None,
+    store: StructuredStore,
+    ungrounded: frozenset[str] = frozenset(),
 ) -> list[Interpretation]:
     """The interpretation echo: the requested output, the named entities and the constraints
     of each structured plan (``datasets`` limits it to the plans that answered)."""
@@ -253,8 +263,15 @@ def interpretation(  # noqa: PLR0912
             status: EchoStatus = _ENTITY_STATUS.get(str(e.get("status")), "unresolved")
             label = _entity_label(str(e.get("kind")), ds)
             rows = [rows_by_id[i] for i in e.get("ids") or [] if i in rows_by_id]
+            if status == "ambiguous" and ds in ungrounded:
+                continue  # matched only by the quantity's name: not what the user named
             if status == "resolved" and rows:  # the printed label of the rows it resolved to
                 names = " / ".join(_unique(row_label(h.dataset, h.values) for h in rows))
+            elif str(e.get("kind")) in O.LABEL_KINDS and ds in store.main:
+                field = O.label_dimension(store, ds) or "label"
+                names = " / ".join(
+                    _unique(O.printed_label(store, ds, field, n) or n for n in _split(text))
+                )
             else:
                 names = " / ".join(_unique(_entity_name(n, store) for n in _split(text)))
             add(Interpretation(str(e.get("kind")), label, names, status, (text,)))
@@ -370,6 +387,195 @@ def out_of_scope(result: RetrievalResult) -> Refusal:
     return Refusal("out_of_scope", cls or "no_evidence", message)
 
 
+def _ungrounded(r: Refusal) -> Refusal:
+    """An ambiguity matched only by the quantity's name: no options (they would name rows the
+    user did not ask about)."""
+    message = L.AMBIGUOUS_UNGROUNDED.format(table=r.table or "این جدول")
+    return Refusal(r.outcome, "ungrounded_ambiguity", message, r.dataset, table=r.table)
+
+
+# ---------------------------------------------------------------- clarifications
+
+# words that ask for a quantity rather than name an entity
+_QUESTION_WORDS = (
+    "حداکثر حداقل مجاز مقدار میزان چقدر چند است چیست چه کدام در برای و از به را با که "
+    "طبق مبحث جدول ساختمان"
+)
+
+
+def _output_words(store: StructuredStore) -> set[str]:
+    """Words that name a requested quantity (or ask for one) rather than an entity."""
+    words = set(O.key(_QUESTION_WORDS).split())
+    for schema in store.schemas.values():
+        for out in schema.outputs:
+            for name in (*out.names, *out.header):
+                words |= set(O.key(name).split())
+    for label in L.OUTPUT_LABELS.values():
+        words |= set(O.key(label).split())
+    return words
+
+
+def _missing_dims(nm: Any, plan: dict[str, Any] | None) -> list[str]:
+    summary = (nm.constraints or {}).get("plan") or {}
+    dims = [str(m) for m in (plan or {}).get("missing") or summary.get("missing") or []]
+    if not dims and (m := _DEPENDS.search(nm.detail)):
+        dims = [a or b for a, b in _QUOTED.findall(m.group(1))]
+    return dims
+
+
+def _ask_for(field: str, dataset: str, store: StructuredStore, table: str) -> Clarification | None:
+    """A clarification for one missing field, or ``None`` when it cannot be asked safely."""
+    schema = store.schemas.get(dataset)
+    dim = schema.dim(field) if schema is not None else None
+    label = L.FIELD_LABELS.get(field, "")
+    prompt = L.CLARIFY_PROMPTS.get(field, "")
+    if dim is None or not (label and prompt):
+        return None
+    common: dict[str, Any] = {
+        "field": field,
+        "field_label": label,
+        "prompt": prompt,
+        "outcome": "missing_required_dimension",
+        "dataset": dataset,
+        "table": table,
+    }
+    if dim.kind == "interval":
+        return Clarification(
+            **common,
+            free_text=True,
+            free_text_prefix=L.APPEND_PREFIX.get(field, ""),
+            placeholder=L.CLARIFY_PLACEHOLDER.get(field, ""),
+        )
+    printed_values = O.printed_options(store, dataset, field)
+    if not printed_values:
+        return None
+    if dim.kind == "category":
+        options = tuple(ClarifyOption(*O.option_text(field, v)) for v in printed_values)
+        hint = L.CLARIFY_CLIMATE_HINT if field == "climate_class" else ""
+        return Clarification(**common, options=options, hint=hint)
+    if len(printed_values) <= MAX_OPTIONS:
+        return Clarification(**common, options=tuple(ClarifyOption(v, v) for v in printed_values))
+    return None
+
+
+def _clarify_missing(
+    nm: Any, plan: dict[str, Any] | None, store: StructuredStore, table: str
+) -> Clarification | None:
+    schema = store.schemas.get(nm.dataset)
+    if schema is None:
+        return None
+
+    def what_first(field: str) -> bool:  # ask for the row (what) before its conditions
+        dim = schema.dim(field)
+        return dim is None or dim.kind not in ("label", "entity")
+
+    for field in sorted(_missing_dims(nm, plan), key=what_first):
+        if (c := _ask_for(field, nm.dataset, store, table)) is not None:
+            return c
+    return None
+
+
+def _ambiguous_candidates(entity: dict[str, Any]) -> list[str]:
+    if entity.get("kind") == "occupancy" and entity.get("ids"):
+        return [str(i) for i in entity["ids"]]
+    return _split(str(entity.get("text") or ""))
+
+
+def _clarify_ambiguous(
+    nm: Any, plan: dict[str, Any] | None, query: str, store: StructuredStore, table: str
+) -> Clarification | Literal["ungrounded"] | None:
+    """Printed candidates of an ambiguous entity; ``"ungrounded"`` when the candidates share no
+    word with the question beyond the requested quantity's name (the user named something
+    else, and offering these rows would answer a different question)."""
+    ambiguous = [e for e in (plan or {}).get("entities") or [] if e.get("status") == "ambiguous"]
+    if len(ambiguous) != 1:
+        return None
+    entity = ambiguous[0]
+    kind = str(entity.get("kind"))
+    field = (O.label_dimension(store, nm.dataset) or "label") if kind == "label" else kind
+    names = [O.printed_label(store, nm.dataset, field, c) for c in _ambiguous_candidates(entity)]
+    if not names or not all(names):
+        return None
+    shared = set(O.key(query).split()) & {w for name in names for w in O.key(name).split()}
+    if not shared:
+        return None  # matched by the engine's own normalization: keep the plain refusal
+    if shared <= _output_words(store):
+        return "ungrounded"
+    return Clarification(
+        field=field,
+        field_label=L.FIELD_LABELS.get(field, "") or L.LABEL_KIND.get(_suffix(nm.dataset), ""),
+        prompt=L.CLARIFY_PROMPTS.get(field, L.CLARIFY_GENERIC),
+        outcome="ambiguous_entity",
+        dataset=nm.dataset,
+        table=table,
+        options=tuple(ClarifyOption(n, n) for n in _unique(names)),
+    )
+
+
+def _entity_printed(entity: dict[str, Any], dataset: str, store: StructuredStore) -> str:
+    ids = [str(i) for i in entity.get("ids") or []]
+    if dataset == APP07:
+        rows = [r for r in store.app07 if str(r.get("id")) in ids]
+        return str(rows[0].get("display_name") or "") if len(rows) == 1 else ""
+    kind = str(entity.get("kind"))
+    field = (O.label_dimension(store, dataset) or "label") if kind == "label" else kind
+    return O.printed_label(store, dataset, field, str(entity.get("text") or ""))
+
+
+def _clarify_output(
+    nm: Any, plan: dict[str, Any] | None, query: str, store: StructuredStore, table: str
+) -> Clarification | None:
+    """The engine resolved one entity and the printed quantity but could not anchor every word
+    of the question: offer that printed quantity for that entity (never another quantity)."""
+    if nm.reason != "no_structured_anchor" or not plan or plan.get("missing"):
+        return None
+    rf = str(plan.get("requested_field") or "")
+    entities = plan.get("entities") or []
+    if rf not in L.OUTPUT_LABELS or len(entities) != 1 or entities[0].get("status") != "resolved":
+        return None
+    name = _entity_printed(entities[0], nm.dataset, store)
+    if not name:
+        return None
+    output = L.OUTPUT_LABELS[rf]
+    note = ""
+    if nm.dataset == APP07 and rf == "thermal_conductivity" and "مقاومت" in O.key(query):
+        note = L.CLARIFY_R_LAMBDA.format(table=table, entity=name)
+    return Clarification(
+        field="output",
+        field_label=L.REQUESTED,
+        prompt=L.CLARIFY_OUTPUT.format(output=output, entity=name),
+        outcome=str(nm.outcome or ""),
+        dataset=nm.dataset,
+        table=table,
+        options=(ClarifyOption(L.CLARIFY_SHOW.format(output=output), O.plain(output)),),
+        note=note,
+    )
+
+
+def clarifications(
+    result: RetrievalResult, store: StructuredStore, sources: _Sources
+) -> tuple[list[Clarification], frozenset[str]]:
+    """The clarification for the first refused lookup that can ask for one item, and the
+    datasets whose ambiguity was matched only by the quantity's name."""
+    plans = {str(p.get("target")): p for p in result.plans}
+    ungrounded: set[str] = set()
+    for nm in result.no_match:
+        table = sources.table(nm.dataset)[0] if nm.dataset in store.schemas else ""
+        plan = plans.get(nm.dataset)
+        found: Clarification | Literal["ungrounded"] | None = None
+        if nm.outcome == "missing_required_dimension":
+            found = _clarify_missing(nm, plan, store, table)
+        elif nm.outcome == "ambiguous_entity":
+            found = _clarify_ambiguous(nm, plan, result.query, store, table)
+        elif nm.outcome == "unresolved_constraint":
+            found = _clarify_output(nm, plan, result.query, store, table)
+        if found == "ungrounded":
+            ungrounded.add(nm.dataset)
+        elif isinstance(found, Clarification):
+            return [found], frozenset(ungrounded)
+    return [], frozenset(ungrounded)
+
+
 # ---------------------------------------------------------------- excerpts
 
 
@@ -480,7 +686,9 @@ def _headline(
     return refused[0].message if refused else L.OUTCOME_MESSAGES["no_result"]
 
 
-def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -> Answer:
+def _compose(
+    result: RetrievalResult, store: StructuredStore, request_id: str, clarify_ok: bool = True
+) -> Answer:
     sources = _Sources(store)
     route = result.route.route
     requested = {str(p.get("target")): str(p.get("requested_field") or "") for p in result.plans}
@@ -503,10 +711,18 @@ def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -
         rtype = "prose"
     else:
         rtype, refused = "out_of_scope", [out_of_scope(result)]
+    clarify: list[Clarification] = []
+    ungrounded: frozenset[str] = frozenset()
+    if rtype == "refusal":
+        clarify, ungrounded = clarifications(result, store, sources)
+        clarify = clarify if clarify_ok else []
+        if clarify:
+            rtype = "clarification"
+        refused = [_ungrounded(r) if r.dataset in ungrounded else r for r in refused]
     answered = {v.dataset for v in all_items}
     echo = []
     if structured_route or result.no_match:
-        echo = interpretation(result, answered or None, store)
+        echo = interpretation(result, answered or None, store, ungrounded)
     issues = [i for v in values for i in v.source_issues]
     issues += [i for e in excerpts for i in e.source_issues]
     cited = [*(v.source for v in values if v.source), *(e.source for e in excerpts)]
@@ -521,7 +737,9 @@ def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -
         request_id=request_id,
         question=result.query,
         response_type=rtype,
-        headline=_headline(
+        headline=clarify[0].prompt
+        if clarify
+        else _headline(
             rtype,
             values,
             refused,
@@ -533,6 +751,7 @@ def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -
         excerpts=excerpts,
         refusals=refused,
         notices=_notices(result, issues, store),
+        clarifications=clarify,
         sources=unique_sources,
         hidden_values=len(all_items) - len(values),
         safety={
@@ -542,6 +761,7 @@ def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -
                 "prose": "retrieved_excerpts",
                 "refusal": "refused",
                 "out_of_scope": "out_of_scope",
+                "clarification": "needs_clarification",
             }[rtype],
             "certified_row_ids": [h.record_id for h in result.structured],
             "prose_chunk_ids": [h.chunk_id for h in shown_hits],
@@ -550,9 +770,12 @@ def _compose(result: RetrievalResult, store: StructuredStore, request_id: str) -
     )
 
 
-def compose(result: RetrievalResult, store: StructuredStore, request_id: str) -> Answer:
-    """The answer for one retrieval result; any provenance violation yields a refusal."""
-    answer = _compose(result, store, request_id)
+def compose(
+    result: RetrievalResult, store: StructuredStore, request_id: str, *, clarify: bool = True
+) -> Answer:
+    """The answer for one retrieval result; any provenance violation yields a refusal.
+    ``clarify=False`` keeps a refusal a refusal (no follow-up question)."""
+    answer = _compose(result, store, request_id, clarify)
     violations = check(answer, result, store)
     answer.safety["provenance_violations"] = violations
     if not violations:

@@ -82,6 +82,24 @@ def test_usage_answer_rate_and_feedback(logs: Path) -> None:
     assert m["feedback"]["with_note"] == 1
 
 
+def test_clarification_flows_are_counted() -> None:
+    p, f1, f2 = "1" * 32, "2" * 32, "3" * 32
+    asked = [
+        _request(p, "clarification", "eng_01"),
+        {**_request(f1, "clarification", "eng_01"), "follow_up": {"parent_request_id": p}},
+        {**_request(f2, "structured_value", "eng_01"), "follow_up": {"parent_request_id": f1}},
+    ]
+    m = metrics(asked, [], [])
+    assert m["clarifications"] == {
+        "asked": 2,
+        "continued_by_user": 2,
+        "follow_ups": 2,
+        "follow_ups_answered": 1,
+    }
+    assert m["answer_rate"]["clarification"]["count"] == 2
+    assert "Clarifications" in markdown(m)
+
+
 def test_reviewed_quality_taxonomy_and_safety(logs: Path) -> None:
     m = _metrics(logs)
     q = m["reviewed_quality"]

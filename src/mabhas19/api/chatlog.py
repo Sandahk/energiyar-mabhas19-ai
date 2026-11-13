@@ -26,7 +26,7 @@ from mabhas19.generation.contract import Answer
 from mabhas19.retrieval.models import RetrievalResult
 
 LOG_DIR = DATA_DIR / "chat"
-LOG_SCHEMA = "m2-chat-log-1"
+LOG_SCHEMA = "m2-chat-log-2"  # adds follow_up and clarifications
 ANONYMOUS = "anonymous"
 PARTICIPANT = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
 # the manual review labels one of these per request
@@ -62,23 +62,30 @@ def auto_hint(answer: Answer) -> str:
         return "answered:excerpts"
     if answer.response_type == "out_of_scope":
         return f"out_of_scope:{answer.refusals[0].reason if answer.refusals else ''}"
+    if answer.response_type == "clarification":
+        return "clarify:" + ",".join(c.field for c in answer.clarifications)
     outcomes = sorted({r.outcome for r in answer.refusals})
     return "refused:" + ",".join(outcomes)
 
 
-def request_record(
+def request_record(  # noqa: PLR0913
     answer: Answer,
     result: RetrievalResult,
     latency_ms: float,
     engine: dict[str, Any],
     participant: str = ANONYMOUS,
+    *,
+    follow_up: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    """One request-log line. ``follow_up`` links a clarification answer to the request it
+    continues (``parent_request_id``, ``field``, ``kind`` option/free, the added ``text``)."""
     return {
         "schema": LOG_SCHEMA,
         "kind": "request",
         "timestamp": _now(),
         "request_id": answer.request_id,
         "participant": participant,
+        "follow_up": follow_up,
         "question": result.query,
         "normalized_question": result.normalized_query,
         "route": result.route.route,
@@ -123,6 +130,16 @@ def request_record(
         "structured_answer": answer.response_type == "structured_value",
         "headline": answer.headline,
         "refusals": [{"outcome": r.outcome, "reason": r.reason} for r in answer.refusals],
+        "clarifications": [
+            {
+                "field": c.field,
+                "outcome": c.outcome,
+                "table": c.dataset,
+                "options": [o.label for o in c.options],
+                "free_text": c.free_text,
+            }
+            for c in answer.clarifications
+        ],
         "sources": [
             {"label": s.label, "pages": list(s.printed_pages), "ids": list(s.ids)}
             for s in answer.sources

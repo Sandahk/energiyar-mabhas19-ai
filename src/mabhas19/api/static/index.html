@@ -41,6 +41,22 @@
     background: var(--accent-soft); color: var(--accent); margin-bottom: 6px;
   }
   .badge.refusal, .badge.out_of_scope { background: var(--refuse-soft); color: var(--refuse); }
+  .badge.clarification { background: var(--warn-soft); color: var(--warn); }
+  .q.choice::before { content: "انتخاب شما: "; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
+  .opts button {
+    padding: 4px 14px; border-radius: 16px; border-color: var(--accent); color: var(--accent);
+    background: var(--accent-soft); font-size: 15px;
+  }
+  .opts button:disabled { opacity: 0.45; cursor: default; }
+  .opts button.chosen { opacity: 1; background: var(--accent); color: #fff; }
+  .free { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+  .free input {
+    flex: 1; min-width: 160px; padding: 4px 8px; font: inherit; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .free button { padding: 4px 14px; }
+  .note { background: var(--warn-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0; font-size: 15px; }
   .headline { font-size: 18px; font-weight: 700; margin: 2px 0 10px; }
   .echo {
     background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0 12px;
@@ -112,7 +128,7 @@
 "use strict";
 const TYPES = {
   structured_value: "مقدار جدول", prose: "متن مبحث", refusal: "پاسخ داده نشد",
-  out_of_scope: "خارج از محدوده",
+  out_of_scope: "خارج از محدوده", clarification: "پرسش تکمیلی",
 };
 const STATUS = { ambiguous: " (نامشخص)", unresolved: " (تفسیرنشده)" };
 const logEl = document.getElementById("log");
@@ -182,10 +198,60 @@ function renderRefusal(r, secondary, repeated) {
   return box;
 }
 
+// a clarification: the question for one item and the printed choices; a choice re-asks the
+// original question with that item added (the server runs the frozen engine again)
+function renderClarification(a, c, card) {
+  if (c.note) card.appendChild(el("div", "note", c.note));
+  const buttons = [];
+  function choose(kind, text, shown, button) {
+    for (const b of buttons) b.disabled = true;
+    if (button) button.classList.add("chosen");
+    ask(a.question, { parent: a.request_id, field: c.field, kind, text }, shown);
+  }
+  if (c.options && c.options.length) {
+    const opts = el("div", "opts");
+    for (const o of c.options) {
+      const b = el("button", "", o.label);
+      b.type = "button";
+      b.onclick = () => choose("option", o.text, o.label, b);
+      buttons.push(b);
+      opts.appendChild(b);
+    }
+    card.appendChild(opts);
+  }
+  if (c.free_text) {
+    const box = el("div", "free");
+    if (c.free_text_prefix) box.appendChild(el("span", "", c.free_text_prefix + ":"));
+    const input = el("input");
+    input.placeholder = c.placeholder || "";
+    input.maxLength = 100;
+    const go = el("button", "", "ادامه");
+    go.type = "button";
+    const send = () => {
+      const v = input.value.trim();
+      if (!v) return;
+      const text = (c.free_text_prefix ? c.free_text_prefix + " " : "") + v;
+      input.disabled = true;
+      choose("free", text, text, go);
+    };
+    go.onclick = send;
+    input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); send(); } });
+    buttons.push(go);
+    box.append(input, go);
+    card.appendChild(box);
+  }
+  if (c.hint) card.appendChild(el("div", "small", c.hint));
+  if (c.table && c.options && c.options.length) {
+    card.appendChild(el("div", "small", "گزینه‌ها از " + c.table + " است."));
+  }
+}
+
 function renderAnswer(a, latency) {
   const card = el("div", "card");
   card.appendChild(el("span", "badge " + a.response_type, TYPES[a.response_type] || ""));
   card.appendChild(el("div", "headline", a.headline));
+  const clarify = a.response_type === "clarification" && a.clarifications && a.clarifications[0];
+  if (clarify) renderClarification(a, clarify, card);
 
   if (a.interpretation && a.interpretation.length) {
     const echo = el("div", "echo");
@@ -221,18 +287,23 @@ function renderAnswer(a, latency) {
   if (secondary && a.refusals && a.refusals.length) {
     card.appendChild(el("div", "small", "جدول‌های دیگری که بررسی شد:"));
   }
-  (a.refusals || []).forEach((r, k) => {
-    const repeated = !secondary && k === 0 && r.message === a.headline;
-    if (repeated && !r.options.length && !r.missing.length && !r.hint) return;
-    card.appendChild(renderRefusal(r, secondary, repeated));
-  });
+  const technical = [];
+  if (clarify) {
+    // the engine's refusal behind the question stays in the technical details only
+    for (const r of a.refusals || []) technical.push("refused: " + r.outcome + " / " + r.reason);
+  } else {
+    (a.refusals || []).forEach((r, k) => {
+      const repeated = !secondary && k === 0 && r.message === a.headline;
+      if (repeated && !r.options.length && !r.missing.length && !r.hint) return;
+      card.appendChild(renderRefusal(r, secondary, repeated));
+    });
+  }
 
   for (const e of a.excerpts || []) {
     card.appendChild(el("blockquote", "", e.text));
     card.appendChild(el("div", "src", "منبع: " + cite(e.source)));
   }
 
-  const technical = [];
   for (const n of a.notices || []) {
     if (n.kind === "technical") technical.push(n.text);
     else card.appendChild(el("div", "notice " + n.kind, n.text));
@@ -281,30 +352,39 @@ function feedback(requestId) {
   return box;
 }
 
-document.getElementById("ask").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const q = document.getElementById("question");
+// one question to the server; ``clarify`` continues a clarification (shown as the user's choice)
+async function ask(text, clarify, shown) {
   const button = document.getElementById("send");
-  const text = q.value.trim();
-  if (!text) return;
-  logEl.appendChild(el("div", "q", text));
+  logEl.appendChild(el("div", clarify ? "q choice" : "q", clarify ? shown : text));
   const waiting = el("div", "card small", "در حال جستجو…");
   logEl.appendChild(waiting);
   button.disabled = true;
+  let ok = false;
   try {
+    const body = { question: text, participant };
+    if (clarify) body.clarify = clarify;
     const r = await fetch("/api/ask", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: text, participant }),
+      body: JSON.stringify(body),
     });
     const data = await r.json();
+    ok = r.ok;
     waiting.replaceWith(r.ok ? renderAnswer(data.answer, data.latency_ms)
       : el("div", "card refuse", "خطا در پردازش سؤال" + (data.request_id ? " (" + data.request_id + ")" : "")));
-    if (r.ok) q.value = "";
   } catch (e) {
     waiting.replaceWith(el("div", "card refuse", "ارتباط با سرور برقرار نشد."));
   }
   button.disabled = false;
   window.scrollTo(0, document.body.scrollHeight);
+  return ok;
+}
+
+document.getElementById("ask").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const q = document.getElementById("question");
+  const text = q.value.trim();
+  if (!text) return;
+  if (await ask(text)) q.value = "";
 });
 document.getElementById("question").addEventListener("keydown", (ev) => {
   if (ev.key === "Enter" && !ev.shiftKey) {

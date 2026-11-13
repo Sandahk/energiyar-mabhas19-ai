@@ -15,7 +15,7 @@ from typing import Any
 from mabhas19.api.chatlog import TRIAGE_CLASSES
 
 ANSWERED = ("structured_value", "prose")
-UNANSWERED = ("refusal", "out_of_scope")
+UNANSWERED = ("clarification", "refusal", "out_of_scope")
 RESPONSE_TYPES = (*ANSWERED, *UNANSWERED)
 
 
@@ -62,6 +62,12 @@ def metrics(
     violations = sorted(rid for rid, r in by_id.items() if r.get("provenance_violations"))
     latencies = sorted(float(r.get("latency_ms") or 0) for r in asked)
 
+    # clarification flows: a follow-up names the request it continues
+    asked_back = {rid for rid, r in by_id.items() if r.get("response_type") == "clarification"}
+    follow_ups = [r for r in asked if (r.get("follow_up") or {}).get("parent_request_id")]
+    continued = {str(r["follow_up"]["parent_request_id"]) for r in follow_ups} & asked_back
+    reached = [r for r in follow_ups if r.get("response_type") in ANSWERED]
+
     return {
         "safety": {
             "wrong_regulatory_values": len(wrong),
@@ -86,6 +92,12 @@ def metrics(
         "answer_rate": {
             t: {"count": types.get(t, 0), "share": _share(types.get(t, 0), n)}
             for t in RESPONSE_TYPES
+        },
+        "clarifications": {
+            "asked": len(asked_back),
+            "continued_by_user": len(continued),
+            "follow_ups": len(follow_ups),
+            "follow_ups_answered": len(reached),
         },
         "feedback": {
             "requests_with_feedback": len(latest_fb),
@@ -136,6 +148,12 @@ def markdown(m: dict[str, Any]) -> str:
         "",
         "## Answer rate",
         *(f"- {t}: {v['count']} ({v['share']})" for t, v in m["answer_rate"].items()),
+        "",
+        "## Clarifications",
+        f"- asked {m['clarifications']['asked']}, continued by the user "
+        f"{m['clarifications']['continued_by_user']}; follow-ups "
+        f"{m['clarifications']['follow_ups']}, of which answered "
+        f"{m['clarifications']['follow_ups_answered']}",
         "",
         "## Feedback",
         f"- with feedback {f['requests_with_feedback']} (rate {f['feedback_rate']}); "

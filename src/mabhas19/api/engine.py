@@ -16,7 +16,7 @@ import json
 import threading
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 import yaml
@@ -72,7 +72,33 @@ class Engine:
         with self._lock:  # the retriever keeps per-query caches; one question at a time
             result = self.retriever.retrieve(question)
             answer = compose(result, self.store, request_id)
+            answer = self._useful_choices(answer, result, request_id)
         return answer, result, round((time.perf_counter() - start) * 1000, 1)
+
+    def _leads_on(self, question: str, choice: str, field: str) -> bool:
+        """Whether choosing ``choice`` moves the question forward: the frozen engine, asked
+        the question with the choice added, answers from certified rows or asks for a different
+        item (not a refusal, and not the same question again)."""
+        follow = compose(self.retriever.retrieve(f"{question} ({choice})"), self.store, "probe")
+        if follow.response_type == "structured_value":
+            return True
+        return follow.response_type == "clarification" and follow.clarifications[0].field != field
+
+    def _useful_choices(self, answer: Answer, result: RetrievalResult, request_id: str) -> Answer:
+        """Keep only the choices of an ambiguity or quantity clarification that lead on; with
+        none left, the engine's refusal is shown as it was. (Printed category values and the
+        rows of a missing row label always constrain the same lookup and are not re-asked.)"""
+        if answer.response_type != "clarification":
+            return answer
+        c = answer.clarifications[0]
+        if c.outcome == "missing_required_dimension":
+            return answer
+        kept = tuple(o for o in c.options if self._leads_on(result.query, o.text, c.field))
+        if not kept:
+            return compose(result, self.store, request_id, clarify=False)
+        if len(kept) == len(c.options):
+            return answer
+        return replace(answer, clarifications=[replace(c, options=kept)])
 
 
 def load_engine(mode: Mode = "hybrid", threads: int = 4) -> Engine:

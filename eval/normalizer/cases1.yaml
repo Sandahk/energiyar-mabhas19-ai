@@ -1,0 +1,74 @@
+# Normalizer shadow experiment 1: case selection and gold (annotated 2026-11-13, before any
+# model call; no model output has been seen). Questions come verbatim from authored1.yaml.
+#
+# Selection (deterministic engine = release 7952912 + the clarification UX patch, hybrid):
+# - failure: the engine fails closed (prose / refusal / out of scope) although the source
+#   prints a row the person means. Gold = the printed rows (accept set), the printed output,
+#   and the city / climate / number the question states (climate taken from a city only when
+#   the exact city lookup gives one printed class). Omitting a stated constraint is allowed
+#   (the engine would ask); stating a different one is wrong.
+# - abstain_expected: the engine fails closed and the source prints NO row or quantity that
+#   means what is asked; any valid proposal is a wrong suggestion.
+# - control: the first 14 (by ID) of the questions the engine already handles correctly; the
+#   trigger must not fire and their answers must be unchanged.
+# - excluded: listed with the reason; never sent to the model.
+failure:
+- {id: N04, gold: {family: energy_limit, entities: ["دبستان و پیش دبستان", "دبیرستان"], output: max_eui}}
+- {id: N08, gold: {family: energy_limit, entities: ["رستوران/ کافه"], output: max_eui}}
+- {id: N10, gold: {family: energy_limit, entities: ["کتابخانه"], output: max_eui, city: "اصفهان"}}
+- {id: N16, gold: {family: opaque_r, entities: ["سقف مجاور فضای آزاد"], output: min_r_value}}
+- {id: N17, gold: {family: opaque_r, entities: ["کف مجاور هوای آزاد"], output: min_r_value, city: "اردبیل", climate: "5C"}}
+- {id: N19, gold: {family: opaque_r, entities: ["دیوار خارجی مجاور فضای نیمه باز کنترل نشده"], output: min_r_value}}
+- {id: N20, gold: {family: opaque_r, entities: ["سقف مجاور فضای آزاد"], output: min_r_value, city: "شیراز", climate: "3B"}}
+- {id: N23, gold: {family: opaque_r, entities: ["سقف مجاور فضای آزاد"], output: min_r_value, city: "کرمان", climate: "3B"}}
+- {id: N25, gold: {family: opaque_r, entities: ["درهای غیرنورگذر بدون لولا", "درهای غیرنورگذر لولادار"], output: min_r_value}}
+- {id: N27, gold: {family: window, entities: ["حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت", "حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – متحرک"], output: max_value, city: "تهران", climate: "3B"}}
+- {id: N28, gold: {family: window, entities: ["حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت", "حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – متحرک"], output: max_value, climate: "5B"}}
+- {id: N29, gold: {family: window, entities: ["حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰", "حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰"], output: max_value, city: "یزد", climate: "2B"}}
+- {id: N30, gold: {family: window, entities: ["حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰", "حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰"], output: max_value}}
+- {id: N32, gold: {family: window, entities: ["حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت", "حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – متحرک"], output: max_value}}
+- {id: N34, gold: {family: material, entities: ["بتن‌های با سنگدانه متداول (سیلیسی، سیلیسی-آهکی و آهکی) متراکم"], output: thermal_conductivity, numbers: ["۲۴۰۰"]}}
+- {id: N35, gold: {family: material, entities: ["گچ گچ اندود داخلی (زنده یا کشته)", "گچ گچ سخت با حداقل میزان آب لازم"], output: thermal_conductivity}}
+- {id: N38, gold: {family: material, entities: ["چوب‌های طبیعی کاج یا صنوبر، اپیسه آ", "چوب‌های طبیعی کاج نقره‌ای، کاج سواحل دریا"], output: thermal_conductivity}}
+- {id: N40, gold: {family: material, entities: ["شیشه و اسفنج شیشه شیشه"], output: thermal_conductivity}}
+- {id: N45, gold: {family: hot_water, entities: ["دوش و وان"], output: max_temperature}}
+- {id: N47, gold: {family: hot_water, entities: ["ظرفشویی آشپزخانه"], output: max_temperature}}
+- {id: N51, gold: {family: equipment_unit, entities: ["پکیج گازی – غیر چگالشی با توان ورودی نامی کمتر از ۷۰ کیلووات", "پکیج چگالشی – توان ورودی نامی کمتر از ۷۰ کیلووات"], output: threshold}}
+- {id: N53, gold: {family: equipment_unit, entities: ["کولر گازی – بر اساس نسبت بازدهی انرژی فصلی SEER"], output: threshold}}
+- {id: N54, gold: {family: equipment_central, entities: ["چیلر تراکمی هوا خنک – بر اساس ضریب عملکرد (COP)"], output: threshold}}
+- {id: N55, gold: {family: equipment_unit, entities: ["آبگرمکن – گازسوز مخزن‌دار"], output: threshold}}
+- {id: N56, gold: {family: equipment_unit, entities: ["بخاری – گازسوز دودکش دار", "بخاری – گازسوز بدون دودکش"], output: threshold}}
+- {id: N62, gold: {family: light_uniformity, entities: ["راهروها و فضاهای عمومی"], output: min_uniformity}}
+- {id: N63, gold: {family: light_uniformity, entities: ["پارکینگ"], output: min_uniformity}}
+- {id: N65, gold: {family: light_uniformity, entities: ["فضاهای ورزشی"], output: min_uniformity}}
+- {id: N68, gold: {family: city_climate, entities: [], output: climate_class, city: "زاهدان"}}
+abstain_expected:
+- {id: N31, reason: "shading-overhang projection ratio: not a printed table quantity"}
+- {id: N33, reason: "brick: Appendix 7 prints no brick row"}
+- {id: N58, reason: "window-to-floor area ratio: table 19-5-6 prints a daylight-sufficiency area ratio, a different quantity"}
+- {id: N60, reason: "shop: table 19-5-7 prints no shop / retail space"}
+control: [N01, N02, N03, N05, N06, N07, N09, N12, N13, N14, N15, N21, N22, N24]
+excluded:
+  N11: "the engine asks a clarification (refrigerated warehouse only): not a trigger case"
+  N18: "the engine asks a clarification (wall rows for a door): not a trigger case"
+  N26: "handled deterministically (beyond the first 14 controls)"
+  N36: "density 100 is a printed range boundary (40-100 / 100-125): unclear gold"
+  N37: "handled deterministically (beyond the first 14 controls)"
+  N39: "handled deterministically (beyond the first 14 controls)"
+  N41: "hollow cement block: no clear printed row"
+  N42: "lightweight concrete at 800: several printed lightweight-concrete types"
+  N43: "handled deterministically (beyond the first 14 controls)"
+  N44: "XPS density: the printed rows differ by an unstated condition"
+  N46: "handled deterministically (beyond the first 14 controls)"
+  N48: "handled deterministically (beyond the first 14 controls)"
+  N49: "no point of use stated: a missing-field clarification case, not a mapping case"
+  N50: "cast-iron boiler: the printed rows do not make that distinction"
+  N52: "handled deterministically (beyond the first 14 controls)"
+  N57: "handled deterministically (beyond the first 14 controls)"
+  N59: "window-to-floor area ratio: same concept as N58 (duplicate)"
+  N61: "warehouse light uniformity: same situation as N60 (duplicate)"
+  N64: "window-to-floor area ratio: same concept as N58 (duplicate)"
+  N66: "handled deterministically (beyond the first 14 controls)"
+  N67: "handled deterministically (beyond the first 14 controls)"
+  N69: "handled deterministically (beyond the first 14 controls)"
+  N70: "handled deterministically (beyond the first 14 controls)"

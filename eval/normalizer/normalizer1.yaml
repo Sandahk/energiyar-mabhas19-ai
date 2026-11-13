@@ -1,0 +1,107 @@
+# frozen; do not edit
+schema: normalizer-experiment-1
+created: '2026-11-13T16:04:54+00:00'
+purpose: LLM suggest-and-confirm normalizer, one finite shadow run (not Final-N)
+files:
+  authored:
+    path: authored1.yaml
+    sha256: e3163f0dee26e45b7f95ed8f8ffc28db7a9426ad071952971f591d47d5d925b2
+  cases:
+    path: cases1.yaml
+    sha256: 2e2ae65ba7591ef362d7dad1e1fa9c11ee3c388fecc4fbca45d839a30e163568
+counts:
+  failure: 29
+  abstain_expected: 4
+  control: 14
+  excluded: 23
+pins:
+  catalog_version: normalizer-catalog-1
+  catalog_sha256: 7943e04894c7ee225bd2701f1095e78eac4ecab1c42464943f417f5782ccb53f
+  prompt_version: normalizer-prompt-1
+  prompt_sha256: 6437dfed7f4833226ad673f528455fb4ccf818467c257356298844905ccd5e22
+  schema_sha256: c1700aa05be44eb85460bf9eb23bdfd7559faa0f67a8e107947f5d6e9f4ee421
+  code_sha256: ccfc82a0db48a54c967251ecff1417a75d6e60df9aea58e5bd62fc5aee4dc8f2
+  engine_composer: m2-composer-4
+  engine_pins: final8+prepilot
+settings:
+  provider: gemini
+  model_id: gemini-4-argon
+  effort: medium
+  max_output_tokens: 16000
+  timeout_s: 300.0
+  max_retries: 1
+price_usd_per_mtok:
+  input: 2.0
+  output_incl_thinking: 10.0
+  valid_until: '2026-11-30'
+trigger:
+- prose
+- refusal
+- out_of_scope
+trigger_snapshot:
+  N04: refusal
+  N08: prose
+  N10: refusal
+  N16: refusal
+  N17: prose
+  N19: prose
+  N20: prose
+  N23: prose
+  N25: refusal
+  N27: prose
+  N28: refusal
+  N29: prose
+  N30: refusal
+  N32: refusal
+  N34: refusal
+  N35: prose
+  N38: prose
+  N40: refusal
+  N45: refusal
+  N47: prose
+  N51: refusal
+  N53: refusal
+  N54: refusal
+  N55: refusal
+  N56: refusal
+  N62: refusal
+  N63: prose
+  N65: refusal
+  N68: prose
+  N31: prose
+  N33: prose
+  N58: prose
+  N60: prose
+  N01: structured_value
+  N02: clarification
+  N03: clarification
+  N05: structured_value
+  N06: structured_value
+  N07: structured_value
+  N09: structured_value
+  N12: clarification
+  N13: clarification
+  N14: clarification
+  N15: clarification
+  N21: structured_value
+  N22: clarification
+  N24: structured_value
+decision_rule:
+  useful_rate_min: 0.6
+  wrong_rate_max: 0.1
+  value_leaks_max: 0
+  latency_p90_s_max: 20.0
+  cost_per_call_usd_max: 0.05
+  failed_calls_max: 3
+  controls: the trigger never fires on a control and every control answer is unchanged
+  definitions:
+    valid: after deterministic verification a family, its output and >=1 printed row
+      (or a city found by the exact city lookup) survive
+    correct: valid; family and output equal gold; every verified row is in the gold
+      accept set; a verified city / climate / number is absent or equal to gold
+    useful: correct and at least one canonical question gets a certified value or
+      a clarification from the gold table (the unchanged engine)
+    wrong: valid and not correct (a wrong confirmation question would be shown); on
+      an abstain-expected case every valid proposal is wrong
+  go: all thresholds hold; otherwise stop the normalizer line (no prompt tuning, no
+    second model, no new benchmark)

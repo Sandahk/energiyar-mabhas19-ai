@@ -1,0 +1,284 @@
+# Raw authored questions for the LLM suggest-and-confirm normalizer shadow experiment.
+# Written 2026-11-13 by a fresh author agent that was told not to read any project file and was
+# given only topic names (no printed table wording). Verbatim; never edited after receipt.
+# Not a benchmark: one finite shadow experiment (see normalizer1.yaml).
+- id: N01
+  question: "حداکثر مصرف انرژی سالانه واسه یه خونه ویلایی تو اقلیم 3B چقدره؟"
+  topic: energy_limit
+  intent: "Maximum allowed annual energy-use intensity for a detached villa house in climate zone 3B."
+- id: N02
+  question: "سقف مصرف انرژی سالانه برای ساختمان مسکونی آپارتمانی در تهران چند کیلووات ساعت بر متر مربع است؟"
+  topic: energy_limit
+  intent: "Maximum allowed annual energy-use intensity (kWh per m2) for an apartment residential building in Tehran."
+- id: N03
+  question: "یه ساختمون اداری ۲۰۰۰ متری داریم، حداکثر مصرف انرژیش در سال چقدر باید باشه که رده B بگیره؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a 2000 m2 office building to achieve energy class B."
+- id: N04
+  question: "حد مجاز مصرف انرژی سالانه مدرسه چقدره؟"
+  topic: energy_limit
+  intent: "Maximum allowed annual energy-use intensity for a school building (no climate or area given)."
+- id: N05
+  question: "برای بیمارستان در اقلیم 2A حداکثر شدت مصرف انرژی سالانه چقدر تعیین شده؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a hospital in climate zone 2A."
+- id: N06
+  question: "مغازه تجاری تو مشهد، سقف مصرف انرژی سالانه‌ش چنده؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a retail shop in Mashhad."
+- id: N07
+  question: "حداکثر مصرف انرژی مجاز سالانه برای هتل در اقلیم گرم و مرطوب مثل بندرعباس چقدر است؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a hotel in a hot-humid climate such as Bandar Abbas."
+- id: N08
+  question: "رستوران حداکثر چقدر انرژی در سال میتونه مصرف کنه به ازای هر متر مربع؟"
+  topic: energy_limit
+  intent: "Maximum annual energy use per square metre for a restaurant (no climate given)."
+- id: N09
+  question: "سقف مصرف انرژی سالانه مسجد در اقلیم 4B چقدر است؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a mosque in climate zone 4B."
+- id: N10
+  question: "واسه یه کتابخونه عمومی تو اصفهان حداکثر مصرف انرژی سالانه چقدره؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for a public library in Isfahan."
+- id: N11
+  question: "انبار ۵۰۰ متری حد مجاز مصرف انرژی سالانه‌اش چقدر است؟"
+  topic: energy_limit
+  intent: "Maximum allowed annual energy-use intensity for a 500 m2 warehouse."
+- id: N12
+  question: "آپارتمان مسکونی تو تبریز بخواد رده A بشه، مصرف انرژی سالانه‌ش باید زیر چند باشه؟"
+  topic: energy_limit
+  intent: "Annual energy-use intensity threshold for an apartment building in Tabriz to achieve energy class A."
+- id: N13
+  question: "حداکثر شدت مصرف انرژی سالانه برای ساختمان اداری با زیربنای کمتر از ۱۰۰۰ متر مربع در اقلیم 3A چقدر است؟"
+  topic: energy_limit
+  intent: "Maximum annual energy-use intensity for an office building under 1000 m2 floor area in climate zone 3A."
+- id: N14
+  question: "خونه ویلایی رده D حداکثر چقدر انرژی مصرف میکنه سالانه؟"
+  topic: energy_limit
+  intent: "Upper annual energy-use intensity limit for a detached house in energy class D (no climate given)."
+- id: N15
+  question: "حداقل مقاومت حرارتی دیوار خارجی تو تهران چقدره؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance (R) of an exterior wall in Tehran."
+- id: N16
+  question: "حداقل R برای بام ساختمان در اقلیم 5A چقدر است؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance (R) of a roof in climate zone 5A."
+- id: N17
+  question: "کف روی پیلوت تو اردبیل چقدر عایق میخواد؟ مقاومت حرارتیش حداقل چند باشه؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of a floor above an open ground-floor parking (pilotis) in Ardabil."
+- id: N18
+  question: "مقاومت حرارتی لازم برای در ورودی خارجی ساختمان چقدر است؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of an exterior entrance door (no climate given)."
+- id: N19
+  question: "دیوار بین آپارتمان و راه‌پله که گرم نمیشه، حداقل R چقدر باید باشه؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of a wall between a dwelling and an unheated stairwell."
+- id: N20
+  question: "حداقل مقاومت حرارتی سقف زیر بام تو شیراز واسه خونه مسکونی چنده؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of the roof/top ceiling of a residential house in Shiraz."
+- id: N21
+  question: "حداقل مقاومت حرارتی کف در تماس با خاک در اقلیم 4A چقدر است؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of a slab-on-ground floor in climate zone 4A."
+- id: N22
+  question: "دیوار خارجی یه ساختمون اداری تو رشت حداقل چه مقاومت حرارتی ای لازم داره؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of an exterior wall of an office building in Rasht."
+- id: N23
+  question: "بام تخت تو کرمان چقدر عایق لازمه؟ R حداقلش رو میخوام"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of a flat roof in Kerman."
+- id: N24
+  question: "حداقل مقاومت حرارتی دیوار مجاور فضای کنترل‌نشده مثل انباری در اقلیم 3B چقدر است؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of a wall adjacent to an unconditioned space like a storage room in climate zone 3B."
+- id: N25
+  question: "در گاراژ که به بیرون باز میشه حداقل R چقدره؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of an exterior garage door (no climate given)."
+- id: N26
+  question: "حداقل مقاومت حرارتی دیوار خارجی در اهواز برای ساختمان مسکونی چقدر است؟"
+  topic: opaque_r
+  intent: "Minimum thermal resistance of an exterior wall of a residential building in Ahvaz."
+- id: N27
+  question: "ضریب انتقال حرارت پنجره تو تهران حداکثر چقدر میتونه باشه؟"
+  topic: window
+  intent: "Maximum allowed U-value of a window in Tehran."
+- id: N28
+  question: "حداکثر ضریب U برای شیشه پنجره در اقلیم 5B چقدر است؟"
+  topic: window
+  intent: "Maximum U-value of window glazing in climate zone 5B."
+- id: N29
+  question: "ضریب بهره خورشیدی شیشه واسه پنجره جنوبی تو یزد حداکثر چقدره؟"
+  topic: window
+  intent: "Maximum solar heat gain coefficient for a south-facing window in Yazd."
+- id: N30
+  question: "حداکثر ضریب سایه یا SHGC پنجره‌های غربی در اقلیم گرم چقدر است؟"
+  topic: window
+  intent: "Maximum solar heat gain coefficient (shading coefficient) for west-facing windows in a hot climate (no specific zone given)."
+- id: N31
+  question: "سایه‌بان پنجره جنوبی تو بوشهر چقدر باید بیرون بزنه؟ نسبت عمقش به ارتفاع پنجره چنده؟"
+  topic: window
+  intent: "Required projection-to-height ratio of a shading overhang for a south-facing window in Bushehr."
+- id: N32
+  question: "حداکثر U-value پنجره برای ساختمان اداری در اقلیم سرد چقدر است؟"
+  topic: window
+  intent: "Maximum window U-value for an office building in a cold climate (no specific zone or city given)."
+- id: N33
+  question: "ضریب هدایت حرارتی آجر فشاری چقدره؟"
+  topic: material
+  intent: "Thermal conductivity of solid fired (pressed) brick."
+- id: N34
+  question: "ضریب هدایت حرارتی بتن معمولی با چگالی ۲۴۰۰ کیلوگرم بر متر مکعب چقدر است؟"
+  topic: material
+  intent: "Thermal conductivity of normal concrete with density 2400 kg/m3."
+- id: N35
+  question: "لامبدای گچ ساختمونی چنده؟"
+  topic: material
+  intent: "Thermal conductivity of building gypsum plaster."
+- id: N36
+  question: "پشم سنگ با دانسیته ۱۰۰ ضریب هدایت حرارتیش چقدره؟"
+  topic: material
+  intent: "Thermal conductivity of mineral (rock) wool with density 100 kg/m3."
+- id: N37
+  question: "ضریب هدایت حرارتی یونولیت یا پلی‌استایرن منبسط چقدر است؟"
+  topic: material
+  intent: "Thermal conductivity of expanded polystyrene (EPS) insulation (no density given)."
+- id: N38
+  question: "چوب کاج ضریب هدایت حرارتیش چقدره؟"
+  topic: material
+  intent: "Thermal conductivity of pine wood."
+- id: N39
+  question: "ضریب هدایت حرارتی سنگ مرمر چقدر است؟"
+  topic: material
+  intent: "Thermal conductivity of marble stone."
+- id: N40
+  question: "شیشه معمولی هدایت حرارتیش چنده؟"
+  topic: material
+  intent: "Thermal conductivity of ordinary glass."
+- id: N41
+  question: "چگالی بلوک سیمانی توخالی چقدر در نظر گرفته میشود؟"
+  topic: material
+  intent: "Density of a hollow cement (concrete) block."
+- id: N42
+  question: "ضریب هدایت حرارتی بتن سبک با چگالی ۸۰۰ چقدره؟"
+  topic: material
+  intent: "Thermal conductivity of lightweight concrete with density 800 kg/m3."
+- id: N43
+  question: "ضریب هدایت حرارتی پشم شیشه چقدر است؟"
+  topic: material
+  intent: "Thermal conductivity of glass wool insulation (no density given)."
+- id: N44
+  question: "پلی‌استایرن اکسترود شده (XPS) چگالیش معمولا چند در نظر گرفته میشه؟"
+  topic: material
+  intent: "Density of extruded polystyrene (XPS) insulation."
+- id: N45
+  question: "حداکثر دمای آب گرم دوش حموم چقدر باید باشه؟"
+  topic: hot_water
+  intent: "Maximum hot-water temperature at a shower outlet."
+- id: N46
+  question: "حداکثر دمای آب گرم خروجی روشویی در ساختمان مسکونی چقدر است؟"
+  topic: hot_water
+  intent: "Maximum hot-water temperature at a washbasin tap in a residential building."
+- id: N47
+  question: "آب گرم سینک آشپزخونه حداکثر چند درجه میتونه باشه؟"
+  topic: hot_water
+  intent: "Maximum hot-water temperature at a kitchen sink."
+- id: N48
+  question: "حداکثر دمای آب گرم روشویی‌های عمومی مثل سرویس بهداشتی مدرسه چقدر مجاز است؟"
+  topic: hot_water
+  intent: "Maximum hot-water temperature at public washbasins, such as school restrooms."
+- id: N49
+  question: "دمای آب گرم مصرفی حداکثر چند درجه باشه؟"
+  topic: hot_water
+  intent: "Maximum domestic hot-water temperature at the point of use (no specific fixture given)."
+- id: N50
+  question: "حداقل راندمان دیگ چدنی گرمایش چقدره؟"
+  topic: equipment
+  intent: "Minimum efficiency of a cast-iron heating boiler."
+- id: N51
+  question: "حداقل بازده پکیج دیواری گازی چقدر باید باشد؟"
+  topic: equipment
+  intent: "Minimum efficiency of a gas-fired wall-hung combi boiler (package)."
+- id: N52
+  question: "کولر آبی حداقل چه راندمانی باید داشته باشه؟"
+  topic: equipment
+  intent: "Minimum efficiency of an evaporative cooler."
+- id: N53
+  question: "حداقل EER یا رده انرژی کولر گازی اسپلیت چقدر است؟"
+  topic: equipment
+  intent: "Minimum EER (energy efficiency ratio) or energy rating of a split air conditioner."
+- id: N54
+  question: "چیلر تراکمی هواخنک حداقل COP اش چند باید باشه؟"
+  topic: equipment
+  intent: "Minimum COP of an air-cooled vapor-compression chiller."
+- id: N55
+  question: "حداقل راندمان آبگرمکن گازی مخزن‌دار چقدر است؟"
+  topic: equipment
+  intent: "Minimum efficiency of a gas-fired storage water heater."
+- id: N56
+  question: "بخاری گازی حداقل راندمانش چقدره طبق مبحث ۱۹؟"
+  topic: equipment
+  intent: "Minimum efficiency of a gas space heater."
+- id: N57
+  question: "حداقل راندمان چیلر جذبی چقدر است؟"
+  topic: equipment
+  intent: "Minimum efficiency (COP) of an absorption chiller."
+- id: N58
+  question: "حداقل نسبت سطح نورگیر به کف واسه دفتر کار چقدره؟"
+  topic: lighting
+  intent: "Minimum daylight opening (window) area to floor area ratio for an office space."
+- id: N59
+  question: "حداقل نسبت سطح پنجره به مساحت کف کلاس درس چقدر است؟"
+  topic: lighting
+  intent: "Minimum daylight window area to floor area ratio for a classroom."
+- id: N60
+  question: "یکنواختی روشنایی تو مغازه حداقل چقدر باید باشه؟"
+  topic: lighting
+  intent: "Minimum artificial-light uniformity ratio for a retail shop."
+- id: N61
+  question: "حداقل یکنواختی روشنایی مصنوعی در انبار چقدر است؟"
+  topic: lighting
+  intent: "Minimum artificial-light uniformity ratio for a warehouse."
+- id: N62
+  question: "راهرو چقدر یکنواختی نور میخواد حداقل؟"
+  topic: lighting
+  intent: "Minimum artificial-light uniformity ratio for a corridor."
+- id: N63
+  question: "حداقل یکنواختی روشنایی در پارکینگ سرپوشیده چقدر تعیین شده است؟"
+  topic: lighting
+  intent: "Minimum artificial-light uniformity ratio for an indoor (covered) parking garage."
+- id: N64
+  question: "برای بخش بستری بیمارستان حداقل نسبت نورگیر طبیعی به کف چقدر است؟"
+  topic: lighting
+  intent: "Minimum daylight opening area to floor area ratio for a hospital inpatient ward."
+- id: N65
+  question: "سالن ورزشی سرپوشیده حداقل یکنواختی نورش چنده؟"
+  topic: lighting
+  intent: "Minimum artificial-light uniformity ratio for an indoor sports hall."
+- id: N66
+  question: "اصفهان جزو کدوم اقلیم حساب میشه تو مبحث ۱۹؟"
+  topic: city_climate
+  intent: "Climate class/zone of the city of Isfahan."
+- id: N67
+  question: "اقلیم شهر رشت بر اساس مبحث ۱۹ چیست؟"
+  topic: city_climate
+  intent: "Climate class/zone of the city of Rasht."
+- id: N68
+  question: "زاهدان تو چه منطقه اقلیمیه؟"
+  topic: city_climate
+  intent: "Climate class/zone of the city of Zahedan."
+- id: N69
+  question: "همدان از نظر اقلیمی جزو کدام گروه قرار می‌گیرد؟"
+  topic: city_climate
+  intent: "Climate class/zone of the city of Hamedan."
+- id: N70
+  question: "میخوام بدونم کرج کدوم اقلیمه، 3B یا 4B؟"
+  topic: city_climate
+  intent: "Climate class/zone of the city of Karaj."

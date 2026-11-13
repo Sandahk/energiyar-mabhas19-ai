@@ -143,6 +143,34 @@ The pin guard compares with Final-8 after applying `eval/retrieval/m2_prepilot_p
 (only `retrieval/router.py`'s hash, from its Final-8 value). Sanity check: the frozen
 paraphrase set `eval/prepilot/paraphrases.yaml` (development only, not a benchmark).
 
+### Follow-up orchestration (2026-11-13)
+
+`api/orchestration.py`, over the unchanged engine (router, planner, admission, PlanCoverage,
+certification, curated data, schemas and `provenance.py` untouched). Every value shown still
+comes from one ordinary engine call that passed its own provenance check.
+
+- **City for climate.** The climate question also has a text box: a city name is looked up
+  through the engine as «رده اقلیمی شهر …» (Appendix 2 and table 19-3-2). Only rows printed with
+  exactly that name (after spelling normalization; a station in parentheses, «تهران (مهرآباد)»,
+  is the same city) are used: no partial, nearest-city or province match, and other rows the
+  engine returns («بندر بوشهر» for «بوشهر») are never used. One printed class: the question
+  continues with that class added and the city rows are shown with the answer
+  (`Answer.context`). Different classes (Isfahan 3B/4B, SI-0009): none is chosen; both rows
+  are shown and only those classes are offered. Unknown: the climate question again. The class
+  is passed on unchanged: Ardabil's 5C uses the printed «5B,5C» column of 19-5-1 and is still
+  refused by Appendix 3 (SI-0001, SI-0002). A typed printed code («3B») is taken as the code.
+- **Side by side.** When the only item missing from an Appendix 3 lookup is the energy rating
+  (A-D) or the residential area band, each printed value is asked as its own fully specified
+  engine call and the certified values are shown together (one row each; no rating is chosen).
+  Any other difference between the candidates (row, quantity, unit, source issues, notices, a
+  conflict, anything unresolved) keeps the question. Row choices (public/private office, wall
+  type, material, density, equipment) are always asked. No value is ever skipped or merged
+  because values happen to be equal.
+- `composite_problems` checks a combined answer against the checked answers it was built from
+  (identical values and context rows, every number shown, notices, sources, echo, options a
+  subset of the printed options); a combination that fails is not shown (the plain engine
+  answer is, and the reason is logged as `orchestration_rejected`).
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
@@ -153,8 +181,9 @@ Routing issues found by the clarification pass and the pre-pilot patch (not fixe
   quantity's name in 19-5-2 (the table names transparent parts differently).
 - A clarification can offer rows matched by a generic word only (a roof U question with «حد
   مجاز» was offered 19-5-2 SHGC rows before the patch; no longer for that question).
-- A city does not stand in for a climate class in tables 19-5-1/19-5-2 («… (در تبریز)» is not
-  applied); the climate clarification therefore offers classes and a hint to look the city up.
+- A city written in the question itself («… در تبریز») is not applied by tables 19-5-1/19-5-2
+  (Appendix 3 already derives the climate from it); only a city typed in the climate
+  question's box is looked up.
 - An ambiguous label the engine matched through its own normalization («چهارلوله» →
   «4 لوله») stays a plain refusal: adding the printed label does not resolve it.
 
@@ -179,6 +208,7 @@ M1 issues:
 | `generation/composer.py` | Retrieval result → answer, read-only over the engine |
 | `generation/provenance.py` | Numeric, row, citation, refusal, excerpt and interpretation checks |
 | `api/engine.py` | Frozen engine loading and the Final-8 pin check |
+| `api/orchestration.py` | City → climate and side-by-side values over certified engine calls |
 | `api/chatlog.py` | Request, feedback and review logs (append-only) |
 | `api/pilot_metrics.py` | M2 metrics from the logs |
 | `api/server.py` | Standard-library HTTP server |

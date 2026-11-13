@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import ProseHit, RetrievalResult, StructuredHit
     from mabhas19.retrieval.structured import StructuredStore
 
-COMPOSER_VERSION = "m2-composer-3"
+COMPOSER_VERSION = "m2-composer-4"
 U_AS_R = MAIN + "19-5-1"  # opaque elements: the requirement is a minimum R
 # the engine's typed refusals of a quantity the table does not print (admission, coverage)
 _U_REFUSALS = frozenset({"unsupported_output_slot", "unattested_quantity"})
@@ -427,7 +427,9 @@ def _missing_dims(nm: Any, plan: dict[str, Any] | None) -> list[str]:
     return dims
 
 
-def _ask_for(field: str, dataset: str, store: StructuredStore, table: str) -> Clarification | None:
+def _ask_for(  # noqa: PLR0911
+    field: str, dataset: str, store: StructuredStore, table: str
+) -> Clarification | None:
     """A clarification for one missing field, or ``None`` when it cannot be asked safely."""
     schema = store.schemas.get(dataset)
     dim = schema.dim(field) if schema is not None else None
@@ -455,8 +457,16 @@ def _ask_for(field: str, dataset: str, store: StructuredStore, table: str) -> Cl
         return None
     if dim.kind == "category":
         options = tuple(ClarifyOption(*O.option_text(field, v)) for v in printed_values)
-        hint = L.CLARIFY_CLIMATE_HINT if field == "climate_class" else ""
-        return Clarification(**common, options=options, hint=hint)
+        if field == "climate_class":  # or a city name (api.orchestration looks it up)
+            return Clarification(
+                **common,
+                options=options,
+                hint=L.CLARIFY_CLIMATE_HINT,
+                free_text=True,
+                free_text_prefix=L.CITY_PREFIX,
+                placeholder=L.CLARIFY_PLACEHOLDER["climate_class"],
+            )
+        return Clarification(**common, options=options)
     if len(printed_values) <= MAX_OPTIONS:
         return Clarification(**common, options=tuple(ClarifyOption(v, v) for v in printed_values))
     return None

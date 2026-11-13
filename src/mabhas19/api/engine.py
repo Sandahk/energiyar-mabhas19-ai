@@ -21,6 +21,7 @@ from typing import Any, Literal
 
 import yaml
 
+from mabhas19.api.orchestration import respond
 from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
 from mabhas19.generation.composer import COMPOSER_VERSION, compose
 from mabhas19.generation.contract import CONTRACT_VERSION, Answer
@@ -83,15 +84,30 @@ class Engine:
     info: dict[str, Any] = field(default_factory=dict)
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-    def ask(self, question: str) -> tuple[Answer, RetrievalResult, float]:
-        """(answer, the retrieval result it was composed from, latency in ms)."""
+    def ask(
+        self,
+        question: str,
+        *,
+        follow_up: dict[str, Any] | None = None,
+        base: str | None = None,
+    ) -> tuple[Answer, RetrievalResult, float]:
+        """(answer, the main retrieval result it was composed from, latency in ms).
+
+        ``follow_up``/``base``: a clarification continued (the question before the choice was
+        added); a typed city for a climate question is looked up first (api.orchestration)."""
         request_id = uuid.uuid4().hex
         start = time.perf_counter()
         with self._lock:  # the retriever keeps per-query caches; one question at a time
-            result = self.retriever.retrieve(question)
-            answer = compose(result, self.store, request_id)
-            answer = self._useful_choices(answer, result, request_id)
-        return answer, result, round((time.perf_counter() - start) * 1000, 1)
+            reply = respond(
+                self._run, self.store, question, request_id, follow_up=follow_up, base=base
+            )
+        return reply.answer, reply.result, round((time.perf_counter() - start) * 1000, 1)
+
+    def _run(self, question: str, request_id: str) -> tuple[Answer, RetrievalResult]:
+        """One frozen engine call: retrieve, compose (provenance-checked), useful choices."""
+        result = self.retriever.retrieve(question)
+        answer = compose(result, self.store, request_id)
+        return self._useful_choices(answer, result, request_id), result
 
     def _leads_on(self, question: str, choice: str, field: str) -> bool:
         """Whether choosing ``choice`` moves the question forward: the frozen engine, asked

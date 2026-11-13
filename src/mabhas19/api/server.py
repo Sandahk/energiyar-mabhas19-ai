@@ -71,7 +71,13 @@ def clarify_request(raw: Any) -> dict[str, Any] | None:
 class AnswerEngine(Protocol):
     info: dict[str, Any]
 
-    def ask(self, question: str) -> tuple[Answer, RetrievalResult, float]: ...
+    def ask(
+        self,
+        question: str,
+        *,
+        follow_up: dict[str, Any] | None = None,
+        base: str | None = None,
+    ) -> tuple[Answer, RetrievalResult, float]: ...
 
 
 def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHandler]:
@@ -137,6 +143,7 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
                 self._json(HTTPStatus.BAD_REQUEST, {"error": "invalid_participant"})
                 return
             follow_up = None
+            base = question
             if (data or {}).get("clarify") is not None:
                 follow_up = clarify_request((data or {}).get("clarify"))
                 if follow_up is None:
@@ -151,7 +158,10 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
                 )
                 return
             try:
-                answer, result, latency = engine.ask(question)
+                if follow_up is None:
+                    answer, result, latency = engine.ask(question)
+                else:
+                    answer, result, latency = engine.ask(question, follow_up=follow_up, base=base)
             except Exception as exc:
                 request_id = uuid.uuid4().hex
                 log.error(request_id, question, f"{type(exc).__name__}: {exc}", participant)

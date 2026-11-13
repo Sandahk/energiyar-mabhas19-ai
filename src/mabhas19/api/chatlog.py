@@ -145,6 +145,10 @@ def request_record(  # noqa: PLR0913
             for s in answer.sources
         ],
         "provenance_violations": answer.safety.get("provenance_violations", []),
+        # follow-up orchestration: the engine calls a side-by-side answer or a city's climate
+        # was built from (each certified on its own), and a rejected combination
+        "composite": answer.safety.get("composite"),
+        "orchestration_rejected": answer.safety.get("orchestration_rejected", []),
         "latency_ms": latency_ms,
         "engine": engine,
         "auto_hint": auto_hint(answer),

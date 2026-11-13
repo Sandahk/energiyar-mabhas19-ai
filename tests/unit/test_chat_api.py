@@ -22,9 +22,17 @@ class StubEngine:
     def __init__(self) -> None:
         self.info: dict[str, Any] = {"mode": "stub", "composer": "test"}
         self.questions: list[str] = []
+        self.follow_ups: list[tuple[dict[str, Any] | None, str | None]] = []
 
-    def ask(self, question: str) -> tuple[Answer, RetrievalResult, float]:
+    def ask(
+        self,
+        question: str,
+        *,
+        follow_up: dict[str, Any] | None = None,
+        base: str | None = None,
+    ) -> tuple[Answer, RetrievalResult, float]:
         self.questions.append(question)
+        self.follow_ups.append((follow_up, base))
         if question == "boom":
             raise RuntimeError("engine failure")
         result = RetrievalResult(question, question, RouteDecision("unsupported", ["gate"]))
@@ -194,6 +202,25 @@ def test_a_clarification_choice_re_asks_the_question_with_only_that_item_added(
         "text": "اقلیم 3B",
     }
     assert rec["clarifications"] == []
+    assert engine.follow_ups[-1] == (rec["follow_up"], "حداقل مقاومت حرارتی دیوار")
+
+
+def test_a_typed_city_reaches_the_engine_with_the_question_before_it(
+    server: tuple[str, StubEngine, Path],
+) -> None:
+    """The engine receives the original question as ``base`` so it can look the city up first."""
+    url, engine, logs = server
+    clarify = {"parent": "b" * 32, "field": "climate_class", "kind": "free", "text": "شهر تهران"}
+    payload = {"question": "حداقل مقاومت حرارتی دیوار", "participant": "t1", "clarify": clarify}
+    status, _ = _call(url + "/api/ask", payload)
+    assert status == 200
+    follow_up, base = engine.follow_ups[-1]
+    assert base == "حداقل مقاومت حرارتی دیوار"
+    assert follow_up is not None
+    assert follow_up["text"] == "شهر تهران"
+    rec = _lines(logs / "requests.jsonl")[-1]
+    assert rec["composite"] is None
+    assert rec["orchestration_rejected"] == []
 
 
 @pytest.mark.parametrize(

@@ -70,6 +70,10 @@
   .value .num { font-size: 17px; }
   .value .num span.v { font-weight: 700; }
   .cond, .src, .small { color: var(--muted); font-size: 14px; }
+  table.side { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 15px; }
+  table.side th, table.side td { border-top: 1px solid var(--line); padding: 6px 4px; text-align: right; vertical-align: top; }
+  table.side th { color: var(--muted); font-weight: 400; font-size: 13px; }
+  table.side td.v { font-weight: 700; white-space: nowrap; }
   .refuse { background: var(--refuse-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
   .refuse.secondary { background: transparent; border: 1px dashed var(--line); font-size: 14px; }
   blockquote {
@@ -253,6 +257,16 @@ function renderAnswer(a, latency) {
   const clarify = a.response_type === "clarification" && a.clarifications && a.clarifications[0];
   if (clarify) renderClarification(a, clarify, card);
 
+  // the certified city rows a climate was taken from (shown, never hidden)
+  if (a.context && a.context.length) {
+    const ctx = el("div", "echo");
+    ctx.appendChild(el("b", "", "اقلیم از نام شهر"));
+    for (const v of a.context) {
+      ctx.appendChild(el("div", "", v.row_label + " ← " + v.output_label + " " + v.value + " (" + cite(v.source) + ")"));
+    }
+    card.appendChild(ctx);
+  }
+
   if (a.interpretation && a.interpretation.length) {
     const echo = el("div", "echo");
     echo.appendChild(el("b", "", "برداشت سیستم از سؤال شما"));
@@ -264,7 +278,26 @@ function renderAnswer(a, latency) {
     card.appendChild(echo);
   }
 
-  for (const v of a.values || []) {
+  // side by side: one certified row per printed value of the last missing column
+  const side = a.safety && a.safety.composite && a.safety.composite.kind === "side_by_side";
+  if (side) {
+    const table = el("table", "side");
+    const head = el("tr");
+    for (const h of ["ردیف", "شرایط", "مقدار", "منبع"]) head.appendChild(el("th", "", h));
+    table.appendChild(head);
+    for (const v of a.values || []) {
+      const tr = el("tr");
+      tr.appendChild(el("td", "", v.row_label));
+      tr.appendChild(el("td", "", (v.conditions || []).map((c) => c.label + ": " + c.value).join("، ")));
+      const val = el("td", "v", v.value + (v.unit ? " " + v.unit : ""));
+      tr.appendChild(val);
+      tr.appendChild(el("td", "src", cite(v.source)));
+      table.appendChild(tr);
+    }
+    card.appendChild(table);
+  }
+
+  for (const v of side ? [] : a.values || []) {
     const box = el("div", "value");
     if (v.row_label) box.appendChild(el("div", "row", v.row_label));
     if (v.value) {

@@ -26,7 +26,7 @@ from typing import Any, Literal
 
 ResponseType = Literal["structured_value", "prose", "refusal", "out_of_scope", "clarification"]
 EchoStatus = Literal["resolved", "ambiguous", "unresolved", "requested"]
-CONTRACT_VERSION = "m2-answer-2"
+CONTRACT_VERSION = "m2-answer-3"
 
 
 @dataclass(frozen=True)
@@ -148,6 +148,10 @@ class Answer:
     hidden_values: int = 0  # certified rows beyond the display limit (still in ``row_ids``)
     safety: dict[str, Any] = field(default_factory=dict)
     contract: str = CONTRACT_VERSION
+    # certified rows of an earlier lookup this answer depends on (a city's climate class),
+    # copied unchanged from that lookup's own checked answer (api.orchestration); never set by
+    # the composer
+    context: list[ValueItem] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -156,7 +160,7 @@ class Answer:
         """Every string a client may display (the provenance checks read exactly these)."""
         out = [self.headline]
         out += [f"{i.label} {i.value}" for i in self.interpretation]
-        for v in self.values:
+        for v in [*self.values, *self.context]:
             out += [v.row_label, v.output_label, v.value, v.unit or "", v.unit_label or ""]
             out += [f"{c.label} {c.value}" for c in v.conditions]
         out += [e.text for e in self.excerpts]

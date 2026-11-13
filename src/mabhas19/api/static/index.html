@@ -6,120 +6,208 @@
 <title>دستیار مبحث ۱۹</title>
 <link rel="icon" href="data:,">
 <style>
+  @font-face {
+    font-family: "Vazirmatn";
+    src: url("/static/Vazirmatn-Variable.woff2") format("woff2-variations"),
+         url("/static/Vazirmatn-Variable.woff2") format("woff2");
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+  /* energiyar.com design tokens */
   :root {
-    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5d6576; --line: #dde1e8;
-    --accent: #1f5fae; --accent-soft: #e8f0fb; --warn: #8a5a00; --warn-soft: #fff6e0;
-    --refuse: #8b2c2c; --refuse-soft: #fbeeee; --ok-soft: #eef7ef;
+    --paper: #ffffff; --bg: #f3f0e4; --ink: #1e2a24; --ink-soft: #4c5a52; --ink-faint: #637069;
+    --emerald: #12a874; --emerald-deep: #0b3c2e; --emerald-pale: #dff5ec; --night: #0a1f18;
+    --line: #e2e6e2; --field: #d9d2bc; --warn: #8a5a00; --warn-soft: #fbf3e2;
+    --refuse: #a8322a; --refuse-soft: #fbedea;
+    --shadow-sm: 0 1px 2px rgba(20,30,25,.06), 0 2px 10px rgba(20,30,25,.05);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #15181e; --card: #1e232b; --text: #e6e9ee; --muted: #a0a8b6; --line: #333a45;
-      --accent: #7fb0f0; --accent-soft: #1d2a3d; --warn: #f0c060; --warn-soft: #2e2716;
-      --refuse: #f09a9a; --refuse-soft: #3a2222; --ok-soft: #1d2b20;
-    }
-  }
+  html { font-synthesis: none; }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: Vazirmatn, "Segoe UI", Tahoma, sans-serif; font-size: 16px; line-height: 1.75;
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Vazirmatn", "IranianSans", "IBM Plex Sans Arabic", Tahoma, sans-serif;
+    font-size: 16px; line-height: 1.8;
   }
-  header { padding: 14px 16px 6px; max-width: 860px; margin: 0 auto; }
-  h1 { font-size: 20px; margin: 0 0 6px; }
-  .warning {
-    background: var(--warn-soft); color: var(--warn); border: 1px solid var(--line);
-    border-radius: 8px; padding: 8px 12px; font-size: 14px;
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* site header (as on the energiyar.com tool pages) */
+  .site-nav {
+    position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.97);
+    backdrop-filter: blur(6px); border-bottom: 1px solid var(--field); box-shadow: var(--shadow-sm);
   }
-  main { max-width: 860px; margin: 0 auto; padding: 8px 16px 160px; }
-  .q { margin: 18px 0 6px; font-weight: 600; }
-  .q::before { content: "پرسش: "; color: var(--muted); font-weight: 400; }
+  .nav-row { display: flex; align-items: center; gap: 28px; padding-top: 12px; padding-bottom: 12px; }
+  .nav-brand img { height: 44px; width: auto; display: block; }
+  .nav-links { display: flex; gap: 26px; overflow-x: auto; scrollbar-width: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--ink-soft); font-size: 13.5px; padding: 4px 0;
+    white-space: nowrap; border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--emerald-deep); }
+  .nav-links a.active { color: var(--emerald-deep); font-weight: 600; border-bottom-color: var(--emerald); }
+
+  /* title band */
+  .hero { background: var(--emerald-deep); color: #fff; padding: 30px 0 26px; }
+  .hero h1 { font-size: 28px; font-weight: 800; margin: 0 0 6px; line-height: 1.5; }
+  .hero h1 .tag {
+    font-size: 13px; font-weight: 600; background: rgba(255,255,255,.14); color: #dff5ec;
+    border-radius: 999px; padding: 2px 10px; margin-inline-start: 8px; vertical-align: middle;
+  }
+  .hero p { margin: 0; color: rgba(234,251,243,.82); font-size: 15px; max-width: 820px; }
+  .who {
+    max-width: 860px; margin: 14px auto 0; padding: 0 24px; font-size: 13px; color: var(--ink-faint);
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .who input {
+    width: 160px; font: inherit; font-size: 13px; padding: 3px 8px; direction: ltr;
+    border: 1px solid var(--field); border-radius: 8px; background: var(--paper); color: var(--ink);
+  }
+
+  /* chat */
+  main { max-width: 860px; margin: 0 auto; padding: 8px 24px 24px; min-height: 40vh; }
+  .q { margin: 22px 0 8px; font-weight: 600; }
+  .q::before { content: "پرسش: "; color: var(--ink-faint); font-weight: 400; }
+  .q.choice::before { content: "انتخاب شما: "; }
   .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: 14px 16px; margin-bottom: 10px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--shadow-sm); scroll-margin-top: 90px;
   }
   .badge {
-    display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 10px;
-    background: var(--accent-soft); color: var(--accent); margin-bottom: 6px;
+    display: inline-block; font-size: 12px; padding: 1px 10px; border-radius: 999px;
+    background: var(--emerald-pale); color: var(--emerald-deep); margin-bottom: 6px; font-weight: 600;
   }
   .badge.refusal, .badge.out_of_scope { background: var(--refuse-soft); color: var(--refuse); }
   .badge.clarification { background: var(--warn-soft); color: var(--warn); }
-  .q.choice::before { content: "انتخاب شما: "; }
+  .headline { font-size: 18px; font-weight: 700; margin: 2px 0 10px; }
   .opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
   .opts button {
-    padding: 4px 14px; border-radius: 16px; border-color: var(--accent); color: var(--accent);
-    background: var(--accent-soft); font-size: 15px;
+    padding: 4px 14px; border-radius: 999px; border: 1px solid var(--emerald); color: var(--emerald-deep);
+    background: var(--emerald-pale); font-size: 15px;
   }
-  .opts button:disabled { opacity: 0.45; cursor: default; }
-  .opts button.chosen { opacity: 1; background: var(--accent); color: #fff; }
+  .opts button:hover { background: #c9eedf; }
+  .opts button:disabled { opacity: .45; cursor: default; }
+  .opts button.chosen { opacity: 1; background: var(--emerald); border-color: var(--emerald); color: #fff; }
   .free { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
   .free input {
-    flex: 1; min-width: 160px; padding: 4px 8px; font: inherit; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    flex: 1; min-width: 160px; padding: 6px 10px; font: inherit; border-radius: 9px;
+    border: 1px solid var(--field); background: var(--paper); color: var(--ink);
   }
-  .free button { padding: 4px 14px; }
-  .note { background: var(--warn-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0; font-size: 15px; }
-  .headline { font-size: 18px; font-weight: 700; margin: 2px 0 10px; }
+  .free button { padding: 5px 16px; background: var(--emerald); color: #fff; border: none; }
+  .note { background: var(--warn-soft); border-radius: 10px; padding: 8px 12px; margin: 8px 0; font-size: 15px; }
   .echo {
-    background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0 12px;
-    font-size: 14px;
+    background: #f1f4f1; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
+    margin: 8px 0 12px; font-size: 14px;
   }
-  .echo b { display: block; margin-bottom: 4px; }
-  .chip { display: inline-block; margin: 2px 0 2px 10px; }
+  .echo b { display: block; margin-bottom: 4px; color: var(--emerald-deep); }
+  .chip { display: inline-block; margin: 2px 0 2px 12px; }
   .chip .st { color: var(--refuse); font-size: 12px; }
-  .value { border-top: 1px solid var(--line); padding: 8px 0; }
+  .value { border-top: 1px solid var(--line); padding: 10px 0; }
   .value .row { font-weight: 600; }
   .value .num { font-size: 17px; }
-  .value .num span.v { font-weight: 700; }
-  .cond, .src, .small { color: var(--muted); font-size: 14px; }
+  .value .num span.v { font-weight: 800; color: var(--emerald-deep); }
+  .cond, .src, .small { color: var(--ink-faint); font-size: 14px; }
   table.side { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 15px; }
-  table.side th, table.side td { border-top: 1px solid var(--line); padding: 6px 4px; text-align: right; vertical-align: top; }
-  table.side th { color: var(--muted); font-weight: 400; font-size: 13px; }
-  table.side td.v { font-weight: 700; white-space: nowrap; }
-  .refuse { background: var(--refuse-soft); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+  table.side th, table.side td {
+    border-top: 1px solid var(--line); padding: 7px 4px; text-align: right; vertical-align: top;
+  }
+  table.side th { color: var(--ink-faint); font-weight: 400; font-size: 13px; }
+  table.side td.v {
+    font-weight: 800; color: var(--emerald-deep); white-space: nowrap; direction: ltr; text-align: right;
+  }
+  .refuse { background: var(--refuse-soft); border-radius: 10px; padding: 8px 12px; margin: 8px 0; }
   .refuse.secondary { background: transparent; border: 1px dashed var(--line); font-size: 14px; }
   blockquote {
-    margin: 8px 0; padding: 6px 12px; border-right: 3px solid var(--accent);
-    background: var(--ok-soft); border-radius: 4px; white-space: pre-wrap;
+    margin: 8px 0; padding: 8px 14px; border-right: 3px solid var(--emerald);
+    background: #f6faf8; border-radius: 6px; white-space: pre-wrap;
   }
   .notice { font-size: 14px; margin: 6px 0; }
   .notice.conflict, .notice.source_issue { color: var(--warn); }
-  details { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  details { font-size: 13px; color: var(--ink-faint); margin-top: 8px; }
   details pre { white-space: pre-wrap; direction: ltr; text-align: left; }
   .fb { margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .fb button { font-size: 16px; padding: 2px 10px; }
-  .fb input { flex: 1; min-width: 180px; padding: 4px 8px; font: inherit; font-size: 14px; }
-  form {
-    position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg);
-    border-top: 1px solid var(--line); padding: 10px 16px;
-  }
-  form .inner { max-width: 860px; margin: 0 auto; display: flex; gap: 8px; }
-  textarea {
-    flex: 1; resize: vertical; min-height: 52px; max-height: 200px; font: inherit; padding: 8px;
-    border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text);
+  .fb input {
+    flex: 1; min-width: 180px; padding: 4px 8px; font: inherit; font-size: 14px;
+    border: 1px solid var(--field); border-radius: 8px;
   }
   button {
-    font: inherit; border-radius: 8px; border: 1px solid var(--line); background: var(--card);
-    color: var(--text); cursor: pointer;
+    font: inherit; border-radius: 9px; border: 1px solid var(--line); background: var(--paper);
+    color: var(--ink); cursor: pointer;
   }
-  form button { padding: 0 18px; background: var(--accent); color: #fff; border: none; }
-  form button:disabled { opacity: 0.5; cursor: wait; }
-  .privacy { max-width: 860px; margin: 0 auto 6px; font-size: 13px; color: var(--muted); }
-  .who { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .who input {
-    width: 150px; font: inherit; font-size: 13px; padding: 1px 6px; direction: ltr;
-    border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--text);
+
+  /* composer: pinned to the bottom of the screen while the chat scrolls */
+  form {
+    position: sticky; bottom: 0; z-index: 10;
+    background: linear-gradient(rgba(243,240,228,0), var(--bg) 22%); padding: 18px 24px 14px;
+  }
+  form .inner {
+    max-width: 812px; margin: 0 auto; display: flex; gap: 8px; background: var(--paper);
+    border: 1px solid var(--field); border-radius: 14px; padding: 8px; box-shadow: var(--shadow-sm);
+  }
+  textarea {
+    flex: 1; resize: vertical; min-height: 48px; max-height: 200px; font: inherit; padding: 6px 8px;
+    border: none; outline: none; background: transparent; color: var(--ink);
+  }
+  #send { padding: 0 22px; background: var(--emerald); color: #fff; border: none; font-weight: 700; }
+  #send:hover { background: #0f9466; }
+  #send:disabled { opacity: .5; cursor: wait; }
+  .privacy { max-width: 812px; margin: 0 auto 6px; font-size: 12.5px; color: var(--ink-faint); }
+
+  /* site footer (content and colours of energiyar.com) */
+  .site-footer { background: var(--night); color: rgba(234,251,243,.72); padding: 44px 0 0; }
+  .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 28px; }
+  .site-footer h3 { color: #fff; font-size: 15px; font-weight: 800; margin: 0 0 12px; }
+  .site-footer p { font-size: 13.5px; margin: 0 0 12px; line-height: 1.9; }
+  .footer-col a, .footer-contact a {
+    display: block; text-decoration: none; color: rgba(234,251,243,.66); font-size: 13.5px; margin: 6px 0;
+  }
+  .footer-col a:hover, .footer-contact a:hover { color: #fff; }
+  .footer-sign { display: flex; justify-content: flex-end; align-items: center; margin-top: 30px; }
+  .footer-sign img { height: 56px; width: auto; display: block; }
+  .footer-bottom {
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12.5px;
+    border-top: 1px solid rgba(234,251,243,.12); margin-top: 18px; padding-top: 14px; padding-bottom: 20px;
+  }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 0 16px; }
+    .nav-row { gap: 16px; }
+    .nav-brand img { height: 36px; }
+    .nav-links { gap: 18px; }
+    .hero h1 { font-size: 22px; }
+    .who { padding: 0 16px; }
+    main { padding: 8px 16px 16px; }
+    form { padding: 14px 12px 8px; }
+    .privacy { font-size: 11px; line-height: 1.6; }
+    textarea { min-height: 40px; }
+    table.side { font-size: 13px; }
+    table.side th, table.side td { padding: 6px 3px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .footer-brand { grid-column: 1 / -1; }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>دستیار آزمایشی مبحث ۱۹ (ویرایش پنجم)</h1>
-  <div class="warning" id="warning">این دستیار آزمایشی مبحث ۱۹ است. برای تصمیم‌های مهم مهندسی، پاسخ را با منبع استنادشده تطبیق دهید.</div>
-  <div class="who">
-    <label for="participant">شناسه آزمایشی شما (بدون نام یا ایمیل):</label>
-    <input id="participant" maxlength="40" spellcheck="false" autocomplete="off">
-    <span id="who-status"></span>
-  </div>
-</header>
+<header class="site-nav"><div class="wrap nav-row">
+  <a class="nav-brand" href="https://energiyar.com/" aria-label="انرژی یار — صفحه اصلی"><img src="/static/logo-icon.png" alt="انرژی یار"></a>
+  <nav class="nav-links" aria-label="منوی اصلی">
+    <a href="https://energiyar.com/">سایت اصلی</a>
+    <a href="https://energiyar.com/tools/">ابزارها</a>
+    <a href="https://energiyar.com/khadamat.html">خدمات</a>
+    <a href="https://energiyar.com/projects/">نمونه‌کارها</a>
+    <a href="https://energiyar.com/articles/blog.html">مقالات</a>
+    <a href="https://energiyar.com/shop/">فروشگاه</a>
+    <a href="/" class="active" aria-current="page">دستیار مبحث ۱۹</a>
+  </nav>
+</div></header>
+<section class="hero"><div class="wrap">
+  <h1>دستیار مبحث ۱۹ <span class="tag">آزمایشی</span></h1>
+  <p id="warning">این دستیار آزمایشی مبحث ۱۹ است. برای تصمیم‌های مهم مهندسی، پاسخ را با منبع استنادشده تطبیق دهید.</p>
+</div></section>
+<div class="who">
+  <label for="participant">شناسه آزمایشی شما (بدون نام یا ایمیل):</label>
+  <input id="participant" maxlength="40" spellcheck="false" autocomplete="off">
+  <span id="who-status"></span>
+</div>
 <main id="log"></main>
 <form id="ask">
   <div class="privacy" id="privacy">آزمایش بسته: پرسش‌ها و بازخوردهای شما برای ارزیابی و بهبود این دستیار ذخیره می‌شود؛ لطفاً اطلاعات شخصی یا محرمانه وارد نکنید. تصمیم‌های مهم مهندسی را با منبع استنادشده مبحث ۱۹ تطبیق دهید.</div>
@@ -128,6 +216,48 @@
     <button id="send" type="submit">ارسال</button>
   </div>
 </form>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <h3>انرژی یار</h3>
+      <p>مشاوره تخصصی انطباق انرژی ساختمان بر اساس مبحث ۱۹ مقررات ملی ساختمان، از پیش‌ارزیابی تا صدور گزارش نهایی.</p>
+      <div class="footer-contact">
+        <a href="mailto:energiyar@gmail.com">energiyar@gmail.com</a>
+        <a href="tel:+989373836586">۰۹۳۷۳۸۳۶۵۸۶</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h3>دسترسی سریع</h3>
+      <a href="https://energiyar.com/khadamat/">خدمات</a>
+      <a href="https://energiyar.com/projects/">نمونه‌کارها</a>
+      <a href="https://energiyar.com/#methods">روش‌های ارزیابی</a>
+      <a href="https://energiyar.com/#about">درباره ما</a>
+      <a href="https://energiyar.com/#contact">تماس با ما</a>
+    </div>
+    <div class="footer-col">
+      <h3>ابزارها</h3>
+      <a href="https://energiyar.com/tools/">همه ابزارها</a>
+      <a href="https://energiyar.com/tools/rade.html">رده بازدهی انرژی</a>
+      <a href="https://energiyar.com/tools/ayegh.html">عایق و جداره</a>
+      <a href="https://energiyar.com/tools/eghlim.html">اقلیم شهرها</a>
+      <a href="https://energiyar.com/tools/masraf.html">برآورد مصرف</a>
+    </div>
+    <div class="footer-col">
+      <h3>منابع</h3>
+      <a href="https://energiyar.com/articles/blog.html">مقالات</a>
+      <a href="https://energiyar.com/shop/">فروشگاه</a>
+      <a href="https://energiyar.com/glossary.html">واژه‌نامه</a>
+      <a href="https://energiyar.com/#faq">پرسش‌های متداول</a>
+    </div>
+  </div>
+  <div class="wrap footer-sign">
+    <a href="https://energiyar.com/" aria-label="انرژی یار"><img src="/static/footer-logo.png" alt="انرژی یار"></a>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© انرژی یار — مبتنی بر مبحث ۱۹ مقررات ملی ساختمان، ویرایش پنجم</span>
+    <span>این دستیار آزمایشی است و جایگزین مشاوره یا تأیید رسمی نیست.</span>
+  </div>
+</footer>
 <script>
 "use strict";
 const TYPES = {
@@ -152,6 +282,10 @@ function loadId() {
   } catch (e) { /* storage unavailable: a new ID for this page */ }
   return newId();
 }
+
+// a narrow screen scrolls the site menu: keep this page's own item in view
+const activeNav = document.querySelector(".nav-links a.active");
+if (activeNav) activeNav.scrollIntoView({ block: "nearest", inline: "center" });
 
 let participant = loadId();
 const idInput = document.getElementById("participant");
@@ -408,7 +542,7 @@ async function ask(text, clarify, shown) {
     waiting.replaceWith(el("div", "card refuse", "ارتباط با سرور برقرار نشد."));
   }
   button.disabled = false;
-  window.scrollTo(0, document.body.scrollHeight);
+  logEl.lastElementChild.scrollIntoView({ block: "start", behavior: "smooth" });
   return ok;
 }
 

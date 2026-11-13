@@ -36,6 +36,12 @@ from mabhas19.generation.labels import PILOT_PRIVACY, PILOT_WARNING
 from mabhas19.retrieval.models import RetrievalResult
 
 STATIC = Path(__file__).parent / "static"
+# the energiyar.com font and logos, served from here so the page makes no third-party request
+ASSETS = {
+    "/static/Vazirmatn-Variable.woff2": ("Vazirmatn-Variable.woff2", "font/woff2"),
+    "/static/logo-icon.png": ("logo-icon.png", "image/png"),
+    "/static/footer-logo.png": ("footer-logo.png", "image/png"),
+}
 MAX_QUESTION = 1000
 MAX_NOTE = 1000
 MAX_BODY = 16_384
@@ -87,11 +93,13 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
         def log_message(self, format: str, *args: Any) -> None:
             pass  # requests are logged to data/chat/, not to the console
 
-        def _send(self, status: int, body: bytes, content_type: str) -> None:
+        def _send(
+            self, status: int, body: bytes, content_type: str, cache: str = "no-store"
+        ) -> None:
             self.send_response(status)
             self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(len(body)))
-            self.send_header("Cache-Control", "no-store")
+            self.send_header("Cache-Control", cache)
             self.send_header("X-Content-Type-Options", "nosniff")
             self.end_headers()
             self.wfile.write(body)
@@ -114,6 +122,10 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
             if self.path in ("/", "/index.html"):
                 page = (STATIC / "index.html").read_bytes()
                 self._send(HTTPStatus.OK, page, "text/html; charset=utf-8")
+            elif self.path in ASSETS:  # a fixed list of the site's own files; nothing else
+                name, kind = ASSETS[self.path]
+                body = (STATIC / name).read_bytes()
+                self._send(HTTPStatus.OK, body, kind, "public, max-age=86400")
             elif self.path == "/api/health":
                 self._json(
                     HTTPStatus.OK,

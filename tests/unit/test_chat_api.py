@@ -177,6 +177,21 @@ def test_server_refuses_a_network_interface_without_explicit_permission() -> Non
     assert main(["--host", "0.0.0.0", "--mode", "lexical"]) == 2
 
 
+def test_only_the_listed_site_assets_are_served(server: tuple[str, StubEngine, Path]) -> None:
+    base, _, _ = server
+    for path, kind in (
+        ("/static/logo-icon.png", "image/png"),
+        ("/static/footer-logo.png", "image/png"),
+        ("/static/Vazirmatn-Variable.woff2", "font/woff2"),
+    ):
+        with urllib.request.urlopen(base + path, timeout=10) as r:
+            assert r.status == 200
+            assert r.headers["Content-Type"] == kind
+            assert r.read()
+    for path in ("/static/index.html", "/static/../server.py", "/static/", "/static/x.png"):
+        assert _call(base + path)[0] == 404
+
+
 def test_unknown_paths_are_404(server: tuple[str, StubEngine, Path]) -> None:
     base, _, _ = server
     assert _call(base + "/api/nothing")[0] == 404

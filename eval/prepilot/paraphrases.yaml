@@ -1,0 +1,84 @@
+# Pre-pilot paraphrase sanity set (development only).
+#
+# NOT a benchmark, holdout, Final-N set or promotion evidence. Written and frozen before the
+# pre-pilot routing patch (2026-11-13) so that the patch is checked against varied wording, not
+# against one sentence. Not tuned after seeing results; ~80% is a sanity indicator only.
+#
+# Families:
+#   A  energy-consumption limit  -> Appendix 3 max EUI (structured value, or a clarification for a
+#      missing occupancy / area band / rating / climate). Never prose, never a refusal.
+#   B  U-value / R of an opaque element -> table 19-5-1 min R (structured value, or a clarification
+#      for element / climate). Never a 19-5-2 (transparent) value, never U = 1/R.
+#   C  controls: existing behaviour that must not change.
+#
+# expect keys (all optional):
+#   occupancy: Appendix 3 row number; climate; rating   -> the answered row, when fully specified
+#   element: printed 19-5-1 element; climate             -> the answered row, when fully specified
+#   r_note: true -> the answer must say the requirement is a minimum R (U-wording questions)
+#   table: expected table for controls
+version: 1
+frozen: 2026-11-13
+cases:
+  # ---------------- Family A: energy-consumption limit ----------------
+  - {id: A01, family: A, query: "برای یک ساختمان مسکونی در اقلیم 3B، حد مجاز مصرف انرژی چقدر است؟"}
+  - {id: A02, family: A, query: "حداکثر مصرف انرژی ساختمان مسکونی در اقلیم 3B چقدر است؟"}
+  - {id: A03, family: A, query: "سقف مصرف انرژی برای ساختمان اداری عمومی در اقلیم 4B چقدر است؟"}
+  - {id: A04, family: A, query: "حد مجاز مصرف انرژی سالانه یک بیمارستان در اقلیم 2A با رده انرژی C", expect: {occupancy: 7, climate: 2A, rating: C}}
+  - {id: A05, family: A, query: "حداکثر مصرف مجاز انرژی برای هتل در اقلیم 5B رده B چند کیلووات ساعت بر متر مربع است؟", expect: {occupancy: 20, climate: 5B, rating: B}}
+  - {id: A06, family: A, query: "مصرف انرژی یک دبستان در اقلیم 1B حداکثر چقدر می‌تونه باشه؟"}
+  - {id: A07, family: A, query: "سقف مجاز مصرف انرژی ویلا تو اقلیم 4A چنده؟"}
+  - {id: A08, family: A, query: "حد مجاز مصرف انرژی ساختمان مسکونی زیر ۳۰۰۰ متر مربع در اقلیم 3A برای رده A", expect: {occupancy: 2, climate: 3A, rating: A}}
+  - {id: A09, family: A, query: "بیشترین مصرف انرژی مجاز برای رستوران در اقلیم 2B چقدر است؟"}
+  - {id: A10, family: A, query: "حداکثر شدت مصرف انرژی مجاز ساختمان اداری خصوصی در اقلیم 3B"}
+  - {id: A11, family: A, query: "برای گرفتن رده B، مصرف انرژی یک ساختمان اداری در اقلیم 0B حداکثر چقدر باشد؟"}
+  - {id: A12, family: A, query: "سقف مصرف انرژی یک فروشگاه در اقلیم 4B"}
+  - {id: A13, family: A, query: "حد مجاز مصرف انرژی یک مرکز خرید در اقلیم 3B با رده D", expect: {occupancy: 27, climate: 3B, rating: D}}
+  - {id: A14, family: A, query: "مقدار مجاز مصرف انرژی سالیانه ساختمان مسکونی بالای ۳۰۰۰ متر مربع در اقلیم 5B چقدر است؟"}
+  - {id: A15, family: A, query: "حداکثر مصرف انرژی کتابخانه در اقلیم 2A"}
+  - {id: A16, family: A, query: "مصرف انرژی مجاز سوله صنعتی با تهویه در اقلیم 4A چقدر است؟"}
+  - {id: A17, family: A, query: "سقف مصرف انرژی ساختمان مسکونی چقدره؟"}
+  - {id: A18, family: A, query: "حد مجاز مصرف انرژی ساختمان‌های مسکونی طبق مبحث ۱۹ چیه؟"}
+  - {id: A19, family: A, query: "یک آپارتمان مسکونی ۲۰۰۰ متری در اقلیم 3B داریم، حداکثر مصرف انرژی مجازش برای رده C چقدر است؟", expect: {occupancy: 2, climate: 3B, rating: C}}
+  - {id: A20, family: A, query: "حداکثر انرژی مصرفی مجاز برای مسجد در اقلیم 1B"}
+  - {id: A21, family: A, query: "حد مجاز مصرف انرژی خوابگاه در اقلیم 4B رده A", expect: {occupancy: 22, climate: 4B, rating: A}}
+  - {id: A22, family: A, query: "سقف مصرف انرژی سالانه برای مهد کودک در اقلیم 3A چقدر تعیین شده؟"}
+  - {id: A23, family: A, query: "حداکثر مصرف انرژی مجاز ساختمان اداری عمومی اقلیم 2B رده B بر حسب کیلووات ساعت بر متر مربع", expect: {occupancy: 4, climate: 2B, rating: B}}
+  - {id: A24, family: A, query: "مصرف انرژی ساختمان مسکونی من در اقلیم 4A حداکثر چقدر می‌تواند باشد تا رده B بگیرد؟"}
+  - {id: A25, family: A, query: "حد مجاز مصرف انرژی برای بانک در اقلیم 5B"}
+  - {id: A26, family: A, query: "بیشینه مصرف انرژی مجاز هتل در اقلیم 0B"}
+
+  # ---------------- Family B: U / R of opaque elements ----------------
+  - {id: B01, family: B, query: "ضریب انتقال حرارت مجاز دیوار خارجی چقدر است؟", expect: {r_note: true}}
+  - {id: B02, family: B, query: "U-value دیوار خارجی چقدر است؟", expect: {r_note: true}}
+  - {id: B03, family: B, query: "حداکثر ضریب انتقال حرارت دیوار خارجی در اقلیم 3B", expect: {r_note: true}}
+  - {id: B04, family: B, query: "ضریب U مجاز برای دیوار خارجی مجاور خاک", expect: {r_note: true}}
+  - {id: B05, family: B, query: "ضریب انتقال حرارت سقف مجاور فضای آزاد در اقلیم 4B چقدر باید باشد؟", expect: {r_note: true, element: "سقف مجاور فضای آزاد", climate: 4B}}
+  - {id: B06, family: B, query: "U مجاز بام ساختمان چقدره؟", expect: {r_note: true}}
+  - {id: B07, family: B, query: "حداکثر U کف مجاور خاک در اقلیم 2A", expect: {r_note: true, element: "کف مجاور خاک", climate: 2A}}
+  - {id: B08, family: B, query: "ضریب انتقال حرارت درهای غیرنورگذر لولادار چقدر است؟", expect: {r_note: true}}
+  - {id: B09, family: B, query: "ضریب انتقال حرارت مجاز درب ورودی غیرنورگذر ساختمان", expect: {r_note: true}}
+  - {id: B10, family: B, query: "مقدار مجاز U-value برای دیوار خارجی مجاور فضای باز در اقلیم 5B", expect: {r_note: true, element: "دیوار خارجی مجاور فضای باز", climate: 5B}}
+  - {id: B11, family: B, query: "ضریب انتقال حرارت کلی دیوار بیرونی چقدر مجاز است؟", expect: {r_note: true}}
+  - {id: B12, family: B, query: "دیوار خارجی من چه ضریب انتقال حرارتی باید داشته باشه؟", expect: {r_note: true}}
+  - {id: B13, family: B, query: "حد مجاز ضریب انتقال حرارت (U) سقف مجاور فضای نیمه باز کنترل نشده در اقلیم 3A", expect: {r_note: true, element: "سقف مجاور فضای نیمه باز کنترل نشده", climate: 3A}}
+  - {id: B14, family: B, query: "ضریب انتقال حرارت مجاز کف مجاور هوای آزاد چقدر است؟", expect: {r_note: true}}
+  - {id: B15, family: B, query: "U value دیوار خارجی اقلیم 4A", expect: {r_note: true}}
+  - {id: B16, family: B, query: "حداکثر ضریب انتقال حرارت مجاز دیوار غیرنورگذر در اقلیم 1B", expect: {r_note: true}}
+  - {id: B17, family: B, query: "ضریب انتقال حرارت دیوار خارجی مجاور فضای نیمه باز کنترل نشده در اقلیم 0B چقدر باید باشه؟", expect: {r_note: true, element: "دیوار خارجی مجاور فضای نیمه باز کنترل نشده", climate: 0B}}
+  - {id: B18, family: B, query: "مقدار U برای سقف مجاور فضای آزاد طبق جدول ۱۹-۵-۱", expect: {r_note: true}}
+  - {id: B19, family: B, query: "ضریب انتقال حرارت درهای غیرنورگذر بدون لولا در اقلیم 4B", expect: {r_note: true, element: "درهای غیرنورگذر بدون لولا", climate: 4B}}
+  - {id: B20, family: B, query: "ضریب انتقال حرارت مجاز کف ساختمان روی خاک", expect: {r_note: true}}
+  - {id: B21, family: B, query: "حداقل مقاومت حرارتی دیوار خارجی چقدر است؟"}
+  - {id: B22, family: B, query: "حداقل مقاومت حرارتی سقف مجاور فضای آزاد در اقلیم 3B", expect: {element: "سقف مجاور فضای آزاد", climate: 3B}}
+  - {id: B23, family: B, query: "مقاومت حرارتی لازم برای کف مجاور خاک در اقلیم 4A چقدر است؟", expect: {element: "کف مجاور خاک", climate: 4A}}
+  - {id: B24, family: B, query: "R مجاز دیوار خارجی مجاور فضای باز اقلیم 2B", expect: {element: "دیوار خارجی مجاور فضای باز", climate: 2B}}
+  - {id: B25, family: B, query: "حداقل R درهای غیرنورگذر لولادار"}
+
+  # ---------------- Controls: must not change ----------------
+  - {id: C01, family: C, query: "ضریب انتقال حرارت مجاز پنجره در اقلیم 3B", expect: {table: "19-5-2"}}
+  - {id: C02, family: C, query: "U-value پنجره در اقلیم 4B", expect: {table: "19-5-2"}}
+  - {id: C03, family: C, query: "مقاومت حرارتی پلی‌کربنات چقدر است؟"}
+  - {id: C04, family: C, query: "ضریب هدایت حرارتی پلی‌کربنات چقدر است؟"}
+  - {id: C05, family: C, query: "رده اقلیمی تبریز"}
+  - {id: C06, family: C, query: "حداکثر ضریب انتقال حرارت جدارهای نورگذر در اقلیم 2A", expect: {table: "19-5-2"}}
+  - {id: C07, family: C, query: "شدت مصرف انرژی مجاز ساختمان مسکونی در اقلیم 1B رده A"}

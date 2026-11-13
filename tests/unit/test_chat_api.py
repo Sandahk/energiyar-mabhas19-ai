@@ -192,6 +192,54 @@ def test_only_the_listed_site_assets_are_served(server: tuple[str, StubEngine, P
         assert _call(base + path)[0] == 404
 
 
+def test_an_unknown_post_route_with_a_body_reliably_gets_its_404(
+    server: tuple[str, StubEngine, Path],
+) -> None:
+    """Regression: the body is read before the 404, so the reply is never lost to a reset."""
+    base, engine, _ = server
+    for i in range(60):
+        assert _call(base + "/api/nothing", {"question": "x" * (i * 50), "i": i}) == (
+            404,
+            {"error": "not_found"},
+        )
+    assert engine.questions == []  # the engine is never reached
+
+
+def _raw_post(url: str, body: bytes) -> int:
+    req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return int(r.status)
+    except urllib.error.HTTPError as e:
+        return int(e.code)
+
+
+def _declared_only(url: str, length: int) -> int:
+    """A POST that declares ``length`` body bytes but sends none (the server must refuse by the
+    declared length, without reading; no unread bytes are left to race the reply)."""
+    import http.client  # noqa: PLC0415
+    from urllib.parse import urlparse  # noqa: PLC0415
+
+    u = urlparse(url)
+    conn = http.client.HTTPConnection(u.hostname or "", u.port, timeout=10)
+    conn.putrequest("POST", u.path)
+    conn.putheader("Content-Type", "application/json")
+    conn.putheader("Content-Length", str(length))
+    conn.endheaders()
+    status = conn.getresponse().status
+    conn.close()
+    return status
+
+
+def test_body_protections_of_the_api_are_unchanged(server: tuple[str, StubEngine, Path]) -> None:
+    base, engine, _ = server
+    assert _raw_post(base + "/api/ask", b"{not json") == 400
+    assert _declared_only(base + "/api/ask", 20_000) == 400  # over MAX_BODY: never read
+    assert _raw_post(base + "/api/feedback", b"[1, 2]") == 400
+    assert engine.questions == []
+    assert _call(base + "/api/ask", {"question": "سؤال", "participant": "t1"})[0] == 200
+
+
 def test_unknown_paths_are_404(server: tuple[str, StubEngine, Path]) -> None:
     base, _, _ = server
     assert _call(base + "/api/nothing")[0] == 404

@@ -145,7 +145,22 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
             elif self.path == "/api/feedback":
                 self._feedback()
             else:
+                self._discard_body()
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
+
+        def _discard_body(self) -> None:
+            """Read and drop the request body of an unknown route, so the 404 reaches the client
+            (a socket closed with unread data can be reset before the reply is read, notably on
+            Windows). Only a body within ``MAX_BODY`` is read; any other Content-Length closes the
+            connection after the reply instead."""
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                length = -1
+            if 0 < length <= MAX_BODY:
+                self.rfile.read(length)
+            elif length:
+                self.close_connection = True
 
         def _ask(self) -> None:
             data = self._body()

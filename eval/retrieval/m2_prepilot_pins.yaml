@@ -1,0 +1,19 @@
+# Pre-pilot routing patch: the only Final-8 pins the M2 pilot engine may differ in.
+#
+# The Final-8 candidate manifest (final8_candidate.yaml) is the historical record and is NOT
+# rewritten. The pilot startup guard (mabhas19.api.engine.pin_drift) compares the live engine with
+# Final-8 after applying exactly these entries; each one must match its ``from`` hash in the
+# Final-8 manifest and the live module must match ``to``. Anything else that differs is drift.
+#
+# Approved 2026-11-13 (user): one narrow pre-pilot routing patch for two query families
+#   A  energy-consumption limit wording -> the Appendix 3 table
+#   B  U-value of an opaque element -> table 19-5-1 (minimum R; U refused, R offered explicitly)
+# Unchanged: curated data, schemas, PlanAdmission, PlanCoverage, certification, structured lookup,
+# numeric data, calculation policy, shadow/V1, answer provenance, BM25/E5/RRF, chunks, scope map.
+# Not a new Final-N candidate; no benchmark was run for it.
+base: final8
+reason: pre-pilot routing patch (families A and B); eval/prepilot/paraphrases.yaml
+modules_sha256:
+  src/mabhas19/retrieval/router.py:
+    from: b77457d49fc5ceba553420c001e50e9808719e43d4d4fb319d8231c466a3df41
+    to: f906df72cd8f9e1079c7c915c816190efa588e3be98284ef040240e3931e693e

@@ -62,23 +62,22 @@ def _answer(query: str) -> Answer:
 
 
 def test_u_value_of_a_wall_is_not_offered_window_rows() -> None:
-    """The engine matched table 19-5-2 (transparent parts) by the quantity's name only: no
-    option names a wall, so none is offered and the refusal says so."""
+    """Pre-pilot patch: a wall's U is about table 19-5-1 (opaque parts, minimum R), never the
+    19-5-2 window rows; the walls of 19-5-1 are offered with the R note."""
     a = _answer(WALL_U)
-    assert a.response_type == "refusal"
-    assert not a.clarifications
-    r = a.refusals[0]
-    assert r.reason == "ungrounded_ambiguity"
-    assert not r.options
-    assert "جدول ۱۹-۵-۲" in r.message
-    assert all(i.status != "ambiguous" for i in a.interpretation)
+    assert a.response_type == "clarification"
+    c = a.clarifications[0]
+    assert c.dataset == "m19-ed5-1404-main.t19-5-1"
+    assert all(o.label.startswith("دیوار خارجی") for o in c.options)
+    assert "(R)" in c.note
     assert all("u value" not in t for t in a.texts())
 
 
-def test_energy_limit_question_routed_to_prose_is_not_given_a_made_up_clarification() -> None:
+def test_energy_limit_question_reaches_appendix_3_and_asks_for_the_area() -> None:
     a = _answer(EUI_PROSE)
-    assert a.response_type == "prose"
-    assert not a.clarifications
+    assert a.response_type == "clarification"
+    assert a.clarifications[0].field == "area"
+    assert not a.values
 
 
 def test_r_of_a_material_explains_lambda_and_offers_only_the_printed_lambda() -> None:

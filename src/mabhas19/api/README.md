@@ -128,15 +128,31 @@ The report reads the logs only. It lists, in this order:
 During the pilot the retrieval engine stays frozen (the Final-8 pin guard stays on). A
 retrieval problem found by a real question is logged and reviewed, not fixed.
 
+### Pre-pilot routing patch (2026-11-13)
+
+One approved patch before M2, in the router's intent wording only (two families):
+
+- **Energy limit:** «حد مجاز / حداکثر / سقف / بیشینه مصرف انرژی», «مصرف مجاز انرژی» name the
+  Appendix 3 output; missing occupancy, area band or rating are still asked, never assumed.
+- **U of an opaque element:** «ضریب انتقال حرارت / U / U-value» of an element table 19-5-1
+  prints (walls, roofs, floors, opaque doors) is about 19-5-1, never 19-5-2. The engine still
+  refuses the U slot; the answer explains that the requirement is a minimum R and offers the
+  printed R as an explicit choice. A shown R carries a notice that it is R, not U. No U = 1/R.
+
+The pin guard compares with Final-8 after applying `eval/retrieval/m2_prepilot_pins.yaml`
+(only `retrieval/router.py`'s hash, from its Final-8 value). Sanity check: the frozen
+paraphrase set `eval/prepilot/paraphrases.yaml` (development only, not a benchmark).
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
-Routing issues found by the clarification pass (engine changes; not fixed here):
+Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
 
-- «ضریب انتقال حرارت … دیوار خارجی» is routed to table 19-5-2 (transparent parts, which print
-  U) instead of 19-5-1 (opaque parts, which print a minimum R); the answer now says the wall
-  was not found in 19-5-2, but does not point to 19-5-1.
-- «حد مجاز مصرف انرژی … مسکونی … اقلیم 3B» is routed to prose; the same question with
-  «شدت مصرف انرژی» reaches the Appendix 3 table (then asks for the area).
+- Opaque elements under unprinted names («بام», «دیوار بیرونی») are not matched to the printed
+  19-5-1 rows; a conversational «دیوار خارجی من چه ضریب … داشته باشه» is still refused.
+- Window U questions («ضریب انتقال حرارت مجاز پنجره») are refused as matched only by the
+  quantity's name in 19-5-2 (the table names transparent parts differently).
+- A clarification can offer rows matched by a generic word only (a roof U question with «حد
+  مجاز» was offered 19-5-2 SHGC rows before the patch; no longer for that question).
 - A city does not stand in for a climate class in tables 19-5-1/19-5-2 («… (در تبریز)» is not
   applied); the climate clarification therefore offers classes and a hint to look the city up.
 - An ambiguous label the engine matched through its own normalization («چهارلوله» →

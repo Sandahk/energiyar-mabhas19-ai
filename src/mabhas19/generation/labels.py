@@ -234,6 +234,16 @@ CLARIFY_R_LAMBDA = (
     "مقاومت حرارتی به ضخامت لایه بستگی دارد و این دستیار آن را محاسبه نمی‌کند."
 )
 CLARIFY_SHOW = "نمایش {output}"
+# a U-value asked of an opaque element: Mabhas 19 states that requirement as a minimum R
+CLARIFY_U_AS_R = (
+    "مبحث ۱۹ برای اجزای غیرنورگذر پوسته (دیوار، سقف، کف و درهای غیرنورگذر) حداکثر ضریب "
+    "انتقال حرارت (U) چاپ نکرده است؛ الزام آن در {table} به‌صورت حداقل مقاومت حرارتی (R) "
+    "آمده است. این دستیار U را از R محاسبه نمی‌کند."
+)
+NOTICE_U_AS_R = (
+    "شما ضریب انتقال حرارت (U) را پرسیده‌اید؛ مقدار نمایش‌داده‌شده حداقل مقاومت حرارتی (R) "
+    "چاپ‌شده در مبحث ۱۹ است، نه U، و از آن U محاسبه نشده است."
+)
 # ambiguity matched only by the name of the requested quantity, not by what the user named
 AMBIGUOUS_UNGROUNDED = (
     "در {table} ردیفی پیدا نشد که با مورد نام‌برده در سؤال مطابقت داشته باشد؛ "

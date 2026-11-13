@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any, Literal
 
 from mabhas19.generation import labels as L
@@ -48,7 +49,10 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import ProseHit, RetrievalResult, StructuredHit
     from mabhas19.retrieval.structured import StructuredStore
 
-COMPOSER_VERSION = "m2-composer-2"
+COMPOSER_VERSION = "m2-composer-3"
+U_AS_R = MAIN + "19-5-1"  # opaque elements: the requirement is a minimum R
+# the engine's typed refusals of a quantity the table does not print (admission, coverage)
+_U_REFUSALS = frozenset({"unsupported_output_slot", "unattested_quantity"})
 MAX_VALUES = 12  # certified rows displayed; the rest are counted, never dropped silently
 MAX_EXCERPTS = 3
 EXCERPT_CHARS = 420
@@ -552,6 +556,36 @@ def _clarify_output(
     )
 
 
+def _clarify_u_as_r(
+    nm: Any, plan: dict[str, Any] | None, store: StructuredStore, table: str
+) -> Clarification | None:
+    """A U-value asked of one opaque element of table 19-5-1 (the router's ``u_as_r``): the
+    engine refused the U slot; offer the printed minimum R for that element, explicitly."""
+    if nm.reason not in _U_REFUSALS or not plan or plan.get("missing"):
+        return None
+    entities = plan.get("entities") or []
+    if len(entities) != 1 or entities[0].get("status") != "resolved":
+        return None
+    name = _entity_printed(entities[0], nm.dataset, store)
+    if not name:
+        return None
+    output = L.OUTPUT_LABELS["min_r_value"]
+    return Clarification(
+        field="output",
+        field_label=L.REQUESTED,
+        prompt=L.CLARIFY_OUTPUT.format(output=output, entity=name),
+        outcome=str(nm.outcome or ""),
+        dataset=nm.dataset,
+        table=table,
+        options=(ClarifyOption(L.CLARIFY_SHOW.format(output=output), O.plain(output)),),
+        note=L.CLARIFY_U_AS_R.format(table=table),
+    )
+
+
+def _u_as_r(result: RetrievalResult) -> bool:
+    return bool(result.route.signals.get("u_as_r"))
+
+
 def clarifications(
     result: RetrievalResult, store: StructuredStore, sources: _Sources
 ) -> tuple[list[Clarification], frozenset[str]]:
@@ -569,9 +603,13 @@ def clarifications(
             found = _clarify_ambiguous(nm, plan, result.query, store, table)
         elif nm.outcome == "unresolved_constraint":
             found = _clarify_output(nm, plan, result.query, store, table)
+        elif nm.outcome == "unsupported_output" and _u_as_r(result) and nm.dataset == U_AS_R:
+            found = _clarify_u_as_r(nm, plan, store, table)
         if found == "ungrounded":
             ungrounded.add(nm.dataset)
         elif isinstance(found, Clarification):
+            if _u_as_r(result) and found.dataset == U_AS_R and not found.note:
+                found = replace(found, note=L.CLARIFY_U_AS_R.format(table=table))
             return [found], frozenset(ungrounded)
     return [], frozenset(ungrounded)
 
@@ -750,7 +788,14 @@ def _compose(
         values=values,
         excerpts=excerpts,
         refusals=refused,
-        notices=_notices(result, issues, store),
+        notices=[
+            *(
+                [Notice("note", L.NOTICE_U_AS_R)]
+                if _u_as_r(result) and any(v.dataset == U_AS_R for v in values)
+                else []
+            ),
+            *_notices(result, issues, store),
+        ],
         clarifications=clarify,
         sources=unique_sources,
         hidden_values=len(all_items) - len(values),

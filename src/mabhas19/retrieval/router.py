@@ -158,6 +158,23 @@ _PURPOSE = re.compile(r"(?:^|\s)برای\s.*(?:می\s?خوام|می\s?خواهم
 # «جزو کدام رده» asks a value; «جزو … است/حساب میشه» asks a classification
 _WHICH_CLASS = re.compile(r"جزو\s*(?:کدام|کدوم|چه)")
 _TABLE_WORD = re.compile(r"(?<![ؠ-ۿ])(?:جدول|جداول)")
+# pre-pilot intent wording (2026-11-13), two families only:
+# (A) a limit on building energy consumption names the Appendix 3 output
+#     («حد مجاز / سقف / بیشینه مصرف انرژی», «مصرف مجاز انرژی», «مصرف انرژی مجاز»)
+_LIMIT = r"(?:حد\s*مجاز|حد\s*اکثر|حداکثر|سقف|بیشینه|بیشترین|ماکزیمم|مقدار\s*مجاز|میزان\s*مجاز)"
+_ENERGY = r"(?:مصرف\s+(?:مجاز\s+)?انرژی|انرژی\s+مصرفی)"
+ENERGY_LIMIT = re.compile(
+    rf"(?<![ؠ-ۿ]){_LIMIT}(?:\s+[^\s،,؟?]+){{0,2}}?\s+{_ENERGY}"
+    rf"|(?<![ؠ-ۿ])مصرف\s+مجاز\s+انرژی"
+    rf"|{_ENERGY}(?:\s+سالانه|\s+سالیانه)?\s+(?:مجاز|حداکثر)(?![ؠ-ۿ])"
+)
+# (B) a U-value asked of an opaque element printed in table 19-5-1, whose requirement is a
+#     minimum R: the question is about that table (never 19-5-2); the engine still refuses the
+#     U slot and the answer offers the printed R explicitly (no U = 1/R)
+U_WORDING = re.compile(
+    r"ضریب\s*(?:کلی\s+)?انتقال\s*حرارت(?:ی)?|(?<![a-z])u(?:\s*-?\s*value)?(?![a-z])"
+)
+OPAQUE_R_TABLE = MAIN + "19-5-1"
 _TABLE_ID = re.compile(r"(?<![\d-])(19\s?-\s?\d+\s?-\s?\d+|پ\s?\d+\s?-\s?\d+)(?![\d-])")
 _ID_FIRST = re.compile(r"\s*(?:شماره\s*)?(?:19\s?-\s?\d|پ\s?\d)")
 _TABLE_REF = re.compile(r"جدول\s*(?:شماره\s*)?(19-\d+-\d+|پ\s?\d+-\d+)")
@@ -487,7 +504,7 @@ class Router:
         }
 
     # ------------------------------------------------------------------ public
-    def route(self, query: str) -> RouteDecision:  # noqa: PLR0911, PLR0915
+    def route(self, query: str) -> RouteDecision:  # noqa: PLR0911, PLR0912, PLR0915
         norm = normalize_query(query)
         refs, ambiguous = self.table_references(norm)
         section_refs = [s for s in _SECTION_REF.findall(norm) if s not in set(refs)]
@@ -540,6 +557,8 @@ class Router:
             "prose_part": prose_part,
             "clauses": kinds,
         }
+        if OPAQUE_R_TABLE in tables and U_WORDING.search(self._bilingual(norm)):
+            signals["u_as_r"] = True  # a U-value asked of an element whose requirement is R
         reasons = [
             f"{c['table'].split('.')[-1]}: dry-run plan {c['outcome']} ({', '.join(c['evidence'])})"
             for c in self._summaries
@@ -720,6 +739,12 @@ class Router:
         own = any(not keys(words[i]) & self.output_keys[ds] for i in explained_words)
         c.entity = bool(resolved) and own
         c.resolved = c.entity and any(e.status == "resolved" for e in resolved)
+        c.named = c.named or self._intent_named(ds, probe, c.entity)
+        if c.named and ds == OPAQUE_R_TABLE and U_WORDING.search(probe):
+            # the U words ask about this element's requirement (printed as R): this table
+            # explains them, so a table explaining only them is not what is asked
+            u_keys = {k for m in U_WORDING.finditer(probe) for w in etokens(m[0]) for k in keys(w)}
+            explained_words |= {i for i, w in enumerate(words) if keys(w) & u_keys}
         c.place = any(e.kind == "place" and e.status == "resolved" for e in resolved)
         c.concrete = any(
             x.state in ("applied", "checked", "invalid") for x in plan.constraints
@@ -769,6 +794,15 @@ class Router:
                 and not w.replace(".", "").isdigit()
             ]
         return c
+
+    @staticmethod
+    def _intent_named(ds: str, text: str, entity: bool) -> bool:
+        """Pre-pilot intent wording that names a table's requested output: an energy
+        consumption limit names Appendix 3's output; a U-value of an element that table 19-5-1
+        prints (an entity of its own) names that table's requirement."""
+        if ds == APP03:
+            return bool(ENERGY_LIMIT.search(text))
+        return ds == OPAQUE_R_TABLE and entity and bool(U_WORDING.search(text))
 
     def _familiar(self, word: str) -> bool:
         """A Mabhas 19 word, also in its colloquial spoken form («ساختمونا» ~ «ساختمانها»)."""

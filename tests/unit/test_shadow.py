@@ -870,8 +870,14 @@ def test_no_production_module_imports_the_shadow_package() -> None:
 
 
 def test_the_frozen_final8_engine_modules_are_unchanged() -> None:
+    """Final-8 module hashes, with only the approved pre-pilot routing patch applied
+    (eval/retrieval/m2_prepilot_pins.yaml: router.py, from its Final-8 hash)."""
+    from mabhas19.api.engine import prepilot_pins  # noqa: PLC0415
+
     doc = yaml.safe_load((REPO_ROOT / "eval/retrieval/final8_candidate.yaml").read_text("utf-8"))
-    frozen = doc["candidate"]["code"]["modules_sha256"]
+    pinned, bad = prepilot_pins(doc["candidate"])
+    assert not bad
+    frozen = pinned["code"]["modules_sha256"]
     assert frozen == {m: candidate._sha(REPO_ROOT / m) for m in candidate.MODULES}
 
 

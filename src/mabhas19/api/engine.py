@@ -21,7 +21,7 @@ from typing import Any, Literal
 
 import yaml
 
-from mabhas19.core.paths import CURATED_DIR, DATA_DIR
+from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
 from mabhas19.generation.composer import COMPOSER_VERSION, compose
 from mabhas19.generation.contract import CONTRACT_VERSION, Answer
 from mabhas19.indexing.chunking import build_chunks
@@ -36,13 +36,31 @@ Mode = Literal["hybrid", "lexical"]
 _UNPINNED = ("code.src_tree", "code.src_clean")
 
 
+def prepilot_pins(frozen: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Final-8 pins with the approved pre-pilot module hashes applied (eval/retrieval/
+    m2_prepilot_pins.yaml), and the entries that do not start from the Final-8 hash."""
+    path = EVAL_DIR / "retrieval" / "m2_prepilot_pins.yaml"
+    if not path.exists():
+        return frozen, []
+    record = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    modules = dict(frozen["code"]["modules_sha256"])
+    bad = []
+    for module, pin in (record.get("modules_sha256") or {}).items():
+        if modules.get(module) != pin["from"]:
+            bad.append(f"pre-pilot pin {module}: 'from' is not the Final-8 hash")
+            continue
+        modules[module] = pin["to"]
+    return {**frozen, "code": {**frozen["code"], "modules_sha256": modules}}, bad
+
+
 def pin_drift() -> list[str]:
-    """Differences between the live retrieval engine and the frozen Final-8 candidate."""
+    """Differences between the live retrieval engine and the frozen Final-8 candidate, with the
+    approved pre-pilot routing patch (one listed module hash) applied."""
     from mabhas19.retrieval.candidate import CURRENT, MANIFESTS, live_candidate  # noqa: PLC0415
 
-    frozen = yaml.safe_load(MANIFESTS[CURRENT].read_text(encoding="utf-8"))["candidate"]
+    final8 = yaml.safe_load(MANIFESTS[CURRENT].read_text(encoding="utf-8"))["candidate"]
+    frozen, out = prepilot_pins(final8)
     live = live_candidate()
-    out = []
     for section, values in frozen.items():
         if not isinstance(values, dict):
             if live.get(section) != values:

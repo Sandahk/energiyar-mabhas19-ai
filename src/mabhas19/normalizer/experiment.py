@@ -77,8 +77,13 @@ SOURCES = (
 )
 
 
+def _text_bytes(path: Path) -> bytes:
+    """File bytes with line endings normalized (a Windows checkout writes CRLF, git stores LF)."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def _sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(_text_bytes(path)).hexdigest()
 
 
 def _engine() -> Any:
@@ -124,7 +129,7 @@ def code_fingerprint() -> str:
     h = hashlib.sha256()
     for rel in SOURCES:
         h.update(rel.encode())
-        h.update((REPO_ROOT / "src" / "mabhas19" / rel).read_bytes())
+        h.update(_text_bytes(REPO_ROOT / "src" / "mabhas19" / rel))
     return h.hexdigest()
 
 
@@ -188,8 +193,9 @@ def freeze() -> int:
         "decision_rule": DECISION_RULE,
     }
     text = yaml.safe_dump(manifest, allow_unicode=True, sort_keys=False)
-    MANIFEST.write_text("# frozen; do not edit\n" + text, encoding="utf-8")
-    MANIFEST.with_suffix(".sha256").write_text(f"{_sha(MANIFEST)}  {MANIFEST.name}\n")
+    MANIFEST.write_text("# frozen; do not edit\n" + text, encoding="utf-8", newline="\n")
+    sha_line = f"{_sha(MANIFEST)}  {MANIFEST.name}\n"
+    MANIFEST.with_suffix(".sha256").write_text(sha_line, encoding="utf-8", newline="\n")
     print(f"frozen {MANIFEST.name} sha256 {_sha(MANIFEST)}")
     return 0
 

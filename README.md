@@ -12,7 +12,7 @@ cites the document, section or table, and page (both the PDF page and the printe
 one non-negotiable rule: **it must never state a regulatory value or citation that the source
 does not support.** Every design decision below follows from that rule.
 
-## Status (2026-11-12)
+## Status (2026-11-17)
 
 | Area | State |
 |---|---|
@@ -21,6 +21,7 @@ does not support.** Every design decision below follows from that rule.
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
 | LLM semantic shadow (SH0) | **Closed, not promoted.** The semantic veto (S1-V) stayed safe but caught too few misreads: on its final holdout, 0 harmful vetoes and 100% precision, but recall 15/67 = 22.4% against a 40% threshold. No result-affecting LLM layer is approved |
+| LLM normalizer (suggest-and-confirm) | **Closed, NO-GO.** Gemini 4 Argon mapped failed questions onto printed rows for the user to confirm: useful 24/29, but wrong 4/33 against a limit of 3. See [`src/mabhas19/normalizer/`](src/mabhas19/normalizer/README.md) |
 | Answer generation, API, UI | **M1 closed-pilot chatbot built**: deterministic Persian answers from certified rows and quoted sections, with an interpretation echo, a local API and a chat page. No LLM; not deployed |
 
 ### Where the project stands
@@ -60,6 +61,18 @@ result-affecting LLM semantic layer is approved.
 - The limit is therefore semantic usefulness, not verifier safety.
 
 Recovery of failed-closed questions (S1-R) was never started and is not planned.
+
+### LLM normalizer closeout (2026-11-17)
+
+A separate suggest-and-confirm experiment asked Gemini 4 Argon to map questions the engine
+could not answer onto printed table rows, verified field by field and confirmed by the user
+before the unchanged engine ran. Run once: useful 24/29, 0 model-supplied numbers, p90
+14.2 s, $0.012 per call, controls untouched, but **4/33 wrong** (limit 3), so it is **NO-GO**
+and the line is closed. The decisive risk is semantic substitution (N58: a window-to-floor
+ratio mapped to the daylight-sufficiency ratio), which a verifier cannot catch. The
+deterministic engine stayed the only source of values; no live answer changed and nothing
+was deployed. Next: deterministic clarification coverage for tables 19-5-2 and 19-5-4 to
+19-5-7.
 
 ### Closed-pilot chatbot (M1)
 

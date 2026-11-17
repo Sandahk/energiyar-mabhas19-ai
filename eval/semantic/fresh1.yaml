@@ -1,0 +1,242 @@
+version: semantic-fresh-1
+cases:
+  - id: F01
+    group: row
+    question: "سقف مصرف انرژی سالانه برای یه درمانگاه سرپایی که تخت بستری نداره چقدره؟"
+    quantity: eui
+    rows: ["کلینیک بدون بستری بیمار"]
+    why: "Outpatient clinic with no inpatient beds is the no-inpatient clinic row."
+  - id: F02
+    group: row
+    question: "یه کافی‌شاپ تو تهران می‌خوام بزنم، حداکثر شدت مصرف انرژی مجازش چنده؟"
+    quantity: eui
+    rows: ["رستوران/ کافه"]
+    why: "A coffee shop is the restaurant/cafe use."
+  - id: F03
+    group: row
+    question: "برای یه آپارتمان کوچیک که کل زیربناش حدود ۱۸۰۰ متره، حد مجاز مصرف انرژی سالانه رو می‌خوام"
+    quantity: eui
+    rows: ["مسکونی < ۳۰۰۰ مترمربع"]
+    why: "Apartment building under 3000 m2 is the small residential row."
+  - id: F04
+    group: row
+    question: "دیوار زیرزمین که پشتش خاکه، حداقل مقاومت حرارتیش باید چقدر باشه؟"
+    quantity: r_value
+    rows: ["دیوار خارجی مجاور خاک"]
+    why: "Basement wall backed by earth is the exterior wall adjacent to soil."
+  - id: F05
+    group: row
+    question: "کف طبقه اول که زیرش پیلوت بازه و هوا آزاد رد میشه، R حداقلش چنده؟ اقلیم سرد"
+    quantity: r_value
+    rows: ["کف مجاور هوای آزاد"]
+    why: "Floor over open pilotis is the floor adjacent to outdoor air."
+  - id: F06
+    group: row
+    question: "اسکای‌لایت روی سقف حداکثر ضریب انتقال حرارتش چقدر میتونه باشه؟"
+    quantity: u_value
+    rows: ["نورگیر سقفی – حداکثر ضریب انتقال حرارتی U-Value (W/m2.k)"]
+    why: "A skylight is the roof light row of the U-value table."
+  - id: F07
+    group: row
+    question: "برای پنجره‌ای که توی سقف کار می‌کنیم، حداکثر ضریب بهره خورشیدی شیشه‌اش چقدر مجازه؟"
+    quantity: shgc
+    rows: ["نورگیر سقفی – حداکثر ضریب بهره خورشیدی SHGC"]
+    why: "A window set in the roof is the roof light SHGC row."
+  - id: F08
+    group: row
+    question: "ضریب هدایت حرارتی ایزوگام چنده؟"
+    quantity: lambda
+    rows: ["عایق‌های رطوبتی ورق پیش‌ساخته قیر اصلاح‌شده با مسلح‌کننده"]
+    why: "Isogam is a prefabricated reinforced modified-bitumen membrane."
+  - id: F09
+    group: row
+    question: "لاندای بلوک هبلکس رو برای محاسبه دیوار لازم دارم"
+    quantity: lambda
+    rows: ["بتن هوادار اتوکلاو شده"]
+    why: "Hebel blocks are autoclaved aerated concrete."
+  - id: F10
+    group: row
+    question: "تخته سه‌لایی چه ضریب هدایت حرارتی‌ای داره؟"
+    quantity: lambda
+    rows: ["صفحات پایه چوبی صفحات تخته چندلا"]
+    why: "Three-ply board is plywood, the multi-ply board row."
+  - id: F11
+    group: row
+    question: "وزن مخصوص تخته MDF طبق مبحث ۱۹ چقدر در نظر گرفته میشه؟"
+    quantity: density
+    rows: ["صفحات پایه چوبی پانل‌های ساخته‌شده از الیاف چوب"]
+    why: "MDF is a wood-fibre panel."
+  - id: F12
+    group: row
+    question: "حداقل راندمان کولر سلولزی چقدر باید باشه؟"
+    quantity: efficiency
+    rows: ["کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI"]
+    why: "A cellulose-pad cooler is an evaporative (water) cooler."
+  - id: F13
+    group: row
+    question: "پکیج کندانسینگ خونگی حداقل بازدهیش طبق مقررات چنده؟"
+    quantity: efficiency
+    rows: ["پکیج چگالشی – توان ورودی نامی کمتر از ۷۰ کیلووات"]
+    why: "A domestic condensing combi boiler is the condensing package under 70 kW."
+  - id: F14
+    group: row
+    question: "COP حداقل برای چیلر ابزوربشن دبل افکت چقدره؟"
+    quantity: efficiency
+    rows: ["چیلر جذبی دو اثره – بر اساس ضریب عملکرد (COP)"]
+    why: "Double-effect absorption chiller is the two-effect absorption chiller row."
+  - id: F15
+    group: row
+    question: "آب گرم شیر دستشویی سرویس بهداشتی عمومی پاساژ حداکثر چند درجه باید باشه؟"
+    quantity: hot_water
+    rows: ["روشویی عمومی"]
+    why: "Public restroom hand basin is the public washbasin row."
+  - id: F16
+    group: row
+    question: "دمای آب گرم برای حموم کردن تو خونه حداکثر چقدر مجازه؟"
+    quantity: hot_water
+    rows: ["دوش و وان"]
+    why: "Bathing at home means the shower and bathtub outlet."
+  - id: F17
+    group: row
+    question: "حداقل نسبت کفایت نور روز برای یه مدرسه چقدره؟"
+    quantity: daylight
+    rows: ["آموزشی"]
+    why: "A school is an educational use."
+  - id: F18
+    group: row
+    question: "برای ساختمون بیمارستان، حداقل نسبت مساحتی که نور روز کافی داره رو بگو"
+    quantity: daylight
+    rows: ["مسکونی، درمانی، هتل، خوابگاه"]
+    why: "A hospital is a healthcare (درمانی) use, grouped in this row."
+  - id: F19
+    group: row
+    question: "یه پاساژ ۵ هزار متری داریم تو شیراز، کفایت نور روزش حداقل چند درصد باید باشه؟"
+    quantity: daylight
+    rows: ["تجاری بزرگ‌تر از ۲۰۰۰ متر مربع"]
+    why: "A 5000 m2 shopping arcade is commercial over 2000 m2."
+  - id: F20
+    group: row
+    question: "یکنواختی نور لامپ‌ها توی گاراژ زیرزمینی ساختمون حداقل باید چقدر باشه؟"
+    quantity: uniformity
+    rows: ["پارکینگ"]
+    why: "An underground garage is the parking space."
+  - id: F21
+    group: row
+    question: "حداقل یکنواختی نور مصنوعی برای کریدور طبقات چنده؟"
+    quantity: uniformity
+    rows: ["راهروها و فضاهای عمومی"]
+    why: "A corridor is the hallways row."
+  - id: F22
+    group: row
+    question: "زمین فوتسال سرپوشیده، یکنواختی نور مصنوعیش حداقل چقدر باشه؟"
+    quantity: uniformity
+    rows: ["فضاهای ورزشی"]
+    why: "Indoor futsal court is a sports space."
+  - id: F23
+    group: trap
+    question: "نسبت مساحت پنجره به مساحت کف اتاق حداقل چقدر باید باشه؟"
+    quantity: none
+    rows: []
+    why: "Window-to-floor area ratio is not the printed daylight-sufficiency area ratio."
+  - id: F24
+    group: trap
+    question: "ضریب سایه (SC) شیشه پنجره‌ها حداکثر چقدر مجازه؟"
+    quantity: none
+    rows: []
+    why: "Shading coefficient SC is a different metric from SHGC."
+  - id: F25
+    group: trap
+    question: "ضخامت پشم شیشه دیوار خارجی تو اقلیم سرد حداقل چند سانت باید باشه؟"
+    quantity: none
+    rows: []
+    why: "Insulation thickness is not the printed minimum thermal resistance R."
+  - id: F26
+    group: trap
+    question: "ضریب عبور نور مرئی شیشه پنجره حداقل چقدر باید باشه؟"
+    quantity: none
+    rows: []
+    why: "Visible light transmittance is not SHGC."
+  - id: F27
+    group: trap
+    question: "شدت روشنایی کلاس درس حداقل چند لوکس باید باشه؟"
+    quantity: none
+    rows: []
+    why: "Illuminance in lux is not the printed artificial-light uniformity."
+  - id: F28
+    group: trap
+    question: "دمای ذخیره آب توی مخزن آبگرمکن برای جلوگیری از لژیونلا حداقل چند درجه باشه؟"
+    quantity: none
+    rows: []
+    why: "Tank storage temperature is not the printed maximum point-of-use hot-water temperature."
+  - id: F29
+    group: trap
+    question: "ظرفیت گرمایی ویژه بتن معمولی چقدره؟"
+    quantity: none
+    rows: []
+    why: "Specific heat capacity is neither the printed lambda nor density."
+  - id: F30
+    group: trap
+    question: "IPLV چیلر تراکمی آب خنک حداقل چقدر باید باشه؟"
+    quantity: none
+    rows: []
+    why: "Part-load IPLV is not the printed full-load COP efficiency of the chiller."
+  - id: F31
+    group: unsupported
+    question: "حداکثر شدت مصرف انرژی مجاز برای یه پمپ بنزین چقدره؟"
+    quantity: eui
+    rows: []
+    why: "No fuel-station use among the EUI rows."
+  - id: F32
+    group: unsupported
+    question: "سقف مصرف انرژی سالانه ترمینال فرودگاه طبق مبحث ۱۹ چنده؟"
+    quantity: eui
+    rows: []
+    why: "No airport terminal use among the EUI rows."
+  - id: F33
+    group: unsupported
+    question: "دیوار بین دو واحد همسایه تو یه آپارتمان، حداقل مقاومت حرارتیش چقدره؟"
+    quantity: r_value
+    rows: []
+    why: "Party wall between conditioned units is not printed; rows cover walls to outside, semi-open or soil."
+  - id: F34
+    group: unsupported
+    question: "یکنواختی نور مصنوعی اتاق خواب خونه حداقل چقدر باید باشه؟"
+    quantity: uniformity
+    rows: []
+    why: "No residential bedroom space among the uniformity rows."
+  - id: F35
+    group: unsupported
+    question: "آب گرمی که به ماشین لباسشویی میره حداکثر چند درجه مجازه؟"
+    quantity: hot_water
+    rows: []
+    why: "Washing-machine supply is not a printed hot-water outlet."
+  - id: F36
+    group: unsupported
+    question: "حداقل نسبت کفایت نور روز برای مسجد چقدره؟"
+    quantity: daylight
+    rows: []
+    why: "Mosque (religious use) is not among the daylight rows."
+  - id: F37
+    group: unsupported
+    question: "ضریب هدایت حرارتی عایق پشم گوسفند چنده؟"
+    quantity: lambda
+    rows: []
+    why: "Sheep-wool insulation is not in the material list."
+  - id: F38
+    group: unsupported
+    question: "چگالی پتوی آیروژل چقدره؟"
+    quantity: density
+    rows: []
+    why: "Aerogel is not in the material list."
+  - id: F39
+    group: unsupported
+    question: "حداقل COP پمپ حرارتی زمین‌گرمایی طبق مقررات چقدر باید باشه؟"
+    quantity: efficiency
+    rows: []
+    why: "Ground-source heat pump is not among the equipment rows."
+  - id: F40
+    group: unsupported
+    question: "آبگرمکن خورشیدی پشت‌بوم حداقل بازدهیش طبق مبحث ۱۹ چقدر باید باشه؟"
+    quantity: efficiency
+    rows: []
+    why: "Solar water heater is not printed; water-heater rows are gas-fired or electric only."

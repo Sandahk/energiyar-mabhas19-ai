@@ -36,12 +36,13 @@ import re
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
+from mabhas19.api import quantities as Q
 from mabhas19.api import wording as W
 from mabhas19.generation import labels as L
 from mabhas19.generation import options as O
-from mabhas19.generation.composer import COMPOSER_VERSION, _Sources
+from mabhas19.generation.composer import COMPOSER_VERSION, MAX_OPTIONS, _Sources
 from mabhas19.generation.composer import _missing_dims as _composer_missing
 from mabhas19.generation.contract import (
     Answer,
@@ -49,6 +50,7 @@ from mabhas19.generation.contract import (
     ClarifyOption,
     Interpretation,
     Notice,
+    Refusal,
     Source,
     ValueItem,
 )
@@ -664,6 +666,167 @@ def _noted(reply: Reply, original: str, rules: list[W.Rule]) -> Reply:
     return Reply(answer, reply.result, reply.parts)
 
 
+# ---------------------------------------------------------------- structured rescue
+
+
+def _rescue_problems(answer: Answer, store: StructuredStore, parts: list[Part]) -> list[str]:
+    """Problems of a rescue answer: no value, city rows only from the checked city lookup,
+    printed options only, and no number without a source."""
+    problems = [f"part: {p.question[:40]} failed its own check" for p in parts if not _clean(p)]
+    if answer.values:
+        problems.append("values: a rescue answer shows no value")
+    part_values = [v for p in parts for v in p.answer.values]
+    for v in answer.context:
+        if v not in part_values:
+            problems.append(f"context: {v.record_id} is not a value of a checked part")
+    allowed = numbers(answer.question)
+    allowed |= {n for p in parts for t in p.answer.texts() for n in numbers(t)}
+    for c in answer.clarifications:
+        printed = set(O.printed_options(store, c.dataset, c.field))
+        for o in c.options:
+            if o.label not in printed or o.text != o.label:
+                problems.append(f"option: «{o.label[:40]}» is not a printed row")
+            allowed |= numbers(o.label)
+        allowed |= numbers(c.table)
+    for r in answer.refusals:
+        allowed |= numbers(r.table)
+    allowed |= {n for s in answer.sources for n in numbers(s.label)}
+    for text in answer.texts():
+        for num in sorted(numbers(text) - allowed):
+            problems.append(f"numeric: {num} in «{text[:60]}» appears in no source")
+    return problems
+
+
+def _rescued(  # noqa: PLR0913
+    part: Part,
+    store: StructuredStore,
+    quantity: Q.Quantity,
+    city: City | None,
+    parts: list[Part],
+    *,
+    question: str,
+    refusal: Refusal | None = None,
+    clarification: Clarification | None = None,
+) -> Reply:
+    context = list(city.rows) if city else []
+    notices = [Notice("note", L.NOTICE_CITY_CLIMATE), *city.notices()] if city else []
+    sources = _unique_sources([v.source for v in context if v.source]) if city else []
+    rtype: Literal["clarification", "refusal"] = "clarification" if clarification else "refusal"
+    head = clarification.prompt if clarification else (refusal.message if refusal else "")
+    answer = Answer(
+        request_id=part.answer.request_id,
+        question=question,
+        response_type=rtype,
+        headline=head,
+        interpretation=[Interpretation("output", L.REQUESTED, quantity.label, "requested")],
+        refusals=[refusal] if refusal else [],
+        notices=_unique_notices(notices),
+        clarifications=[clarification] if clarification else [],
+        sources=sources,
+        context=context,
+        safety={
+            "route": part.answer.safety.get("route"),
+            "status": "needs_clarification" if clarification else "refused",
+            "certified_row_ids": [],
+            "prose_chunk_ids": [],
+            "composer": COMPOSER_VERSION,
+            "composite": {
+                "kind": "rescue",
+                "quantity": quantity.id,
+                "replaced": part.answer.response_type,
+                **({"city": _city_record(city, city.codes)} if city else {}),
+            },
+        },
+    )
+    problems = _rescue_problems(answer, store, parts)
+    if problems:  # fail closed: the engine's own answer, with the reason recorded
+        safety = {**part.answer.safety, "orchestration_rejected": problems}
+        return Reply(replace(part.answer, safety=safety), part.result, [part])
+    answer.safety["provenance_violations"] = []
+    return Reply(answer, part.result, parts)
+
+
+def rescue(run: Run, store: StructuredStore, reply: Reply) -> Reply:  # noqa: PLR0911, PLR0912
+    """A value request for exactly one table quantity that the engine answered with prose or
+    out of scope (nothing else named but filler, a printed climate code or a printed city) gets
+    a typed answer instead: the climate's absence from the table, the table's printed rows to
+    choose from, or a refusal asking for the row. Anything else keeps the engine's answer."""
+    if reply.answer.response_type not in ("prose", "out_of_scope") or not reply.parts:
+        return reply
+    part = reply.parts[0]
+    request = Q.analyse(part.question)
+    if request is None:
+        return reply
+    quantity = request.quantity
+    sources = _Sources(store)
+    city: City | None = None
+    codes = [request.code] if request.code else []
+    parts = [part]
+    if request.leftover:  # only a printed city may be left, and only where climate applies
+        if not quantity.climate_table or len(request.leftover) > Q.MAX_PLACE_WORDS:
+            return reply
+        if request.code:
+            return reply
+        city = city_lookup(run, " ".join(request.leftover))
+        if city is None:
+            return reply
+        codes = city.codes
+        parts.append(city.part)
+    if not quantity.climate_table and codes:
+        return reply
+    question = part.question
+    if quantity.climate_table and codes:
+        table = sources.table(quantity.climate_table)[0]
+        printed = O.printed_options(store, quantity.climate_table, CLIMATE)
+        if len(codes) == 1 and codes[0] not in printed:
+            place = f" («{' '.join(request.leftover)}»)" if city else ""
+            message = L.RESCUE_CLIMATE.format(code=codes[0], place=place, table=table)
+            refusal = Refusal(
+                "climate_not_printed",
+                "climate_class_not_in_table",
+                message,
+                dataset=quantity.climate_table,
+                table=table,
+            )
+            return _rescued(part, store, quantity, city, parts, question=question, refusal=refusal)
+        if len(codes) == 1 and city:  # the next step keeps the city's printed class
+            question = f"{question} ({O.option_text(CLIMATE, codes[0])[1]})"
+    rows = quantity.rows(store)
+    if quantity.choose and len(quantity.tables) == 1 and 0 < len(rows) <= MAX_OPTIONS:
+        dataset, field_name = quantity.tables[0]
+        clar = Clarification(
+            field=field_name,
+            field_label=L.FIELD_LABELS.get(field_name, ""),
+            prompt=L.CLARIFY_PROMPTS.get(field_name, L.CLARIFY_GENERIC),
+            outcome="missing_row",
+            dataset=dataset,
+            table=sources.table(dataset)[0],
+            options=tuple(ClarifyOption(r, r) for r in rows),
+        )
+        return _rescued(part, store, quantity, city, parts, question=question, clarification=clar)
+    dataset, field_name = quantity.tables[-1]
+    table = sources.table(dataset)[0]
+    if quantity.id == "u_value":
+        message = L.RESCUE_U.format(
+            transparent=sources.table(Q.T19_5_2)[0], opaque=sources.table(Q.T19_5_1)[0]
+        )
+    else:
+        label = L.RESCUE_FIELD.get(field_name, L.FIELD_LABELS.get(field_name, ""))
+        tables = " و ".join(dict.fromkeys(sources.table(d)[0] for d, _ in quantity.tables))
+        message = L.RESCUE_ROW.format(table=tables, field=label)
+        if quantity.climate_table and not codes:
+            message += L.RESCUE_ROW_CLIMATE
+    refusal = Refusal(
+        "missing_row",
+        "row_not_named",
+        message,
+        dataset=dataset,
+        missing=(L.RESCUE_FIELD.get(field_name, L.FIELD_LABELS.get(field_name, "")),),
+        table=table,
+    )
+    return _rescued(part, store, quantity, city, parts, question=question, refusal=refusal)
+
+
 # ---------------------------------------------------------------- entry point
 
 
@@ -685,7 +848,8 @@ def respond(  # noqa: PLR0913
         question = chosen
     text, rules = W.rewrite(question)
     reply = side_by_side(run, store, _call(run, text, request_id), request_id)
-    return _noted(widen(run, store, reply, request_id), question, rules)
+    reply = rescue(run, store, widen(run, store, reply, request_id))
+    return _noted(reply, question, rules)
 
 
 def family_choice(

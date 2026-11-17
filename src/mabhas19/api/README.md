@@ -213,6 +213,29 @@ expected behaviour written before the code).
 - The closed normalizer experiment's frozen code fingerprint covers this module, so its manifest
   no longer verifies; that experiment is closed and is never re-run.
 
+### Structured rescue (2026-11-17)
+
+`api/quantities.py` + `orchestration.rescue`. The engine's router treats a question as a table
+lookup only when it also names a row or a printed condition; a value request that names only
+the quantity («حداکثر SHGC مجاز چقدره؟») or the quantity and a city («برای اردبیل حد مجاز مصرف
+انرژی چقدره؟») was answered with prose. When the engine returns prose or out of scope and the
+question (1) names exactly one table quantity (its printed / table-definition names), (2) asks
+for a value, (3) contains nothing else but filler, a printed climate code or an exact printed
+city, and (4) is not conceptual, the answer is typed instead:
+
+- a city is looked up through the certified city lookup (conflicts kept, no province or
+  nearest city); a class the table does not print (Ardabil 5C in Appendix 3) is a typed
+  refusal shown with the city's certified rows;
+- a table with at most 16 printed rows (19-5-1, 19-5-2 by quantity, 19-5-5) offers them; the
+  city's printed class is carried to the next step;
+- larger tables (Appendix 3, 19-5-3/4, Appendix 7) and U (printed as U for transparent and as R
+  for opaque parts) get a typed refusal asking for the row.
+
+Conceptual questions, anything naming another thing, an unprinted city and every answer the
+engine itself gives as a table refusal are untouched. Frozen cases: `eval/clarify/structured1.yaml`.
+Known deviation: «حداقل مقاومت حرارتی برای اردبیل» is refused by the engine itself (the city is
+read as an unknown 19-5-1 row), so it is not rescued.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
@@ -251,6 +274,7 @@ M1 issues:
 | `api/engine.py` | Frozen engine loading and the Final-8 pin check |
 | `api/orchestration.py` | City → climate, row groups and side-by-side values over certified engine calls |
 | `api/wording.py` | Reviewed wording rules, concept rows and row families (no model) |
+| `api/quantities.py` | Table quantities as named, and the value-request analysis for the rescue |
 | `api/chatlog.py` | Request, feedback and review logs (append-only) |
 | `api/pilot_metrics.py` | M2 metrics from the logs |
 | `api/server.py` | Standard-library HTTP server |

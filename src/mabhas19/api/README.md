@@ -231,10 +231,12 @@ city, and (4) is not conceptual, the answer is typed instead:
 - larger tables (Appendix 3, 19-5-3/4, Appendix 7) and U (printed as U for transparent and as R
   for opaque parts) get a typed refusal asking for the row.
 
-Conceptual questions, anything naming another thing, an unprinted city and every answer the
-engine itself gives as a table refusal are untouched. Frozen cases: `eval/clarify/structured1.yaml`.
-Known deviation: «حداقل مقاومت حرارتی برای اردبیل» is refused by the engine itself (the city is
-read as an unknown 19-5-1 row), so it is not rescued.
+One engine refusal is also replaced, narrowly: when the engine read the words left besides
+the quantity as an unknown row of the quantity's climate-dependent table and those words are an
+exact printed city (the certified lookup decides; «حداقل مقاومت حرارتی برای اردبیل» → 5C → the
+element choice). Conceptual questions, anything naming another thing, an unprinted city or any
+other unknown word, and every other engine refusal are untouched. Frozen cases:
+`eval/clarify/structured1.yaml` (27/27).
 
 ### Known issues (hypotheses for the pilot, not fixed)
 

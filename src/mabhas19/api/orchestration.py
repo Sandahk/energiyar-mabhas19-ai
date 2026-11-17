@@ -746,16 +746,43 @@ def _rescued(  # noqa: PLR0913
     return Reply(answer, part.result, parts)
 
 
+def _city_read_as_row(part: Part, request: Q.Request) -> bool:
+    """The engine refused only because it read the words left besides the quantity as an
+    unknown row of the quantity's climate-dependent table (whether those words are a printed
+    city is decided afterwards by the exact certified city lookup, never here)."""
+    a, r = part.answer, part.result
+    tables = {d for d, _ in request.quantity.tables}
+    if a.response_type != "refusal" or a.values or a.clarifications or not request.leftover:
+        return False
+    if not request.quantity.climate_table or request.code:
+        return False
+    if len(a.refusals) != 1 or a.refusals[0].outcome != "unknown_entity":
+        return False
+    if not r.no_match or any(n.outcome != "unknown_entity" for n in r.no_match):
+        return False
+    if any(n.dataset not in tables for n in r.no_match) or r.structured:
+        return False
+    unknown = r.route.signals.get("unknown_entities") or []
+    tokens = [str(t) for u in unknown for t in (u.get("tokens") or [])]
+    datasets = {str(u.get("dataset")) for u in unknown}
+    return datasets <= tables and W.letters(" ".join(tokens)) == " ".join(request.leftover)
+
+
 def rescue(run: Run, store: StructuredStore, reply: Reply) -> Reply:  # noqa: PLR0911, PLR0912
     """A value request for exactly one table quantity that the engine answered with prose or
     out of scope (nothing else named but filler, a printed climate code or a printed city) gets
     a typed answer instead: the climate's absence from the table, the table's printed rows to
-    choose from, or a refusal asking for the row. Anything else keeps the engine's answer."""
-    if reply.answer.response_type not in ("prose", "out_of_scope") or not reply.parts:
+    choose from, or a refusal asking for the row. One refusal is also replaced: an unknown row
+    that is exactly the words left besides the quantity when those words are a printed city
+    (the certified city lookup decides). Anything else keeps the engine's answer."""
+    if not reply.parts:
         return reply
     part = reply.parts[0]
     request = Q.analyse(part.question)
     if request is None:
+        return reply
+    as_row = _city_read_as_row(part, request)
+    if reply.answer.response_type not in ("prose", "out_of_scope") and not as_row:
         return reply
     quantity = request.quantity
     sources = _Sources(store)

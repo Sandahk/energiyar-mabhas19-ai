@@ -11,6 +11,12 @@ one question each); nothing is retrieved, ranked, matched or computed here. Two 
   (Isfahan): no class is chosen; the rows are shown and the user picks one. An unknown city: the
   climate question is asked again. The printed class is passed on unchanged (5C stays 5C; each
   table accepts or refuses it).
+* **Wording and row groups** (:mod:`mabhas19.api.wording`). Reviewed spelling / morphology
+  variants are rewritten before the engine reads the question, with a visible note. When the
+  engine still cannot answer, an everyday word for several printed rows («بام», «پنجره»), or a
+  table's quantity asked with no row at all, offers those printed rows to choose from; rows
+  that differ only in a printed band are each looked up and shown side by side. Nothing is
+  chosen for the user, and every value still comes from an ordinary engine call.
 * **Side by side.** When the only missing item of a lookup is a small printed column (Appendix 3
   energy rating, or the residential area band), the question is asked once per printed value,
   each a fully specified engine call, and the certified values are shown together instead of
@@ -32,9 +38,10 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
+from mabhas19.api import wording as W
 from mabhas19.generation import labels as L
 from mabhas19.generation import options as O
-from mabhas19.generation.composer import COMPOSER_VERSION
+from mabhas19.generation.composer import COMPOSER_VERSION, _Sources
 from mabhas19.generation.composer import _missing_dims as _composer_missing
 from mabhas19.generation.contract import (
     Answer,
@@ -237,27 +244,44 @@ def _consistent(field_name: str, cands: list[Part]) -> bool:  # noqa: PLR0911
     return len(differing) == 1
 
 
-def _side_answer(base: Part, cands: list[Part], request_id: str) -> Answer:
+def _side_answer(  # noqa: PLR0913, PLR0917
+    base: Part,
+    cands: list[Part],
+    request_id: str,
+    field_name: str | None = None,
+    dataset: str | None = None,
+    notices: tuple[str, ...] = (),
+) -> Answer:
     a = base.answer
-    c = a.clarifications[0]
+    c = a.clarifications[0] if field_name is None else None
+    fname = c.field if c is not None else str(field_name)
+    dset = c.dataset if c is not None else str(dataset)
     values = [p.answer.values[0] for p in cands]
     kept = ("requested", "resolved")
-    echo = [i for i in a.interpretation if i.key != c.field and i.status in kept]
-    if c.field != "area":
+    if c is None:  # a row group: the echo items every lookup shares
+        echo = [i for i in cands[0].answer.interpretation if i.status in kept]
+        echo = [i for i in echo if all(i in p.answer.interpretation for p in cands)]
+    else:
+        echo = [i for i in a.interpretation if i.key != fname and i.status in kept]
+    if fname != "area":
         shown = [
-            next((i.value for i in p.answer.interpretation if i.key == c.field), "") for p in cands
+            next((i.value for i in p.answer.interpretation if i.key == fname), "") for p in cands
         ]
-        if all(shown):
-            label = L.FIELD_LABELS.get(c.field, c.field_label)
-            echo.append(Interpretation(c.field, label, " / ".join(shown), "resolved", tuple(shown)))
+        if all(shown) and not any(i.key == fname for i in echo):
+            label = L.FIELD_LABELS.get(fname, c.field_label if c is not None else "")
+            echo.append(Interpretation(fname, label, " / ".join(shown), "resolved", tuple(shown)))
     return Answer(
         request_id=request_id,
         question=a.question,
         response_type="structured_value",
-        headline=L.SIDE_BY_SIDE_HEADLINE[c.field],
+        headline=L.SIDE_BY_SIDE_HEADLINE[fname],
         interpretation=echo,
         values=values,
-        notices=[Notice("note", L.SIDE_BY_SIDE_NOTE), *cands[0].answer.notices],
+        notices=[
+            *(Notice("note", n) for n in notices),
+            Notice("note", L.SIDE_BY_SIDE_NOTE),
+            *cands[0].answer.notices,
+        ],
         sources=_unique_sources([s for p in cands for s in p.answer.sources]),
         safety={
             "route": a.safety.get("route"),
@@ -267,8 +291,8 @@ def _side_answer(base: Part, cands: list[Part], request_id: str) -> Answer:
             "composer": COMPOSER_VERSION,
             "composite": {
                 "kind": "side_by_side",
-                "field": c.field,
-                "dataset": c.dataset,
+                "field": fname,
+                "dataset": dset,
                 "parts": [
                     {
                         "question": p.question,
@@ -464,6 +488,182 @@ def _city_record(city: City, codes: list[str]) -> dict[str, Any]:
     }
 
 
+# ---------------------------------------------------------------- row groups
+
+
+FAILED = frozenset({"prose", "refusal", "out_of_scope"})
+DAYLIGHT = f"{MAIN}19-5-6"
+
+
+def _choice_problems(answer: Answer, store: StructuredStore, parts: list[Part]) -> list[str]:
+    """Problems of a row-group clarification: printed options only, no value, and no number
+    that is not in the question, an option, the table citation or a checked part."""
+    problems = [f"part: {p.question[:40]} failed its own check" for p in parts if not _clean(p)]
+    if answer.values or answer.context:
+        problems.append("values: a clarification shows no value")
+    allowed = numbers(answer.question)
+    allowed |= {n for a in (p.answer for p in parts) for t in a.texts() for n in numbers(t)}
+    for c in answer.clarifications:
+        printed = set(O.printed_options(store, c.dataset, c.field))
+        for o in c.options:
+            if o.label not in printed or o.text != o.label:
+                problems.append(f"option: «{o.label[:40]}» is not a printed row")
+            allowed |= numbers(o.label)
+        allowed |= numbers(c.table)
+    for text in answer.texts():
+        for num in sorted(numbers(text) - allowed):
+            problems.append(f"numeric: {num} in «{text[:60]}» appears in no source")
+    return problems
+
+
+def _choice(  # noqa: PLR0913, PLR0917
+    store: StructuredStore,
+    part: Part,
+    dataset: str,
+    field_name: str,
+    rows: list[str],
+    prompt: str,
+    note: str,
+    kind: str,
+) -> Reply:
+    """Ask the user to choose one of ``rows`` (printed labels of ``dataset``); choose none."""
+    clar = Clarification(
+        field=field_name,
+        field_label=L.FIELD_LABELS.get(field_name, ""),
+        prompt=prompt,
+        outcome=kind,
+        dataset=dataset,
+        table=_Sources(store).table(dataset)[0],
+        options=tuple(ClarifyOption(r, r) for r in rows),
+    )
+    answer = Answer(
+        request_id=part.answer.request_id,
+        question=part.question,
+        response_type="clarification",
+        headline=prompt,
+        interpretation=[i for i in part.answer.interpretation if i.status == "requested"],
+        # the engine's checked excerpts stay (a question may also ask something the text answers)
+        excerpts=part.answer.excerpts,
+        refusals=part.answer.refusals,
+        notices=[Notice("note", note)] if note else [],
+        clarifications=[clar],
+        sources=part.answer.sources,
+        safety={
+            "route": part.answer.safety.get("route"),
+            "status": "needs_clarification",
+            "certified_row_ids": [],
+            "prose_chunk_ids": part.answer.safety.get("prose_chunk_ids") or [],
+            "composer": COMPOSER_VERSION,
+            "composite": {"kind": kind, "dataset": dataset, "field": field_name},
+        },
+    )
+    problems = _choice_problems(answer, store, [part])
+    if problems:  # fail closed: the plain engine answer, with the reason recorded
+        safety = {**part.answer.safety, "orchestration_rejected": problems}
+        return Reply(replace(part.answer, safety=safety), part.result, [part])
+    answer.safety["provenance_violations"] = []
+    return Reply(answer, part.result, [part])
+
+
+def _band(  # noqa: PLR0913, PLR0917
+    run: Run,
+    part: Part,
+    rows: list[str],
+    field_name: str,
+    dataset: str,
+    notes: tuple[str, ...],
+    request_id: str,
+) -> Reply | None:
+    """Printed rows of one group that differ only in a printed band, each looked up separately
+    and shown side by side; ``None`` when they are not all certified alike."""
+    if not 2 <= len(rows) <= MAX_SIDE:
+        return None
+    cands = [_call(run, f"{part.question} ({r})") for r in rows]
+    if not _consistent("area", cands):  # one printed row each, every other condition the same
+        return None
+    if [p.answer.values[0].row_label for p in cands] != rows:
+        return None
+    composite = _side_answer(part, cands, request_id, field_name, dataset, notes)
+    plain = Reply(part.answer, part.result, [part])
+    return _accept(
+        composite,
+        plain,
+        [part, *cands],
+        fixed_notices=(*notes, L.SIDE_BY_SIDE_NOTE),
+        summary_keys=(field_name,),
+    )
+
+
+def _printed(store: StructuredStore, dataset: str, field_name: str, rows: tuple[str, ...]) -> bool:
+    printed = O.printed_options(store, dataset, field_name)
+    return bool(rows) and all(r in printed for r in rows)
+
+
+def _band_of_refusal(part: Part, store: StructuredStore) -> list[str] | None:
+    """Table 19-5-6 refused for a missing row condition while reading the use as exactly two
+    printed rows of the same use that differ only in their printed area band."""
+    a = part.answer
+    if a.response_type != "refusal" or [r.dataset for r in a.refusals] != [DAYLIGHT]:
+        return None
+    if a.refusals[0].outcome != "missing_required_dimension":
+        return None
+    uses = [i for i in a.interpretation if " / " in i.value and i.key != "output"]
+    if len(uses) != 1:
+        return None
+    rows = [x.strip() for x in uses[0].value.split(" / ")]
+    if len(rows) != 2 or not _printed(store, DAYLIGHT, "use", tuple(rows)):
+        return None
+    return rows if len({r.split()[0] for r in rows}) == 1 else None
+
+
+def widen(run: Run, store: StructuredStore, reply: Reply, request_id: str) -> Reply:
+    """When the engine could not answer: a row group the question names, a band of printed
+    rows, or the printed rows of a quantity asked with no row; otherwise the reply unchanged."""
+    if reply.answer.response_type not in FAILED or not reply.parts:
+        return reply
+    part = reply.parts[0]
+    fam = W.family(part.question)
+    if fam is not None and _printed(store, fam.dataset, fam.field, fam.rows):
+        rows = list(fam.rows)
+        if fam.band:
+            band = _band(run, part, rows, fam.field, fam.dataset, (fam.note,), request_id)
+            if band is not None:
+                return band
+        return _choice(store, part, fam.dataset, fam.field, rows, fam.prompt, fam.note, "row_group")
+    pair = _band_of_refusal(part, store)
+    if pair is not None:
+        band = _band(run, part, pair, "use", DAYLIGHT, (), request_id)
+        if band is not None:
+            return band
+    missing = W.missing_row(part.question)
+    if missing is not None:
+        printed = O.printed_options(store, missing.dataset, missing.field)
+        if printed:
+            prompt = L.CLARIFY_PROMPTS.get(missing.field, L.CLARIFY_GENERIC)
+            return _choice(
+                store, part, missing.dataset, missing.field, printed, prompt, "", "missing_row"
+            )
+    return reply
+
+
+def _noted(reply: Reply, original: str, rules: list[W.Rule]) -> Reply:
+    """The reply with a note for each wording rule applied (fixed texts, no numbers)."""
+    if not rules:
+        return reply
+    a = reply.answer
+    safety = {
+        **a.safety,
+        "wording": {
+            "version": W.WORDING_VERSION,
+            "original": original,
+            "rules": [r.name for r in rules],
+        },
+    }
+    notes = [Notice("note", r.note) for r in rules]
+    answer = replace(a, notices=_unique_notices([*notes, *a.notices]), safety=safety)
+    return Reply(answer, reply.result, reply.parts)
+
+
 # ---------------------------------------------------------------- entry point
 
 
@@ -480,4 +680,6 @@ def respond(  # noqa: PLR0913
     first; otherwise one engine call, shown side by side when its only missing column is small."""
     if follow_up and base and follow_up.get("field") == CLIMATE and follow_up.get("kind") == "free":
         return city_flow(run, store, base, str(follow_up.get("text") or ""), request_id)
-    return side_by_side(run, store, _call(run, question, request_id), request_id)
+    text, rules = W.rewrite(question)
+    reply = side_by_side(run, store, _call(run, text, request_id), request_id)
+    return _noted(widen(run, store, reply, request_id), question, rules)

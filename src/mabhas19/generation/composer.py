@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import ProseHit, RetrievalResult, StructuredHit
     from mabhas19.retrieval.structured import StructuredStore
 
-COMPOSER_VERSION = "m2-composer-4"
+COMPOSER_VERSION = "m2-composer-5"
 U_AS_R = MAIN + "19-5-1"  # opaque elements: the requirement is a minimum R
 # the engine's typed refusals of a quantity the table does not print (admission, coverage)
 _U_REFUSALS = frozenset({"unsupported_output_slot", "unattested_quantity"})
@@ -58,6 +58,11 @@ MAX_EXCERPTS = 3
 EXCERPT_CHARS = 420
 MIN_EXCERPT = 60
 MAX_OPTIONS = 16  # more printed choices than this: no clarification (the user retypes)
+# printed quantity names carried by the row labels of a table that prints two quantities in one
+# column: a question naming one of them is never offered the other's rows
+_QUANTITY_ROWS: dict[str, tuple[tuple[str, ...], ...]] = {
+    MAIN + "19-5-2": (("u-value", "u value", "ضریب انتقال حرارت"), ("shgc", "ضریب بهره خورشیدی")),
+}
 _FA_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 _PRINTED_KEYS = ("printed", "displayed", "raw", "text", "code", "value", "label")
 _BOOKKEEPING = frozenset(
@@ -427,8 +432,21 @@ def _missing_dims(nm: Any, plan: dict[str, Any] | None) -> list[str]:
     return dims
 
 
+def _same_quantity(dataset: str, values: list[str], query: str) -> list[str]:
+    """The printed rows that carry the quantity the question names (all rows when the question
+    names none or both of the table's quantities)."""
+    kinds = _QUANTITY_ROWS.get(dataset)
+    if not kinds:
+        return values
+    q = O.key(query)
+    named = [k for k in kinds if any(O.key(t) in q for t in k)]
+    if len(named) != 1:
+        return values
+    return [v for v in values if any(O.key(t) in O.key(v) for t in named[0])]
+
+
 def _ask_for(  # noqa: PLR0911
-    field: str, dataset: str, store: StructuredStore, table: str
+    field: str, dataset: str, store: StructuredStore, table: str, query: str = ""
 ) -> Clarification | None:
     """A clarification for one missing field, or ``None`` when it cannot be asked safely."""
     schema = store.schemas.get(dataset)
@@ -467,13 +485,14 @@ def _ask_for(  # noqa: PLR0911
                 placeholder=L.CLARIFY_PLACEHOLDER["climate_class"],
             )
         return Clarification(**common, options=options)
-    if len(printed_values) <= MAX_OPTIONS:
+    printed_values = _same_quantity(dataset, printed_values, query)
+    if printed_values and len(printed_values) <= MAX_OPTIONS:
         return Clarification(**common, options=tuple(ClarifyOption(v, v) for v in printed_values))
     return None
 
 
 def _clarify_missing(
-    nm: Any, plan: dict[str, Any] | None, store: StructuredStore, table: str
+    nm: Any, plan: dict[str, Any] | None, store: StructuredStore, table: str, query: str = ""
 ) -> Clarification | None:
     schema = store.schemas.get(nm.dataset)
     if schema is None:
@@ -484,7 +503,7 @@ def _clarify_missing(
         return dim is None or dim.kind not in ("label", "entity")
 
     for field in sorted(_missing_dims(nm, plan), key=what_first):
-        if (c := _ask_for(field, nm.dataset, store, table)) is not None:
+        if (c := _ask_for(field, nm.dataset, store, table, query)) is not None:
             return c
     return None
 
@@ -608,7 +627,7 @@ def clarifications(
         plan = plans.get(nm.dataset)
         found: Clarification | Literal["ungrounded"] | None = None
         if nm.outcome == "missing_required_dimension":
-            found = _clarify_missing(nm, plan, store, table)
+            found = _clarify_missing(nm, plan, store, table, result.query)
         elif nm.outcome == "ambiguous_entity":
             found = _clarify_ambiguous(nm, plan, result.query, store, table)
         elif nm.outcome == "unresolved_constraint":

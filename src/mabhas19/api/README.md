@@ -171,14 +171,52 @@ comes from one ordinary engine call that passed its own provenance check.
   subset of the printed options); a combination that fails is not shown (the plain engine
   answer is, and the reason is logged as `orchestration_rejected`).
 
+### Wording rules and row groups (2026-11-17)
+
+`api/wording.py` (reviewed lists, no model) and `api/orchestration.py`; composer
+`m2-composer-5`. Principle: a simple wording difference is normalized automatically; an obvious
+broad family is identified and then clarified with printed rows only; a meaning-changing
+interpretation is never guessed. Frozen cases: `eval/clarify/natural1.yaml` (40 questions,
+expected behaviour written before the code).
+
+- **Wording** (rewritten before the engine reads the question; a note says so):
+  «یو ولیو / یوولیو / یو-ولیو» → «U-Value», «اس اچ جی سی» → «SHGC», «یکنواختی روشنایی» →
+  «یکنواختی نور», «آبگرمکن گازی» → «آبگرمکن گازسوز», «بخاری گازی» → «بخاری گازسوز», «سینک
+  ظرفشویی» → «ظرفشویی», «دوش حمام» → «دوش», and «اداره» → «اداری» only when an energy-use,
+  daylight or lighting-uniformity quantity is asked. Arabic letters, ZWNJ and singular/plural are
+  normalized by the engine itself. A question no rule matches reaches the engine exactly as typed.
+- **Concept rows** (only together with that table's quantity; a note says so): «اسپلیت» →
+  «کولر گازی» (efficiency), «دفتر کار» → «اداری و فضاهای کار» and «سالن ورزشی» → «فضاهای
+  ورزشی» (lighting uniformity), «پکیج دیواری» → «پکیج» (the engine then asks which of the two
+  printed packages).
+- **Row groups** (only when the engine could not answer): «بام» with a thermal resistance →
+  choose one of the two printed roof rows of 19-5-1; «پنجره» with a U-value → choose fixed or
+  operable; «پنجره» with an SHGC → the four printed percentage bands, each looked up and shown side
+  by side when a climate is known (otherwise chosen). Never when the question already names a
+  row, a band, another element or both quantities.
+- **A quantity with no row** (19-5-5 hot-water temperature, 19-5-6 daylight sufficiency, 19-5-7
+  lighting uniformity): the table's printed rows are offered only when no other content word is
+  left in the question (so «استخر» or «حمام» keeps the refusal).
+- **19-5-6 area band:** an office or commercial use without its printed area band shows both
+  printed rows side by side.
+- **SHGC fix:** a 19-5-2 row clarification offers only the rows of the quantity the question
+  names (an SHGC request never offers U-value rows).
+- Never mapped (meaning changes): school → «آموزشی», hospital → «درمانی», shop → «تجاری»,
+  bathroom → «دوش و وان», «دستشویی» → «روشویی», shading coefficient → SHGC, «بازشو» →
+  «متحرک».
+- Row-group clarifications are checked by `_choice_problems` (printed options only, no value, no
+  number without a source) and keep the engine's checked excerpts; band answers go through
+  `composite_problems`. Wording notes are fixed texts without numbers.
+- The closed normalizer experiment's frozen code fingerprint covers this module, so its manifest
+  no longer verifies; that experiment is closed and is never re-run.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
 
-- Opaque elements under unprinted names («بام», «دیوار بیرونی») are not matched to the printed
-  19-5-1 rows; a conversational «دیوار خارجی من چه ضریب … داشته باشه» is still refused.
-- Window U questions («ضریب انتقال حرارت مجاز پنجره») are refused as matched only by the
-  quantity's name in 19-5-2 (the table names transparent parts differently).
+- Opaque elements under unprinted names other than «بام» («دیوار بیرونی») are not matched to
+  the printed 19-5-1 rows; a conversational «دیوار خارجی من چه ضریب … داشته باشه» is still
+  refused.
 - A clarification can offer rows matched by a generic word only (a roof U question with «حد
   مجاز» was offered 19-5-2 SHGC rows before the patch; no longer for that question).
 - A city written in the question itself («… در تبریز») is not applied by tables 19-5-1/19-5-2
@@ -208,7 +246,8 @@ M1 issues:
 | `generation/composer.py` | Retrieval result → answer, read-only over the engine |
 | `generation/provenance.py` | Numeric, row, citation, refusal, excerpt and interpretation checks |
 | `api/engine.py` | Frozen engine loading and the Final-8 pin check |
-| `api/orchestration.py` | City → climate and side-by-side values over certified engine calls |
+| `api/orchestration.py` | City → climate, row groups and side-by-side values over certified engine calls |
+| `api/wording.py` | Reviewed wording rules, concept rows and row families (no model) |
 | `api/chatlog.py` | Request, feedback and review logs (append-only) |
 | `api/pilot_metrics.py` | M2 metrics from the logs |
 | `api/server.py` | Standard-library HTTP server |

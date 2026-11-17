@@ -863,16 +863,17 @@ def test_production_results_are_byte_identical_with_and_without_shadow() -> None
 
 
 def test_no_production_module_imports_the_shadow_package() -> None:
-    """Only the experiment packages (shadow, and the normalizer shadow experiment that reuses
-    its audited Gemini adapter) may import the shadow package; nothing in production imports
-    either of them."""
-    experiments = ("shadow", "normalizer")
+    """Only the experiment packages (shadow, the normalizer shadow experiment that reuses its
+    audited Gemini adapter, and the offline semantic row-retrieval prototype) may import the
+    shadow package; nothing in production imports any of them."""
+    experiments = ("shadow", "normalizer", "semantic")
     for path in (REPO_ROOT / "src" / "mabhas19").rglob("*.py"):
         if any(e in path.parts for e in experiments):
             continue
         text = path.read_text(encoding="utf-8")
         assert "mabhas19.shadow" not in text, path
         assert "mabhas19.normalizer" not in text, path
+        assert "mabhas19.semantic" not in text, path
 
 
 def test_the_frozen_final8_engine_modules_are_unchanged() -> None:

@@ -1,0 +1,162 @@
+# frozen before implementation (2026-11-17): structured value questions that must not degrade
+# to prose when the engine routes them to prose / out of scope. Expected behaviour written from
+# the printed tables and the certified city lookup before any code changed; checked by
+# tests/unit/test_structured1.py.
+#
+# expect:
+#   climate_refusal - a typed refusal (outcome climate_not_printed) for `dataset`; the certified
+#                     city rows shown with class(es) `codes`; no value, no excerpt
+#   row_refusal     - a typed refusal (outcome missing_row) asking for the row; city rows with
+#                     `codes` when given; no value, no excerpt, no options
+#   clarify         - a clarification of `field` whose options are exactly `rows`; city rows with
+#                     `codes` when given
+#   prose           - prose excerpts (conceptual questions stay prose)
+#   untouched       - not taken over by the new layer (the engine's own answer); no value
+version: structured-1
+R_ROWS: &r_rows
+  - دیوار خارجی مجاور فضای باز
+  - دیوار خارجی مجاور فضای نیمه باز کنترل نشده
+  - دیوار خارجی مجاور خاک
+  - سقف مجاور فضای آزاد
+  - سقف مجاور فضای نیمه باز کنترل نشده
+  - کف مجاور هوای آزاد
+  - کف مجاور نیمه باز کنترل نشده
+  - کف مجاور خاک
+  - درهای غیرنورگذر لولادار
+  - درهای غیرنورگذر بدون لولا
+SHGC_ROWS: &shgc_rows
+  - حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰
+  - حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰
+  - حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰
+  - حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰
+  - نورگیر سقفی – حداکثر ضریب بهره خورشیدی SHGC
+cases:
+  # ---- city-only energy limit (Appendix 3)
+  - id: S01
+    question: برای اردبیل حد مجاز مصرف انرژی چقدره؟
+    expect: climate_refusal
+    dataset: max_energy_use_intensity
+    codes: [5C]
+    why: Ardabil is printed as 5C; Appendix 3 prints no 5C column
+  - id: S02
+    question: حد مجاز مصرف انرژی در اردبیل چقدره؟
+    expect: climate_refusal
+    dataset: max_energy_use_intensity
+    codes: [5C]
+  - id: S03
+    question: برای تهران حد مجاز مصرف انرژی چقدره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+    codes: [3B]
+    why: 3B is printed; 34 printed uses - ask for the use, no buttons
+  - id: S04
+    question: حداکثر مصرف انرژی مجاز برای مشهد چقدره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+    codes: [3B]
+  - id: S05
+    question: برای اصفهان حد مجاز مصرف انرژی چقدره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+    codes: [3B, 4B]
+    why: the printed sources disagree (3B / 4B); both shown, none chosen
+  - id: S06
+    question: برای کیش حد مجاز مصرف انرژی چقدره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+    codes: [0B]
+  # ---- a quantity with no row
+  - id: S07
+    question: حداکثر شدت مصرف انرژی مجاز چقدره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+  - id: S08
+    question: حداکثر SHGC مجاز چقدره؟
+    expect: clarify
+    field: component
+    rows: *shgc_rows
+  - id: S09
+    question: مقاومت حرارتی مجاز چقدره؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+  - id: S10
+    question: دمای مجاز آب گرم چقدره؟
+    expect: clarify
+    field: place_of_use
+    rows: [دوش و وان, روشویی عمومی, روشویی خصوصی, ظرفشویی آشپزخانه]
+  - id: S11
+    question: حداقل راندمان چقدر باید باشه؟
+    expect: row_refusal
+    dataset: t19-5-4
+    why: 30 printed devices in 19-5-3 and 19-5-4 - ask for the equipment
+  - id: S12
+    question: ضریب هدایت حرارتی مجاز چقدره؟
+    expect: row_refusal
+    dataset: material_thermal_properties
+    why: 116 printed materials - ask for the material
+  - id: S13
+    question: حداکثر ضریب انتقال حرارت مجاز چقدره؟
+    expect: row_refusal
+    dataset: t19-5-2
+    why: U of an opaque part is printed as R (19-5-1), of a transparent part as U (19-5-2) - ask
+  # ---- a quantity and a printed city, small tables
+  - id: S14
+    question: حداقل مقاومت حرارتی برای اردبیل چقدره؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+    codes: [5C]
+    why: 19-5-1 prints 5C (the «5B,5C» column); the city's class is kept for the next step
+  - id: S15
+    question: حداکثر SHGC مجاز برای کیش چقدره؟
+    expect: clarify
+    field: component
+    rows: *shgc_rows
+    codes: [0B]
+  # ---- conceptual questions stay prose
+  - id: S16
+    question: مبحث ۱۹ درباره مصرف انرژی چه می‌گوید؟
+    expect: prose
+  - id: S17
+    question: شدت مصرف انرژی یعنی چه؟
+    expect: prose
+  - id: S18
+    question: ضریب انتقال حرارت چیست؟
+    expect: prose
+  - id: S19
+    question: راندمان دیگ چگونه محاسبه می‌شود؟
+    expect: prose
+  # ---- left exactly to the engine
+  - id: S20
+    question: حداقل یکنواختی نور مصنوعی برای آشپزخانه صنعتی رستوران
+    expect: untouched
+    why: development case F124 - a space 19-5-7 does not print
+  - id: S21
+    question: حداقل راندمان UPS استاتیک طبق مبحث ۸۰ درصده؟
+    expect: untouched
+    why: development case F152 - answered from the text
+  - id: S22
+    question: سقف مجاز شدت مصرف انرژی برای کاربری‌ها و اقلیم‌های مختلف با چه واحدی بیان شده و عددهای رده‌ها کجا اومده؟
+    expect: untouched
+    why: development case K023 - a question about the document
+  - id: S23
+    question: عایق کاری لوله های آب گرم و بخار حداکثر چه ضریب انتقال حرارتی میتونه داشته باشه؟
+    expect: untouched
+    why: development case K205 - pipe insulation, answered from the text
+  - id: S24
+    question: حداکثر دمای آب گرم استخر چقدر است؟
+    expect: untouched
+    why: a place 19-5-5 does not print; the printed places are not offered
+  - id: S25
+    question: برای لواسان حد مجاز مصرف انرژی چقدره؟
+    expect: untouched
+    why: not a printed city; no climate is guessed and no nearest city or province is used
+  - id: S26
+    question: حد مجاز مصرف انرژی ساختمان مسکونی در اردبیل چقدره؟
+    expect: untouched
+    why: the engine already refuses it (5C not printed in Appendix 3)
+  - id: S27
+    question: حداکثر مصرف انرژی مجاز در اقلیم 5C
+    expect: untouched
+    why: the engine already refuses it (typed)

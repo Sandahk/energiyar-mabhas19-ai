@@ -72,7 +72,11 @@ stop the normalizer line (no prompt tuning, no second model, no new benchmark).
   `aa43b1d` (flaky unknown-route test fixed before the run), `f140402` (row labels as plain
   strings in the response schema, verifier unchanged).
 - **Manifest:** `eval/normalizer/normalizer1.yaml`, sha256
-  `803b9364a5ccffcf1ca5f66e5f2164532da6b6a6c9cadb0fa4952a2bb5758958`.
+  `803b9364a5ccffcf1ca5f66e5f2164532da6b6a6c9cadb0fa4952a2bb5758958`. **Historical; it no
+  longer verifies, intentionally.** Its code fingerprint covers `api/orchestration.py`, which
+  changed after the experiment closed (`d9b1a71`, deterministic wording rules and row groups),
+  so `verify-freeze` now reports `code_sha256 changed`. The manifest, cases and records are kept
+  exactly as run; the experiment is closed and is never re-frozen or re-run.
 - **Outputs (not committed, by policy):** `data/normalizer/run1/`,
   `data/normalizer/run1_analysis.json`; void attempts in `data/normalizer/run1_void_429/` and
   `run1_void_429b/`.

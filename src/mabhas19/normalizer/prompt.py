@@ -1,5 +1,10 @@
 """The normalizer request: fixed instructions, the closed catalog, the user's question, and a
-response schema whose every choice is an enum of printed strings.
+response schema whose short choices are enums.
+
+The row labels (217 printed strings, up to 153 characters) are plain strings in the schema:
+Gemini refuses a schema with that many long enum values ("too many states for serving"). The
+closed set is enforced by :mod:`mabhas19.normalizer.verify`, which keeps a label only when it
+equals a printed row of the proposed family exactly and discards anything else, unrepaired.
 
 The model only *reads* the question and *chooses*: a table family, up to three printed row
 labels, a printed output, a printed climate code, an energy rating, a city name (verified later
@@ -81,7 +86,8 @@ def system_text(cat: dict[str, Any]) -> str:
 
 
 def schema(cat: dict[str, Any]) -> dict[str, Any]:
-    """The response schema (Gemini ``responseJsonSchema``): closed enums everywhere."""
+    """The response schema (Gemini ``responseJsonSchema``): enums for the short closed choices;
+    the row labels are plain strings, checked by exact match in the verifier."""
     families = [f["family"] for f in cat["families"]]
     return {
         "type": "object",
@@ -90,7 +96,7 @@ def schema(cat: dict[str, Any]) -> dict[str, Any]:
             "family": {"type": "string", "enum": [*families, "none"]},
             "entities": {
                 "type": "array",
-                "items": {"type": "string", "enum": C.all_labels(cat)},
+                "items": {"type": "string"},
                 "maxItems": MAX_ENTITIES,
             },
             "output": {"type": "string", "enum": [*C.all_outputs(cat), "none"]},

@@ -1,6 +1,6 @@
 # frozen; do not edit
 schema: normalizer-experiment-1
-created: '2026-11-13T16:24:14+00:00'
+created: '2026-11-17T10:49:57+00:00'
 purpose: LLM suggest-and-confirm normalizer, one finite shadow run (not Final-N)
 files:
   authored:
@@ -19,8 +19,8 @@ pins:
   catalog_sha256: 7943e04894c7ee225bd2701f1095e78eac4ecab1c42464943f417f5782ccb53f
   prompt_version: normalizer-prompt-1
   prompt_sha256: 6437dfed7f4833226ad673f528455fb4ccf818467c257356298844905ccd5e22
-  schema_sha256: c1700aa05be44eb85460bf9eb23bdfd7559faa0f67a8e107947f5d6e9f4ee421
-  code_sha256: bfe3e6f9c26e1c3eabb77df283f1c48bb7441bfd1e75b939c808634157ffa618
+  schema_sha256: c294848bcda559bfcf1da2c3adb8926ed14a35eb8309d78af250f39582e54727
+  code_sha256: b59ae1ce96e638dfaf4753864ba79ded2552e31219bf9c1d7acd777bed1f7e98
   engine_composer: m2-composer-4
   engine_pins: final8+prepilot
 settings:

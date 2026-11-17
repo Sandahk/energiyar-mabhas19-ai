@@ -249,7 +249,7 @@ def dry_run() -> int:
     print(f"worst case (1 token per char + all 16000 output tokens): ${worst:.2f}")
     print(
         f"system text chars: {len(P.system_text(cat))}; "
-        f"schema enum labels: {len(C.all_labels(cat))}"
+        f"catalog labels (plain strings in the schema): {len(C.all_labels(cat))}"
     )
     return 0
 

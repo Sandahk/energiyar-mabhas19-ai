@@ -243,6 +243,12 @@ def family(text: str) -> Family | None:
     return found[0] if len(found) == 1 else None
 
 
+def with_row(text: str, fam: Family, row: str) -> str:
+    """The question with the family's word replaced by the chosen printed row (the row is then
+    the question's only name for the thing; the broad word is not kept beside it)."""
+    return fam.word.sub(lambda _: row, letters(text), count=1)
+
+
 # ---------------------------------------------------------------- a quantity with no row
 
 

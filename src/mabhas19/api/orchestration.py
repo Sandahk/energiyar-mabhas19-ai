@@ -680,6 +680,26 @@ def respond(  # noqa: PLR0913
     first; otherwise one engine call, shown side by side when its only missing column is small."""
     if follow_up and base and follow_up.get("field") == CLIMATE and follow_up.get("kind") == "free":
         return city_flow(run, store, base, str(follow_up.get("text") or ""), request_id)
+    chosen = family_choice(store, follow_up, base)
+    if chosen is not None:  # the chosen printed row replaces the family's word
+        question = chosen
     text, rules = W.rewrite(question)
     reply = side_by_side(run, store, _call(run, text, request_id), request_id)
     return _noted(widen(run, store, reply, request_id), question, rules)
+
+
+def family_choice(
+    store: StructuredStore, follow_up: dict[str, Any] | None, base: str | None
+) -> str | None:
+    """``base`` with its family word replaced by the printed row the user chose from that
+    family's clarification, or ``None`` when this follow-up is not such a choice."""
+    if not follow_up or not base or follow_up.get("kind") != "option":
+        return None
+    fam = W.family(base)
+    if fam is None or follow_up.get("field") != fam.field:
+        return None
+    if not _printed(store, fam.dataset, fam.field, fam.rows):
+        return None
+    want = O.label_key(str(follow_up.get("text") or ""))  # the page drops parentheses
+    rows = [r for r in fam.rows if O.label_key(r) == want]
+    return W.with_row(base, fam, rows[0]) if len(rows) == 1 else None

@@ -194,6 +194,9 @@ expected behaviour written before the code).
   operable; «پنجره» with an SHGC → the four printed percentage bands, each looked up and shown side
   by side when a climate is known (otherwise chosen). Never when the question already names a
   row, a band, another element or both quantities.
+  When a row is chosen, it replaces the family word in the question («برای بام …» → «برای سقف
+  مجاور فضای آزاد …»); the broad word is never kept beside it, so later steps (climate, city)
+  ask the engine about the printed row only.
 - **A quantity with no row** (19-5-5 hot-water temperature, 19-5-6 daylight sufficiency, 19-5-7
   lighting uniformity): the table's printed rows are offered only when no other content word is
   left in the question (so «استخر» or «حمام» keeps the refusal).

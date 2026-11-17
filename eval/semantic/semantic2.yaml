@@ -1,0 +1,74 @@
+# frozen before the fresh2 run; do not edit
+version: semantic-2
+created: '2026-11-17T21:15:59Z'
+purpose: 'B2: explicit quantity phrasings + top-3 display + sibling / cross-table
+  guards'
+model: intfloat/multilingual-e5-small (frozen candidate)
+catalogue:
+  version: semantic-catalog-1
+  rows: 217
+  sha256: 2ca619f51b7211643ce891673c541facd5eb1799b1060b55b1d47b7e4bc53d63
+settings:
+  lex_weight: 0.3
+  floor: 0.94
+  band: 0.03
+  version: b2
+  weak_floor: 0.92
+  tie_band: 0.005
+tuning:
+  dev: 'eval/normalizer gold + eval/clarify/natural1.yaml (fresh1 is spent: not used)'
+  grid:
+    lex_weight:
+    - 0.15
+    - 0.3
+    floor:
+    - 0.88
+    - 0.9
+    - 0.92
+    - 0.94
+    band:
+    - 0.02
+    - 0.03
+    - 0.05
+    weak_floor:
+    - 0.78
+    - 0.79
+    - 0.8
+    - 0.81
+    - 0.82
+    - 0.83
+    - 0.84
+    - 0.85
+    - 0.86
+    - 0.87
+    - 0.88
+    - 0.89
+    - 0.9
+    - 0.91
+    - 0.92
+    - 0.93
+    tie_band:
+    - 0.005
+    - 0.01
+    - 0.02
+  dev_cases: 71
+  dev_row_cases: 57
+  dev_good: 41
+  dev_wrong: 3
+  objective: 'good - 3*wrong offerings (ties: fewer wrong, higher floors, tighter
+    tie)'
+fresh:
+  path: fresh2.yaml
+  sha256: 686957f3746f7cb3fe4270dc51eace1316830ef59e46b305bfca96bf460982f3
+go_rule:
+  wrong_quantity: 0
+  wrong_values: 0
+  trap_violations: 0
+  wrong_row_offerings_max: 1
+  usable_b2_min_share_of_eligible: 0.4
+  usable_gain_over_a_min: 6
+  top3_recall_engaged_min: 0.65
+  top3_recall_first_run: 10/20 = 0.50
+  unsupported_decline_min_share: 0.9
+  eligible: row questions with no digit (numbers stay excluded from semantic mapping)
+  go: every item holds; otherwise the semantic line is closed (no third iteration)

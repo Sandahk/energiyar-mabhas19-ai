@@ -112,3 +112,112 @@ def test_the_canonical_question_uses_printed_words_only() -> None:
     )
     with pytest.raises(AssertionError):
         V.canonical("not_a_quantity", row)
+
+
+# ---- B2: explicit quantity phrasings, top-3 display and guards
+
+from mabhas19.semantic import quantity as SQ  # noqa: E402
+from mabhas19.semantic.retrieve import Proposal, Scored  # noqa: E402
+
+
+@pytest.mark.parametrize(
+    ("question", "quantity"),
+    [
+        ("کف که زیرش باز است، R حداقلش چنده؟", "r_value"),  # bare R
+        ("تخته چوبی چه ضریب هدایت حرارتی‌ای داره؟", "lambda"),  # «چه … داره»
+        ("لاندای بلوک رو برای محاسبه دیوار لازم دارم", "lambda"),  # purpose, not method
+        ("آب گرم شیر روشویی عمومی حداکثر چند درجه باید باشه؟", "hot_water"),  # «آب گرم … درجه»
+    ],
+)
+def test_b2_phrasings_resolve_the_quantity_deterministically(question: str, quantity: str) -> None:
+    r = SQ.analyse(question)
+    assert r is not None
+    assert r.quantity.id == quantity
+    assert SQ.extended_only(question)
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "راندمان دیگ چگونه محاسبه می‌شود؟",  # a method question stays conceptual
+        "آب گرم مصرفی ساختمان از کجا تامین میشه؟",  # «آب گرم» without degrees / temperature
+        "راندمان آبگرمکن چه رده‌ای داره و دمای آب گرم چند درجه است؟",  # two quantities
+        "نسبت مساحت پنجره به کف چه حدی داره؟",  # no printed quantity named
+    ],
+)
+def test_b2_phrasings_never_create_a_quantity_otherwise(question: str) -> None:
+    assert SQ.analyse(question) is None
+
+
+def _b2(**kw: Any) -> Retriever:
+    base = {"floor": 0.9, "band": 0.03, "version": "b2", "weak_floor": 0.8, "tie_band": 0.01}
+    return _retriever(**(base | kw))
+
+
+def _decide(r: Retriever, words: list[str], ranked: list[tuple[str, str, float]]) -> Proposal:
+    rows = {(x.dataset.rsplit(".", 1)[-1], x.label): x for x in _cat().rows}
+    scored = [Scored(rows[(d, lab)], sc, 0.0, sc) for d, lab, sc in ranked]
+    p = Proposal("x", words)
+    p.ranked = scored[:5]
+    r._decide_b2(p, scored, words)
+    return p
+
+
+def test_b2_never_confirms_a_weak_top_row() -> None:
+    p = _decide(
+        _b2(),
+        ["گاراژ"],
+        [
+            ("t19-5-7", "پارکینگ", 0.85),
+            ("t19-5-7", "فضاهای ورزشی", 0.82),
+            ("t19-5-7", "کلاس‌های درس", 0.81),
+        ],
+    )
+    assert p.decision == "choose"
+    assert len(p.offered) == 3
+
+
+def test_b2_abstains_below_the_weak_floor_and_on_ties() -> None:
+    weak = _decide(
+        _b2(), ["استخر"], [("t19-5-5", "دوش و وان", 0.7), ("t19-5-5", "روشویی عمومی", 0.69)]
+    )
+    assert weak.decision == "abstain"
+    tied = _decide(
+        _b2(),
+        ["پنجره"],
+        [
+            ("t19-5-2", "حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰", 0.92),
+            ("t19-5-2", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰", 0.919),
+            ("t19-5-2", "حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰", 0.918),
+            ("t19-5-2", "حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰", 0.917),
+        ],
+    )
+    assert tied.decision == "abstain"
+
+
+def test_b2_sibling_guard_keeps_both_coolers_when_the_words_do_not_tell_them_apart() -> None:
+    ranked = [
+        ("t19-5-4", "کولر گازی – بر اساس نسبت بازدهی انرژی فصلی SEER", 1.0),
+        ("t19-5-4", "کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI", 0.9),
+        ("t19-5-4", "فن – دمنده و مکنده", 0.85),
+    ]
+    vague = _decide(_b2(), ["کولر", "سلولزی"], ranked)
+    assert vague.decision == "choose"
+    assert {r.label for r in vague.offered} >= {ranked[0][1], ranked[1][1]}
+    named = _decide(_b2(), ["کولر", "گازی"], ranked)  # «گازی» is in the top row only
+    assert named.decision == "confirm"
+
+
+def test_b2_cross_table_guard_brings_each_tables_row_for_a_shared_word() -> None:
+    ranked = [
+        ("t19-5-1", "سقف مجاور فضای آزاد", 0.95),
+        ("t19-5-1", "سقف مجاور فضای نیمه باز کنترل نشده", 0.9),
+        ("t19-5-1", "دیوار خارجی مجاور فضای باز", 0.85),
+        ("t19-5-2", "نورگیر سقفی – حداکثر ضریب انتقال حرارتی U-Value (W/m2.k)", 0.8),
+    ]
+    p = _decide(_b2(), ["اسکای", "لایت", "سقف"], ranked)
+    assert p.decision == "choose"
+    assert "نورگیر سقفی – حداکثر ضریب انتقال حرارتی U-Value (W/m2.k)" in {
+        r.label for r in p.offered
+    }
+    assert len(p.offered) <= 3

@@ -79,6 +79,26 @@ STOP = frozenset(
         "اساس",
         "حدود",
         "خونه",
+        # b2: verbs and connectives of colloquial value questions
+        "روی",
+        "میتونه",
+        "می‌تونه",
+        "کردن",
+        "بگو",
+        "دارم",
+        "داریم",
+        "بزنم",
+        "خوام",
+        "می",
+        "نداره",
+        "مقررات",
+        "یش",
+        "اش",
+        "ش",
+        "حداقلش",
+        "حداکثرش",
+        "درجه",
+        "محاسبه",
     }
 )
 _WORD = re.compile(r"[^\W\d_]+|[A-Za-z]+")
@@ -88,14 +108,25 @@ _CODE = re.compile(r"(?<![A-Za-z0-9])[0-5۰-۵]\s*[ABCabc](?![A-Za-z])")
 
 @dataclass(frozen=True)
 class Settings:
-    """Frozen with the experiment manifest; tuned on development questions only."""
+    """Frozen with the experiment manifest; tuned on development questions only.
+
+    ``version`` "b1": the first run's rule (offer only rows above ``floor`` within ``band``).
+    ``version`` "b2": confirm only a strong, unambiguous top row; otherwise show the top three
+    printed rows when the best is at least ``weak_floor`` and at most three rows are tied within
+    ``tie_band``; the sibling and cross-table guards apply."""
 
     lex_weight: float = 0.3
-    floor: float = 0.86  # minimum combined score of any offered row
-    band: float = 0.02  # rows within this of the best are equally plausible
+    floor: float = 0.86  # b1: minimum score of an offered row; b2: minimum score to confirm
+    band: float = 0.02  # b1: rows within this of the best are equally plausible; b2: confirm gap
+    version: str = "b1"
+    weak_floor: float = 0.0  # b2: below this nothing is shown
+    tie_band: float = 0.0  # b2: rows within this of the best count as tied
 
     def to_dict(self) -> dict[str, Any]:
-        return {"lex_weight": self.lex_weight, "floor": self.floor, "band": self.band}
+        d: dict[str, Any] = {"lex_weight": self.lex_weight, "floor": self.floor, "band": self.band}
+        if self.version != "b1":
+            d |= {"version": self.version, "weak_floor": self.weak_floor, "tie_band": self.tie_band}
+        return d
 
 
 @dataclass
@@ -160,13 +191,35 @@ def _cos(a: list[float], b: list[float]) -> float:
     return dot / (na * nb) if na and nb else 0.0
 
 
+def _head(label: str) -> str:
+    words = _key(label).split()
+    return words[0] if words else ""
+
+
+def _discriminates(words: list[str], top: Row, others: list[Row]) -> bool:
+    """A user word (3+ letters) found in the top row's printed text and in none of its siblings."""
+    for w in words:
+        k = _key(w)
+        if len(k) < 3 or k not in _key(top.passage()):
+            continue
+        if all(k not in _key(o.passage()) for o in others):
+            return True
+    return False
+
+
 class Retriever:
     def __init__(
-        self, catalogue: Catalogue, store: StructuredStore, embedder: Any, settings: Settings
+        self,
+        catalogue: Catalogue,
+        store: StructuredStore,
+        embedder: Any,
+        settings: Settings,
+        analyse: Any = None,
     ) -> None:
         self.catalogue = catalogue
         self.embedder = embedder
         self.settings = settings
+        self.analyse = analyse or Q.analyse
         self.cities = {
             _key(str((r.get("city") or {}).get("text") or ""))
             for r in store.app02
@@ -188,7 +241,7 @@ class Retriever:
 
     def propose(self, question: str) -> Proposal:
         start = time.perf_counter()
-        request = Q.analyse(question)
+        request = self.analyse(question)
         if request is None:
             p = Proposal("", [], reason="quantity not resolved (none, several, or conceptual)")
             p.ms = (time.perf_counter() - start) * 1000
@@ -215,6 +268,10 @@ class Retriever:
                 scored.append(Scored(r, c, lx, c + s.lex_weight * lx))
             scored.sort(key=lambda x: x.score, reverse=True)
             p.ranked = scored[:TOP_K]
+            if s.version == "b2":
+                self._decide_b2(p, scored, words)
+                p.ms = (time.perf_counter() - start) * 1000
+                return p
             best = p.ranked[0].score
             close = [x for x in p.ranked if x.score >= s.floor and best - x.score <= s.band]
             if not close:
@@ -228,3 +285,48 @@ class Retriever:
                 p.reason = f"{len(close)} rows equally close"
         p.ms = (time.perf_counter() - start) * 1000
         return p
+
+    def _cross_table(self, words: list[str], scored: list[Scored]) -> list[Row]:
+        """For a quantity printed in two tables: the best row of each table that contains a user
+        word found in both tables («سقف» in a 19-5-1 roof row and in 19-5-2 «نورگیر سقفی»)."""
+        if len({x.row.dataset for x in scored}) < 2:
+            return []
+        out: list[Row] = []
+        for w in words:
+            k = _key(w)
+            if len(k) < 3:
+                continue
+            per: dict[str, Row] = {}
+            for x in scored:  # best first
+                if k in _key(x.row.label) and x.row.dataset not in per:
+                    per[x.row.dataset] = x.row
+            if len(per) > 1:
+                out += [r for r in per.values() if r not in out]
+        return out
+
+    def _decide_b2(self, p: Proposal, scored: list[Scored], words: list[str]) -> None:
+        s = self.settings
+        best = scored[0]
+        second = scored[1].score if len(scored) > 1 else -1.0
+        top3 = [x.row for x in scored[:MAX_CHOICES]]
+        cross = self._cross_table(words, scored)
+        siblings = [
+            x.row for x in scored[1:MAX_CHOICES] if _head(x.row.label) == _head(best.row.label)
+        ]
+        strong = best.score >= s.floor and best.score - second > s.band
+        if strong and not cross and (not siblings or _discriminates(words, best.row, siblings)):
+            p.decision, p.offered, p.reason = "confirm", [best.row], "one row stands out"
+            return
+        if best.score < s.weak_floor:
+            p.reason = "no row strong enough to show"
+            return
+        tied = [x for x in scored if best.score - x.score <= s.tie_band]
+        if len(tied) > MAX_CHOICES:
+            p.reason = f"{len(tied)} rows tied"
+            return
+        offered = list(top3)
+        for r in cross:  # each table's row for the shared word replaces the weakest choice
+            if r not in offered:
+                offered = [*offered[: MAX_CHOICES - 1], r]
+        p.decision, p.offered = "choose", offered[:MAX_CHOICES]
+        p.reason = "top three shown" + (" (cross-table word)" if cross else "")

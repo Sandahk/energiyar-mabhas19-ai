@@ -1,0 +1,259 @@
+# frozen before implementation (2026-11-17): natural Persian questions for the deterministic
+# wording and clarification phase. No LLM. Expected behaviour was written from the printed
+# tables before any code changed; it is checked by tests/unit/test_natural1.py.
+#
+# expect:
+#   value        - certified value(s) of exactly `rows` (printed row labels)
+#   side_by_side - certified values of exactly `rows`, one per printed row, shown together
+#   clarify      - a clarification of `field` whose options are exactly `rows` (printed labels)
+#   no_answer    - no certified value and no clarification offering a row (refusal or prose)
+# notice: true when a wording / concept note must be shown, false when none may be shown.
+version: natural-1
+cases:
+  # ---- the requested examples
+  - id: U01
+    question: برای بام حداقل مقاومت حرارتی چقدره؟
+    expect: clarify
+    field: element
+    rows: [سقف مجاور فضای آزاد, سقف مجاور فضای نیمه باز کنترل نشده]
+    notice: true
+    why: «بام» names the roof family; two printed roof rows, the user picks one
+  - id: U02
+    question: برای اداره خصوصی در اقلیم 3B مصرف مجاز انرژی چقدره؟
+    expect: side_by_side
+    rows: [اداری خصوصی]
+    notice: true
+    why: «اداره» -> «اداری» (morphology); the rating column is then shown side by side as today
+  - id: U03
+    question: حداکثر یو ولیو پنجره ثابت در اقلیم 3B چقدره؟
+    expect: value
+    rows: [حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت]
+    notice: true
+  - id: U04
+    question: حداکثر ضریب بهره خورشیدی پنجره در اقلیم 2B چقدره؟
+    expect: side_by_side
+    rows:
+      - حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰
+    notice: true
+    why: window SHGC depends on the window-to-wall band (a condition band, at most 4 rows)
+  - id: U05
+    question: حداقل راندمان آبگرمکن گازی چقدره؟
+    expect: clarify
+    field: equipment
+    rows: [آبگرمکن – گازسوز مخزن‌دار, آبگرمکن – گازسوز بدون مخزن (فوری)]
+    notice: true
+  - id: U06
+    question: حداقل راندمان بخاری گازی چقدره؟
+    expect: clarify
+    field: equipment
+    rows: [بخاری – گازسوز دودکش دار, بخاری – گازسوز بدون دودکش]
+    notice: true
+  - id: U07
+    question: حداکثر دمای آب گرم سینک ظرفشویی آشپزخانه چقدره؟
+    expect: value
+    rows: [ظرفشویی آشپزخانه]
+    notice: true
+  - id: U08
+    question: حداکثر دمای آب گرم دوش حمام چقدره؟
+    expect: value
+    rows: [دوش و وان]
+    notice: true
+  - id: U09
+    question: حداقل نسبت کفایت نور روز ساختمان اداری چقدره؟
+    expect: side_by_side
+    rows: [اداری کوچک‌تر از ۲۰۰۰ متر مربع, اداری بزرگتر از ۲۰۰۰ متر مربع]
+    notice: false
+    why: the only missing item is the printed area band (two rows)
+  - id: U10
+    question: یکنواختی روشنایی دفتر کار چقدره؟
+    expect: value
+    rows: [اداری و فضاهای کار]
+    notice: true
+  - id: U11
+    question: برای اسپلیت چه حد بازدهی‌ای لازمه؟
+    expect: value
+    rows: [کولر گازی – بر اساس نسبت بازدهی انرژی فصلی SEER]
+    notice: true
+    why: «اسپلیت» names the split air conditioner; one printed row applies
+  # ---- further planned coverage
+  - id: A01
+    question: حداکثر ضریب انتقال حرارتی پنجره در اقلیم 3B چقدر است؟
+    expect: clarify
+    field: component
+    rows:
+      - حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت
+      - حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – متحرک
+    notice: true
+    why: fixed or operable window is a row identity, so ask; never show both as one answer
+  - id: A02
+    question: حداکثر ضریب بهره خورشیدی SHGC در اقلیم 2B چقدر است؟
+    expect: clarify
+    field: component
+    rows:
+      - حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰
+      - نورگیر سقفی – حداکثر ضریب بهره خورشیدی SHGC
+    notice: false
+    why: the SHGC fix - an SHGC request never offers U-value rows
+  - id: A03
+    question: حداکثر اس اچ جی سی پنجره در اقلیم 2B چقدر است؟
+    expect: side_by_side
+    rows:
+      - حد اکثر ضریب بهره خورشیدی SHGC – کمتر از %۲۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۲۰ تا %۵۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بین %۵۰ تا %۷۰
+      - حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰
+    notice: true
+  - id: A04
+    question: حداکثر دمای آب گرم مصرفی چقدر باید باشه؟
+    expect: clarify
+    field: place_of_use
+    rows: [دوش و وان, روشویی عمومی, روشویی خصوصی, ظرفشویی آشپزخانه]
+    notice: false
+  - id: A05
+    question: حداقل نسبت مساحت کفایت نور روز چقدر است؟
+    expect: clarify
+    field: use
+    rows:
+      - اداری کوچک‌تر از ۲۰۰۰ متر مربع
+      - اداری بزرگتر از ۲۰۰۰ متر مربع
+      - تجاری کوچک‌تر از ۲۰۰۰ متر مربع
+      - تجاری بزرگ‌تر از ۲۰۰۰ متر مربع
+      - آموزشی
+      - انبار، سوله صنعتی
+      - مسکونی، درمانی، هتل، خوابگاه
+    notice: false
+  - id: A06
+    question: حداقل یکنواختی روشنایی مصنوعی چقدر است؟
+    expect: clarify
+    field: space
+    rows:
+      - پارکینگ
+      - راهروها و فضاهای عمومی
+      - اداری و فضاهای کار
+      - کلاس‌های درس
+      - فضاهای عمومی و بستری بیمارستان‌ها
+      - آزمایشگاه و فضاهای فعالیت‌های دقیق
+      - فضاهای ورزشی
+    notice: true
+  - id: A07
+    question: حداقل یکنواختی نور سالن ورزشی چقدر است؟
+    expect: value
+    rows: [فضاهای ورزشی]
+    notice: true
+  - id: A08
+    question: بازدهی پکیج دیواری حداقل چند درصده؟
+    expect: clarify
+    field: equipment
+    rows:
+      - پکیج گازی – غیر چگالشی با توان ورودی نامی کمتر از ۷۰ کیلووات
+      - پکیج چگالشی – توان ورودی نامی کمتر از ۷۰ کیلووات
+    notice: true
+  - id: A09
+    question: حداقل یکنواختی روشنایی پارکینگ چقدره؟
+    expect: value
+    rows: [پارکینگ]
+    notice: true
+  - id: A10
+    question: حداقل کفایت نور روز ساختمان تجاری چقدره؟
+    expect: side_by_side
+    rows: [تجاری کوچک‌تر از ۲۰۰۰ متر مربع, تجاری بزرگ‌تر از ۲۰۰۰ متر مربع]
+    notice: false
+  - id: A11
+    question: حداكثر دماي آب گرم دوش چقدره؟
+    expect: value
+    rows: [دوش و وان]
+    notice: false
+    why: Arabic kaf / yeh are already normalized by the engine
+  - id: A12
+    question: حداقل یکنواختی نور کلاسهای درس چقدر است؟
+    expect: value
+    rows: [کلاس‌های درس]
+    notice: false
+    why: a missing ZWNJ is already normalized by the engine
+  - id: A13
+    question: حداقل یکنواختی نور راهرو چقدر است؟
+    expect: value
+    rows: [راهروها و فضاهای عمومی]
+    notice: false
+    why: singular / plural already handled by the engine
+  - id: A14
+    question: حداکثر مصرف انرژی مجاز اداره در اقلیم 3B چقدر است؟
+    expect: clarify
+    field: occupancy
+    rows: [اداری عمومی, اداری خصوصی]
+    notice: true
+  # ---- deliberately not guessed
+  - id: R01
+    question: کفایت نور روز مدرسه چقدره؟
+    expect: no_answer
+    why: school -> «آموزشی» changes regulatory meaning; never mapped
+  - id: R02
+    question: حداقل کفایت نور روز بیمارستان؟
+    expect: no_answer
+    why: hospital -> «درمانی» is a category mapping; never mapped
+  - id: R03
+    question: کفایت نور روز فروشگاه ۱۵۰۰ متری چقدره؟
+    expect: no_answer
+    why: shop -> «تجاری» is a category mapping; never mapped
+  - id: R04
+    question: دمای آب گرم حمام حداکثر چند درجه باشه؟
+    expect: no_answer
+    why: a bathroom has a shower and a washbasin; never mapped to «دوش و وان»
+  - id: R05
+    question: حداکثر دمای آب دستشویی عمومی چند درجه است؟
+    expect: no_answer
+    why: «دستشویی» may mean a toilet; never mapped to «روشویی»
+  - id: R06
+    question: حداکثر ضریب سایه پنجره در اقلیم 2B چقدر است؟
+    expect: no_answer
+    why: shading coefficient is not SHGC
+  - id: R07
+    question: حداقل کفایت نور روز ساختمان اداری ۲۰۰۰ متر مربعی؟
+    expect: no_answer
+    why: exactly 2000 m2 is in neither printed band
+  - id: R08
+    question: حداقل نسبت مساحت کفایت نور روز برای هتل چقدر است؟
+    expect: no_answer
+    why: the printed row «مسکونی، درمانی، هتل، خوابگاه» has no value (a dash)
+  - id: R09
+    question: حداقل یکنواختی نور استخر چقدر است؟
+    expect: no_answer
+    why: a space the table does not print; the printed spaces are not offered
+  - id: R10
+    question: حداکثر دمای آب گرم استخر چقدر است؟
+    expect: no_answer
+    why: a place the table does not print; the printed places are not offered
+  # ---- controls: today's answers stay exactly as they are
+  - id: C01
+    question: حداقل بازده پکیج چگالشی چقدر است؟
+    expect: value
+    rows: [پکیج چگالشی – توان ورودی نامی کمتر از ۷۰ کیلووات]
+    notice: false
+  - id: C02
+    question: حداکثر ضریب انتقال حرارت پنجره ثابت در اقلیم 3B چقدر است؟
+    expect: value
+    rows: [حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت]
+    notice: false
+  - id: C03
+    question: حداکثر دمای آب گرم روشویی چقدر است؟
+    expect: clarify
+    field: place_of_use
+    rows: [روشویی خصوصی, روشویی عمومی]
+    notice: false
+  - id: C04
+    question: برای ساختمان اداری در اقلیم 3B مصرف مجاز انرژی چقدره؟
+    expect: clarify
+    field: occupancy
+    rows: [اداری عمومی, اداری خصوصی]
+    notice: false
+  - id: C05
+    question: حداقل SEER کولر گازی چقدره؟
+    expect: value
+    rows: [کولر گازی – بر اساس نسبت بازدهی انرژی فصلی SEER]
+    notice: false

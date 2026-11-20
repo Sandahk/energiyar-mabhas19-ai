@@ -12,7 +12,7 @@ cites the document, section or table, and page (both the PDF page and the printe
 one non-negotiable rule: **it must never state a regulatory value or citation that the source
 does not support.** Every design decision below follows from that rule.
 
-## Status (2026-11-17)
+## Status (2026-11-20)
 
 | Area | State |
 |---|---|
@@ -21,6 +21,7 @@ does not support.** Every design decision below follows from that rule.
 | Retrieval | Built and frozen: deterministic router, hybrid prose search, fail-closed structured lookup |
 | Safety evaluation | Ten frozen evaluation sets (2,394 questions); last decision run (Final-8) **not promoted** |
 | LLM semantic shadow (SH0) | **Closed, not promoted.** The semantic veto (S1-V) stayed safe but caught too few misreads: on its final holdout, 0 harmful vetoes and 100% precision, but recall 15/67 = 22.4% against a 40% threshold. No result-affecting LLM layer is approved |
+| Offline semantic row retrieval | **Closed, NO-GO.** Deterministic quantity + E5-small row ranking within that table, user confirmation: safe (0 wrong quantities or values) but too imprecise: first run 4/22 usable with 2 wrong row offerings; final iteration 10/22 usable with 5 wrong offerings. See [`src/mabhas19/semantic/`](src/mabhas19/semantic/README.md) |
 | LLM normalizer (suggest-and-confirm) | **Closed, NO-GO.** Gemini 4 Argon mapped failed questions onto printed rows for the user to confirm: useful 24/29, but wrong 4/33 against a limit of 3. See [`src/mabhas19/normalizer/`](src/mabhas19/normalizer/README.md) |
 | Answer generation, API, UI | **M1 closed-pilot chatbot built**: deterministic Persian answers from certified rows and quoted sections, with an interpretation echo, a local API and a chat page. No LLM; not deployed |
 

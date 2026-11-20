@@ -238,6 +238,14 @@ element choice). Conceptual questions, anything naming another thing, an unprint
 other unknown word, and every other engine refusal are untouched. Frozen cases:
 `eval/clarify/structured1.yaml` (27/27).
 
+Narrow quantity phrasings (2026-11-20, `eval/clarify/quantity2.yaml`): (A) «آب گرم» with «چند
+درجه» / «دما» names the hot-water temperature (19-5-5), never «آبگرمکن» and never with
+«برگشت / رفت / خط / مخزن / دیگ / بویلر / لوله / گرمایش / شوفاژ»; (B) «حداقل R» / «R
+حداقل(ش)» names the minimum thermal resistance (19-5-1), never with «نسبت R» (the 19-3-3 R
+ratio) or «ضریب رفتار R»; (C) «چه <quantity name> … داره / دارد / داشته باش» is a value
+request (only the words of the phrase itself are consumed; «چه نقشی / تعریفی / کاربردی دارد»
+stays conceptual). «برای محاسبه» gets no special handling.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):

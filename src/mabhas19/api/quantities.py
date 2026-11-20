@@ -38,9 +38,36 @@ class Quantity:
     climate_table: str = ""  # the table whose printed climate columns apply ("" if none)
     row_filter: str = ""  # a printed word every row of this quantity carries (19-5-2)
     choose: bool = True  # offer the printed rows when there are few; False: always ask
+    # narrow extra phrasings: (cue, a phrase that must also be present or "", excluded contexts)
+    guarded: tuple[tuple[str, str, str], ...] = ()
 
     def pattern(self) -> re.Pattern[str]:
         return re.compile("|".join(f"(?:{c})" for c in self.cues), re.IGNORECASE)
+
+    def spans(self, text: str) -> list[tuple[int, int]]:
+        """Where the question names this quantity: printed names, then the guarded phrasings
+        (with the words they require, «چند درجه», which are part of the same request)."""
+        out = [m.span() for m in self.pattern().finditer(text)]
+        for cue, needs, excluded in self.guarded:
+            if needs and not re.search(needs, text, re.IGNORECASE):
+                continue
+            if excluded and re.search(excluded, text, re.IGNORECASE):
+                continue
+            found = [m.span() for m in re.finditer(cue, text, re.IGNORECASE)]
+            if found and needs:
+                found += [m.span() for m in re.finditer(needs, text, re.IGNORECASE)]
+            out += found
+        return out
+
+    def che(self) -> re.Pattern[str]:
+        """C: «چه» + this quantity's printed name (+ at most two words) + «داره / دارد / داشته
+        باش»: a value request («چه ضریب هدایت حرارتی‌ای داره؟»); «چه نقشی دارد» is not."""
+        names = "|".join(f"(?:{c})" for c in self.cues)
+        return re.compile(
+            rf"{_B}چه{_S1}(?:{names})(?:{_S}ا?ی)?(?:{_S1}[^\s؟?.!،]+){{0,2}}?"
+            rf"{_S1}(?:باید{_S1})?(?:داره|دارد|داشته{_S1}باش)",
+            re.IGNORECASE,
+        )
 
     def rows(self, store: StructuredStore) -> list[str]:
         out: list[str] = []
@@ -72,6 +99,14 @@ QUANTITIES: tuple[Quantity, ...] = (
         (rf"مقاومت{_S1}حرارتی", rf"{_B}R{_S}-?{_S}value{_E}"),
         ((T19_5_1, "element"),),
         climate_table=T19_5_1,
+        # B: «حداقل R» / «R حداقل(ش)» only; never the R ratio (19-3-3) or a seismic R factor
+        guarded=(
+            (
+                rf"حداقل{_S1}R{_E}|{_B}R{_S1}حداقل(?:ش)?{_E}",
+                "",
+                rf"نسبت{_S1}R|{_B}R{_S1}نسبت|رفتار{_S1}R",
+            ),
+        ),
     ),
     Quantity(
         "u_value",
@@ -121,6 +156,15 @@ QUANTITIES: tuple[Quantity, ...] = (
         L.OUTPUT_LABELS["max_temperature"],
         (rf"دمای?(?:{_S1}مجاز)?{_S1}آب{_S}گرم", rf"آب{_S}گرم{_S1}مصرفی"),
         ((f"{MAIN}19-5-5", "place_of_use"),),
+        # A: «آب گرم» with «چند درجه» / «دما»; never «آبگرمکن» (the appliance) or a circuit,
+        # tank, boiler or heating temperature
+        guarded=(
+            (
+                rf"آب{_S}گرم(?!{_S}کن)",
+                rf"چند{_S1}درجه|{_B}دما",
+                rf"برگشت|{_B}رفت{_E}|{_B}خط{_E}|مخزن|{_B}دیگ|بویلر|لوله|گرمایش|شوفاژ",
+            ),
+        ),
     ),
     Quantity(
         "daylight",
@@ -199,6 +243,8 @@ FILLERS = frozenset(
     }
 )
 MAX_PLACE_WORDS = 3
+# C: the words of «چه <quantity> … داره» itself, dropped only when that phrase was found
+CHE_WORDS = frozenset({"چه", "ای", "ی", "داره", "دارد", "داشته", "باش"})
 
 
 @dataclass(frozen=True)
@@ -213,20 +259,29 @@ class Request:
 def analyse(question: str) -> Request | None:
     """The question as a value request for exactly one table quantity, or ``None``."""
     text = letters(question)
-    if CONCEPT.search(text) or not VALUE.search(text):
+    if CONCEPT.search(text):
         return None
-    found = [(q, list(q.pattern().finditer(text))) for q in QUANTITIES]
-    found = [(q, ms) for q, ms in found if ms]
+    if not (VALUE.search(text) or any(q.che().search(text) for q in QUANTITIES)):
+        return None
+    found = [(q, q.spans(text)) for q in QUANTITIES]
+    found = [(q, sp) for q, sp in found if sp]
     if len(found) != 1:
         return None
-    quantity, matches = found[0]
+    quantity, spans = found[0]
+    merged: list[list[int]] = []
+    for start, end in sorted(set(spans)):  # overlapping phrasings: one span
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
     rest = text
-    for m in sorted(matches, key=lambda m: m.start(), reverse=True):
-        rest = rest[: m.start()] + " " + rest[m.end() :]
+    for start, end in reversed(merged):
+        rest = rest[:start] + " " + rest[end:]
     rest = rest.translate(_DIGITS)
     codes = {f"{a}{b.upper()}" for a, b in _CODE.findall(rest)}
     if len(codes) > 1:
         return None
     rest = _CODE.sub(" ", rest)
-    words = [w for w in _WORD.findall(rest.replace("‌", " ")) if w not in FILLERS]
+    drop = FILLERS | (CHE_WORDS if quantity.che().search(text) else frozenset())
+    words = [w for w in _WORD.findall(rest.replace("‌", " ")) if w not in drop]
     return Request(quantity, next(iter(codes), ""), tuple(words))

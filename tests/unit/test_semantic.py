@@ -133,7 +133,8 @@ def test_b2_phrasings_resolve_the_quantity_deterministically(question: str, quan
     r = SQ.analyse(question)
     assert r is not None
     assert r.quantity.id == quantity
-    assert SQ.extended_only(question)
+    # (at B2's freeze these resolved only through the prototype; since 2026-11-20 the narrow
+    # forms A-C are production rules in api/quantities.py, so «extended only» no longer holds)
 
 
 @pytest.mark.parametrize(

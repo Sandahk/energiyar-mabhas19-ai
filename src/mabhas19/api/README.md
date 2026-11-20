@@ -246,6 +246,14 @@ ratio) or «ضریب رفتار R»; (C) «چه <quantity name> … داره / �
 request (only the words of the phrase itself are consumed; «چه نقشی / تعریفی / کاربردی دارد»
 stays conceptual). «برای محاسبه» gets no special handling.
 
+Row choices (2026-11-20, `orchestration.row_choice`): a printed row chosen from any row
+clarification (the engine's own or a row group / rescue) becomes the follow-up's only name for
+the thing - the quantity's printed name + the printed row + only the conditions the user wrote (a
+printed climate code, «رده X», a printed city). The user's other words are dropped, so «برای
+دیوار بیرونی حداقل R» -> «دیوار خارجی مجاور فضای باز» -> «تهران» reaches the certified 3B
+value instead of a refusal of «بیرونی». A question with any other number keeps the plain
+follow-up.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):

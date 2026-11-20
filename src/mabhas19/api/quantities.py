@@ -183,6 +183,19 @@ QUANTITIES: tuple[Quantity, ...] = (
     ),
 )
 BY_ID = {q.id: q for q in QUANTITIES}
+# the printed words a canonical question starts with (each quantity's printed name)
+CANONICAL = {
+    "eui": "حداکثر شدت مصرف انرژی مجاز",
+    "r_value": "حداقل مقاومت حرارتی",
+    "u_value": "حداکثر ضریب انتقال حرارتی",
+    "shgc": "حداکثر ضریب بهره خورشیدی",
+    "lambda": "ضریب هدایت حرارتی",
+    "density": "چگالی",
+    "efficiency": "حداقل بازدهی",
+    "hot_water": "حداکثر دمای آب گرم مصرفی",
+    "daylight": "حداقل نسبت مساحت کفایت نور روز",
+    "uniformity": "حداقل یکنواختی نور مصنوعی",
+}
 
 # asking for a value (not for an explanation)
 VALUE = re.compile(

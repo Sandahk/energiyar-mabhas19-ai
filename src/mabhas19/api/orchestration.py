@@ -870,13 +870,82 @@ def respond(  # noqa: PLR0913
     first; otherwise one engine call, shown side by side when its only missing column is small."""
     if follow_up and base and follow_up.get("field") == CLIMATE and follow_up.get("kind") == "free":
         return city_flow(run, store, base, str(follow_up.get("text") or ""), request_id)
-    chosen = family_choice(store, follow_up, base)
-    if chosen is not None:  # the chosen printed row replaces the family's word
+    chosen = row_choice(run, store, follow_up, base) or family_choice(store, follow_up, base)
+    if chosen is not None:  # the chosen printed row is the question's only name for the thing
         question = chosen
     text, rules = W.rewrite(question)
     reply = side_by_side(run, store, _call(run, text, request_id), request_id)
     reply = rescue(run, store, widen(run, store, reply, request_id))
     return _noted(reply, question, rules)
+
+
+ROW_FIELDS = frozenset(
+    {"element", "component", "equipment", "place_of_use", "use", "space", "occupancy", "material"}
+)
+_RATING = re.compile(r"رده(?:[\s\u200c]+انرژی)?[\s\u200c]+([A-D])(?![A-Za-z+])")
+_ANY_DIGIT = re.compile(r"[0-9]")
+
+
+def _printed_cities(store: StructuredStore, text: str) -> list[str]:
+    """Printed city names written in ``text`` (exact, as written; one to three words)."""
+    names = {  # a station in parentheses, «تهران (مهرآباد)», is the same printed city
+        O.label_key(W.letters(_STATION.sub("", str((r.get("city") or {}).get("text") or ""))))
+        for r in store.app02
+        if (r.get("city") or {}).get("text")
+    }
+    words = re.findall(r"[^\W\d_]+", text.replace("\u200c", " "))
+    out: list[str] = []
+    for n in (3, 2, 1):
+        for i in range(len(words) - n + 1):
+            phrase = " ".join(words[i : i + n])
+            if O.label_key(phrase) in names and not any(phrase in c for c in out):
+                out.append(phrase)
+    return out
+
+
+def row_choice(
+    run: Run, store: StructuredStore, follow_up: dict[str, Any] | None, base: str | None
+) -> str | None:
+    """A printed row chosen from a row clarification becomes the follow-up's only name for the
+    thing: the quantity's printed name + the printed row + only the conditions the user wrote (a
+    printed climate code, «رده X», a printed city). The user's other words are dropped, so an
+    extra word («دیوار بیرونی») cannot stop the lookup once every condition is known. A question
+    with any other number keeps the plain follow-up (its numbers are conditions only the engine
+    may read)."""
+    if not follow_up or not base or follow_up.get("kind") != "option":
+        return None
+    field_name = str(follow_up.get("field") or "")
+    if field_name not in ROW_FIELDS:
+        return None
+    text = W.letters(base).translate(Q._DIGITS)
+    codes = sorted({f"{a}{b.upper()}" for a, b in Q._CODE.findall(text)})
+    if len(codes) > 1 or _ANY_DIGIT.search(Q._CODE.sub(" ", text)):
+        return None
+    request = Q.analyse(base)
+    if request is not None:
+        head = Q.CANONICAL[request.quantity.id]
+        tables = [(d, f) for d, f in request.quantity.tables if f == field_name]
+    else:  # the engine's own row question: its plan names the table and the asked output
+        part = _call(run, base)
+        plans = [p for p in part.result.plans if p.get("requested_field")]
+        if len(plans) != 1:
+            return None
+        head = O.plain(L.OUTPUT_LABELS.get(str(plans[0]["requested_field"]), ""))
+        tables = [(str(plans[0].get("target")), field_name)]
+    want = O.label_key(str(follow_up.get("text") or ""))  # the page drops parentheses
+    rows = list(
+        dict.fromkeys(
+            r for d, f in tables for r in O.printed_options(store, d, f) if O.label_key(r) == want
+        )
+    )
+    if not head or len(rows) != 1:
+        return None
+    tail = f" در اقلیم {codes[0]}" if codes else ""
+    if rating := _RATING.search(text):
+        tail += f" رده {rating.group(1)}"
+    if not codes:
+        tail += "".join(f" در {c}" for c in _printed_cities(store, text))
+    return f"{head} {rows[0]}{tail}"
 
 
 def family_choice(

@@ -1,0 +1,152 @@
+# frozen before implementation (2026-11-20): three narrow deterministic quantity phrasings for the
+# structured rescue (api/quantities.py): A «آب گرم … چند درجه / دما» -> hot-water temperature
+# (19-5-5); B «حداقل R» / «R حداقل(ش)» -> minimum thermal resistance (19-5-1); C «چه <quantity
+# name> … داره / دارد / داشته باش» as a value request. D («برای محاسبه») is rejected and absent.
+# Checked by tests/unit/test_quantity2.py with the structured1 expectation kinds:
+#   clarify / row_refusal / climate_refusal - as in structured1.yaml (rescued)
+#   untouched - not taken over by the rescue (the engine's own answer, whatever it is)
+#   prose     - prose excerpts, not rescued
+version: quantity-2
+R_ROWS: &r_rows
+  - دیوار خارجی مجاور فضای باز
+  - دیوار خارجی مجاور فضای نیمه باز کنترل نشده
+  - دیوار خارجی مجاور خاک
+  - سقف مجاور فضای آزاد
+  - سقف مجاور فضای نیمه باز کنترل نشده
+  - کف مجاور هوای آزاد
+  - کف مجاور نیمه باز کنترل نشده
+  - کف مجاور خاک
+  - درهای غیرنورگذر لولادار
+  - درهای غیرنورگذر بدون لولا
+PLACES: &places [دوش و وان, روشویی عمومی, روشویی خصوصی, ظرفشویی آشپزخانه]
+cases:
+  # ---- A: hot-water temperature
+  - id: Q01
+    question: آب گرم حداکثر چند درجه باید باشه؟
+    expect: clarify
+    field: place_of_use
+    rows: *places
+  - id: Q02
+    question: دمای آب گرم مجاز چند درجه است؟
+    expect: clarify
+    field: place_of_use
+    rows: *places
+  - id: Q03
+    question: دمای آب گرم خط برگشت حداقل چند درجه؟
+    expect: untouched
+    why: the return-line temperature is another quantity (excluded word «برگشت»)
+  - id: Q04
+    question: آب گرم مخزن حداکثر چند درجه باشه؟
+    expect: untouched
+    why: a storage-tank temperature (excluded word «مخزن»)
+  - id: Q05
+    question: آب گرم شوفاژ چند درجه باید باشه؟
+    expect: untouched
+    why: a heating-circuit temperature (excluded word «شوفاژ»)
+  - id: Q06
+    question: آب گرم دیگ بویلر حداکثر چند درجه؟
+    expect: untouched
+  - id: Q07
+    question: آب گرم استخر چند درجه باید باشه؟
+    expect: untouched
+    why: a place 19-5-5 does not print («استخر» is left over)
+  - id: Q08
+    question: راندمان آبگرمکن گازسوز چقدره؟
+    expect: untouched
+    why: «آبگرمکن» is the appliance, not the hot-water temperature
+  - id: Q09
+    question: آب گرم برای مشهد حداکثر چند درجه باید باشه؟
+    expect: untouched
+    why: 19-5-5 has no climate; a city is not a place of use
+  - id: Q10
+    question: آب گرم مصرفی ساختمان از کجا تامین میشه؟
+    expect: untouched
+    why: no temperature asked
+  # ---- B: «حداقل R» / «R حداقل»
+  - id: Q11
+    question: حداقل R چنده؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+  - id: Q12
+    question: R حداقلش برای اردبیل چقدره؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+    codes: [5C]
+  - id: Q13
+    question: حداقل R در اقلیم 3B چقدره؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+  - id: Q14
+    question: نسبت R برای رده B چقدره؟
+    expect: untouched
+    why: the R ratio of table 19-3-3 is another quantity
+  - id: Q15
+    question: ضریب رفتار R قاب خمشی چقدره؟
+    expect: untouched
+    why: a seismic factor, out of scope
+  - id: Q16
+    question: حداقل نسبت R برای رده A چقدر است؟
+    expect: untouched
+    why: «نسبت R» even with «حداقل»
+  - id: Q17
+    question: R کل دیوار چطور محاسبه می‌شود؟
+    expect: untouched
+    why: conceptual (method) and no «حداقل»
+  # ---- C: «چه <quantity> … داره»
+  - id: Q18
+    question: چه ضریب هدایت حرارتی‌ای داره؟
+    expect: row_refusal
+    dataset: material_thermal_properties
+  - id: Q19
+    question: چه مقاومت حرارتی‌ای باید داشته باشه؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+  - id: Q20
+    question: برای کیش چه شدت مصرف انرژی‌ای مجاز داره؟
+    expect: row_refusal
+    dataset: max_energy_use_intensity
+    codes: [0B]
+  - id: Q21
+    question: شدت مصرف انرژی چه نقشی دارد؟
+    expect: untouched
+  - id: Q22
+    question: ساختمان ایده‌آل چه تعریفی دارد؟
+    expect: untouched
+  - id: Q23
+    question: بانک یخ چه کاربردی دارد؟
+    expect: untouched
+  - id: Q24
+    question: این بند چه الزامی داره؟
+    expect: untouched
+  - id: Q25
+    question: چه ضریب هدایت حرارتی‌ای برای کاهگل داره؟
+    expect: untouched
+    why: an unprinted material is left over
+  # ---- D rejected, and existing behaviour kept
+  - id: Q26
+    question: برای محاسبه لاندا چه لازمه؟
+    expect: untouched
+    why: D is not implemented; «محاسبه» keeps the question conceptual
+  - id: Q27
+    question: حداکثر دمای آب گرم مصرفی چقدره؟
+    expect: clarify
+    field: place_of_use
+    rows: *places
+  - id: Q28
+    question: R-value حداقل چقدره؟
+    expect: clarify
+    field: element
+    rows: *r_rows
+  - id: Q29
+    question: برای اردبیل حد مجاز مصرف انرژی چقدره؟
+    expect: climate_refusal
+    dataset: max_energy_use_intensity
+    codes: [5C]
+  - id: Q30
+    question: حداقل R دیوار خارجی مجاور خاک در اقلیم 3B چقدره؟
+    expect: untouched
+    why: the engine answers it itself (a named row)

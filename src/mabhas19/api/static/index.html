@@ -92,6 +92,15 @@
     border: 1px solid var(--field); background: var(--paper); color: var(--ink);
   }
   .free button { padding: 5px 16px; background: var(--emerald); color: #fff; border: none; }
+  .card [hidden] { display: none !important; }
+  .paths { display: flex; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .paths button { padding: 4px 14px; font-size: 14px; }
+  .paths button[aria-pressed="true"] { background: var(--emerald-deep); border-color: var(--emerald-deep); color: #fff; }
+  .cities input {
+    width: 100%; box-sizing: border-box; padding: 6px 10px; font: inherit; border-radius: 9px;
+    border: 1px solid var(--field); background: var(--paper); color: var(--ink); margin: 6px 0;
+  }
+  .cities .opts { max-height: 220px; overflow-y: auto; margin-top: 4px; }
   .note { background: var(--warn-soft); border-radius: 10px; padding: 8px 12px; margin: 8px 0; font-size: 15px; }
   .echo {
     background: #f1f4f1; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
@@ -336,6 +345,71 @@ function renderRefusal(r, secondary, repeated) {
   return box;
 }
 
+// the certified city list (GET /api/cities), read once; the search box only filters it
+let cityList = null;
+function loadCities() {
+  if (!cityList) {
+    cityList = fetch("/api/cities").then((r) => (r.ok ? r.json() : { cities: [] }))
+      .then((d) => d.cities || []).catch(() => { cityList = null; return []; });
+  }
+  return cityList;
+}
+
+// the search key of the server (options.label_key): Persian letter forms, no marks, no spaces
+const FOLDS = { "ك": "ک", "ي": "ی", "ى": "ی", "ۀ": "ه", "ة": "ه", "أ": "ا", "إ": "ا", "آ": "ا", "ؤ": "و" };
+function cityKey(text) {
+  let t = String(text).normalize("NFKC").replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
+  t = Array.from(t, (ch) => FOLDS[ch] || ch).join("").replace(/\u0640|\p{Mn}/gu, "");
+  t = t.replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+  return t.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+// a climate question: a printed class, or a city chosen from the certified list (never typed)
+function renderCityPath(c, card, buttons, choose, climateBox) {
+  const paths = el("div", "paths");
+  const byCode = el("button", "", "انتخاب اقلیم"), byCity = el("button", "", "انتخاب شهر");
+  byCode.type = byCity.type = "button";
+  const box = el("div", "cities");
+  box.hidden = true;
+  const search = el("input");
+  search.placeholder = "جستجو در فهرست شهرهای چاپ‌شده";
+  search.maxLength = 40;
+  const list = el("div", "opts");
+  const empty = el("div", "small", "شهری با این نام در فهرست شهرهای چاپ‌شده نیست؛ اقلیم را مستقیم انتخاب کنید.");
+  empty.hidden = true;
+  box.append(search, list, empty);
+  let cities = [];
+  function show() {
+    const want = cityKey(search.value);
+    list.replaceChildren();
+    const shown = cities.filter((x) => x.key.includes(want));
+    for (const x of shown) {
+      const b = el("button", "", x.name);
+      b.type = "button";
+      b.onclick = () => choose("city", x.name, "شهر " + x.name, b);
+      buttons.push(b);
+      list.appendChild(b);
+    }
+    empty.hidden = shown.length > 0;
+  }
+  function select(city) {
+    byCode.setAttribute("aria-pressed", String(!city));
+    byCity.setAttribute("aria-pressed", String(city));
+    if (climateBox) climateBox.hidden = city;
+    box.hidden = !city;
+    if (city) loadCities().then((xs) => { cities = xs; show(); search.focus(); });
+  }
+  byCode.onclick = () => select(false);
+  byCity.onclick = () => select(true);
+  search.addEventListener("input", show);
+  search.addEventListener("keydown", (ev) => { if (ev.key === "Enter") ev.preventDefault(); });
+  paths.append(byCode, byCity);
+  card.appendChild(paths);
+  card.appendChild(box);
+  select(false);
+}
+
 // a clarification: the question for one item and the printed choices; a choice re-asks the
 // original question with that item added (the server runs the frozen engine again)
 function renderClarification(a, c, card) {
@@ -346,6 +420,7 @@ function renderClarification(a, c, card) {
     if (button) button.classList.add("chosen");
     ask(a.question, { parent: a.request_id, field: c.field, kind, text }, shown);
   }
+  let climateBox = null;
   if (c.options && c.options.length) {
     const opts = el("div", "opts");
     for (const o of c.options) {
@@ -355,8 +430,10 @@ function renderClarification(a, c, card) {
       buttons.push(b);
       opts.appendChild(b);
     }
-    card.appendChild(opts);
+    climateBox = opts;
   }
+  if (c.city_select) renderCityPath(c, card, buttons, choose, climateBox);
+  if (climateBox) card.appendChild(climateBox);
   if (c.free_text) {
     const box = el("div", "free");
     if (c.free_text_prefix) box.appendChild(el("span", "", c.free_text_prefix + ":"));

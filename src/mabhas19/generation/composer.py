@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.models import ProseHit, RetrievalResult, StructuredHit
     from mabhas19.retrieval.structured import StructuredStore
 
-COMPOSER_VERSION = "m2-composer-5"
+COMPOSER_VERSION = "m2-composer-6"
 U_AS_R = MAIN + "19-5-1"  # opaque elements: the requirement is a minimum R
 # the engine's typed refusals of a quantity the table does not print (admission, coverage)
 _U_REFUSALS = frozenset({"unsupported_output_slot", "unattested_quantity"})
@@ -475,14 +475,9 @@ def _ask_for(  # noqa: PLR0911
         return None
     if dim.kind == "category":
         options = tuple(ClarifyOption(*O.option_text(field, v)) for v in printed_values)
-        if field == "climate_class":  # or a city name (api.orchestration looks it up)
+        if field == "climate_class":  # or a listed city (api.orchestration looks it up)
             return Clarification(
-                **common,
-                options=options,
-                hint=L.CLARIFY_CLIMATE_HINT,
-                free_text=True,
-                free_text_prefix=L.CITY_PREFIX,
-                placeholder=L.CLARIFY_PLACEHOLDER["climate_class"],
+                **common, options=options, hint=L.CLARIFY_CLIMATE_HINT, city_select=True
             )
         return Clarification(**common, options=options)
     printed_values = _same_quantity(dataset, printed_values, query)

@@ -7,14 +7,16 @@ answer, which must be the certified value the direct printed-row question gets.
 
 from __future__ import annotations
 
+from functools import cache
 from typing import Any
 
 import pytest
 from tests.unit.test_natural1 import _ask
 
 from mabhas19.api import wording as W
+from mabhas19.api.cities import catalogue
 from mabhas19.api.orchestration import family_choice
-from mabhas19.api.server import clarify_request
+from mabhas19.api.server import added_question, clarify_request
 from mabhas19.core.paths import CURATED_DIR
 from mabhas19.generation.contract import Answer
 from mabhas19.retrieval.structured import StructuredStore
@@ -33,13 +35,19 @@ SHGC_ROWS = (
 )
 
 
+@cache
+def _cities() -> frozenset[str]:
+    """The certified city list (contract m2-answer-4: a city is chosen, never typed)."""
+    return frozenset(e.name for e in catalogue(StructuredStore(CURATED_DIR)))
+
+
 def _page(a: Answer, kind: str, text: str) -> Answer:
     """One follow-up exactly as the page sends it and the server rebuilds it."""
     c = a.clarifications[0]
     raw = {"parent": "0" * 32, "field": c.field, "kind": kind, "text": text}
-    follow = clarify_request(raw)
+    follow = clarify_request(raw, _cities())
     assert follow is not None
-    return _ask(f"{a.question} ({follow['text']})", follow_up=follow, base=a.question)
+    return _ask(added_question(a.question, follow), follow_up=follow, base=a.question)
 
 
 def _option(a: Answer, label: str) -> Answer:
@@ -83,7 +91,7 @@ def test_roof_row_then_climate_code_gives_the_certified_value(row: str, code: st
 def test_roof_row_then_city_gives_the_certified_climate_and_value(
     row: str, city: str, code: str
 ) -> None:
-    final = _page(_option(_ask(ROOF), row), "free", f"شهر {city}")
+    final = _page(_option(_ask(ROOF), row), "city", city)
     _certified(final, row, f"حداقل مقاومت حرارتی {row} در اقلیم {code}")
     assert {v.value for v in final.context} == {code}
     assert all(city in v.row_label for v in final.context)

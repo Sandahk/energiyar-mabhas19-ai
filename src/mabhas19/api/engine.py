@@ -21,6 +21,7 @@ from typing import Any, Literal
 
 import yaml
 
+from mabhas19.api.cities import CityEntry, catalogue
 from mabhas19.api.orchestration import respond
 from mabhas19.core.paths import CURATED_DIR, DATA_DIR, EVAL_DIR
 from mabhas19.generation.composer import COMPOSER_VERSION, compose
@@ -83,6 +84,14 @@ class Engine:
     mode: Mode
     info: dict[str, Any] = field(default_factory=dict)
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+    _cities: tuple[CityEntry, ...] | None = field(default=None, repr=False)
+
+    @property
+    def cities(self) -> tuple[CityEntry, ...]:
+        """The certified city list (derived from the curated city records)."""
+        if self._cities is None:
+            self._cities = catalogue(self.store)
+        return self._cities
 
     def ask(
         self,
@@ -94,7 +103,7 @@ class Engine:
         """(answer, the main retrieval result it was composed from, latency in ms).
 
         ``follow_up``/``base``: a clarification continued (the question before the choice was
-        added); a typed city for a climate question is looked up first (api.orchestration)."""
+        added); a listed city for a climate question is looked up first (api.orchestration)."""
         request_id = uuid.uuid4().hex
         start = time.perf_counter()
         with self._lock:  # the retriever keeps per-query caches; one question at a time

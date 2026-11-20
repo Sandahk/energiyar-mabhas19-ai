@@ -137,6 +137,7 @@ def request_record(  # noqa: PLR0913
                 "table": c.dataset,
                 "options": [o.label for o in c.options],
                 "free_text": c.free_text,
+                "city_select": c.city_select,
             }
             for c in answer.clarifications
         ],

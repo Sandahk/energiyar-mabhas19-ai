@@ -26,7 +26,7 @@ from typing import Any, Literal
 
 ResponseType = Literal["structured_value", "prose", "refusal", "out_of_scope", "clarification"]
 EchoStatus = Literal["resolved", "ambiguous", "unresolved", "requested"]
-CONTRACT_VERSION = "m2-answer-3"
+CONTRACT_VERSION = "m2-answer-4"
 
 
 @dataclass(frozen=True)
@@ -123,6 +123,9 @@ class Clarification:
     placeholder: str = ""  # unit-neutral, never an example number
     hint: str = ""
     note: str = ""  # a fixed explanation (e.g. R versus λ); no regulatory value
+    # a climate question: a city may also be chosen from the certified city list (GET
+    # /api/cities); a chosen city is looked up, never typed text
+    city_select: bool = False
 
 
 @dataclass(frozen=True)

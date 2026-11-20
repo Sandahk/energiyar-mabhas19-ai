@@ -52,14 +52,20 @@ def _ask(question: str) -> Answer:
 
 @cache
 def _city(question: str, typed: str) -> Answer:
-    """The climate question of ``question`` answered by typing ``typed`` in its text box."""
+    """The climate question of ``question`` answered with the city ``typed`` (the orchestration
+    is called directly: the server accepts listed names only, so an unlisted name tests the
+    lookup's own refusal)."""
     first = _ask(question)
     c = first.clarifications[0]
     assert c.field == "climate_class"
-    assert c.free_text
-    text = f"{c.free_text_prefix} {typed}"
-    follow = {"parent_request_id": first.request_id, "field": c.field, "kind": "free", "text": text}
-    question_with_city = f"{first.question} ({text})"
+    assert c.city_select
+    follow = {
+        "parent_request_id": first.request_id,
+        "field": c.field,
+        "kind": "city",
+        "text": typed,
+    }
+    question_with_city = f"{first.question} ({L.CITY_PREFIX} {typed})"
     answer, _, _ = _engine().ask(question_with_city, follow_up=follow, base=first.question)
     return answer
 
@@ -71,14 +77,14 @@ def _ids(items: Any) -> set[str]:
 # ---------------------------------------------------------------- the climate question
 
 
-def test_the_climate_question_offers_printed_codes_and_a_city_box() -> None:
+def test_the_climate_question_offers_printed_codes_and_the_city_list() -> None:
     a = _ask(WALL)
     c = a.clarifications[0]
     assert c.field == "climate_class"
     assert c.prompt == L.CLARIFY_PROMPTS["climate_class"]
     assert [o.label for o in c.options] == O.printed_options(_store(), c.dataset, "climate_class")
-    assert c.free_text
-    assert c.free_text_prefix == L.CITY_PREFIX
+    assert c.city_select
+    assert not c.free_text
     assert not numbers(c.prompt + c.placeholder + c.hint)
 
 
@@ -149,6 +155,7 @@ def test_isfahan_shows_both_printed_classes_and_chooses_none() -> None:
     assert [o.label for o in c.options] == ["3B", "4B"]
     assert not c.free_text
     assert "اصفهان" in c.note
+    assert a.headline == c.prompt == L.CITY_CONFLICT_PROMPT  # no city path on this step
     assert {(v.dataset, v.value) for v in a.context} == {(APP02, "4B"), (T19_3_2, "3B")}
     assert any(n.kind == "conflict" for n in a.notices)
     assert any("SI-0009" in n.ids for n in a.notices)
@@ -171,9 +178,12 @@ def test_ardabil_5c_is_still_refused_by_appendix_3() -> None:
     assert any("SI-0002" in n.ids for n in a.notices)
 
 
-def test_a_typed_printed_code_is_taken_as_the_code() -> None:
+def test_a_printed_code_is_not_a_city() -> None:
+    """A code is chosen from the printed options; as a city it is unknown (never guessed)."""
     a = _city(WALL, "3b")
-    assert [(v.record_id, v.value) for v in a.values] == [("main-t19-5-1-r02c03", "۱/۴۳")]
+    assert a.response_type == "clarification"
+    assert a.clarifications[0].field == "climate_class"
+    assert not a.values
     assert not a.context
 
 

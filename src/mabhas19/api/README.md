@@ -76,7 +76,8 @@ trusted private network.
 | Endpoint | |
 |---|---|
 | `GET /` | Persian RTL chat page |
-| `POST /api/ask` `{"question", "participant", "clarify"?}` | `{"answer": <Answer>, "latency_ms"}`; `clarify` = `{"parent", "field", "kind": "option"\|"free", "text"}` continues a clarification |
+| `POST /api/ask` `{"question", "participant", "clarify"?}` | `{"answer": <Answer>, "latency_ms"}`; `clarify` = `{"parent", "field", "kind": "option"\|"free"\|"city", "text"}` continues a clarification (a climate question takes `option` or a listed `city` only; anything else is 400) |
+| `GET /api/cities` | `{"cities": [{"name", "key"}]}`: the certified city list for the climate question's city path |
 | `GET /api/health` | Status, pilot warning, privacy notice, engine mode and pins |
 | `POST /api/feedback` `{"request_id", "rating": "up"\|"down", "note", "participant"}` | Records feedback |
 
@@ -149,7 +150,8 @@ paraphrase set `eval/prepilot/paraphrases.yaml` (development only, not a benchma
 certification, curated data, schemas and `provenance.py` untouched). Every value shown still
 comes from one ordinary engine call that passed its own provenance check.
 
-- **City for climate.** The climate question also has a text box: a city name is looked up
+- **City for climate.** The climate question also offers a city chosen from the certified city
+  list (see «City selector» below); the city is looked up
   through the engine as «رده اقلیمی شهر …» (Appendix 2 and table 19-3-2). Only rows printed with
   exactly that name (after spelling normalization; a station in parentheses, «تهران (مهرآباد)»,
   is the same city) are used: no partial, nearest-city or province match, and other rows the
@@ -158,7 +160,7 @@ comes from one ordinary engine call that passed its own provenance check.
   (`Answer.context`). Different classes (Isfahan 3B/4B, SI-0009): none is chosen; both rows
   are shown and only those classes are offered. Unknown: the climate question again. The class
   is passed on unchanged: Ardabil's 5C uses the printed «5B,5C» column of 19-5-1 and is still
-  refused by Appendix 3 (SI-0001, SI-0002). A typed printed code («3B») is taken as the code.
+  refused by Appendix 3 (SI-0001, SI-0002).
 - **Side by side.** When the only item missing from an Appendix 3 lookup is the energy rating
   (A-D) or the residential area band, each printed value is asked as its own fully specified
   engine call and the certified values are shown together (one row each; no rating is chosen).
@@ -174,7 +176,7 @@ comes from one ordinary engine call that passed its own provenance check.
 ### Wording rules and row groups (2026-11-17)
 
 `api/wording.py` (reviewed lists, no model) and `api/orchestration.py`; composer
-`m2-composer-5`. Principle: a simple wording difference is normalized automatically; an obvious
+`m2-composer-5` (now `m2-composer-6`, see City selector). Principle: a simple wording difference is normalized automatically; an obvious
 broad family is identified and then clarified with printed rows only; a meaning-changing
 interpretation is never guessed. Frozen cases: `eval/clarify/natural1.yaml` (40 questions,
 expected behaviour written before the code).
@@ -254,6 +256,23 @@ printed climate code, «رده X», a printed city). The user's other words are 
 value instead of a refusal of «بیرونی». A question with any other number keeps the plain
 follow-up.
 
+### City selector (2026-11-20, contract `m2-answer-4`, composer `m2-composer-6`)
+
+A climate clarification no longer has a text box. It has two explicit paths on the page,
+«انتخاب اقلیم» (the printed classes) and «انتخاب شهر» (`Clarification.city_select`): a list
+of the 77 printed cities, derived by `api/cities.py` from the same curated records the certified
+lookup answers from (Appendix 2 and table 19-3-2, a printed station is the same city, one entry
+per `label_key`); no second city list is kept anywhere. The search box only filters that list
+(the same key: Arabic ي/ك as ی/ک, آ as ا, spaces and ZWNJ ignored; plain substring). No fuzzy
+match, edit distance, Latin alias or nearest city. Only a click on a listed city sends a
+follow-up (`kind: "city"`, its exact listed name); the server refuses an unlisted name, a city
+for any other field, and typed text (`kind: "free"`) for a climate question. The chosen city
+then follows the certified path above (lookup -> printed class -> the selected row and
+quantity -> unchanged engine -> certification + provenance). Isfahan (3B / 4B, SI-0009) shows
+both printed rows and offers only those two classes (no city path on that step). A city written
+in the question itself is still read by the structured rescue. Frozen tests:
+`tests/unit/test_city_selector.py`.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
@@ -264,8 +283,8 @@ Routing issues found by the clarification pass and the pre-pilot patch (not fixe
 - A clarification can offer rows matched by a generic word only (a roof U question with «حد
   مجاز» was offered 19-5-2 SHGC rows before the patch; no longer for that question).
 - A city written in the question itself («… در تبریز») is not applied by tables 19-5-1/19-5-2
-  (Appendix 3 already derives the climate from it); only a city typed in the climate
-  question's box is looked up.
+  (Appendix 3 already derives the climate from it); only a city chosen in the climate
+  question's city list is looked up.
 - An ambiguous label the engine matched through its own normalization («چهارلوله» →
   «4 لوله») stays a plain refusal: adding the printed label does not resolve it.
 

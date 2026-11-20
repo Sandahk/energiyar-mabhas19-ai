@@ -7,6 +7,8 @@
   (:class:`~mabhas19.generation.contract.Answer`); ``clarify`` continues a clarification (see
   :func:`clarify_request`);
 * ``GET /api/health`` -> status, versions and the engine's pin check;
+* ``GET /api/cities`` -> the certified city list a climate question may be answered with
+  (:mod:`mabhas19.api.cities`; ``name`` and search ``key`` only);
 * ``POST /api/feedback`` ``{"request_id", "rating": "up"|"down", "note", "participant"}``.
 
 Every question is answered by the frozen engine and the deterministic composer; there is no
@@ -28,12 +30,17 @@ import uuid
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from mabhas19.api.chatlog import ChatLog, participant_id, request_record
 from mabhas19.generation.contract import Answer
-from mabhas19.generation.labels import PILOT_PRIVACY, PILOT_WARNING
+from mabhas19.generation.labels import CITY_PREFIX, PILOT_PRIVACY, PILOT_WARNING
 from mabhas19.retrieval.models import RetrievalResult
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
+
+    from mabhas19.api.cities import CityEntry
 
 STATIC = Path(__file__).parent / "static"
 # the energiyar.com font and logos, served from here so the page makes no third-party request
@@ -51,15 +58,19 @@ LOOPBACK = ("127.0.0.1", "localhost", "::1")
 
 MAX_CLARIFY_TEXT = 120
 _FIELD = re.compile(r"^[a-z_]{1,40}$")
+CLIMATE = "climate_class"
+KINDS = ("option", "free", "city")
 
 
-def clarify_request(raw: Any) -> dict[str, Any] | None:
+def clarify_request(raw: Any, cities: Collection[str] = ()) -> dict[str, Any] | None:
     """A validated clarification follow-up, or ``None``.
 
-    ``{"parent": <request ID>, "field": <field>, "kind": "option"|"free", "text": <words>}``:
-    ``text`` (a printed option or the user's typed value) is added to the original question in
-    parentheses and the whole question goes through the frozen engine again; nothing is answered
-    from the client's choice.
+    ``{"parent": <request ID>, "field": <field>, "kind": "option"|"free"|"city", "text": <words>}``:
+    ``text`` (a printed option, the user's typed value, or a city chosen from the certified list)
+    is added to the original question in parentheses and the whole question goes through the
+    frozen engine again; nothing is answered from the client's choice. A climate question takes
+    a printed option or a ``city`` that is exactly one of ``cities`` (the listed names); typed
+    text is never accepted for it, and ``city`` answers nothing else.
     """
     if not isinstance(raw, dict):
         return None
@@ -67,15 +78,30 @@ def clarify_request(raw: Any) -> dict[str, Any] | None:
     field = str(raw.get("field") or "")
     kind = str(raw.get("kind") or "")
     text = " ".join(str(raw.get("text") or "").replace("(", " ").replace(")", " ").split())
-    if not (_REQUEST_ID.match(parent) and _FIELD.match(field) and kind in ("option", "free")):
+    if not (_REQUEST_ID.match(parent) and _FIELD.match(field) and kind in KINDS):
         return None
     if not text or len(text) > MAX_CLARIFY_TEXT:
+        return None
+    if field == CLIMATE and kind == "free":
+        return None
+    if kind == "city" and (field != CLIMATE or text not in cities):
         return None
     return {"parent_request_id": parent, "field": field, "kind": kind, "text": text}
 
 
+def added_question(question: str, follow_up: dict[str, Any]) -> str:
+    """The original question with only the chosen item added (a city with its prefix)."""
+    text = str(follow_up["text"])
+    if follow_up["kind"] == "city":
+        text = f"{CITY_PREFIX} {text}"
+    return f"{question} ({text})"
+
+
 class AnswerEngine(Protocol):
     info: dict[str, Any]
+
+    @property
+    def cities(self) -> tuple[CityEntry, ...]: ...
 
     def ask(
         self,
@@ -87,6 +113,12 @@ class AnswerEngine(Protocol):
 
 
 def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHandler]:
+    cities = engine.cities
+    names = frozenset(c.name for c in cities)
+    city_list = json.dumps({"cities": [c.to_dict() for c in cities]}, ensure_ascii=False).encode(
+        "utf-8"
+    )
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "mabhas19-pilot"
 
@@ -126,6 +158,8 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
                 name, kind = ASSETS[self.path]
                 body = (STATIC / name).read_bytes()
                 self._send(HTTPStatus.OK, body, kind, "public, max-age=86400")
+            elif self.path == "/api/cities":
+                self._send(HTTPStatus.OK, city_list, "application/json; charset=utf-8")
             elif self.path == "/api/health":
                 self._json(
                     HTTPStatus.OK,
@@ -172,12 +206,12 @@ def make_handler(engine: AnswerEngine, log: ChatLog) -> type[BaseHTTPRequestHand
             follow_up = None
             base = question
             if (data or {}).get("clarify") is not None:
-                follow_up = clarify_request((data or {}).get("clarify"))
+                follow_up = clarify_request((data or {}).get("clarify"), names)
                 if follow_up is None:
                     self._json(HTTPStatus.BAD_REQUEST, {"error": "invalid_clarification"})
                     return
                 # the original question with only the chosen item added; the engine runs again
-                question = f"{question} ({follow_up['text']})"
+                question = added_question(question, follow_up)
             if not question or len(question) > MAX_QUESTION:
                 self._json(
                     HTTPStatus.BAD_REQUEST,

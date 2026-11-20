@@ -10,8 +10,9 @@ from typing import Any
 import pytest
 from tests.unit.test_natural1 import _ask, _engine
 
+from mabhas19.api.cities import catalogue
 from mabhas19.api.orchestration import row_choice
-from mabhas19.api.server import clarify_request
+from mabhas19.api.server import added_question, clarify_request
 from mabhas19.core.paths import CURATED_DIR
 from mabhas19.generation.contract import Answer
 from mabhas19.retrieval.structured import StructuredStore
@@ -25,11 +26,18 @@ def _store() -> StructuredStore:
     return StructuredStore(CURATED_DIR)
 
 
+@cache
+def _cities() -> frozenset[str]:
+    """The certified city list (contract m2-answer-4: a city is chosen, never typed)."""
+    return frozenset(e.name for e in catalogue(_store()))
+
+
 def _page(a: Answer, kind: str, text: str) -> Answer:
     c = a.clarifications[0]
-    follow = clarify_request({"parent": "0" * 32, "field": c.field, "kind": kind, "text": text})
+    raw = {"parent": "0" * 32, "field": c.field, "kind": kind, "text": text}
+    follow = clarify_request(raw, _cities())
     assert follow is not None
-    return _ask(f"{a.question} ({follow['text']})", follow_up=follow, base=a.question)
+    return _ask(added_question(a.question, follow), follow_up=follow, base=a.question)
 
 
 def _pick(a: Answer, label: str) -> Answer:
@@ -52,7 +60,7 @@ def test_the_reported_flow_wall_r_then_row_then_tehran_gives_the_value() -> None
     chosen = _pick(_ask("برای دیوار بیرونی حداقل R چقدره؟"), WALL)
     assert "بیرونی" not in chosen.question  # the user's extra word is not carried on
     assert WALL in chosen.question
-    final = _page(chosen, "free", "شهر تهران")
+    final = _page(chosen, "city", "تهران")
     _same_as(final, f"حداقل مقاومت حرارتی {WALL} در اقلیم 3B")
     assert {v.value for v in final.context} == {"3B"}  # the certified Tehran rows
 
@@ -76,7 +84,7 @@ def test_the_reported_flow_wall_r_then_row_then_tehran_gives_the_value() -> None
     ],
 )
 def test_row_then_city_reaches_the_certified_value(question: str, row: str, direct: str) -> None:
-    final = _page(_pick(_ask(question), row), "free", "شهر تبریز")  # Tabriz: printed 4B
+    final = _page(_pick(_ask(question), row), "city", "تبریز")  # Tabriz: printed 4B
     _same_as(final, direct)
     assert {v.value for v in final.context} == {"4B"}
 
@@ -90,7 +98,7 @@ def test_row_then_climate_code_reaches_the_certified_value(code: str) -> None:
 
 def test_appendix_3_use_then_city_gives_the_printed_ratings() -> None:
     final = _page(
-        _pick(_ask("شدت مصرف انرژی مجاز ساختمان اداری چقدره؟"), "اداری خصوصی"), "free", "شهر تهران"
+        _pick(_ask("شدت مصرف انرژی مجاز ساختمان اداری چقدره؟"), "اداری خصوصی"), "city", "تهران"
     )
     direct = _ask("حداکثر شدت مصرف انرژی مجاز اداری خصوصی در اقلیم 3B")
     assert [(v.record_id, v.value) for v in final.values] == [

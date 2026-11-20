@@ -3,7 +3,8 @@
 Everything here is built from ordinary engine calls (retrieve -> compose -> provenance check,
 one question each); nothing is retrieved, ranked, matched or computed here. Two conveniences:
 
-* **City for climate.** The climate clarification also accepts a city name. The city is looked up
+* **City for climate.** The climate clarification also accepts a city chosen from the certified
+  city list (:mod:`mabhas19.api.cities`; never typed text). The city is looked up
   through the engine exactly like «رده اقلیمی شهر …» (Appendix 2 and table 19-3-2 only); the
   lookup is accepted only when the engine resolved that exact printed name (after its normal
   spelling normalization) and nothing else. One printed class: the original question continues
@@ -40,6 +41,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from mabhas19.api import quantities as Q
 from mabhas19.api import wording as W
+from mabhas19.api.cities import STATION as _STATION
 from mabhas19.generation import labels as L
 from mabhas19.generation import options as O
 from mabhas19.generation.composer import COMPOSER_VERSION, MAX_OPTIONS, _Sources
@@ -69,8 +71,6 @@ CITY_DATASETS = frozenset({APP02, f"{MAIN}19-3-2"})
 SIDE_BY_SIDE = frozenset({(APP03, "rating"), (APP03, "area")})
 MAX_SIDE = 4
 MAX_CITY = 40
-_STATION = re.compile(r"\s*\([^)]*\)\s*$")  # «تهران (مهرآباد)»: a printed station of the city
-_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 
 @dataclass(frozen=True)
@@ -330,19 +330,6 @@ def side_by_side(run: Run, store: StructuredStore, part: Part, request_id: str) 
 # ---------------------------------------------------------------- city -> climate
 
 
-def _typed_city(text: str) -> str:
-    words = text.split()
-    if words and words[0] == L.CITY_PREFIX:
-        words = words[1:]
-    return " ".join(words)
-
-
-def _printed_code(store: StructuredStore, dataset: str, typed: str) -> str:
-    """The printed climate class the user typed instead of a city (``""`` if none)."""
-    want = typed.translate(_DIGITS).replace(" ", "").upper()
-    return next((c for c in O.printed_options(store, dataset, CLIMATE) if c.upper() == want), "")
-
-
 @dataclass(frozen=True)
 class City:
     """A city lookup: the engine call and the certified rows printed with exactly that name
@@ -409,17 +396,14 @@ def _climate_question(part: Part) -> Clarification | None:
     return None
 
 
-def city_flow(run: Run, store: StructuredStore, base: str, typed: str, request_id: str) -> Reply:
-    """The climate clarification of ``base`` answered with ``typed`` (a city or a printed code)."""
+def city_flow(run: Run, store: StructuredStore, base: str, name: str, request_id: str) -> Reply:
+    """The climate clarification of ``base`` answered with the city ``name`` chosen from the
+    certified city list (:mod:`mabhas19.api.cities`; the server accepts listed names only)."""
     base_part = _call(run, base, request_id)
     plain = Reply(base_part.answer, base_part.result, [base_part])
     clar = _climate_question(base_part)
     if clar is None:  # the question no longer asks for a climate: show what it does
         return plain
-    name = _typed_city(typed)
-    code = _printed_code(store, clar.dataset, name)
-    if code:
-        return respond(run, store, f"{base} ({O.option_text(CLIMATE, code)[1]})", request_id)
     city = city_lookup(run, name)
     if city is None:  # never guessed: the climate question again, saying why
         shown = name and not numbers(name) and len(name) <= MAX_CITY
@@ -462,14 +446,17 @@ def city_flow(run: Run, store: StructuredStore, base: str, typed: str, request_i
         offered = clar.options  # a class this table does not print: the full printed list
     choose = replace(
         clar,
+        prompt=L.CITY_CONFLICT_PROMPT,
         options=offered,
         note=L.CITY_CONFLICT.format(city=name),
         free_text=False,
         free_text_prefix="",
         placeholder="",
+        city_select=False,  # only the printed classes of this city
     )
     composite = replace(
         base_part.answer,
+        headline=L.CITY_CONFLICT_PROMPT,
         clarifications=[choose],
         context=context,
         notices=_unique_notices([*city_notices, *base_part.answer.notices]),
@@ -866,9 +853,9 @@ def respond(  # noqa: PLR0913
     follow_up: dict[str, Any] | None = None,
     base: str | None = None,
 ) -> Reply:
-    """The answer to one request: a typed city (or code) for a climate question is looked up
-    first; otherwise one engine call, shown side by side when its only missing column is small."""
-    if follow_up and base and follow_up.get("field") == CLIMATE and follow_up.get("kind") == "free":
+    """The answer to one request: a city chosen for a climate question is looked up first;
+    otherwise one engine call, shown side by side when its only missing column is small."""
+    if follow_up and base and follow_up.get("field") == CLIMATE and follow_up.get("kind") == "city":
         return city_flow(run, store, base, str(follow_up.get("text") or ""), request_id)
     chosen = row_choice(run, store, follow_up, base) or family_choice(store, follow_up, base)
     if chosen is not None:  # the chosen printed row is the question's only name for the thing

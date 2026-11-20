@@ -13,6 +13,7 @@ from typing import Any
 import pytest
 
 from mabhas19.api.chatlog import TRIAGE_CLASSES, ChatLog, auto_hint
+from mabhas19.api.cities import CityEntry
 from mabhas19.api.server import make_handler
 from mabhas19.generation.contract import Answer, Refusal
 from mabhas19.retrieval.models import RetrievalResult, RouteDecision
@@ -21,6 +22,7 @@ from mabhas19.retrieval.models import RetrievalResult, RouteDecision
 class StubEngine:
     def __init__(self) -> None:
         self.info: dict[str, Any] = {"mode": "stub", "composer": "test"}
+        self.cities = (CityEntry("تهران", "تهران", ()),)
         self.questions: list[str] = []
         self.follow_ups: list[tuple[dict[str, Any] | None, str | None]] = []
 
@@ -268,19 +270,20 @@ def test_a_clarification_choice_re_asks_the_question_with_only_that_item_added(
     assert engine.follow_ups[-1] == (rec["follow_up"], "حداقل مقاومت حرارتی دیوار")
 
 
-def test_a_typed_city_reaches_the_engine_with_the_question_before_it(
+def test_a_listed_city_reaches_the_engine_with_the_question_before_it(
     server: tuple[str, StubEngine, Path],
 ) -> None:
     """The engine receives the original question as ``base`` so it can look the city up first."""
     url, engine, logs = server
-    clarify = {"parent": "b" * 32, "field": "climate_class", "kind": "free", "text": "شهر تهران"}
+    clarify = {"parent": "b" * 32, "field": "climate_class", "kind": "city", "text": "تهران"}
     payload = {"question": "حداقل مقاومت حرارتی دیوار", "participant": "t1", "clarify": clarify}
     status, _ = _call(url + "/api/ask", payload)
     assert status == 200
     follow_up, base = engine.follow_ups[-1]
     assert base == "حداقل مقاومت حرارتی دیوار"
     assert follow_up is not None
-    assert follow_up["text"] == "شهر تهران"
+    assert follow_up["text"] == "تهران"
+    assert engine.questions[-1] == "حداقل مقاومت حرارتی دیوار (شهر تهران)"
     rec = _lines(logs / "requests.jsonl")[-1]
     assert rec["composite"] is None
     assert rec["orchestration_rejected"] == []

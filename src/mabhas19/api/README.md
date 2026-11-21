@@ -273,6 +273,26 @@ both printed rows and offers only those two classes (no city path on that step).
 in the question itself is still read by the structured rescue. Frozen tests:
 `tests/unit/test_city_selector.py`.
 
+### City/material collision, «سقف», carried city (2026-11-20)
+
+Frozen tests: `tests/unit/test_city_misread.py`.
+
+- **A - a written city read as another entity** (`orchestration.city_misread`). The frozen engine
+  read «تبریز» as the Appendix 7 material «چوب‌های طبیعی تبریزی، اکومه» and turned an R or U
+  question into a λ question. When the question names one table quantity and an exact listed
+  city, has no explicit table reference, and the engine (no value) planned another table on a
+  non-place entity whose printed label word merely begins with that city and is not itself
+  written, that reading is not shown: the row groups / structured rescue answer for the asked
+  quantity instead, with only the written city looked up. Derived from the city list and the
+  engine plan (no city named in code); «چوب تبریزی» written in the question keeps Appendix 7.
+  Of the 77 cities only «تبریز» collides today.
+- **B - «سقف» with R** is a roof family like «بام» (the same two printed 19-5-1 rows); not with
+  any other quantity («سقف مصرف انرژی» is Appendix 3, unchanged).
+- **C - a city written in the question is carried through a row choice**
+  (`orchestration.carry_city`): when the rebuilt question names exactly one listed city and the
+  engine asks for the climate, the certified `city_flow` continues with it (Isfahan still stops
+  at 3B / 4B).
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):
@@ -282,9 +302,9 @@ Routing issues found by the clarification pass and the pre-pilot patch (not fixe
   refused.
 - A clarification can offer rows matched by a generic word only (a roof U question with «حد
   مجاز» was offered 19-5-2 SHGC rows before the patch; no longer for that question).
-- A city written in the question itself («… در تبریز») is not applied by tables 19-5-1/19-5-2
-  (Appendix 3 already derives the climate from it); only a city chosen in the climate
-  question's city list is looked up.
+- A city written in the question itself («… در تبریز») is not applied by the engine for tables
+  19-5-1/19-5-2 (Appendix 3 already derives the climate from it); the orchestration carries it
+  only through a row choice (C above) and the structured rescue.
 - An ambiguous label the engine matched through its own normalization («چهارلوله» →
   «4 لوله») stays a plain refusal: adding the printed label does not resolve it.
 

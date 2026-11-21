@@ -199,17 +199,34 @@ _SHGC_ROWS = (
     "حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰",
 )
 
+_R = re.compile(rf"مقاومت{_S1}حرارتی|{_B}R{_E}", re.IGNORECASE)
+_ROOF_ROWS = ("سقف مجاور فضای آزاد", "سقف مجاور فضای نیمه باز کنترل نشده")
+_ROOF_EXCLUDED = re.compile(rf"دیوار|{_B}کف{_E}|{_B}در(?:ها|های){_E}|مجاور")
+
 FAMILIES: tuple[Family, ...] = (
     Family(
         "roof",
         "بام",
         re.compile(rf"{_B}(?:پشت{_S})?بام(?:{_S}ها)?{_E}"),
-        re.compile(rf"مقاومت{_S1}حرارتی|{_B}R{_E}", re.IGNORECASE),
+        _R,
         f"{MAIN}19-5-1",
         "element",
-        ("سقف مجاور فضای آزاد", "سقف مجاور فضای نیمه باز کنترل نشده"),
+        _ROOF_ROWS,
         "نوع سقف را انتخاب کنید:",
-        excluded=re.compile(rf"دیوار|{_B}کف{_E}|{_B}در(?:ها|های){_E}|مجاور"),
+        excluded=_ROOF_EXCLUDED,
+    ),
+    # «سقف» with R only: the two printed 19-5-1 rows that begin with «سقف» («سقف مصرف انرژی»
+    # names no R and is never this family)
+    Family(
+        "roof_saqf",
+        "سقف",
+        re.compile(rf"{_B}سقف(?:{_S}ها)?{_E}"),
+        _R,
+        f"{MAIN}19-5-1",
+        "element",
+        _ROOF_ROWS,
+        "نوع سقف را انتخاب کنید:",
+        excluded=_ROOF_EXCLUDED,
     ),
     Family(
         "window_u",

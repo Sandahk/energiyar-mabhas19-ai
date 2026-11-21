@@ -42,6 +42,7 @@ from typing import TYPE_CHECKING, Any, Literal
 from mabhas19.api import quantities as Q
 from mabhas19.api import wording as W
 from mabhas19.api.cities import STATION as _STATION
+from mabhas19.api.cities import catalogue
 from mabhas19.generation import labels as L
 from mabhas19.generation import options as O
 from mabhas19.generation.composer import COMPOSER_VERSION, MAX_OPTIONS, _Sources
@@ -514,8 +515,11 @@ def _choice(  # noqa: PLR0913, PLR0917
     prompt: str,
     note: str,
     kind: str,
+    asked: Q.Quantity | None = None,
 ) -> Reply:
-    """Ask the user to choose one of ``rows`` (printed labels of ``dataset``); choose none."""
+    """Ask the user to choose one of ``rows`` (printed labels of ``dataset``); choose none.
+    ``asked``: the engine read another entity (a misread city): nothing of that reading is
+    shown, only the asked quantity."""
     clar = Clarification(
         field=field_name,
         field_label=L.FIELD_LABELS.get(field_name, ""),
@@ -530,13 +534,17 @@ def _choice(  # noqa: PLR0913, PLR0917
         question=part.question,
         response_type="clarification",
         headline=prompt,
-        interpretation=[i for i in part.answer.interpretation if i.status == "requested"],
+        interpretation=(
+            [Interpretation("output", L.REQUESTED, asked.label, "requested")]
+            if asked
+            else [i for i in part.answer.interpretation if i.status == "requested"]
+        ),
         # the engine's checked excerpts stay (a question may also ask something the text answers)
-        excerpts=part.answer.excerpts,
-        refusals=part.answer.refusals,
+        excerpts=[] if asked else part.answer.excerpts,
+        refusals=[] if asked else part.answer.refusals,
         notices=[Notice("note", note)] if note else [],
         clarifications=[clar],
-        sources=part.answer.sources,
+        sources=[] if asked else part.answer.sources,
         safety={
             "route": part.answer.safety.get("route"),
             "status": "needs_clarification",
@@ -605,12 +613,17 @@ def _band_of_refusal(part: Part, store: StructuredStore) -> list[str] | None:
     return rows if len({r.split()[0] for r in rows}) == 1 else None
 
 
-def widen(run: Run, store: StructuredStore, reply: Reply, request_id: str) -> Reply:
-    """When the engine could not answer: a row group the question names, a band of printed
-    rows, or the printed rows of a quantity asked with no row; otherwise the reply unchanged."""
-    if reply.answer.response_type not in FAILED or not reply.parts:
+def widen(
+    run: Run, store: StructuredStore, reply: Reply, request_id: str, *, misread: bool = False
+) -> Reply:
+    """When the engine could not answer (or read a city as another entity, ``misread``): a row
+    group the question names, a band of printed rows, or the printed rows of a quantity asked
+    with no row; otherwise the reply unchanged."""
+    if not reply.parts or (reply.answer.response_type not in FAILED and not misread):
         return reply
     part = reply.parts[0]
+    request = Q.analyse(part.question) if misread else None
+    asked = request.quantity if request else None
     fam = W.family(part.question)
     if fam is not None and _printed(store, fam.dataset, fam.field, fam.rows):
         rows = list(fam.rows)
@@ -618,7 +631,9 @@ def widen(run: Run, store: StructuredStore, reply: Reply, request_id: str) -> Re
             band = _band(run, part, rows, fam.field, fam.dataset, (fam.note,), request_id)
             if band is not None:
                 return band
-        return _choice(store, part, fam.dataset, fam.field, rows, fam.prompt, fam.note, "row_group")
+        return _choice(
+            store, part, fam.dataset, fam.field, rows, fam.prompt, fam.note, "row_group", asked
+        )
     pair = _band_of_refusal(part, store)
     if pair is not None:
         band = _band(run, part, pair, "use", DAYLIGHT, (), request_id)
@@ -630,7 +645,15 @@ def widen(run: Run, store: StructuredStore, reply: Reply, request_id: str) -> Re
         if printed:
             prompt = L.CLARIFY_PROMPTS.get(missing.field, L.CLARIFY_GENERIC)
             return _choice(
-                store, part, missing.dataset, missing.field, printed, prompt, "", "missing_row"
+                store,
+                part,
+                missing.dataset,
+                missing.field,
+                printed,
+                prompt,
+                "",
+                "missing_row",
+                asked,
             )
     return reply
 
@@ -755,37 +778,57 @@ def _city_read_as_row(part: Part, request: Q.Request) -> bool:
     return datasets <= tables and W.letters(" ".join(tokens)) == " ".join(request.leftover)
 
 
-def rescue(run: Run, store: StructuredStore, reply: Reply) -> Reply:  # noqa: PLR0911, PLR0912
+def _rescue_city(
+    run: Run, store: StructuredStore, part: Part, request: Q.Request, *, misread: bool
+) -> tuple[bool, City | None, str]:
+    """(whether the rescue may go on, the certified city, the city as written). Only a printed
+    city may be left besides the quantity, and only where climate applies; after a misread
+    (:func:`city_misread`) only the one printed city written is used, whatever else is left."""
+    if not request.leftover:
+        return True, None, ""
+    if misread:
+        written = _printed_cities(store, part.question)
+        if request.quantity.climate_table and not request.code and len(written) == 1:
+            city = city_lookup(run, written[0])
+            return True, city, written[0] if city else ""
+        return True, None, ""
+    if not request.quantity.climate_table or len(request.leftover) > Q.MAX_PLACE_WORDS:
+        return False, None, ""
+    if request.code:
+        return False, None, ""
+    name = " ".join(request.leftover)
+    city = city_lookup(run, name)
+    return city is not None, city, name
+
+
+def rescue(  # noqa: PLR0911
+    run: Run, store: StructuredStore, reply: Reply, *, misread: bool = False
+) -> Reply:
     """A value request for exactly one table quantity that the engine answered with prose or
     out of scope (nothing else named but filler, a printed climate code or a printed city) gets
     a typed answer instead: the climate's absence from the table, the table's printed rows to
     choose from, or a refusal asking for the row. One refusal is also replaced: an unknown row
     that is exactly the words left besides the quantity when those words are a printed city
-    (the certified city lookup decides). Anything else keeps the engine's answer."""
+    (the certified city lookup decides). The engine's reading of a written city as another
+    entity (``misread``, :func:`city_misread`) is replaced too, whatever else the question says:
+    only the written printed city is looked up. Anything else keeps the engine's answer."""
     if not reply.parts:
         return reply
     part = reply.parts[0]
     request = Q.analyse(part.question)
     if request is None:
         return reply
+    misread = misread and reply.answer is part.answer  # not when a row group already answers
     as_row = _city_read_as_row(part, request)
-    if reply.answer.response_type not in ("prose", "out_of_scope") and not as_row:
+    if reply.answer.response_type not in ("prose", "out_of_scope") and not (as_row or misread):
         return reply
     quantity = request.quantity
     sources = _Sources(store)
-    city: City | None = None
-    codes = [request.code] if request.code else []
-    parts = [part]
-    if request.leftover:  # only a printed city may be left, and only where climate applies
-        if not quantity.climate_table or len(request.leftover) > Q.MAX_PLACE_WORDS:
-            return reply
-        if request.code:
-            return reply
-        city = city_lookup(run, " ".join(request.leftover))
-        if city is None:
-            return reply
-        codes = city.codes
-        parts.append(city.part)
+    go_on, city, place_name = _rescue_city(run, store, part, request, misread=misread)
+    if not go_on:
+        return reply
+    codes = city.codes if city else ([request.code] if request.code else [])
+    parts = [part, city.part] if city else [part]
     if not quantity.climate_table and codes:
         return reply
     question = part.question
@@ -793,7 +836,7 @@ def rescue(run: Run, store: StructuredStore, reply: Reply) -> Reply:  # noqa: PL
         table = sources.table(quantity.climate_table)[0]
         printed = O.printed_options(store, quantity.climate_table, CLIMATE)
         if len(codes) == 1 and codes[0] not in printed:
-            place = f" («{' '.join(request.leftover)}»)" if city else ""
+            place = f" («{place_name}»)" if city else ""
             message = L.RESCUE_CLIMATE.format(code=codes[0], place=place, table=table)
             refusal = Refusal(
                 "climate_not_printed",
@@ -861,9 +904,69 @@ def respond(  # noqa: PLR0913
     if chosen is not None:  # the chosen printed row is the question's only name for the thing
         question = chosen
     text, rules = W.rewrite(question)
-    reply = side_by_side(run, store, _call(run, text, request_id), request_id)
-    reply = rescue(run, store, widen(run, store, reply, request_id))
+    part = _call(run, text, request_id)
+    misread = city_misread(store, part)
+    reply = side_by_side(run, store, part, request_id)
+    reply = widen(run, store, reply, request_id, misread=misread)
+    reply = rescue(run, store, reply, misread=misread)
+    if chosen is not None:
+        carried = carry_city(run, store, chosen, reply, request_id)
+        if carried is not None:
+            reply = carried
     return _noted(reply, question, rules)
+
+
+def _word_keys(text: str) -> list[str]:
+    return [
+        O.label_key(w) for w in re.findall(r"[^\W\d_]+", W.letters(text).replace("\u200c", " "))
+    ]
+
+
+def city_misread(store: StructuredStore, part: Part) -> bool:
+    """A - the engine read an exact printed city written in the question as another entity: no
+    value, one table quantity asked (:func:`mabhas19.api.quantities.analyse`), no explicit table
+    or section reference, and a plan outside that quantity's tables rests on a non-place entity
+    one of whose printed label words merely begins with the written city («تبریز» ->
+    «چوب‌های طبیعی تبریزی») while that label word itself is not written («چوب تبریزی» is)."""
+    a, r = part.answer, part.result
+    if a.values or a.response_type == "structured_value":
+        return False
+    request = Q.analyse(part.question)
+    if request is None:
+        return False
+    if r.route.signals.get("table_ref") or r.route.signals.get("section_ref"):
+        return False
+    cities = {O.label_key(c) for c in _printed_cities(store, part.question)}
+    if not cities:
+        return False
+    asked = {d for d, _ in request.quantity.tables}
+    written = set(_word_keys(part.question))
+    for plan in r.plans:
+        if str(plan.get("target")) in asked:
+            continue
+        for entity in plan.get("entities") or []:
+            if entity.get("kind") == "place":
+                continue
+            for w in _word_keys(str(entity.get("text") or "")):
+                if w not in written and any(w != c and w.startswith(c) for c in cities):
+                    return True
+    return False
+
+
+def carry_city(
+    run: Run, store: StructuredStore, chosen: str, reply: Reply, request_id: str
+) -> Reply | None:
+    """C - after a row choice, a question that names exactly one printed city and is answered
+    with the climate question continues through the certified city lookup (:func:`city_flow`;
+    a conflict still stops and asks). ``None`` otherwise."""
+    if reply.answer.response_type != "clarification" or not reply.parts:
+        return None
+    if reply.answer is not reply.parts[0].answer or _climate_question(reply.parts[0]) is None:
+        return None
+    written = _printed_cities(store, chosen)
+    if len(written) != 1:
+        return None
+    return city_flow(run, store, chosen, written[0], request_id)
 
 
 ROW_FIELDS = frozenset(
@@ -874,12 +977,9 @@ _ANY_DIGIT = re.compile(r"[0-9]")
 
 
 def _printed_cities(store: StructuredStore, text: str) -> list[str]:
-    """Printed city names written in ``text`` (exact, as written; one to three words)."""
-    names = {  # a station in parentheses, «تهران (مهرآباد)», is the same printed city
-        O.label_key(W.letters(_STATION.sub("", str((r.get("city") or {}).get("text") or ""))))
-        for r in store.app02
-        if (r.get("city") or {}).get("text")
-    }
+    """Printed city names written in ``text`` (exact, as written; one to three words), from the
+    certified city list (:func:`mabhas19.api.cities.catalogue`)."""
+    names = {e.key for e in catalogue(store)}
     words = re.findall(r"[^\W\d_]+", text.replace("\u200c", " "))
     out: list[str] = []
     for n in (3, 2, 1):

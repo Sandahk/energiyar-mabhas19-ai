@@ -50,7 +50,8 @@ exceptions:
       - «مقاومت حرارتی چوب تبریزی چقدره؟» -> output clarification «نمایش ضریب هدایت حرارتی (λ)»
         (tests/unit/test_city_misread.py)
     not_covered:
-      - the material word is not written but resembles a written word («تبریز» -> «تبریزی»):
+      - >-
+        the material word is not written but resembles a written word («تبریز» -> «تبریزی»);
         a misread, not this exception (orchestration.city_misread)
 
   - id: X2
@@ -130,11 +131,13 @@ exceptions:
     kind: not_shown
     asked: any
     condition: >-
-      A candidate plan of another table that contributes nothing shown (no value, context row,
-      clarification or refusal of that table) is not a substitution. The invariant is checked on
-      what the answer shows.
+      A candidate plan of another table that contributes nothing shown (no value, context row or
+      clarification of that table) is not a substitution, and neither is its secondary refusal
+      listed beside the asked quantity's own value (the page puts it under «جدول‌های دیگری که
+      بررسی شد» in the details). The invariant is checked on what the answer shows.
     evidence:
-      - final3 K123 (router candidate app03 + 19-5-1; the value shown is main-t19-5-1-r04c00 ۰/۹۱)
+      - final3 K123 (router candidate app03 + 19-5-1; the value shown is main-t19-5-1-r04c00 ۰/۹۱,
+        the app03 refusal is secondary)
 
   - id: X8
     name: prose_answer
@@ -144,3 +147,15 @@ exceptions:
       A prose answer (verbatim excerpts) shows no table value; it is not a substitution but is
       counted separately by the audit (a table quantity answered with prose is a coverage gap,
       handled by the structured rescue, not a safety violation).
+
+  - id: X9
+    name: derived_word_form
+    kind: same_word
+    asked: any
+    condition: >-
+      A resolved entity whose label word is a derived form (a relational or adjectival suffix) of
+      a written word that names nothing in another namespace: «ویلا» -> the Appendix 3 occupancy
+      «ویلایی». Not covered: the written word is itself a name elsewhere (a listed city, a
+      material, a row): «تبریز» (a listed city) -> the material «تبریزی» is a misreading.
+    evidence:
+      - final3 K150, K151, K191 «ویلا …» -> occupancy «ویلایی» (development-set survey 2026-11-23)

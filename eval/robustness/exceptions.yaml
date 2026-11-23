@@ -1,0 +1,146 @@
+# Robustness audit - reviewed exceptions (Phase 1, 2026-11-23).
+#
+# Invariant (quantity preservation): when api/quantities.analyse identifies exactly one table
+# quantity, everything the answer SHOWS (values, context rows, clarification and refusal datasets)
+# comes from that quantity's own tables - unless one of the exceptions below applies. Candidate
+# plans that contribute nothing shown are not checked (X7).
+#
+# Invariant (no unwritten word): a resolved non-place entity must not rest on a word the user did
+# not write (e.g. «تبریز» resolved as the material word «تبریزی»).
+#
+# Source of the list: the approved behaviours of the engine and orchestration, and a survey of
+# every development question (dev, heldout, final, final2, final3: 825) with exactly one
+# deterministic quantity, comparing the tables shown with the quantity's own tables
+# (2026-11-23, code a751059/83a7f14). Every exception has its evidence. A new exception needs
+# review before any test or guard may rely on it.
+#
+# Nothing here is read by the runtime yet (Phase 3 is not approved).
+
+version: 1
+status: proposed_for_review
+
+# the deterministic quantities and their own tables / requested fields (as in api/quantities.py and
+# the engine plans observed on those tables); listed so the review sees the baseline
+quantities:
+  eui: {tables: [app03.max_energy_use_intensity], fields: [max_eui]}
+  r_value: {tables: [main.t19-5-1], fields: [min_r_value]}
+  u_value: {tables: [main.t19-5-1, main.t19-5-2], fields: [max_value, min_r_value]}
+  shgc: {tables: [main.t19-5-2], fields: [max_value]}
+  lambda: {tables: [app07.material_thermal_properties], fields: [thermal_conductivity]}
+  density: {tables: [app07.material_thermal_properties], fields: [density]}
+  efficiency: {tables: [main.t19-5-3, main.t19-5-4], fields: [threshold]}
+  hot_water: {tables: [main.t19-5-5], fields: [max_temperature]}
+  daylight: {tables: [main.t19-5-6], fields: [min_daylight_area]}
+  uniformity: {tables: [main.t19-5-7], fields: [min_uniformity]}
+
+exceptions:
+  - id: X1
+    name: material_r_vs_lambda
+    kind: different_output
+    asked: [r_value]
+    shown_table: app07.material_thermal_properties
+    shown_output: thermal_conductivity
+    allowed_response: [clarification]
+    condition: >-
+      An Appendix 7 material is written in the question (a word of its printed label occurs as
+      written). Appendix 7 prints no R; the engine offers the material's λ as an explicit
+      clarification with the R-versus-λ note. Never a λ value for an R question without that
+      choice.
+    evidence:
+      - «مقاومت حرارتی چوب تبریزی چقدره؟» -> output clarification «نمایش ضریب هدایت حرارتی (λ)»
+        (tests/unit/test_city_misread.py)
+    not_covered:
+      - the material word is not written but resembles a written word («تبریز» -> «تبریزی»):
+        a misread, not this exception (orchestration.city_misread)
+
+  - id: X2
+    name: opaque_u_as_r
+    kind: different_output
+    asked: [u_value]
+    shown_table: main.t19-5-1
+    shown_output: min_r_value
+    allowed_response: [refusal, clarification, structured_value]
+    condition: >-
+      U asked for an opaque element: table 19-5-1 prints R, so U is refused and R is offered
+      explicitly with a notice (approved pre-pilot routing patch 7952912). 19-5-1 is one of
+      u_value's own tables; the exception is the output, not the table.
+    evidence:
+      - pre-pilot routing patch 7952912 (eval/prepilot/paraphrases.yaml)
+
+  - id: X3
+    name: city_climate_context
+    kind: supporting_context
+    asked: [eui, r_value, u_value, shgc]
+    shown_table: [app02.city_climate_classes, main.t19-3-2]
+    shown_output: climate_class
+    allowed_response: [structured_value, clarification, refusal]
+    condition: >-
+      The certified city rows a climate class was taken from, shown only as Answer.context (never
+      as the answer's values) by the certified city lookup (city_flow, structured rescue,
+      carry_city). A question about the city's climate itself asks for climate_class and is not
+      a table-quantity question.
+    evidence:
+      - tests/unit/test_city_selector.py, tests/unit/test_orchestration.py
+
+  - id: X4
+    name: explicit_table_or_section
+    kind: explicit_reference
+    asked: any
+    shown_table: the table or section the user names
+    allowed_response: [structured_value, clarification, refusal, prose]
+    condition: >-
+      The question names a table or section explicitly (route signals table_ref / section_ref);
+      the user's reference decides the table, whatever quantity word the question also contains.
+    evidence:
+      - final3 K119 «… نسبت R (جدول ۱۹-۳-۳) …» -> 19-3-3 r_range refusal
+      - final F078 «… طبق جدول زمان‌بندی …» -> 19-2-1 printed symbol
+
+  - id: X5
+    name: implementation_schedule
+    kind: different_table
+    asked: [r_value, u_value, shgc, efficiency, eui, hot_water, daylight, uniformity]
+    shown_table: main.t19-2-1
+    shown_output: printed_symbol
+    allowed_response: [structured_value, clarification, refusal]
+    condition: >-
+      The quantity is named as a requirement of the implementation schedule (building group and/or
+      year of the fifth edition): table 19-2-1 prints whether the requirement applies (a symbol),
+      not its value.
+    evidence:
+      - final2 G077 «در سال دوم … گروه الف ملزم به رعایت حداقل مقاومت حرارتی جداره نورگذر هستند؟»
+        -> main-t19-2-1-r03c09 ✗
+      - final F078 (also X4)
+
+  - id: X6
+    name: second_quantity_named
+    kind: different_table
+    asked: any
+    shown_table: the table of the second quantity
+    allowed_response: [structured_value, clarification, refusal]
+    condition: >-
+      The question also names another quantity by a printed symbol or name the deterministic
+      reader does not count as a quantity (a bare «U»), and the shown answer is that quantity
+      from its own table. The second quantity must be written; never inferred.
+    evidence:
+      - final2 G106 «حداکثر U پنجره ثابت در اقلیم 2B … و آیا مقاومت حرارتی لایه هوای …» -> 19-5-2
+        U value (+ prose for the R part)
+
+  - id: X7
+    name: unused_candidate_plan
+    kind: not_shown
+    asked: any
+    condition: >-
+      A candidate plan of another table that contributes nothing shown (no value, context row,
+      clarification or refusal of that table) is not a substitution. The invariant is checked on
+      what the answer shows.
+    evidence:
+      - final3 K123 (router candidate app03 + 19-5-1; the value shown is main-t19-5-1-r04c00 ۰/۹۱)
+
+  - id: X8
+    name: prose_answer
+    kind: not_a_table_answer
+    asked: any
+    condition: >-
+      A prose answer (verbatim excerpts) shows no table value; it is not a substitution but is
+      counted separately by the audit (a table quantity answered with prose is a coverage gap,
+      handled by the structured rescue, not a safety violation).

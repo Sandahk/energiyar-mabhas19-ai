@@ -1,0 +1,600 @@
+version: 1
+status: proposed_for_review
+generated_by: python -m mabhas19.cli.robustness_audit collisions --write-baseline
+definition: 'word keys = options.label_key of each name word (>= 3 letters, stopwords of api/invariants.STOPWORDS
+  dropped) of: the 77 listed cities, Appendix 7 material names, printed row labels of every main table
+  (19-3-2 excluded: it prints the listed cities themselves), Appendix 3 occupancies, printed output names,
+  family words. exact = one key in more than one namespace group; prefix = a key of >= 4 letters that
+  is a strict prefix of a key of another namespace group.'
+review_classes:
+  guarded: a known misreading risk with a runtime guard and a test
+  watch: distinct things share a name word; covered by the generated sweeps
+  same_concept: the same name printed by several tables
+  family_word: a reviewed family word
+  generic_word: not a distinguishing name
+  pending: new; not reviewed (the collisions test fails until reviewed)
+collisions:
+- key: exact:اداری
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  - row:t19-5-7
+  examples:
+  - اداری بزرگتر از ۲۰۰۰ متر مربع
+  - اداری خصوصی
+  - اداری و فضاهای کار
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:ازمایشگاه
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-7
+  examples:
+  - آزمایشگاه و فضاهای فعالیت‌های دقیق
+  - تشخیص پزشکی آزمایشگاه
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:استاندارد
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  examples:
+  - استاندارد
+  - اسفنج پلی‌یورتان یا پلی‌ایزوسیانورات مطابق استاندارد ملی ایران صفحات با عایق تزریق‌شده به‌صورت ممتد
+    بین دو ورق فلزی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:انبار
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - انبار یخچال دار
+  - انبار، سوله صنعتی
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:انرژی
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-2-1
+  - row:t19-5-4
+  examples:
+  - انرژی تجدیدپذیر
+  - حداکثر شدت مصرف انرژی مجاز
+  - کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:بازدهی
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-2-1
+  - row:t19-5-3
+  - row:t19-5-4
+  examples:
+  - تأسیسات مکانیکی – بازدهی تجهیزات انرژی‌بر
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازدهی حرارتی ناخالص قابل
+    قبول در شرایط متوسط دمای سالانه
+  - حداقل بازدهی
+  - کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:بام
+  kind: exact
+  namespaces:
+  - family
+  - row:t19-2-1
+  examples:
+  - بام
+  - جداره غیرنورگذر – الزامات بازتاب بام
+  review: family_word
+  note: A reviewed family word (api/wording.FAMILIES) that is also a printed word of another row; the
+    family applies only with R and no row named.
+- key: exact:بدون
+  kind: exact
+  namespaces:
+  - material
+  - occupancy
+  - row:t19-5-1
+  - row:t19-5-3
+  - row:t19-5-4
+  examples:
+  - آبگرمکن – گازسوز بدون مخزن (فوری)
+  - الکتروموتور – سرعت متغیر بدون جاروبک
+  - درهای غیرنورگذر بدون لولا
+  - سوله بدون تهویه (صنعتی)
+  - پلی‌استایرن منبسط (اصطلاحاً یونولیت یا پلاستوفوم) پلی‌استایرن برش خورده در بلوک‌های قالبی تولیدشده
+    به‌صورت منقطع، یا قالب‌گیری شدهٔ ممتد بدون پوستهٔ سطحی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:بستری
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-7
+  examples:
+  - فضاهای عمومی و بستری بیمارستان‌ها
+  - کلینیک بدون بستری بیمار
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:بسیار
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-3-1
+  examples:
+  - بتن با سنگدانه بسیار سبک لایه‌های بتن متشکل از ورمیکولیت ساخته شده در کارخانه
+  - بسیار سرد و کم باران (5B)، بسیار سرد و بارش متوسط (5C)
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:بیمارستان
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-7
+  examples:
+  - بیمارستان
+  - فضاهای عمومی و بستری بیمارستان‌ها
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:تجاری
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - تجاری بزرگ‌تر از ۲۰۰۰ متر مربع
+  - تجاری/ فروشگاه
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:حرارتی
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  - row:t19-2-1
+  - row:t19-5-2
+  - row:t19-5-3
+  examples:
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  - جداره نورگذر – حداقل مقاومت حرارتی
+  - حداقل مقاومت حرارتی (R)
+  - حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت
+  - عایق‌های حرارتی معدنی پشم‌سنگ
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:خالص
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-5-3
+  examples:
+  - بتونهٔ درزها، مواد آب‌بندی و گرماشکنی سیلیکون خالص
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:خاک
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-5-1
+  examples:
+  - خاک و خشت خشت، گل، خاک تثبیت‌شده، بلوک‌های رسی متراکم
+  - دیوار خارجی مجاور خاک
+  review: watch
+  note: Distinct things share a name word; the asked quantity selects the table. Covered by the generated
+    sweeps (city x quantity, near-miss); no misrouting observed.
+- key: exact:خصوصی
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-5
+  examples:
+  - اداری خصوصی
+  - روشویی خصوصی
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:خوابگاه
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - خوابگاه
+  - مسکونی، درمانی، هتل، خوابگاه
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:خودرو
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-2-1
+  examples:
+  - تأسیسات الکتریکی – شارژر خودرو برقی
+  - تعمیرگاه خودرو
+  review: watch
+  note: Distinct things share a name word; the asked quantity selects the table. Covered by the generated
+    sweeps (city x quantity, near-miss); no misrouting observed.
+- key: exact:دار
+  kind: exact
+  namespaces:
+  - material
+  - occupancy
+  - row:t19-5-3
+  - row:t19-5-4
+  examples:
+  - آبگرمکن – گازسوز مخزن‌دار
+  - انبار یخچال دار
+  - دیگ بخار ری‌هیت‌دار – بازدهی حرارتی ناخالص
+  - عایق‌های رطوبتی آسفالت (قیر ماسه‌دار)
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:دمای
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-5-3
+  examples:
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازدهی حرارتی ناخالص قابل
+    قبول در شرایط متوسط دمای سالانه
+  - حداکثر دمای آب گرم مصرفی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:سقف
+  kind: exact
+  namespaces:
+  - family
+  - row:t19-5-1
+  examples:
+  - سقف
+  - سقف مجاور فضای آزاد
+  review: family_word
+  note: A reviewed family word (api/wording.FAMILIES) that is also a printed word of another row; the
+    family applies only with R and no row named.
+- key: exact:سوله
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - انبار، سوله صنعتی
+  - سوله با تهویه (صنعتی)
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:شده
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  examples:
+  - اسفنج پلی‌یورتان یا پلی‌ایزوسیانورات مطابق استاندارد ملی ایران صفحات با عایق تزریق‌شده به‌صورت ممتد
+    بین دو ورق فلزی
+  - علامت درج‌شده در جدول
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:شیشه
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-2-1
+  examples:
+  - جداره نورگذر – شیشه چندجداره
+  - شیشه و اسفنج شیشه اسفنج شیشه (شیشه متخلخل)
+  review: watch
+  note: Distinct things share a name word; the asked quantity selects the table. Covered by the generated
+    sweeps (city x quantity, near-miss); no misrouting observed.
+- key: exact:صنعتی
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - انبار، سوله صنعتی
+  - سوله با تهویه (صنعتی)
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:ضریب
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-5-2
+  - row:t19-5-3
+  - row:t19-5-4
+  examples:
+  - حد اکثر ضریب بهره خورشیدی SHGC – بیشتر از %۷۰
+  - ضریب هدایت حرارتی (λ)
+  - چیلر تراکمی آب خنک – ۰/۵۷۶ کیلووات به‌ازای هر تن‌تبرید یا بر اساس ضریب عملکرد (COP)
+  - کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:عایق
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-2-1
+  examples:
+  - اسفنج پلی‌یورتان یا پلی‌ایزوسیانورات مطابق استاندارد ملی ایران صفحات با عایق تزریق‌شده به‌صورت ممتد
+    بین دو ورق فلزی
+  - جداره غیرنورگذر – عایق‌کاری پوسته خارجی
+  review: watch
+  note: Distinct things share a name word; the asked quantity selects the table. Covered by the generated
+    sweeps (city x quantity, near-miss); no misrouting observed.
+- key: exact:عمومی
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-5
+  - row:t19-5-7
+  examples:
+  - اداری عمومی
+  - راهروها و فضاهای عمومی
+  - روشویی عمومی
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:قابل
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-5-3
+  examples:
+  - بتونهٔ درزها، مواد آب‌بندی و گرماشکنی پی‌وی‌سی قابل انعطاف با ۴۰ درصد روان‌ساز
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازدهی حرارتی ناخالص قابل
+    قبول در شرایط متوسط دمای سالانه
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:متر
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-5-6
+  examples:
+  - اداری بزرگتر از ۲۰۰۰ متر مربع
+  - گچ اندود با پرلیت یا ورمیکولیت (از ۱ تا ۲ میلی‌متر)
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:مرکز
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-3
+  examples:
+  - مرکز خرید/ مال
+  - پمپهای گریز از مرکز – جریان مختلط و محوری
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:مسکونی
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - مسکونی < ۳۰۰۰ مترمربع
+  - مسکونی، درمانی، هتل، خوابگاه
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:مصنوعی
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  examples:
+  - حداقل یکنواختی نور مصنوعی
+  - سنگ‌ها سنگ مصنوعی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:مقاومت
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-2-1
+  examples:
+  - جداره نورگذر – حداقل مقاومت حرارتی
+  - حداقل مقاومت حرارتی (R)
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:نسبت
+  kind: exact
+  namespaces:
+  - quantity
+  - row:t19-5-4
+  examples:
+  - بازه نسبت R
+  - کولر گازی – بر اساس نسبت بازدهی انرژی فصلی SEER
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:هتل
+  kind: exact
+  namespaces:
+  - occupancy
+  - row:t19-5-6
+  examples:
+  - مسکونی، درمانی، هتل، خوابگاه
+  - هتل
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: exact:پوسته
+  kind: exact
+  namespaces:
+  - material
+  - row:t19-2-1
+  examples:
+  - جداره غیرنورگذر – عایق‌کاری پوسته خارجی
+  - پلی‌استایرن منبسط (اصطلاحاً یونولیت یا پلاستوفوم) پلی‌استایرن برش خورده در بلوک‌های قالبی تولیدشده
+    به‌صورت منقطع، یا قالب‌گیری شدهٔ ممتد بدون پوستهٔ سطحی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:پیش
+  kind: exact
+  namespaces:
+  - material
+  - occupancy
+  examples:
+  - دبستان و پیش دبستان
+  - عایق‌های رطوبتی ورق پیش‌ساخته قیر اصلاح‌شده با مسلح‌کننده
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:چگالی
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  examples:
+  - بتن سبک‌دانه با خاکستر بادی سینترشده (چگالی ظاهری سنگدانه حدود ۶۵۰)
+  - چگالی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: exact:گرم
+  kind: exact
+  namespaces:
+  - material
+  - quantity
+  - row:t19-3-1
+  examples:
+  - بسیار گرم و کم باران (1B)
+  - حداکثر دمای آب گرم مصرفی
+  - پلیمرهای متراکم متداول در ساختمان بوتیل (ایزو بوتن) سخت با اجرای گرم
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: prefix:اموزش>اموزشی
+  kind: prefix
+  namespaces:
+  - occupancy
+  longer_namespaces:
+  - row:t19-5-6
+  examples:
+  - دانشگاه و آموزش عالی
+  - آموزشی
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: prefix:ایران>ایرانشهر
+  kind: prefix
+  namespaces:
+  - material
+  longer_namespaces:
+  - city
+  examples:
+  - اسفنج پلی‌یورتان یا پلی‌ایزوسیانورات مطابق استاندارد ملی ایران صفحات با عایق تزریق‌شده به‌صورت ممتد
+    بین دو ورق فلزی
+  - ایرانشهر
+  review: watch
+  note: Distinct things share a name word; the asked quantity selects the table. Covered by the generated
+    sweeps (city x quantity, near-miss); no misrouting observed.
+- key: prefix:بازده>بازدهی
+  kind: prefix
+  namespaces:
+  - row:t19-5-3
+  longer_namespaces:
+  - quantity
+  - row:t19-2-1
+  - row:t19-5-3
+  - row:t19-5-4
+  examples:
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  - تأسیسات مکانیکی – بازدهی تجهیزات انرژی‌بر
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازدهی حرارتی ناخالص قابل
+    قبول در شرایط متوسط دمای سالانه
+  - حداقل بازدهی
+  - کولر آبی – خنک کنندگی بر مبنای ضریب بازدهی انرژی EEI
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: prefix:بیمار>بیمارستان
+  kind: prefix
+  namespaces:
+  - occupancy
+  longer_namespaces:
+  - occupancy
+  - row:t19-5-7
+  examples:
+  - کلینیک بدون بستری بیمار
+  - بیمارستان
+  - فضاهای عمومی و بستری بیمارستان‌ها
+  review: same_concept
+  note: The same use / space name printed by several tables (Appendix 3 and 19-5-5/6/7); the asked quantity
+    selects the table, never the name alone.
+- key: prefix:تبریز>تبریزی
+  kind: prefix
+  namespaces:
+  - city
+  longer_namespaces:
+  - material
+  examples:
+  - تبریز
+  - چوب‌های طبیعی تبریزی، اکومه
+  review: guarded
+  note: A listed city is the start of an Appendix 7 material word («چوب‌های طبیعی تبریزی»); the engine
+    read «تبریز» as that material. Guarded at runtime by orchestration.city_misread (a751059) and by the
+    city x quantity sweep.
+- key: prefix:تولید>تولیدشده
+  kind: prefix
+  namespaces:
+  - row:t19-5-3
+  longer_namespaces:
+  - material
+  examples:
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  - پلی‌استایرن منبسط (اصطلاحاً یونولیت یا پلاستوفوم) پلی‌استایرن برش خورده در بلوک‌های قالبی تولیدشده
+    به‌صورت منقطع، یا قالب‌گیری شدهٔ ممتد بدون پوستهٔ سطحی
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: prefix:حرارت>حرارتی
+  kind: prefix
+  namespaces:
+  - row:t19-2-1
+  - row:t19-5-3
+  longer_namespaces:
+  - material
+  - quantity
+  - row:t19-2-1
+  - row:t19-5-2
+  - row:t19-5-3
+  examples:
+  - تأسیسات مکانیکی – بازیافت حرارت
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  - تولید همزمان حرارت و برق (CHP) یا تولید همزمان برودت، حرارت و برق (CCHP) – بازده خالص حرارتی
+  - جداره نورگذر – حداقل مقاومت حرارتی
+  - حداقل مقاومت حرارتی (R)
+  - حداکثر ضریب انتقال حرارتی U-Value (W/m2.k) – ثابت
+  - عایق‌های حرارتی معدنی پشم‌سنگ
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: prefix:ساخت>ساختمان
+  kind: prefix
+  namespaces:
+  - row:t19-2-1
+  longer_namespaces:
+  - material
+  examples:
+  - بازرسی – حین ساخت
+  - پلیمرهای متراکم متداول در ساختمان آکریلیک
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.
+- key: prefix:ساخت>ساخته
+  kind: prefix
+  namespaces:
+  - row:t19-2-1
+  longer_namespaces:
+  - material
+  examples:
+  - بازرسی – حین ساخت
+  - بتن با خرده چوب ساخته شده با تراشه‌های چوب و سیمان
+  review: generic_word
+  note: A generic or quantity word (not a distinguishing name); it never resolves an entity on its own.

@@ -77,7 +77,24 @@
   }
   .badge.refusal, .badge.out_of_scope { background: var(--refuse-soft); color: var(--refuse); }
   .badge.clarification { background: var(--warn-soft); color: var(--warn); }
-  .headline { font-size: 18px; font-weight: 700; margin: 2px 0 10px; }
+  .headline { font-size: 20px; font-weight: 800; margin: 2px 0 10px; line-height: 1.6; }
+  .headline.small-head { font-size: 15px; font-weight: 600; color: var(--ink-soft); }
+  /* a certified value: the result first */
+  .result { padding: 6px 0 12px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .result:last-of-type { border-bottom: none; }
+  .result .big { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .result .big .v { font-size: 38px; font-weight: 800; color: var(--emerald-deep); line-height: 1.25; }
+  .result .big .unit { font-size: 17px; font-weight: 600; color: var(--ink-soft); direction: ltr; unicode-bidi: isolate; }
+  .result .qty { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .result .ctx { font-size: 15px; color: var(--ink-soft); margin-top: 4px; }
+  .result .srcline { font-size: 13px; color: var(--ink-faint); margin-top: 6px; }
+  /* evidence and details on demand */
+  details.fold { margin-top: 8px; font-size: 14px; color: var(--ink-soft); }
+  details.fold > summary { cursor: pointer; color: var(--emerald-deep); font-weight: 600; padding: 2px 0; }
+  details.fold .echo, details.fold blockquote { margin: 6px 0; }
+  details.fold pre { white-space: pre-wrap; direction: ltr; text-align: left; font-size: 12px; color: var(--ink-faint); }
+  .ctx-line { font-size: 14px; color: var(--ink-soft); margin: 4px 0; }
+  .ltr { direction: ltr; text-align: right; unicode-bidi: isolate; }
   .opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
   .opts button {
     padding: 4px 14px; border-radius: 999px; border: 1px solid var(--emerald); color: var(--emerald-deep);
@@ -189,6 +206,9 @@
     .privacy { font-size: 11px; line-height: 1.6; }
     textarea { min-height: 40px; }
     table.side { font-size: 13px; }
+    .result .big .v { font-size: 32px; }
+    table.side th:nth-child(4), table.side td:nth-child(4) { display: none; }  /* in the details */
+    .headline { font-size: 18px; }
     table.side th, table.side td { padding: 6px 3px; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .footer-brand { grid-column: 1 / -1; }
@@ -455,42 +475,79 @@ function renderClarification(a, c, card) {
     box.append(input, go);
     card.appendChild(box);
   }
-  if (c.hint) card.appendChild(el("div", "small", c.hint));
+  // the city hint belongs to the city path; without it (a conflict step) it stays in the details
+  if (c.hint && (c.city_select || c.field !== "climate_class")) card.appendChild(el("div", "small", c.hint));
+  else if (c.hint) a.__details = [el("div", "small", c.hint)];
   if (c.table && c.options && c.options.length) {
     card.appendChild(el("div", "small", "گزینه‌ها از " + c.table + " است."));
   }
 }
 
+// a source as one short line: «مبحث ۱۹ · جدول ۱۹-۵-۱ · صفحه ۶۵»
+function citeShort(s) {
+  if (!s) return "";
+  const parts = ["مبحث ۱۹", s.label];
+  if (s.printed_pages && s.printed_pages.length) parts.push("صفحه " + fa(s.printed_pages.join("، ")));
+  return parts.join(" · ");
+}
+
+function unique(xs) { return xs.filter((x, i) => x && xs.indexOf(x) === i); }
+
+// the city a climate was taken from, as printed (a station in parentheses is the same city)
+function contextCities(a) {
+  return unique((a.context || []).map((v) => v.row_label.replace(/\s*\([^)]*\)\s*$/, "")));
+}
+
+// collapsed by default: evidence and details are shown on demand
+function fold(title, cls) {
+  const d = el("details", "fold" + (cls ? " " + cls : ""));
+  d.appendChild(el("summary", "", title));
+  return d;
+}
+
+// one certified value: the result first, then its quantity, a short context and one source line
+function renderResult(v, a) {
+  const box = el("div", "result");
+  const big = el("div", "big");
+  big.appendChild(el("span", "v", v.value));
+  if (v.unit) big.appendChild(el("bdi", "unit", v.unit));
+  box.appendChild(big);
+  if (v.output_label) box.appendChild(el("div", "qty", v.output_label));
+  // the climate the lookup used (from the answer's own echo); the printed column it fell in
+  // («اقلیم‌ها 3A, 3B») stays with the full conditions in the details
+  const climate = (a.interpretation || []).find((i) => i.key === "climate_class" && i.status === "resolved");
+  const conds = (v.conditions || []).filter((c) => !(climate && c.label.startsWith("اقلیم")));
+  const ctx = unique([
+    v.row_label,
+    ...contextCities(a),
+    climate ? "اقلیم " + climate.value : "",
+    ...conds.map((c) => c.label + " " + c.value),
+  ]);
+  if (ctx.length) box.appendChild(el("div", "ctx", ctx.join(" · ")));
+  if (v.source) box.appendChild(el("div", "srcline", citeShort(v.source)));
+  return box;
+}
+
 function renderAnswer(a, latency) {
   const card = el("div", "card");
   card.appendChild(el("span", "badge " + a.response_type, TYPES[a.response_type] || ""));
-  card.appendChild(el("div", "headline", a.headline));
   const clarify = a.response_type === "clarification" && a.clarifications && a.clarifications[0];
-  if (clarify) renderClarification(a, clarify, card);
-
-  // the certified city rows a climate was taken from (shown, never hidden)
-  if (a.context && a.context.length) {
-    const ctx = el("div", "echo");
-    ctx.appendChild(el("b", "", "اقلیم از نام شهر"));
-    for (const v of a.context) {
-      ctx.appendChild(el("div", "", v.row_label + " ← " + v.output_label + " " + v.value + " (" + cite(v.source) + ")"));
-    }
-    card.appendChild(ctx);
-  }
-
-  if (a.interpretation && a.interpretation.length) {
-    const echo = el("div", "echo");
-    echo.appendChild(el("b", "", "برداشت سیستم از سؤال شما"));
-    for (const i of a.interpretation) {
-      const chip = el("span", "chip", i.label + " = " + i.value);
-      if (STATUS[i.status]) chip.appendChild(el("span", "st", STATUS[i.status]));
-      echo.appendChild(chip);
-    }
-    card.appendChild(echo);
-  }
-
-  // side by side: one certified row per printed value of the last missing column
   const side = a.safety && a.safety.composite && a.safety.composite.kind === "side_by_side";
+  const valueCard = a.response_type === "structured_value" && !side && (a.values || []).length > 0;
+  const details = [];  // elements for «منبع و جزئیات فنی»
+  const technical = [];
+
+  // 1. the answer: the certified result, the question asked back, or the message
+  if (valueCard) {
+    if (a.values.length > 1) card.appendChild(el("div", "headline small-head", a.headline));
+    for (const v of a.values) card.appendChild(renderResult(v, a));
+  } else {
+    card.appendChild(el("div", "headline", a.headline));
+  }
+  if (clarify) renderClarification(a, clarify, card);
+  if (a.__details) details.push(...a.__details);
+
+  // side by side: one certified row per printed value, the table is the result
   if (side) {
     const table = el("table", "side");
     const head = el("tr");
@@ -500,69 +557,95 @@ function renderAnswer(a, latency) {
       const tr = el("tr");
       tr.appendChild(el("td", "", v.row_label));
       tr.appendChild(el("td", "", (v.conditions || []).map((c) => c.label + ": " + c.value).join("، ")));
-      const val = el("td", "v", v.value + (v.unit ? " " + v.unit : ""));
-      tr.appendChild(val);
-      tr.appendChild(el("td", "src", cite(v.source)));
+      tr.appendChild(el("td", "v", v.value + (v.unit ? " " + v.unit : "")));
+      tr.appendChild(el("td", "src", citeShort(v.source)));
       table.appendChild(tr);
     }
     card.appendChild(table);
-  }
-
-  for (const v of side ? [] : a.values || []) {
-    const box = el("div", "value");
-    if (v.row_label) box.appendChild(el("div", "row", v.row_label));
-    if (v.value) {
-      const num = el("div", "num");
-      if (v.output_label) num.appendChild(document.createTextNode(v.output_label + ": "));
-      num.appendChild(el("span", "v", v.value));
-      if (v.unit) num.appendChild(document.createTextNode(" " + v.unit));
-      if (v.unit_label) num.appendChild(el("span", "small", " (" + v.unit_label + ")"));
-      box.appendChild(num);
-    }
-    for (const c of v.conditions || []) box.appendChild(el("div", "cond", c.label + ": " + c.value));
-    box.appendChild(el("div", "src", "منبع: " + cite(v.source)));
-    card.appendChild(box);
   }
   if (a.hidden_values) {
     card.appendChild(el("div", "small", a.hidden_values + " ردیف دیگر نیز مطابقت دارد؛ برای فهرست کامل به منبع مراجعه کنید."));
   }
 
+  // 2. what must stay visible: refusals, conflicts, source issues, a prose answer's excerpts
   const secondary = a.response_type === "structured_value";
-  if (secondary && a.refusals && a.refusals.length) {
-    card.appendChild(el("div", "small", "جدول‌های دیگری که بررسی شد:"));
-  }
-  const technical = [];
   if (clarify) {
     // the engine's refusal behind the question stays in the technical details only
     for (const r of a.refusals || []) technical.push("refused: " + r.outcome + " / " + r.reason);
+  } else if (secondary) {
+    const others = el("div");
+    for (const r of a.refusals || []) others.appendChild(renderRefusal(r, true, false));
+    if (others.childNodes.length) details.push(el("div", "small", "جدول‌های دیگری که بررسی شد:"), others);
   } else {
     (a.refusals || []).forEach((r, k) => {
-      const repeated = !secondary && k === 0 && r.message === a.headline;
+      const repeated = k === 0 && r.message === a.headline;
       if (repeated && !r.options.length && !r.missing.length && !r.hint) return;
-      card.appendChild(renderRefusal(r, secondary, repeated));
+      card.appendChild(renderRefusal(r, false, repeated));
     });
   }
 
+  // the certified city rows: in view when they decide what happens next (a conflict, a class
+  // the table does not print), with the details when a value was found
+  if (a.context && a.context.length) {
+    const ctx = el("div", "echo");
+    ctx.appendChild(el("b", "", "اقلیم از نام شهر"));
+    for (const v of a.context) {
+      ctx.appendChild(el("div", "", v.row_label + " ← " + v.output_label + " " + v.value + " (" + cite(v.source) + ")"));
+    }
+    const codes = unique(a.context.map((v) => v.value));
+    // in view when it decides what happens next: sources disagree, or no value was given
+    if (codes.length > 1 || (!secondary && !clarify)) card.appendChild(ctx);
+    else {
+      if (!secondary) card.appendChild(el("div", "ctx-line", contextCities(a).join("، ") + " · اقلیم " + codes[0]));
+      details.push(ctx);
+    }
+  }
+
+  const prose = a.response_type === "prose";
   for (const e of a.excerpts || []) {
-    card.appendChild(el("blockquote", "", e.text));
-    card.appendChild(el("div", "src", "منبع: " + cite(e.source)));
+    const q = el("blockquote", "", e.text), src = el("div", "src", "منبع: " + cite(e.source));
+    if (prose) card.append(q, src); else details.push(q, src);
   }
 
   for (const n of a.notices || []) {
     if (n.kind === "technical") technical.push(n.text);
+    else if (n.kind === "note" && (secondary || clarify)) details.push(el("div", "notice note", n.text));
     else card.appendChild(el("div", "notice " + n.kind, n.text));
   }
-  const det = el("details");
-  det.appendChild(el("summary", "", "جزئیات فنی"));
-  const pre = el("pre", "", [
+
+  // 3. on demand: the system's reading of the question, then sources and technical details
+  if (a.interpretation && a.interpretation.length) {
+    const echo = fold("برداشت سیستم از سؤال");
+    const chips = el("div", "echo");
+    for (const i of a.interpretation) {
+      const chip = el("span", "chip", i.label + " = " + i.value);
+      if (STATUS[i.status]) chip.appendChild(el("span", "st", STATUS[i.status]));
+      chips.appendChild(chip);
+    }
+    echo.appendChild(chips);
+    card.appendChild(echo);
+  }
+  const more = fold("منبع و جزئیات فنی");
+  if (valueCard && a.values.length === 1) more.appendChild(el("div", "small", a.headline));
+  for (const v of a.values || []) {  // every certified row in full (side by side too)
+    const box = el("div", "value");
+    if (v.row_label) box.appendChild(el("div", "row", v.row_label));
+    for (const c of v.conditions || []) box.appendChild(el("div", "cond", c.label + ": " + c.value));
+    if (v.unit_label) box.appendChild(el("div", "cond", "واحد: " + v.unit_label));
+    box.appendChild(el("div", "src", "منبع: " + cite(v.source)));
+    box.appendChild(el("div", "cond ltr", "record: " + v.record_id));
+    more.appendChild(box);
+  }
+  for (const s of a.sources || []) more.appendChild(el("div", "src", "منبع: " + cite(s)));
+  for (const d of details) more.appendChild(d);
+  more.appendChild(el("pre", "", [
     "request: " + a.request_id,
     "route: " + (a.safety && a.safety.route),
     "certified rows: " + ((a.safety && a.safety.certified_row_ids) || []).join(", "),
     "latency: " + latency + " ms",
     ...technical,
-  ].join("\n"));
-  det.appendChild(pre);
-  card.appendChild(det);
+  ].join("\n")));
+  card.appendChild(more);
   card.appendChild(feedback(a.request_id));
   return card;
 }

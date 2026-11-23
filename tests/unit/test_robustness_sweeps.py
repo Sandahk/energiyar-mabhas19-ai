@@ -45,22 +45,11 @@ def _problems(question: str, label: str = "") -> list[str]:
     return out
 
 
-# Open findings of the audit (2026-11-23), reported for review before any runtime guard (Phase 3):
-# for a multi-word listed city the frozen engine plans the city's climate lookup instead of the
-# asked quantity (an energy-use question gets the city's climate class; R / SHGC get a city-table
-# refusal). No wrong regulatory value is shown. A new finding fails; a fixed one must be removed.
-_EUI = "حد مجاز مصرف انرژی در {} چقدره؟"
-_MOGHAN = "پارس آباد مغان"
-KNOWN_OPEN = {
-    "city_quantity": {
-        *(_EUI.format(c) for c in ("بندر بوشهر", "بندر لنگه", "بندر ماهشهر", _MOGHAN)),
-        *(_EUI.format(c) for c in ("تربت حیدریه", "خرم آباد")),
-        f"برای سقف یه ساختمان تو {_MOGHAN} حداقل مقاومت حرارتی چقدره؟",
-        f"حداقل مقاومت حرارتی {_MOGHAN} چقدره؟",
-        f"حداقل R دیوار در {_MOGHAN} چقدره؟",
-        f"حداکثر SHGC پنجره در {_MOGHAN} چقدره؟",
-    },
-}
+# Open findings of the audit: none. The 10 multi-word-city findings of 2026-11-23 (an energy-use
+# question answered with the city's climate class; R / SHGC with a city-table refusal) are
+# resolved by the Phase 3 quantity guard (api.guard; tests/unit/test_quantity_guard.py). A new
+# finding fails here until it is reviewed.
+KNOWN_OPEN: dict[str, set[str]] = {}
 
 
 @pytest.mark.parametrize(

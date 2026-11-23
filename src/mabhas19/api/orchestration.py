@@ -39,6 +39,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Literal
 
+from mabhas19.api import guard as G
 from mabhas19.api import quantities as Q
 from mabhas19.api import wording as W
 from mabhas19.api.cities import STATION as _STATION
@@ -905,15 +906,47 @@ def respond(  # noqa: PLR0913
         question = chosen
     text, rules = W.rewrite(question)
     part = _call(run, text, request_id)
-    misread = city_misread(store, part)
-    reply = side_by_side(run, store, part, request_id)
+    # Phase 3: the primary engine result must be the one table quantity asked (api.guard); an
+    # incompatible reading (or a written city read as another entity) is suppressed and the
+    # asked quantity's own structured path answers
+    guarded = G.violation(store, part.question, part.answer, part.result)
+    misread = guarded is not None or city_misread(store, part)
+    if misread:
+        reply = Reply(part.answer, part.result, [part])
+    else:
+        reply = side_by_side(run, store, part, request_id)
     reply = widen(run, store, reply, request_id, misread=misread)
     reply = rescue(run, store, reply, misread=misread)
+    if misread and reply.answer is part.answer:  # nothing typed it: fail closed
+        reply = _guard_refusal(store, part)
+    if guarded is not None:
+        reply.answer.safety["quantity_guard"] = {"violation": guarded}
     if chosen is not None:
         carried = carry_city(run, store, chosen, reply, request_id)
         if carried is not None:
             reply = carried
     return _noted(reply, question, rules)
+
+
+def _guard_refusal(store: StructuredStore, part: Part) -> Reply:
+    """The asked quantity's typed refusal asking for the row, when the engine's reading was
+    suppressed and no structured path typed an answer (never the suppressed reading)."""
+    request = Q.analyse(part.question)
+    assert request is not None  # a reading is suppressed only for an identified quantity
+    quantity = request.quantity
+    sources = _Sources(store)
+    dataset, field_name = quantity.tables[-1]
+    label = L.RESCUE_FIELD.get(field_name, L.FIELD_LABELS.get(field_name, ""))
+    tables = " و ".join(dict.fromkeys(sources.table(d)[0] for d, _ in quantity.tables))
+    refusal = Refusal(
+        "missing_row",
+        "row_not_named",
+        L.RESCUE_ROW.format(table=tables, field=label),
+        dataset=dataset,
+        missing=(label,),
+        table=sources.table(dataset)[0],
+    )
+    return _rescued(part, store, quantity, None, [part], question=part.question, refusal=refusal)
 
 
 def _word_keys(text: str) -> list[str]:

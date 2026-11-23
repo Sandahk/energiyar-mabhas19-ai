@@ -293,6 +293,30 @@ Frozen tests: `tests/unit/test_city_misread.py`.
   engine asks for the climate, the certified `city_flow` continues with it (Isfahan still stops
   at 3B / 4B).
 
+### Quantity guard (Phase 3, 2026-11-23)
+
+`api/guard.py`, called by `orchestration.respond` on the main engine call. Once
+`quantities.analyse` identifies exactly one table quantity, the primary engine result (its values,
+else its first clarification, else its first refusal; secondary refusals and unused plans never
+decide) must be that quantity: one of its tables, printing an output the table's schema declares
+for it (Appendix 7 λ / density told apart by output, 19-5-2 U / SHGC by the printed row). Only the
+quantity-transformation exceptions of `eval/robustness/exceptions.yaml` permit another primary
+table: X1 (R for a written material -> λ offer), X2 (U for an opaque element -> 19-5-1 R), X4
+(explicit table / section), X5 (schedule 19-2-1), X6 (another quantity written, including the
+city's climate classification «رده اقلیمی …»). City tables are supporting context only (X3).
+After a violation the engine's reading (echo, excerpts, sources) is suppressed and the asked
+quantity's own path answers: row groups, the structured rescue with the exact certified city
+lookup (longest whole listed name), or the quantity's typed refusal. The guard never produces a
+value, a row or a climate; the violation is recorded as `safety.quantity_guard`. Example: «حد مجاز
+مصرف انرژی در بندر بوشهر چقدره؟» was answered with the city's climate class 1B; it now asks for the
+building use, with «بندر بوشهر» -> 1B as context. Frozen tests: `tests/unit/test_quantity_guard.py`;
+audit: `python -m mabhas19.cli.robustness_audit sweep|consistency`.
+
+Separate usability issue (not a quantity substitution, not changed by the guard): «حداقل مقاومت
+حرارتی بندر بوشهر» (and other multi-word cities after an R quantity with no row) gets the engine's
+own same-quantity refusal for the unknown word «بندر» instead of the element rows with the city's
+class - a structured-rescue gap to review separately.
+
 ### Known issues (hypotheses for the pilot, not fixed)
 
 Routing issues found by the clarification pass and the pre-pilot patch (not fixed):

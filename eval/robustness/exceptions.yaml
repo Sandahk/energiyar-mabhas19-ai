@@ -16,8 +16,40 @@
 #
 # Nothing here is read by the runtime yet (Phase 3 is not approved).
 
-version: 1
-status: proposed_for_review
+version: 2
+status: approved_2026-11-23  # X1-X9 approved with scopes (not one flat allow-list)
+
+# Every exception has exactly one scope. A scope says which invariants it may bypass and whether a
+# runtime guard may ever rely on it. An exception never bypasses an invariant its scope does not
+# list; in particular nothing permits a different quantity as the PRIMARY answer except a
+# quantity_transformation exception under its documented condition.
+scopes:
+  quantity_transformation:
+    bypasses: [quantity_preservation, quantity_table_consistency]
+    runtime: true
+    meaning: >-
+      The primary answer may legitimately be another table / output, only under the exception's
+      documented and evidenced condition.
+  supporting_context:
+    bypasses: []
+    runtime: true
+    meaning: >-
+      Another table may be shown as supporting evidence (Answer.context) only. It never replaces
+      the requested primary quantity: a city table as the primary answer of a table-quantity
+      question is a violation (unless the user asks for the city's climate classification, which
+      is then not a table-quantity question).
+  audit_exclusion:
+    bypasses: []
+    runtime: false
+    meaning: >-
+      How the audit reads an answer (what counts as shown / primary). Never a runtime permission
+      for a quantity substitution.
+  lexical_equivalence:
+    bypasses: [unwritten_word]
+    runtime: true
+    meaning: >-
+      A reviewed derived word form satisfies "the word was written". It never bypasses quantity
+      preservation or quantity/table consistency.
 
 # the deterministic quantities and their own tables / requested fields (as in api/quantities.py and
 # the engine plans observed on those tables); listed so the review sees the baseline
@@ -35,6 +67,7 @@ quantities:
 
 exceptions:
   - id: X1
+    scope: quantity_transformation
     name: material_r_vs_lambda
     kind: different_output
     asked: [r_value]
@@ -55,6 +88,7 @@ exceptions:
         a misread, not this exception (orchestration.city_misread)
 
   - id: X2
+    scope: quantity_transformation
     name: opaque_u_as_r
     kind: different_output
     asked: [u_value]
@@ -69,6 +103,7 @@ exceptions:
       - pre-pilot routing patch 7952912 (eval/prepilot/paraphrases.yaml)
 
   - id: X3
+    scope: supporting_context
     name: city_climate_context
     kind: supporting_context
     asked: [eui, r_value, u_value, shgc]
@@ -84,6 +119,7 @@ exceptions:
       - tests/unit/test_city_selector.py, tests/unit/test_orchestration.py
 
   - id: X4
+    scope: quantity_transformation
     name: explicit_table_or_section
     kind: explicit_reference
     asked: any
@@ -97,6 +133,7 @@ exceptions:
       - final F078 «… طبق جدول زمان‌بندی …» -> 19-2-1 printed symbol
 
   - id: X5
+    scope: quantity_transformation
     name: implementation_schedule
     kind: different_table
     asked: [r_value, u_value, shgc, efficiency, eui, hot_water, daylight, uniformity]
@@ -113,6 +150,7 @@ exceptions:
       - final F078 (also X4)
 
   - id: X6
+    scope: quantity_transformation
     name: second_quantity_named
     kind: different_table
     asked: any
@@ -127,6 +165,7 @@ exceptions:
         U value (+ prose for the R part)
 
   - id: X7
+    scope: audit_exclusion
     name: unused_candidate_plan
     kind: not_shown
     asked: any
@@ -140,6 +179,7 @@ exceptions:
         the app03 refusal is secondary)
 
   - id: X8
+    scope: audit_exclusion
     name: prose_answer
     kind: not_a_table_answer
     asked: any
@@ -149,6 +189,7 @@ exceptions:
       handled by the structured rescue, not a safety violation).
 
   - id: X9
+    scope: lexical_equivalence
     name: derived_word_form
     kind: same_word
     asked: any

@@ -78,4 +78,54 @@ def test_the_reviewed_exceptions_are_complete() -> None:
     for x in data["exceptions"]:
         assert x["condition"], x["id"]
         assert x.get("evidence") or x["kind"] in ("not_a_table_answer",), x["id"]
+        assert x["scope"] in data["scopes"], x["id"]
+
+
+def test_every_exception_is_scoped_as_approved() -> None:
+    """X1-X9 are not one allow-list: only quantity transformations may change the primary
+    answer's quantity; audit exclusions never reach the runtime; X9 only satisfies the
+    written-word invariant; X3 only adds supporting context."""
+    data = I.exceptions()
+    scope = {x["id"]: x["scope"] for x in data["exceptions"]}
+    assert scope == {
+        "X1": "quantity_transformation",
+        "X2": "quantity_transformation",
+        "X3": "supporting_context",
+        "X4": "quantity_transformation",
+        "X5": "quantity_transformation",
+        "X6": "quantity_transformation",
+        "X7": "audit_exclusion",
+        "X8": "audit_exclusion",
+        "X9": "lexical_equivalence",
+    }
+    scopes = data["scopes"]
+    assert scopes["quantity_transformation"]["bypasses"] == [
+        "quantity_preservation",
+        "quantity_table_consistency",
+    ]
+    assert scopes["supporting_context"]["bypasses"] == []
+    assert scopes["audit_exclusion"] == {
+        **scopes["audit_exclusion"],
+        "bypasses": [],
+        "runtime": False,
+    }
+    assert scopes["lexical_equivalence"]["bypasses"] == ["unwritten_word"]
+    # the code applies each exception only within its scope
+    assert I.EXCEPTION_USE == {
+        "X1": "quantity_preservation",
+        "X2": "quantity_preservation",
+        "X4": "quantity_preservation",
+        "X5": "quantity_preservation",
+        "X6": "quantity_preservation",
+        "X3": "context",
+        "X7": "audit",
+        "X8": "audit",
+        "X9": "unwritten_word",
+    }
+    for xid, use in I.EXCEPTION_USE.items():
+        bypasses = scopes[scope[xid]]["bypasses"]
+        if use in ("quantity_preservation", "unwritten_word"):
+            assert use in bypasses, xid
+        else:
+            assert bypasses == [], xid
     assert set(data["quantities"]) == {q.id for q in Q.QUANTITIES}

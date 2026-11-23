@@ -37,6 +37,20 @@ if TYPE_CHECKING:
     from mabhas19.retrieval.structured import StructuredStore
 
 ROBUSTNESS_DIR = EVAL_DIR / "robustness"
+# where each reviewed exception is applied (eval/robustness/exceptions.yaml scopes): only
+# quantity transformations relax quantity preservation; X3 only admits context rows; X7/X8 only
+# shape how the audit reads an answer; X9 only satisfies the written-word invariant
+EXCEPTION_USE = {
+    "X1": "quantity_preservation",
+    "X2": "quantity_preservation",
+    "X4": "quantity_preservation",
+    "X5": "quantity_preservation",
+    "X6": "quantity_preservation",
+    "X3": "context",
+    "X7": "audit",
+    "X8": "audit",
+    "X9": "unwritten_word",
+}
 T19_3_2 = f"{MAIN}19-3-2"
 T19_2_1 = f"{MAIN}19-2-1"
 CONTEXT_TABLES = frozenset({APP02, T19_3_2})  # X3: city rows shown as supporting context only
